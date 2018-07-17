@@ -1,11 +1,13 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 
+local info_tab = nil
 local info1 = -1; --номер картинки
 local info2 = -1; --значение картинки
 local info3 = -1; --слот картинки
 
 --гуи окно
 local stats_window = nil
+local tabPanel = nil
 local tab_player = nil
 local tab_car = nil
 local tab_house = nil
@@ -77,8 +79,15 @@ local info_png = {
 	[34] = {"Shotgun", "ID"},
 	[35] = {"Parachute", "ID"}
 }
-local info2_png = -1 --номер картинки
-local info3_png = -1 --значение картинки
+local info1_png = -1 --номер картинки
+local info2_png = -1 --значение картинки
+
+local gui_selection = false
+local gui_selection_pos_x = 0 --положение картинки x
+local gui_selection_pos_y = 0 --положение картинки y
+local info3_selection = -1 --слот картинки
+local info1_selection = -1 --номер картинки
+local info2_selection = -1 --значение картинки
 
 function createText ()
 	local playerid = getLocalPlayer()
@@ -102,12 +111,19 @@ function createText ()
 		local x = 9
 		local y = 20+24
 		local offset = dxGetFontHeight(1,"default-bold")
-		if info2_png ~= 0 then
-			local dimensions = dxGetTextWidth ( info_png[info2_png][1].." "..info3_png.." "..info_png[info2_png][2], 1, "default-bold" )
+		if info1_png ~= 0 then
+			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, "default-bold" )
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
-			dxDrawText ( info_png[info2_png][1].." "..info3_png.." "..info_png[info2_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold", "left", "top", false, false, true )
-			dxDrawText ( info_png[info2_png][1].." "..info3_png.." "..info_png[info2_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold", "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold", "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold", "left", "top", false, false, true )
 		end
+	end
+
+	if gui_selection and info_tab == guiGetSelectedTab(tabPanel) then--выделение картинки
+		local width,height = guiGetPosition ( stats_window, false )
+		local x = 9
+		local y = 20+24
+		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( 255, 255, 130, 100 ), true )
 	end
 end
 addEventHandler ( "onClientRender", getRootElement(), createText )
@@ -158,7 +174,8 @@ function inv_create ()--создание инв-ря
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			info_tab = "player"
+			local x,y = guiGetPosition ( inv_slot[i][1], false )
+
 			info3 = i
 			info1 = inv_slot[i][2]
 			info2 = inv_slot[i][3]
@@ -167,7 +184,18 @@ function inv_create ()--создание инв-ря
 				return
 			end
 
-			sendPlayerMessage(info3.." "..info1.." "..info2.." "..info_tab)
+			if not gui_selection then
+				gui_selection = true
+			end
+
+			info_tab = tab_player
+			gui_selection_pos_x = x
+			gui_selection_pos_y = y
+			info3_selection = info3
+			info1_selection = info1
+			info2_selection = info2
+
+			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
 		addEventHandler ( "onClientGUIClick", inv_slot[i][1], outputEditBox, false )
 	end
@@ -178,8 +206,8 @@ function inv_create ()--создание инв-ря
 			local x,y = guiGetPosition ( inv_slot[i][1], false )
 			gui_pos_x = x
 			gui_pos_y = y
-			info2_png = inv_slot[i][2]
-			info3_png = inv_slot[i][3]
+			info1_png = inv_slot[i][2]
+			info2_png = inv_slot[i][3]
 		end
 		addEventHandler( "onClientMouseEnter", inv_slot[i][1], outputEditBox, false )
 	end
@@ -214,7 +242,8 @@ function inv_create ()--создание инв-ря
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			info_tab = "car"
+			local x,y = guiGetPosition ( inv_slot_car[i][1], false )
+
 			info3 = i
 			info1 = inv_slot_car[i][2]
 			info2 = inv_slot_car[i][3]
@@ -223,7 +252,18 @@ function inv_create ()--создание инв-ря
 				return
 			end
 
-			sendPlayerMessage(info3.." "..info1.." "..info2.." "..info_tab)
+			if not gui_selection then
+				gui_selection = true
+			end
+
+			info_tab = tab_car
+			gui_selection_pos_x = x
+			gui_selection_pos_y = y
+			info3_selection = info3
+			info1_selection = info1
+			info2_selection = info2
+
+			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
 		addEventHandler ( "onClientGUIClick", inv_slot_car[i][1], outputEditBox, false )
 	end
@@ -234,8 +274,8 @@ function inv_create ()--создание инв-ря
 			local x,y = guiGetPosition ( inv_slot_car[i][1], false )
 			gui_pos_x = x
 			gui_pos_y = y
-			info2_png = inv_slot_car[i][2]
-			info3_png = inv_slot_car[i][3]
+			info1_png = inv_slot_car[i][2]
+			info2_png = inv_slot_car[i][3]
 		end
 		addEventHandler( "onClientMouseEnter", inv_slot_car[i][1], outputEditBox, false )
 	end
@@ -270,7 +310,8 @@ function inv_create ()--создание инв-ря
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			info_tab = "house"
+			local x,y = guiGetPosition ( inv_slot_house[i][1], false )
+
 			info3 = i
 			info1 = inv_slot_house[i][2]
 			info2 = inv_slot_house[i][3]
@@ -279,7 +320,18 @@ function inv_create ()--создание инв-ря
 				return
 			end
 
-			sendPlayerMessage(info3.." "..info1.." "..info2.." "..info_tab)
+			if not gui_selection then
+				gui_selection = true
+			end
+
+			info_tab = tab_house
+			gui_selection_pos_x = x
+			gui_selection_pos_y = y
+			info3_selection = info3
+			info1_selection = info1
+			info2_selection = info2
+
+			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
 		addEventHandler ( "onClientGUIClick", inv_slot_house[i][1], outputEditBox, false )
 	end
@@ -290,8 +342,8 @@ function inv_create ()--создание инв-ря
 			local x,y = guiGetPosition ( inv_slot_house[i][1], false )
 			gui_pos_x = x
 			gui_pos_y = y
-			info2_png = inv_slot_house[i][2]
-			info3_png = inv_slot_house[i][3]
+			info1_png = inv_slot_house[i][2]
+			info2_png = inv_slot_house[i][3]
 		end
 		addEventHandler( "onClientMouseEnter", inv_slot_house[i][1], outputEditBox, false )
 	end
@@ -307,8 +359,15 @@ function inv_delet ()--удаление инв-ря
 	gui_2dtext = false
 	gui_pos_x = 0
 	gui_pos_y = 0
+	info1_png = -1
 	info2_png = -1
-	info3_png = -1
+
+	gui_selection = false
+	gui_selection_pos_x = 0
+	gui_selection_pos_y = 0
+	info3_selection = -1
+	info1_selection = -1
+	info2_selection = -1
 
 	info1 = -1;
 	info2 = -1;
@@ -351,6 +410,6 @@ function(absoluteX, absoluteY, gui)
 	gui_2dtext = false
 	gui_pos_x = 0
 	gui_pos_y = 0
+	info1_png = -1
 	info2_png = -1
-	info3_png = -1
 end)
