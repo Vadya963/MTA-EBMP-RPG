@@ -1,0 +1,42 @@
+<meta>
+    <info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
+    <script src="script.lua" type="server"/>
+	<script src="script_client.lua" type="client"/>
+	
+	<file src="0.png" />
+	<file src="1.png" />
+	<file src="2.png" />
+	<file src="3.png" />
+	<file src="4.png" />
+	<file src="5.png" />
+	<file src="6.png" />
+	<file src="7.png" />
+	<file src="8.png" />
+	<file src="9.png" />
+	<file src="10.png" />
+	<file src="11.png" />
+	<file src="12.png" />
+	<file src="13.png" />
+	<file src="14.png" />
+	<file src="15.png" />
+	<file src="16.png" />
+	<file src="17.png" />
+	<file src="18.png" />
+	<file src="19.png" />
+	<file src="20.png" />
+	<file src="21.png" />
+	<file src="22.png" />
+	<file src="23.png" />
+	<file src="24.png" />
+	<file src="25.png" />
+	<file src="26.png" />
+	<file src="27.png" />
+	<file src="28.png" />
+	<file src="29.png" />
+	<file src="30.png" />
+	<file src="31.png" />
+	<file src="32.png" />
+	<file src="33.png" />
+	<file src="34.png" />
+	<file src="35.png" />
+</meta>
