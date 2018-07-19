@@ -104,9 +104,9 @@ function ( playerid, cmd )
 	sendPlayerMessage( playerid, ""..tostring(theVehicle) )
 end)
 
-local png_number = 35
+local png_number = 38
 function tab_down (playerid, key, keyState )
-	
+
 local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then

@@ -77,7 +77,10 @@ local info_png = {
 	[32] = {"Шеврон Капитан", "шт"},
 	[33] = {"Шеврон Шефа полиции", "шт"},
 	[34] = {"Shotgun", "ID"},
-	[35] = {"Parachute", "ID"}
+	[35] = {"Parachute", "ID"},
+	[36] = {"Nightstick", "ID"},
+	[37] = {"Bat", "ID"},
+	[38] = {"Knife", "ID"}
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -102,8 +105,8 @@ function createText ()
 	if vehicle then
 		local speed_table = split(getSpeed(vehicle), '.')
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h"
-		dxDrawText ( speed_vehicle, 200.0+1, 20.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-		dxDrawText ( speed_vehicle, 200.0, 20.0, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold" )
+		dxDrawText ( speed_vehicle, 300.0+1, 20.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+		dxDrawText ( speed_vehicle, 300.0, 20.0, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold" )
 	end
 
 	if gui_2dtext then--отображение инфы
