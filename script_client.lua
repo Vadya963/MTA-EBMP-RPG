@@ -85,12 +85,17 @@ local info_png = {
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
+local lmb = 0--лкм
 local gui_selection = false
 local gui_selection_pos_x = 0 --положение картинки x
 local gui_selection_pos_y = 0 --положение картинки y
 local info3_selection = -1 --слот картинки
 local info1_selection = -1 --номер картинки
 local info2_selection = -1 --значение картинки
+
+local info3_selection_1 = -1 --слот картинки
+local info1_selection_1 = -1 --номер картинки
+local info2_selection_1 = -1 --значение картинки
 
 function createText ()
 	local playerid = getLocalPlayer()
@@ -131,6 +136,39 @@ function createText ()
 end
 addEventHandler ( "onClientRender", getRootElement(), createText )
 
+function zamena_img()
+--------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
+	if info_tab == tab_player then
+		inv_slot[info3_selection][2] = info1_selection_1
+		inv_slot[info3_selection][3] = info2_selection_1
+
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection, info1_selection_1, info2_selection_1 )
+
+		if stats_window ~= nil then
+			triggerEvent( "event_change_image", getRootElement(), "player", info3_selection, info1_selection_1 )
+		end
+
+	elseif info_tab == tab_car then
+		inv_slot_car[info3_selection][2] = info1_selection_1
+		inv_slot_car[info3_selection][3] = info2_selection_1
+
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection, info1_selection_1, info2_selection_1 )
+
+		if stats_window ~= nil then
+			triggerEvent( "event_change_image", getRootElement(), "car", info3_selection, info1_selection_1 )
+		end
+
+	elseif info_tab == tab_house then
+		inv_slot_house[info3_selection][2] = info1_selection_1
+		inv_slot_house[info3_selection][3] = info2_selection_1
+
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection, info1_selection_1, info2_selection_1 )
+
+		if stats_window ~= nil then
+			triggerEvent( "event_change_image", getRootElement(), "house", info3_selection, info1_selection_1 )
+		end
+	end
+end
 
 function inv_create ()--создание инв-ря
 	local width = 400.0+100+10
@@ -183,20 +221,47 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot[i][2]
 			info2 = inv_slot[i][3]
 
-			if info1 == 0 or info1 == -1 or info1 == 1 then
-				return
-			end
-
 			if not gui_selection then
 				gui_selection = true
 			end
 
-			info_tab = tab_player
-			gui_selection_pos_x = x
-			gui_selection_pos_y = y
-			info3_selection = info3
-			info1_selection = info1
-			info2_selection = info2
+			if lmb == 0 then
+				if info1 == 1 or info1 == 0 then
+					return
+				end
+
+				info_tab = tab_player
+				gui_selection_pos_x = x
+				gui_selection_pos_y = y
+				info3_selection = info3
+				info1_selection = info1
+				info2_selection = info2
+				lmb = 1
+			else
+				info3_selection_1 = info3
+				info1_selection_1 = info1
+				info2_selection_1 = info2
+
+				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+				if inv_slot[info3_selection_1][2] ~= 0 then
+					return
+				end
+
+				inv_slot[info3_selection_1][2] = info1_selection
+				inv_slot[info3_selection_1][3] = info2_selection
+
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection_1, info1_selection, info2_selection )
+
+				if stats_window ~= nil then
+					triggerEvent( "event_change_image", getRootElement(), "player", info3_selection_1, info1_selection )
+				end
+
+				zamena_img()
+
+				gui_selection = false
+				info_tab = nil
+				lmb = 0
+			end
 
 			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
@@ -251,20 +316,47 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot_car[i][2]
 			info2 = inv_slot_car[i][3]
 
-			if info1 == 0 or info1 == -1 or info1 == 1 then
-				return
-			end
-
 			if not gui_selection then
 				gui_selection = true
 			end
 
-			info_tab = tab_car
-			gui_selection_pos_x = x
-			gui_selection_pos_y = y
-			info3_selection = info3
-			info1_selection = info1
-			info2_selection = info2
+			if lmb == 0 then
+				if info1 == 1 or info1 == 0 then
+					return
+				end
+
+				info_tab = tab_car
+				gui_selection_pos_x = x
+				gui_selection_pos_y = y
+				info3_selection = info3
+				info1_selection = info1
+				info2_selection = info2
+				lmb = 1
+			else
+				info3_selection_1 = info3
+				info1_selection_1 = info1
+				info2_selection_1 = info2
+
+				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+				if inv_slot_car[info3_selection_1][2] ~= 0 then
+					return
+				end
+
+				inv_slot_car[info3_selection_1][2] = info1_selection
+				inv_slot_car[info3_selection_1][3] = info2_selection
+
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection )
+
+				if stats_window ~= nil then
+					triggerEvent( "event_change_image", getRootElement(), "car", info3_selection_1, info1_selection )
+				end
+
+				zamena_img()
+
+				gui_selection = false
+				info_tab = nil
+				lmb = 0
+			end
 
 			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
@@ -319,20 +411,47 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot_house[i][2]
 			info2 = inv_slot_house[i][3]
 
-			if info1 == 0 or info1 == -1 or info1 == 1 then
-				return
-			end
-
 			if not gui_selection then
 				gui_selection = true
 			end
 
-			info_tab = tab_house
-			gui_selection_pos_x = x
-			gui_selection_pos_y = y
-			info3_selection = info3
-			info1_selection = info1
-			info2_selection = info2
+			if lmb == 0 then
+				if info1 == 1 or info1 == 0 then
+					return
+				end
+
+				info_tab = tab_house
+				gui_selection_pos_x = x
+				gui_selection_pos_y = y
+				info3_selection = info3
+				info1_selection = info1
+				info2_selection = info2
+				lmb = 1
+			else
+				info3_selection_1 = info3
+				info1_selection_1 = info1
+				info2_selection_1 = info2
+
+				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+				if inv_slot_house[info3_selection_1][2] ~= 0 then
+					return
+				end
+
+				inv_slot_house[info3_selection_1][2] = info1_selection
+				inv_slot_house[info3_selection_1][3] = info2_selection
+
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection )
+
+				if stats_window ~= nil then
+					triggerEvent( "event_change_image", getRootElement(), "house", info3_selection_1, info1_selection )
+				end
+
+				zamena_img()
+
+				gui_selection = false
+				info_tab = nil
+				lmb = 0
+			end
 
 			sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
@@ -372,9 +491,16 @@ function inv_delet ()--удаление инв-ря
 	info1_selection = -1
 	info2_selection = -1
 
+	info3_selection_1 = -1
+	info1_selection_1 = -1
+	info2_selection_1 = -1
+
 	info1 = -1;
 	info2 = -1;
 	info3 = -1;
+
+	info_tab = nil
+	lmb = 0
 
 	destroyElement(stats_window)
 end
