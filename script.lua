@@ -178,6 +178,29 @@ function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, source )
 end)
 
+function notifyAboutExplosion()
+	local vehicle = source
+	destroyElement(vehicle)
+	sendPlayerMessage(getRootElement(), "vehicle delet ["..tostring(vehicle).."]")
+end
+addEventHandler("onVehicleExplode", getRootElement(), notifyAboutExplosion)
+
+function addHelmetOnEnter ( vehicle, seat, jacked )--евент входа в авто
+	local playerid = source
+
+	sendPlayerMessage(playerid, "seat "..seat.." jacked "..tostring (jacked))
+end
+addEventHandler ( "onPlayerVehicleEnter", getRootElement(), addHelmetOnEnter )
+
+function removeHelmetOnExit ( vehicle, seat, jacked )--евент выхода из авто
+	local playerid = source
+
+	setVehicleEngineState ( vehicle, false )
+
+	sendPlayerMessage(playerid, "seat "..seat.." jacked "..tostring (jacked))
+end
+addEventHandler ( "onPlayerVehicleExit", getRootElement(), removeHelmetOnExit )
+
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
 	local randomize = math.random(0,9999)
@@ -260,7 +283,7 @@ local playername = getPlayerName ( playerid )
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
-			if area then
+			if area and earth[j][4] ~= 0 then
 				for i=0,max_inv do
 					if array_player_1[playername][i+1] == 0 then
 						inv_server_load( playerid, "player", i, earth[j][4], earth[j][5] )
@@ -364,7 +387,12 @@ function ( playerid, cmd, id )
 	local x,y,z = getElementPosition( playerid )
 	local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
 
-	sendPlayerMessage(playerid, "spawn vehicle "..id.." "..getVehicleNameFromModel ( tonumber ( id ) ))
+	sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..tostring(vehicleid).."] "..getVehicleNameFromModel ( tonumber ( id ) ))
+end)
+
+addCommandHandler ( "go",
+function ( playerid, cmd, x, y, z )
+	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
 end)
 
 function input_Console ( text )
@@ -375,3 +403,26 @@ function input_Console ( text )
 	end
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
+
+addCommandHandler("hp",
+function (source)
+	local vehicle = getPedOccupiedVehicle(source)
+	local playerHealth = getElementHealth(source)
+	
+	if vehicle then
+		local vehicleHP = getElementHealth(vehicle)
+		if vehicleHP == 1000 then
+			outputChatBox("[Ошибка] #FFFFFFВаш транспорт не нуждаетсая в ремонте!",source, 180,0,0, true)
+		else
+			fixVehicle(vehicle)
+			outputChatBox("Ваш транспорт отремонтирован!",source, 7,145,0)
+		end
+	else
+		if playerHealth == 100 then
+			outputChatBox("[Ошибка] #FFFFFFВаше здоровье не нуждается в пополнении!",source, 180,0,0, true)
+		else
+			setElementHealth(source, 100)
+			outputChatBox("Ваше здоровье полностью пополнено!",source, 7,145,0)
+		end
+	end
+end)

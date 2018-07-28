@@ -31,7 +31,7 @@ addEvent( "event_earth_loadd", true )
 addEventHandler ( "event_earth_loadd", getRootElement(), earth_load )
 
 local image = {}--загрузка картинок для отображения на земле
-for i=2,38 do
+for i=0,38 do
 	image[i] = dxCreateTexture(i..".png")
 end
 
@@ -165,6 +165,10 @@ function createText ()
 		dxDrawText ( speed_vehicle, 300.0, 20.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 	end
 
+	local x,y,z = getElementPosition(playerid)
+	dxDrawText ( x.." "..y.." "..z, 300.0+1, 40.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+	dxDrawText ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
 	if gui_2dtext then--отображение инфы
 		local width,height = guiGetPosition ( stats_window, false )
 		local x = 9
@@ -189,7 +193,7 @@ function createText ()
 		local x,y,z = getElementPosition(playerid)
 		local area = isPointInCircle3D( x, y, z, earth[i][1], earth[i][2], earth[i][3], 20 )
 
-		if area then
+		if area and earth[i][4] ~= 0 then
 			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1, 0, false ) }
 			if coords[1] and coords[2] then
 				dxDrawImage ( coords[1], coords[2], 57, 57, image[ earth[i][4] ] )
