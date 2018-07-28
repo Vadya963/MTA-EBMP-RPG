@@ -1,5 +1,40 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 
+----цвета----
+local color_tips = {168,228,160}--бабушкины яблоки
+local yellow = {255,255,0}--желтый
+local red = {255,0,0}--красный
+local blue = {0,150,255}--синий
+local white = {255,255,255}--белый
+local green = {0,255,0}--зеленый
+local turquoise = {0,255,255}--бирюзовый
+local orange = {255,100,0}--оранжевый
+local pink = {255,100,255}--розовый
+local lyme = {130,255,0}--лайм админский цвет
+local svetlo_zolotoy = {255,255,130}--светло-золотой
+
+local earth = {}--слоты земли
+local max_earth = 50
+
+for i=1,max_earth do
+	earth[i] = {0,0,0,0,0}
+end
+
+function earth_load (i, x, y, z, id1, id2)--изменения слотов земли
+	earth[i][1] = x
+	earth[i][2] = y
+	earth[i][3] = z
+	earth[i][4] = id1
+	earth[i][5] = id2
+end
+addEvent( "event_earth_loadd", true )
+addEventHandler ( "event_earth_loadd", getRootElement(), earth_load )
+
+local image = {}--загрузка картинок для отображения на земле
+for i=2,38 do
+	image[i] = dxCreateTexture(i..".png")
+end
+
 local info_tab = nil
 local info1 = -1; --номер картинки
 local info2 = -1; --значение картинки
@@ -16,6 +51,10 @@ local tab_house = nil
 local use_button = nil
 local throw_button = nil
 
+local playername = ""
+local plate = ""
+local house = ""
+
 local max_inv = 23
 local inv_slot = {} -- инв-рь игрока
 local inv_slot_car = {} -- инв-рь авто
@@ -29,6 +68,18 @@ end
 
 function sendPlayerMessage(text, r, g, b)
 	outputChatBox(text, r, g, b)
+end
+
+function getPlayerVehicle( playerid )
+	local vehicle = getPedOccupiedVehicle ( playerid )
+	return vehicle
+end
+
+function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
+	local hash = createColSphere ( x, y, z, radius )
+	local area = isInsideColShape( hash, x1, y1, z1 )
+	destroyElement(hash)
+	return area
 end
 
 function getSpeed(vehicle)
@@ -47,7 +98,7 @@ local info_png = {
 	[2] = {"Права на имя", ""},
 	[3] = {"Сигареты Big Break Red", "шт в пачке"},
 	[4] = {"error", ""},
-	[5] = {"В канистре", "галл."},
+	[5] = {"Канистра с", "галл."},
 	[6] = {"Ключ от автомобиля с номером", ""},
 	[7] = {"Сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"Сигареты Big Break White", "сигарет в пачке"},
@@ -104,14 +155,14 @@ function createText ()
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
 
 	dxDrawText ( text, 2.0+1, 0.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-	dxDrawText ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold" )
+	dxDrawText ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
-	local vehicle = getPedOccupiedVehicle ( getLocalPlayer() )
-	if vehicle then
+	local vehicle = getPlayerVehicle ( getLocalPlayer() )
+	if vehicle then--отображение скорости авто
 		local speed_table = split(getSpeed(vehicle), '.')
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h"
 		dxDrawText ( speed_vehicle, 300.0+1, 20.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-		dxDrawText ( speed_vehicle, 300.0, 20.0, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold" )
+		dxDrawText ( speed_vehicle, 300.0, 20.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 	end
 
 	if gui_2dtext then--отображение инфы
@@ -123,7 +174,7 @@ function createText ()
 			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, "default-bold" )
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold", "left", "top", false, false, true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( 255, 255, 255, 255 ), 1, "default-bold", "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold", "left", "top", false, false, true )
 		end
 	end
 
@@ -131,7 +182,25 @@ function createText ()
 		local width,height = guiGetPosition ( stats_window, false )
 		local x = 9
 		local y = 20+24
-		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( 255, 255, 130, 100 ), true )
+		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 100 ), true )
+	end
+
+	for i=1,max_earth do--отображение предметов на земле
+		local x,y,z = getElementPosition(playerid)
+		local area = isPointInCircle3D( x, y, z, earth[i][1], earth[i][2], earth[i][3], 20 )
+
+		if area then
+			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1, 0, false ) }
+			if coords[1] and coords[2] then
+				dxDrawImage ( coords[1], coords[2], 57, 57, image[ earth[i][4] ] )
+			end
+
+			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1+0.2, 0, false ) }
+			if coords[1] and coords[2] then
+				dxDrawText ( "Нажмите E", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+			end
+		end
 	end
 end
 addEventHandler ( "onClientRender", getRootElement(), createText )
@@ -143,30 +212,25 @@ function zamena_img()
 		inv_slot[info3_selection][3] = info2_selection_1
 
 		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection, info1_selection_1, info2_selection_1 )
+		
+		change_image ( "player", info3_selection, info1_selection_1 )
 
-		if stats_window ~= nil then
-			triggerEvent( "event_change_image", getRootElement(), "player", info3_selection, info1_selection_1 )
-		end
 
 	elseif info_tab == tab_car then
 		inv_slot_car[info3_selection][2] = info1_selection_1
 		inv_slot_car[info3_selection][3] = info2_selection_1
 
 		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection, info1_selection_1, info2_selection_1 )
-
-		if stats_window ~= nil then
-			triggerEvent( "event_change_image", getRootElement(), "car", info3_selection, info1_selection_1 )
-		end
+		
+		change_image ( "car", info3_selection, info1_selection_1 )
 
 	elseif info_tab == tab_house then
 		inv_slot_house[info3_selection][2] = info1_selection_1
 		inv_slot_house[info3_selection][3] = info2_selection_1
 
 		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection, info1_selection_1, info2_selection_1 )
-
-		if stats_window ~= nil then
-			triggerEvent( "event_change_image", getRootElement(), "house", info3_selection, info1_selection_1 )
-		end
+		
+		change_image ( "house", info3_selection, info1_selection_1 )
 	end
 end
 
@@ -179,9 +243,9 @@ function inv_create ()--создание инв-ря
 
 	stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 	tabPanel = guiCreateTabPanel ( 0.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
-	tab_player = guiCreateTab( "Инвентарь", tabPanel )
-	tab_car = guiCreateTab( "Авто", tabPanel )
-	tab_house = guiCreateTab( "Дом", tabPanel )
+	tab_player = guiCreateTab( "Инвентарь "..playername, tabPanel )
+	tab_car = guiCreateTab( "Авто "..plate, tabPanel )
+	tab_house = guiCreateTab( "Дом "..house, tabPanel )
 
 	showCursor( true )
 
@@ -221,15 +285,12 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot[i][2]
 			info2 = inv_slot[i][3]
 
-			if not gui_selection then
-				gui_selection = true
-			end
-
 			if lmb == 0 then
 				if info1 == 1 or info1 == 0 then
 					return
 				end
 
+				gui_selection = true
 				info_tab = tab_player
 				gui_selection_pos_x = x
 				gui_selection_pos_y = y
@@ -252,9 +313,7 @@ function inv_create ()--создание инв-ря
 
 				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection_1, info1_selection, info2_selection )
 
-				if stats_window ~= nil then
-					triggerEvent( "event_change_image", getRootElement(), "player", info3_selection_1, info1_selection )
-				end
+				change_image ( "player", info3_selection_1, info1_selection )
 
 				zamena_img()
 
@@ -316,15 +375,12 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot_car[i][2]
 			info2 = inv_slot_car[i][3]
 
-			if not gui_selection then
-				gui_selection = true
-			end
-
 			if lmb == 0 then
 				if info1 == 1 or info1 == 0 then
 					return
 				end
 
+				gui_selection = true
 				info_tab = tab_car
 				gui_selection_pos_x = x
 				gui_selection_pos_y = y
@@ -347,9 +403,7 @@ function inv_create ()--создание инв-ря
 
 				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection )
 
-				if stats_window ~= nil then
-					triggerEvent( "event_change_image", getRootElement(), "car", info3_selection_1, info1_selection )
-				end
+				change_image ( "car", info3_selection_1, info1_selection )
 
 				zamena_img()
 
@@ -411,15 +465,12 @@ function inv_create ()--создание инв-ря
 			info1 = inv_slot_house[i][2]
 			info2 = inv_slot_house[i][3]
 
-			if not gui_selection then
-				gui_selection = true
-			end
-
 			if lmb == 0 then
 				if info1 == 1 or info1 == 0 then
 					return
 				end
 
+				gui_selection = true
 				info_tab = tab_house
 				gui_selection_pos_x = x
 				gui_selection_pos_y = y
@@ -442,9 +493,7 @@ function inv_create ()--создание инв-ря
 
 				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection )
 
-				if stats_window ~= nil then
-					triggerEvent( "event_change_image", getRootElement(), "house", info3_selection_1, info1_selection )
-				end
+				change_image ( "house", info3_selection_1, info1_selection )
 
 				zamena_img()
 
@@ -473,11 +522,41 @@ function inv_create ()--создание инв-ря
 	use_button = guiCreateButton( 400.0, 43.0, 100.0, 25.0, "Использовать", false, stats_window )
 	throw_button = guiCreateButton( 400.0, 73.0, 100.0, 25.0, "Выкинуть", false, stats_window )
 
+	---------------------кнопки--------------------------------------------------
+	function throw_earth ( button, state, absoluteX, absoluteY )--выброс предмета
+		if info1 == 1 or info1 == 0 or info1 == -1 then
+			return
+		end
+
+		if tab_player == guiGetSelectedTab(tabPanel) then
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
+		elseif tab_car == guiGetSelectedTab(tabPanel) then
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
+		elseif tab_house == guiGetSelectedTab(tabPanel) then
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2 )
+		end
+
+		gui_selection = false
+		info_tab = nil
+		lmb = 0
+	end
+	addEventHandler ( "onClientGUIClick", throw_button, throw_earth, false )
+
 end
 addEvent( "event_inv_create", true )
 addEventHandler ( "event_inv_create", getRootElement(), inv_create )
 
 function inv_delet ()--удаление инв-ря
+	for i=0,max_inv do
+		inv_slot[i] = {0,0,0}
+		inv_slot_car[i] = {0,0,0}
+		inv_slot_house[i] = {0,0,0}
+	end
+
+	playername = ""
+	plate = ""
+	house = ""
+
 	gui_2dtext = false
 	gui_pos_x = 0
 	gui_pos_y = 0
@@ -521,6 +600,18 @@ function inv_load (value, id3, id1, id2)--загрузка инв-ря
 end
 addEvent( "event_inv_load", true )
 addEventHandler ( "event_inv_load", getRootElement(), inv_load )
+
+function tab_load (value, text)--загрузка надписей в табе
+	if value == "player" then
+		playername = text
+	elseif value == "car" then
+		plate = text
+	elseif value == "house" then
+		house = text
+	end
+end
+addEvent( "event_tab_load", true )
+addEventHandler ( "event_tab_load", getRootElement(), tab_load )
 
 function change_image (value, id3, filename)--замена картинок в инв-ре
 	if value == "player" then
