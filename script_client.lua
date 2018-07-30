@@ -51,7 +51,6 @@ local tab_house = nil
 local use_button = nil
 local throw_button = nil
 
-local playername = ""
 local plate = ""
 local house = ""
 
@@ -149,6 +148,8 @@ local info1_selection_1 = -1 --номер картинки
 local info2_selection_1 = -1 --значение картинки
 
 function createText ()
+	--setTime( 0, 0 )
+
 	local playerid = getLocalPlayer()
 	local time = getRealTime()
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
@@ -247,7 +248,7 @@ function inv_create ()--создание инв-ря
 
 	stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 	tabPanel = guiCreateTabPanel ( 0.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
-	tab_player = guiCreateTab( "Инвентарь "..playername, tabPanel )
+	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( getLocalPlayer() ), tabPanel )
 	tab_car = guiCreateTab( "Авто "..plate, tabPanel )
 	tab_house = guiCreateTab( "Дом "..house, tabPanel )
 
@@ -380,7 +381,7 @@ function inv_create ()--создание инв-ря
 			info2 = inv_slot_car[i][3]
 
 			if lmb == 0 then
-				if info1 == 1 or info1 == 0 then
+				if info1 == 1 or info1 == 0 or plate == "" then
 					return
 				end
 
@@ -398,7 +399,7 @@ function inv_create ()--создание инв-ря
 				info2_selection_1 = info2
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_car[info3_selection_1][2] ~= 0 then
+				if inv_slot_car[info3_selection_1][2] ~= 0 or plate == "" then
 					return
 				end
 
@@ -557,7 +558,6 @@ function inv_delet ()--удаление инв-ря
 		inv_slot_house[i] = {0,0,0}
 	end
 
-	playername = ""
 	plate = ""
 	house = ""
 
@@ -606,9 +606,7 @@ addEvent( "event_inv_load", true )
 addEventHandler ( "event_inv_load", getRootElement(), inv_load )
 
 function tab_load (value, text)--загрузка надписей в табе
-	if value == "player" then
-		playername = text
-	elseif value == "car" then
+	if value == "car" then
 		plate = text
 	elseif value == "house" then
 		house = text

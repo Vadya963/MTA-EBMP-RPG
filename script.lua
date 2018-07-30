@@ -178,28 +178,30 @@ function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, source )
 end)
 
-function notifyAboutExplosion()
+function explode_car()
 	local vehicle = source
 	destroyElement(vehicle)
 	sendPlayerMessage(getRootElement(), "vehicle delet ["..tostring(vehicle).."]")
 end
-addEventHandler("onVehicleExplode", getRootElement(), notifyAboutExplosion)
+addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
-function addHelmetOnEnter ( vehicle, seat, jacked )--евент входа в авто
+function enter_car ( vehicle, seat, jacked )--евент входа в авто
 	local playerid = source
 
-	sendPlayerMessage(playerid, "seat "..seat.." jacked "..tostring (jacked))
+	sendPlayerMessage(playerid, "function enter_car" )
+	local upgrades = getVehicleUpgrades ( vehicle )
+    for v, upgrade in ipairs ( upgrades ) do
+        sendPlayerMessage(playerid, getVehicleUpgradeSlotName ( upgrade ) .. ": " .. upgrade )
+    end
 end
-addEventHandler ( "onPlayerVehicleEnter", getRootElement(), addHelmetOnEnter )
+addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
-function removeHelmetOnExit ( vehicle, seat, jacked )--евент выхода из авто
+function exit_car ( vehicle, seat, jacked )--евент выхода из авто
 	local playerid = source
 
-	setVehicleEngineState ( vehicle, false )
-
-	sendPlayerMessage(playerid, "seat "..seat.." jacked "..tostring (jacked))
+	triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 end
-addEventHandler ( "onPlayerVehicleExit", getRootElement(), removeHelmetOnExit )
+addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
@@ -228,7 +230,6 @@ local vehicleid = getPlayerVehicle(playerid)
 		if state_inv_player[playername] == 0 then --инв-рь игрока
 			for i=0,max_inv do
 				triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, array_player_1[playername][i+1], array_player_2[playername][i+1] )
-				triggerClientEvent( playerid, "event_tab_load", playerid, "player", playername )
 
 				if vehicleid then
 					local plate = getVehiclePlateText ( vehicleid )
@@ -390,6 +391,96 @@ function ( playerid, cmd, id )
 	sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..tostring(vehicleid).."] "..getVehicleNameFromModel ( tonumber ( id ) ))
 end)
 
+addCommandHandler ( "paint",
+function ( playerid, cmd, id )
+	local vehicleid = getPlayerVehicle(playerid)
+	local value = tonumber(id)
+	if vehicleid then
+		setVehiclePaintjob ( vehicleid, value )
+	end
+end)
+
+addCommandHandler ( "upd",
+function ( playerid, cmd, id )
+	local vehicleid = getPlayerVehicle(playerid)
+	local value = tonumber(id)
+	local text = ""
+	if vehicleid then
+		addVehicleUpgrade ( vehicleid, value )
+
+		local model = getElementModel ( vehicleid )
+
+		sendPlayerMessage(playerid, "addCommandHandler upd" )
+		sendPlayerMessage(playerid, "model - "..model )
+
+		local upgrades = getVehicleUpgrades ( vehicleid )
+		for _, upgrade in pairs ( upgrades ) do
+			if value == upgrade then
+				text = text..upgrade..","
+			end
+		end
+
+		sendPlayerMessage(playerid, text)
+	end
+end)
+
+addCommandHandler ( "getupd",
+function ( playerid )
+	local text = ""
+	local vehicleid = getPlayerVehicle(playerid)
+	if vehicleid then
+		local model = getElementModel ( vehicleid )
+
+		sendPlayerMessage(playerid, "addCommandHandler getupd" )
+		sendPlayerMessage(playerid, "model - "..model )	
+
+		for i=1000,1193 do
+			addVehicleUpgrade ( vehicleid, i )
+
+			local upgrades = getVehicleUpgrades ( vehicleid )
+			for _, upgrade in pairs ( upgrades ) do
+				if i == upgrade then
+					text = text..upgrade..","
+				end
+			end
+		end
+
+		sendPlayerMessage(playerid, text)
+	end
+end)
+
+addCommandHandler ( "getupd2",
+function ( playerid )
+	local text = ""
+	local vehicleid = getPlayerVehicle(playerid)
+	if vehicleid then
+		local model = getElementModel ( vehicleid )
+
+		sendPlayerMessage(playerid, "addCommandHandler getupd2" )
+		sendPlayerMessage(playerid, "model - "..model )	
+
+			local upgrades = getVehicleUpgrades ( vehicleid )
+			for _, upgrade in pairs ( upgrades ) do
+				text = text..upgrade..","
+			end
+
+		sendPlayerMessage(playerid, text)
+	end
+end)
+
+addCommandHandler( "color",
+function( playerid )
+	if isPedInVehicle( playerid ) then
+		local uVehicle = getPlayerVehicle( playerid )
+		if uVehicle then
+			local r, g, b = math.random( 255 ), math.random( 255 ), math.random( 255 )
+			setVehicleColor( uVehicle, r, g, b, r, g, b, r, g, b, r, g, b )
+			setVehicleHeadLightColor ( uVehicle, r, g, b )
+			sendPlayerMessage(playerid, r.." "..g.." "..b)
+		end
+	end
+end)
+
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
@@ -406,7 +497,7 @@ addEventHandler ( "onConsole", getRootElement(), input_Console )
 
 addCommandHandler("hp",
 function (source)
-	local vehicle = getPedOccupiedVehicle(source)
+	local vehicle = getPlayerVehicle(source)
 	local playerHealth = getElementHealth(source)
 	
 	if vehicle then
