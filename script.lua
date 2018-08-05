@@ -45,44 +45,44 @@ local spawnX, spawnY, spawnZ = 1959.55, -1714.46, 17
 
 local info_png = {
 	[0] = {"", ""},
-	[1] = {"Деньги", "$"},
-	[2] = {"Права на имя", ""},
-	[3] = {"Сигареты Big Break Red", "шт в пачке"},
+	[1] = {"деньги", "$"},
+	[2] = {"права на имя", ""},
+	[3] = {"сигареты Big Break Red", "шт в пачке"},
 	[4] = {"error", ""},
-	[5] = {"Канистра с", "галл."},
-	[6] = {"Ключ от автомобиля с номером", ""},
-	[7] = {"Сигареты Big Break Blue", "сигарет в пачке"},
-	[8] = {"Сигареты Big Break White", "сигарет в пачке"},
-	[9] = {"Grenade", "ID"},
-	[10] = {"Полицейское удостоверение на имя", ""},
-	[11] = {"Патроны 25 шт для", "ID"},
-	[12] = {"Colt-45", "ID"},
-	[13] = {"Deagle", "ID"},
+	[5] = {"канистра с", "галл."},
+	[6] = {"ключ от автомобиля с номером", ""},
+	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
+	[8] = {"сигареты Big Break White", "сигарет в пачке"},
+	[9] = {"граната", "ID"},
+	[10] = {"полицейское удостоверение на имя", ""},
+	[11] = {"патроны 25 шт для", "ID"},
+	[12] = {"colt-45", "ID"},
+	[13] = {"deagle", "ID"},
 	[14] = {"AK-47", "ID"},
 	[15] = {"M4", "ID"},
-	[16] = {"Tec-9", "ID"},
+	[16] = {"tec-9", "ID"},
 	[17] = {"MP5", "ID"},
-	[18] = {"Uzi", "ID"},
-	[19] = {"Teargas", "ID"},
-	[20] = {"Наркотики", "гр"},
-	[21] = {"Пиво старый эмпайр", "шт"},
-	[22] = {"Пиво штольц", "шт"},
-	[23] = {"Наручные часы Empire, состояние", "%"},
-	[24] = {"Ящик, цена продажи", "$"},
-	[25] = {"Ключ от дома с номером", ""},
-	[26] = {"Ключ от автомобиля с номером", ""},
+	[18] = {"uzi", "ID"},
+	[19] = {"дымовая граната", "ID"},
+	[20] = {"наркотики", "гр"},
+	[21] = {"пиво старый эмпайр", "шт"},
+	[22] = {"пиво штольц", "шт"},
+	[23] = {"наручные часы Empire, состояние", "%"},
+	[24] = {"ящик, цена продажи", "$"},
+	[25] = {"ключ от дома с номером", ""},
+	[26] = {"ключ от автомобиля с номером", ""},
 	[27] = {"", "одежда"},
-	[28] = {"Шеврон Офицера", "шт"},
-	[29] = {"Шеврон Детектива", "шт"},
-	[30] = {"Шеврон Сержанта", "шт"},
-	[31] = {"Шеврон Лейтенанта", "шт"},
-	[32] = {"Шеврон Капитан", "шт"},
-	[33] = {"Шеврон Шефа полиции", "шт"},
-	[34] = {"Shotgun", "ID"},
-	[35] = {"Parachute", "ID"},
-	[36] = {"Nightstick", "ID"},
-	[37] = {"Bat", "ID"},
-	[38] = {"Knife", "ID"}
+	[28] = {"шеврон Офицера", "шт"},
+	[29] = {"шеврон Детектива", "шт"},
+	[30] = {"шеврон Сержанта", "шт"},
+	[31] = {"шеврон Лейтенанта", "шт"},
+	[32] = {"шеврон Капитан", "шт"},
+	[33] = {"шеврон Шефа полиции", "шт"},
+	[34] = {"shotgun", "ID"},
+	[35] = {"парашют", "ID"},
+	[36] = {"дубинка", "ID"},
+	[37] = {"бита", "ID"},
+	[38] = {"нож", "ID"}
 }
 
 ----цвета----
@@ -188,11 +188,6 @@ addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 function enter_car ( vehicle, seat, jacked )--евент входа в авто
 	local playerid = source
 
-	sendPlayerMessage(playerid, "function enter_car" )
-	local upgrades = getVehicleUpgrades ( vehicle )
-    for v, upgrade in ipairs ( upgrades ) do
-        sendPlayerMessage(playerid, getVehicleUpgradeSlotName ( upgrade ) .. ": " .. upgrade )
-    end
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
@@ -345,7 +340,7 @@ function (playerid, cmd, id1, id2 )
 				triggerClientEvent( playerid, "event_change_image", playerid, "player", i, array_player_1[playername][i+1])
 			end
 
-			sendPlayerMessage(playerid, "вы создали ["..i.."] ["..array_player_1[playername][i+1].."] ["..array_player_2[playername][i+1].."]", lyme[1], lyme[2], lyme[3])
+			sendPlayerMessage(playerid, "Вы создали "..info_png[array_player_1[playername][i+1]][1].." "..array_player_2[playername][i+1].." "..info_png[array_player_1[playername][i+1]][2], lyme[1], lyme[2], lyme[3])
 			return
 		end
 	end
@@ -369,7 +364,7 @@ function (playerid, cmd, id1, id2 )
 				triggerClientEvent( playerid, "event_change_image", playerid, "player", i, array_player_1[playername][i+1])
 			end
 
-			sendPlayerMessage(playerid, "вы создали ["..i.."] ["..array_player_1[playername][i+1].."] ["..array_player_2[playername][i+1].."]", lyme[1], lyme[2], lyme[3])
+			sendPlayerMessage(playerid, "Вы создали "..info_png[array_player_1[playername][i+1]][1].." "..array_player_2[playername][i+1].." "..info_png[array_player_1[playername][i+1]][2], lyme[1], lyme[2], lyme[3])
 			return
 		end
 	end
@@ -432,20 +427,13 @@ function ( playerid )
 		local model = getElementModel ( vehicleid )
 
 		sendPlayerMessage(playerid, "addCommandHandler getupd" )
-		sendPlayerMessage(playerid, "model - "..model )	
+		sendPlayerMessage(playerid, "model - "..model )
 
-		for i=1000,1193 do
-			addVehicleUpgrade ( vehicleid, i )
-
-			local upgrades = getVehicleUpgrades ( vehicleid )
-			for _, upgrade in pairs ( upgrades ) do
-				if i == upgrade then
-					text = text..upgrade..","
-				end
-			end
+		local upgrades = getVehicleCompatibleUpgrades ( vehicleid )
+		for v, upgrade in ipairs ( upgrades ) do
+			text = text..upgrade..","
 		end
-
-		sendPlayerMessage(playerid, text)
+		sendPlayerMessage(playerid, text )
 	end
 end)
 
@@ -457,7 +445,7 @@ function ( playerid )
 		local model = getElementModel ( vehicleid )
 
 		sendPlayerMessage(playerid, "addCommandHandler getupd2" )
-		sendPlayerMessage(playerid, "model - "..model )	
+		sendPlayerMessage(playerid, "model - "..model )
 
 			local upgrades = getVehicleUpgrades ( vehicleid )
 			for _, upgrade in pairs ( upgrades ) do
@@ -465,6 +453,36 @@ function ( playerid )
 			end
 
 		sendPlayerMessage(playerid, text)
+	end
+end)
+
+local horn = 0
+function horn( vehicleid )
+	for k,playerid in pairs(getElementsByType("player")) do
+		local vehicle = getPlayerVehicle(playerid)
+		if vehicleid then
+			if horn == 0 then
+				setVehicleOverrideLights ( vehicleid, 1 )
+				if vehicleid == vehicle then
+					setControlState ( playerid, "horn", false )
+				end
+				horn = 1
+			else
+				setVehicleOverrideLights ( vehicleid, 2 )
+				if vehicleid == vehicle then
+					setControlState ( playerid, "horn", true )
+				end
+				horn = 0
+			end
+		end
+	end
+end
+
+addCommandHandler ( "horn",
+function ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	if vehicleid then
+		setTimer(horn, 500, 0, vehicleid)
 	end
 end)
 
