@@ -1,3 +1,25 @@
+local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
+
+----цвета----
+local color_tips = {168,228,160}--бабушкины яблоки
+local yellow = {255,255,0}--желтый
+local red = {255,0,0}--красный
+local blue = {0,150,255}--синий
+local white = {255,255,255}--белый
+local green = {0,255,0}--зеленый
+local turquoise = {0,255,255}--бирюзовый
+local orange = {255,100,0}--оранжевый
+local pink = {255,100,255}--розовый
+local lyme = {130,255,0}--лайм админский цвет
+local svetlo_zolotoy = {255,255,130}--светло-золотой
+
+-------------------пользовательские функции----------------------------------------------
+function sqlite(text)
+	local result = dbQuery( database, text )
+	local result = dbPoll( result, -1 )
+	return result
+end
+
 function sendPlayerMessage(playerid, text, r, g, b)
 	outputChatBox(text, playerid, r, g, b)
 end
@@ -18,13 +40,39 @@ function getPlayerVehicle( playerid )
 	return vehicle
 end
 
-local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
-
-function sqlite(text)
-	local result = dbQuery( database, text )
-	local result = dbPoll( result, -1 )
-	return result
+function getSpeed(vehicle)
+	if vehicle then
+		local x, y, z = getElementVelocity(vehicle)
+		return math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))*111.847*1.61--узнает скорость авто в км/ч
+	end
 end
+-----------------------------------------------------------------------------------------
+
+-------------------------------эвенты----------------------------------------------------
+function addVehicleUpgrade_fun( vehicleid, value )
+	addVehicleUpgrade ( vehicleid, value )
+end
+addEvent( "event_addVehicleUpgrade", true )
+addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
+
+function setVehiclePaintjob_fun( vehicleid, value )
+	setVehiclePaintjob ( vehicleid, value )
+end
+addEvent( "event_setVehiclePaintjob", true )
+addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
+
+function setVehicleColor_fun( vehicleid, r, g, b )
+	setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
+end
+addEvent( "event_setVehicleColor", true )
+addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun )
+
+function setVehicleHeadLightColor_fun( vehicleid, r, g, b )
+	setVehicleHeadLightColor ( vehicleid, r, g, b )
+end
+addEvent( "event_setVehicleHeadLightColor", true )
+addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
+-----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
 local max_earth = 50
@@ -34,10 +82,24 @@ for i=1,max_earth do
 end
 
 function timer_earth()
-	for k,v in pairs(getElementsByType("player")) do
+	for k,playerid in pairs(getElementsByType("player")) do
 		for i=1,max_earth do
-			triggerClientEvent( v, "event_earth_loadd", v, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
+			triggerClientEvent( playerid, "event_earth_load", playerid, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
 		end
+	end
+end
+
+function timer_earth_clear()
+	for j=1,max_earth do
+		earth[j][1] = 0
+		earth[j][2] = 0
+		earth[j][3] = 0
+		earth[j][4] = 0
+		earth[j][5] = 0
+	end
+
+	for k,playerid in pairs(getElementsByType("player")) do
+		sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора.", green[1], green[2], green[3])
 	end
 end
 
@@ -48,7 +110,7 @@ local info_png = {
 	[1] = {"деньги", "$"},
 	[2] = {"права на имя", ""},
 	[3] = {"сигареты Big Break Red", "шт в пачке"},
-	[4] = {"error", ""},
+	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "галл."},
 	[6] = {"ключ от автомобиля с номером", ""},
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
@@ -82,21 +144,9 @@ local info_png = {
 	[35] = {"парашют", "ID"},
 	[36] = {"дубинка", "ID"},
 	[37] = {"бита", "ID"},
-	[38] = {"нож", "ID"}
+	[38] = {"нож", "ID"},
+	[39] = {"бронежилет", "шт"},
 }
-
-----цвета----
-local color_tips = {168,228,160}--бабушкины яблоки
-local yellow = {255,255,0}--желтый
-local red = {255,0,0}--красный
-local blue = {0,150,255}--синий
-local white = {255,255,255}--белый
-local green = {0,255,0}--зеленый
-local turquoise = {0,255,255}--бирюзовый
-local orange = {255,100,0}--оранжевый
-local pink = {255,100,255}--розовый
-local lyme = {130,255,0}--лайм админский цвет
-local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 local me_radius = 10--радиус отображения действий игрока в чате
 
@@ -109,15 +159,80 @@ local array_player_2 = {}
 --инв-рь авто
 local array_car_1 = {}
 local array_car_2 = {}
+local fuel = {}
 
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
 
 local state_inv_player = {}--состояние инв-ря 0-выкл, 1-вкл
+local state_tune_window = {}--состояние окна тюнинга 0-выкл, 1-вкл
+
+function fuel_down()--система топлива авто
+	for k,vehicle in pairs(getElementsByType("vehicle")) do
+		local veh = getVehiclePlateText(vehicle)
+		local engine = getVehicleEngineState ( vehicle )
+
+		if engine then
+			if fuel[veh] <= 0 then
+				setVehicleEngineState ( vehicle, false )
+			else
+				if getSpeed(vehicle) == 0 then
+					fuel[veh] = fuel[veh] - 0.001
+				elseif getSpeed(vehicle) > 0 and getSpeed(vehicle) <= 100 then
+					fuel[veh] = fuel[veh] - 0.01
+				elseif getSpeed(vehicle) > 100 and getSpeed(vehicle) <= 150 then
+					fuel[veh] = fuel[veh] - 0.02
+				elseif getSpeed(vehicle) > 150 and getSpeed(vehicle) <= 200 then
+					fuel[veh] = fuel[veh] - 0.03
+				elseif getSpeed(vehicle) > 200 and getSpeed(vehicle) <= 250 then
+					fuel[veh] = fuel[veh] - 0.04
+				elseif getSpeed(vehicle) > 250 and getSpeed(vehicle) <= 300 then
+					fuel[veh] = fuel[veh] - 0.05
+				end
+			end
+
+			for k,playerid in pairs(getElementsByType("player")) do
+				local car_player = getPlayerVehicle(playerid)
+
+				if car_player == vehicle then
+					triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
+				end
+			end
+		end
+	end
+end
+
+function search_inv_player( playerid, value1, value2 )--цикл по поиску предмета в инв-ре игрока
+	local playername = getPlayerName ( playerid )
+	local val = 0
+
+	for i=0,max_inv do
+		if array_player_1[playername][i+1] == value1 and array_player_2[playername][i+1] == value2 then
+			val = val + 1
+		end
+	end
+
+	return val
+end
+
+function search_inv_car( vehicleid, value1, value2 )--цикл по поиску предмета в инв-ре авто
+	local plate = getVehiclePlateText ( vehicleid )
+	local val = 0
+
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == value1 and array_car_2[plate][i+1] == value2 then
+			val = val + 1
+		end
+	end
+
+	return val
+end
 
 function displayLoadedRes ( res )--старт ресурсов
 	setTimer(timer_earth, 5000, 0)
+	setTimer(timer_earth_clear, 300000, 0)
+	setTimer(fuel_down, 500, 0)
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
 
@@ -135,23 +250,22 @@ function()
 		array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
 	end
 
-	array_car_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_car_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
 	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
 	state_inv_player[playername] = 0
+	state_tune_window[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
 	bindKey(playerid, "e", "down", e_down )
+	bindKey(playerid, "z", "down", z_down )
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 
-	for _, stat in ipairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
+	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 999)
 	end
 end)
@@ -179,9 +293,15 @@ function(ammo, attacker, weapon, bodypart)
 end)
 
 function explode_car()
-	local vehicle = source
-	destroyElement(vehicle)
-	sendPlayerMessage(getRootElement(), "vehicle delet ["..tostring(vehicle).."]")
+	local vehicleid = source
+	local plate = getVehiclePlateText ( vehicleid )
+
+	array_car_1[plate] = nil
+	array_car_2[plate] = nil
+	fuel[plate] = nil
+
+	destroyElement(vehicleid)
+	sendPlayerMessage(getRootElement(), "vehicle delet ["..plate.."]")
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
@@ -222,26 +342,30 @@ local playername = getPlayerName ( playerid )
 local vehicleid = getPlayerVehicle(playerid)
 
 	if keyState == "down" then
-		if state_inv_player[playername] == 0 then --инв-рь игрока
-			for i=0,max_inv do
-				triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, array_player_1[playername][i+1], array_player_2[playername][i+1] )
+		if state_tune_window[playername] == 0 then--тюнинг окно
+			if state_inv_player[playername] == 0 then--инв-рь игрока
+				for i=0,max_inv do
+					triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, array_player_1[playername][i+1], array_player_2[playername][i+1] )
 
-				if vehicleid then
-					local plate = getVehiclePlateText ( vehicleid )
-					triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[1][i+1], array_car_2[1][i+1] )
-					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+					if vehicleid then
+						local plate = getVehiclePlateText ( vehicleid )
+
+						if search_inv_player(playerid, 6, plate) ~= 0 or search_inv_player(playerid, 26, plate) ~= 0 then
+							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+							triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+						end
+					end
+
+					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
+					triggerClientEvent( playerid, "event_tab_load", playerid, "house", "0" )
 				end
 
-				triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "0" )
+				triggerClientEvent( playerid, "event_inv_create", playerid )
+				state_inv_player[playername] = 1
+			elseif state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_inv_delet", playerid )
+				state_inv_player[playername] = 0
 			end
-
-			triggerClientEvent( playerid, "event_inv_create", playerid )
-			state_inv_player[playername] = 1
-		elseif state_inv_player[playername] == 1 then
-			triggerClientEvent( playerid, "event_inv_delet", playerid )
-			showCursor(playerid, false )
-			state_inv_player[playername] = 0
 		end
 	end
 end
@@ -263,7 +387,7 @@ function throw_earth_server (playerid, value, id3, id1, id2)--выброс пр�
 			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, 0, 0 )
 			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
 
-			sendPlayerMessage(playerid, "Вы выкинули "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 			return
 		end
 	end
@@ -306,16 +430,37 @@ local playername = getPlayerName ( playerid )
 	end
 end
 
+function z_down (playerid, key, keyState)--тюнинг окно
+local playername = getPlayerName ( playerid )
+
+	if keyState == "down" then
+		if state_inv_player[playername] == 0 then--инв-рь игрока
+			if state_tune_window[playername] == 0 then
+				triggerClientEvent( playerid, "event_tune_create", playerid )
+				state_tune_window[playername] = 1
+			else
+				triggerClientEvent( playerid, "event_tune_delet", playerid )
+				state_tune_window[playername] = 0
+			end
+		end
+	end
+end
+
 function inv_server_load (playerid, value, id3, id1, id2 )--изменение инв-ря на сервере
 	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
 
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
 		sqlite( "UPDATE inventory SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
 	elseif value == "car" then
-		array_car_1[1][id3+1] = id1
-		array_car_2[1][id3+1] = id2
+		if vehicleid then
+			local plate = getVehiclePlateText ( vehicleid )
+
+			array_car_1[plate][id3+1] = id1
+			array_car_2[plate][id3+1] = id2
+		end
 	elseif value == "house" then
 		array_house_1[1][id3+1] = id1
 		array_house_2[1][id3+1] = id2
@@ -323,6 +468,86 @@ function inv_server_load (playerid, value, id3, id1, id2 )--изменение �
 end
 addEvent( "event_inv_server_load", true )
 addEventHandler ( "event_inv_server_load", getRootElement(), inv_server_load )
+
+function use_inv (playerid, value, id3, id_1, id_2 )--использование предметов
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	local id1, id2 = id_1, id_2
+
+	if value == "player" then
+
+		if id1 == 6 or id1 == 26 then
+			if vehicleid then
+				local plate = getVehiclePlateText ( vehicleid )
+
+				if plate == id2 then
+					if getVehicleEngineState(vehicleid) then
+						setVehicleEngineState(vehicleid, false)
+						sendPlayerMessage(playerid, "Вы заглушили двигатель", pink[1], pink[2], pink[3])
+					else
+						setVehicleEngineState(vehicleid, true)
+						sendPlayerMessage(playerid, "Вы завели двигатель", pink[1], pink[2], pink[3])
+					end
+				else
+					sendPlayerMessage(playerid, "[ERROR] Этот ключ не подходит", red[1], red[2], red[3] )
+				end
+				return
+			end
+		end
+
+-----------------------------------------------------------------------------------------------------------------------
+		if id2 == 0 then
+			id1, id2 = 0, 0
+		end
+
+		if state_inv_player[playername] == 1 and id2 == 0 then
+			triggerClientEvent( playerid, "event_change_image", playerid, "player", id3, id1)
+		end
+
+		array_player_1[playername][id3+1] = id1
+		array_player_2[playername][id3+1] = id2
+
+		triggerClientEvent( playerid, "event_inv_load", playerid, "player", id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
+
+		sqlite( "UPDATE inventory SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
+
+	elseif value == "car" then
+		if vehicleid then
+			local plate = getVehiclePlateText ( vehicleid )
+
+-----------------------------------------------------------------------------------------------------------------------
+			if id2 == 0 then
+				id1, id2 = 0, 0
+			end
+
+			if state_inv_player[playername] == 1 and id2 == 0 then
+				triggerClientEvent( playerid, "event_change_image", playerid, "car", id3, id1)
+			end
+
+			array_car_1[plate][id3+1] = id1
+			array_car_2[plate][id3+1] = id2
+
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", id3, array_car_1[plate][id3+1], array_car_2[plate][id3+1] )
+		end
+	elseif value == "house" then
+
+-----------------------------------------------------------------------------------------------------------------------
+		if id2 == 0 then
+			id1, id2 = 0, 0
+		end
+
+		if state_inv_player[playername] == 1 and id2 == 0 then
+			triggerClientEvent( playerid, "event_change_image", playerid, "house", id3, id1)
+		end
+
+		array_house_1[1][id3+1] = id1
+		array_house_2[1][id3+1] = id2
+
+		triggerClientEvent( playerid, "event_inv_load", playerid, "house", id3, array_house_1[1][id3+1], array_house_2[1][id3+1] )
+	end
+end
+addEvent( "event_use_inv", true )
+addEventHandler ( "event_use_inv", getRootElement(), use_inv )
 
 addCommandHandler ( "sub",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
@@ -372,51 +597,17 @@ function (playerid, cmd, id1, id2 )
 	sendPlayerMessage(playerid, "[ERROR] Инвентарь полон.", red[1], red[2], red[3])
 end)
 
-addCommandHandler ( "area",
-function (playerid, cmd )
-	local x, y, z = getElementPosition( playerid )
-	sendPlayerMessage(playerid, tostring(isPointInCircle3D(1959.55,-1714.46,17, x,y,z, 5)))
-end)
-
 addCommandHandler ( "v",
 function ( playerid, cmd, id )
 	local x,y,z = getElementPosition( playerid )
 	local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
+	local plate = getVehiclePlateText ( vehicleid )
 
-	sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..tostring(vehicleid).."] "..getVehicleNameFromModel ( tonumber ( id ) ))
-end)
+	array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	fuel[plate] = 50
 
-addCommandHandler ( "paint",
-function ( playerid, cmd, id )
-	local vehicleid = getPlayerVehicle(playerid)
-	local value = tonumber(id)
-	if vehicleid then
-		setVehiclePaintjob ( vehicleid, value )
-	end
-end)
-
-addCommandHandler ( "upd",
-function ( playerid, cmd, id )
-	local vehicleid = getPlayerVehicle(playerid)
-	local value = tonumber(id)
-	local text = ""
-	if vehicleid then
-		addVehicleUpgrade ( vehicleid, value )
-
-		local model = getElementModel ( vehicleid )
-
-		sendPlayerMessage(playerid, "addCommandHandler upd" )
-		sendPlayerMessage(playerid, "model - "..model )
-
-		local upgrades = getVehicleUpgrades ( vehicleid )
-		for _, upgrade in pairs ( upgrades ) do
-			if value == upgrade then
-				text = text..upgrade..","
-			end
-		end
-
-		sendPlayerMessage(playerid, text)
-	end
+	sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( tonumber ( id ) ))
 end)
 
 addCommandHandler ( "getupd",
@@ -430,7 +621,7 @@ function ( playerid )
 		sendPlayerMessage(playerid, "model - "..model )
 
 		local upgrades = getVehicleCompatibleUpgrades ( vehicleid )
-		for v, upgrade in ipairs ( upgrades ) do
+		for v, upgrade in pairs ( upgrades ) do
 			text = text..upgrade..","
 		end
 		sendPlayerMessage(playerid, text )
@@ -486,15 +677,18 @@ function ( playerid )
 	end
 end)
 
-addCommandHandler( "color",
-function( playerid )
-	if isPedInVehicle( playerid ) then
-		local uVehicle = getPlayerVehicle( playerid )
-		if uVehicle then
-			local r, g, b = math.random( 255 ), math.random( 255 ), math.random( 255 )
-			setVehicleColor( uVehicle, r, g, b, r, g, b, r, g, b, r, g, b )
-			setVehicleHeadLightColor ( uVehicle, r, g, b )
-			sendPlayerMessage(playerid, r.." "..g.." "..b)
+local x = 0
+addCommandHandler ( "off",
+function ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+
+	if vehicleid then
+		if x == 0 then
+			setVehicleEngineState(vehicleid, false)
+			x = 1
+		else
+			setVehicleEngineState(vehicleid, true)
+			x = 0
 		end
 	end
 end)
@@ -504,9 +698,27 @@ function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
 end)
 
+local paint={
+	[483]={"VehiclePaintjob_Camper_0"},        -- camper
+	[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},    -- remington
+	[535]={"VehiclePaintjob_Slamvan_0","VehiclePaintjob_Slamvan_1","VehiclePaintjob_Slamvan_2"},    -- slamvan
+	[536]={"VehiclePaintjob_Blade_0","VehiclePaintjob_Blade_1","VehiclePaintjob_Blade_2"},    -- blade
+	[558]={"VehiclePaintjob_Uranus_0","VehiclePaintjob_Uranus_1","VehiclePaintjob_Uranus_2"},    -- uranus
+	[559]={"VehiclePaintjob_Jester_0","VehiclePaintjob_Jester_1","VehiclePaintjob_Jester_2"},    -- jester
+	[560]={"VehiclePaintjob_Sultan_0","VehiclePaintjob_Sultan_1","VehiclePaintjob_Sultan_2"},    -- sultan
+	[561]={"VehiclePaintjob_Stratum_0","VehiclePaintjob_Stratum_1","VehiclePaintjob_Stratum_2"},    -- stratum
+	[562]={"VehiclePaintjob_Elegy_0","VehiclePaintjob_Elegy_1","VehiclePaintjob_Elegy_2"},    -- elegy
+	[565]={"VehiclePaintjob_Flash_0","VehiclePaintjob_Flash_1","VehiclePaintjob_Flash_2"},    -- flash
+	[567]={"VehiclePaintjob_Savanna_0","VehiclePaintjob_Savanna_1","VehiclePaintjob_Savanna_2"},    -- savanna
+	[575]={"VehiclePaintjob_Broadway_0","VehiclePaintjob_Broadway_1"},      -- broadway
+	[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},    -- tornado
+}
+
 function input_Console ( text )
+	local x = "1 2 3"
+	local number = split(x, " ")
 	if text == "z" then
-		print(white[1])
+		print(number[4])
 	elseif text == "x" then
 		
 	end
