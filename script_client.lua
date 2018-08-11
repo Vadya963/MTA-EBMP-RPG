@@ -15,6 +15,8 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 local fuel = 0
 
+local max_subject = 39
+
 local earth = {}--слоты земли
 local max_earth = 50
 
@@ -42,14 +44,14 @@ addEventHandler ( "event_fuel_load", getRootElement(), fuel_load )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
-for i=0,39 do
+for i=0,max_subject do
 	image[i] = dxCreateTexture(i..".png")
 end
 
 local info_tab = nil
-local info1 = -1; --номер картинки
-local info2 = -1; --значение картинки
-local info3 = -1; --слот картинки
+local info1 = -1 --номер картинки
+local info2 = -1 --значение картинки
+local info3 = -1 --слот картинки
 
 --гуи окно
 local stats_window = nil
@@ -197,7 +199,12 @@ function createText ()
 	dxDrawText ( text, 2.0+1, 0.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 	dxDrawText ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
-	local vehicle = getPlayerVehicle ( getLocalPlayer() )
+	local x,y,z = getElementPosition(playerid)
+	dxDrawText ( x.." "..y.." "..z, 300.0+1, 40.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+	dxDrawText ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
+
+	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
 		local speed_table = split(getSpeed(vehicle), ".")
 		local heal_table = split(getElementHealth(vehicle), ".")
@@ -208,9 +215,6 @@ function createText ()
 		dxDrawText ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 	end
 
-	local x,y,z = getElementPosition(playerid)
-	dxDrawText ( x.." "..y.." "..z, 300.0+1, 40.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-	dxDrawText ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
 	if gui_2dtext then--отображение инфы
 		local width,height = guiGetPosition ( stats_window, false )
@@ -225,12 +229,14 @@ function createText ()
 		end
 	end
 
+
 	if gui_selection and info_tab == guiGetSelectedTab(tabPanel) then--выделение картинки
 		local width,height = guiGetPosition ( stats_window, false )
 		local x = 9
 		local y = 20+24
 		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 100 ), true )
 	end
+
 
 	for i=1,max_earth do--отображение предметов на земле
 		local x,y,z = getElementPosition(playerid)
@@ -249,6 +255,7 @@ function createText ()
 			end
 		end
 	end
+
 
 	if tune_color_2d then--выбор цвета для окна тюнинга
 		local width,height = guiGetPosition ( tune_window, false )
@@ -645,7 +652,7 @@ function inv_create ()--создание инв-ря
 			info2 = inv_slot_house[i][3]
 
 			if lmb == 0 then
-				if info1 == 1 or info1 == 0 then
+				if info1 == 1 or info1 == 0 or house == "" then
 					return
 				end
 
@@ -663,7 +670,7 @@ function inv_create ()--создание инв-ря
 				info2_selection_1 = info2
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_house[info3_selection_1][2] ~= 0 then
+				if inv_slot_house[info3_selection_1][2] ~= 0 or house == "" then
 					return
 				end
 
@@ -723,6 +730,9 @@ function inv_create ()--создание инв-ря
 
 		gui_selection = false
 		info_tab = nil
+		info1 = -1
+		info2 = -1
+		info3 = -1
 		lmb = 0
 	end
 	addEventHandler ( "onClientGUIClick", use_button, use_subject, false )
@@ -748,6 +758,9 @@ function inv_create ()--создание инв-ря
 
 		gui_selection = false
 		info_tab = nil
+		info1 = -1
+		info2 = -1
+		info3 = -1
 		lmb = 0
 	end
 	addEventHandler ( "onClientGUIClick", throw_button, throw_earth, false )
@@ -828,6 +841,9 @@ addEventHandler ( "event_inv_load", getRootElement(), inv_load )
 function tab_load (value, text)--загрузка надписей в табе
 	if value == "car" then
 		plate = text
+		gui_selection = false
+		info_tab = nil
+		lmb = 0
 	elseif value == "house" then
 		house = text
 	end
