@@ -705,8 +705,8 @@ function inv_create ()--создание инв-ря
 		addEventHandler( "onClientMouseEnter", inv_slot_house[i][1], outputEditBox, false )
 	end
 
-	use_button = guiCreateButton( 400.0, 43.0, 100.0, 25.0, "Использовать", false, stats_window )
-	throw_button = guiCreateButton( 400.0, 73.0, 100.0, 25.0, "Выбросить", false, stats_window )
+	use_button = guiCreateButton( 400.0, 44.0, 100.0, 25.0, "Использовать", false, stats_window )
+	throw_button = guiCreateButton( 400.0, 74.0, 100.0, 25.0, "Выбросить", false, stats_window )
 
 	---------------------кнопки--------------------------------------------------
 	function use_subject ( button, state, absoluteX, absoluteY )--использование предмета

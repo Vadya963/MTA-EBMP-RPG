@@ -177,7 +177,7 @@ local array_house_1 = {}
 local array_house_2 = {}
 
 local state_inv_player = {}--состояние инв-ря 0-выкл, 1-вкл
-local state_tune_window = {}--состояние окна тюнинга 0-выкл, 1-вкл
+local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
 
 -----------------------------------------------------------------------------------------
 function fuel_down()--система топлива авто
@@ -212,6 +212,11 @@ function fuel_down()--система топлива авто
 				end
 			end
 		end
+	end
+
+	for k,playerid in pairs(getElementsByType("player")) do
+		local playername = getPlayerName ( playerid )
+		triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
 	end
 end
 
@@ -286,9 +291,9 @@ end
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
-	setTimer(timer_earth, 5000, 0)
-	setTimer(timer_earth_clear, 300000, 0)
-	setTimer(fuel_down, 500, 0)
+	setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
+	setTimer(timer_earth_clear, 300000, 0)--очистка земли от предметов
+	setTimer(fuel_down, 500, 0)--система топлива
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
 
@@ -313,7 +318,7 @@ function()
 	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
 	state_inv_player[playername] = 0
-	state_tune_window[playername] = 0
+	state_gui_window[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -351,6 +356,7 @@ function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, source )
 end)
 
+------------------------------------взрыв авто-------------------------------------------
 function explode_car()
 	local vehicleid = source
 	local plate = getVehiclePlateText ( vehicleid )
@@ -364,6 +370,7 @@ function explode_car()
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
+--------------------------------------вход и выход в авто--------------------------------
 function enter_car ( vehicle, seat, jacked )--евент входа в авто
 	local playerid = source
 
@@ -385,6 +392,7 @@ function exit_car ( vehicle, seat, jacked )--евент выхода из авт
 	triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
+-----------------------------------------------------------------------------------------
 
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
@@ -410,23 +418,27 @@ local playername = getPlayerName ( playerid )
 local vehicleid = getPlayerVehicle(playerid)
 
 	if keyState == "down" then
-		if state_tune_window[playername] == 0 then--тюнинг окно
+		if state_gui_window[playername] == 0 then--гуи окно
 			if state_inv_player[playername] == 0 then--инв-рь игрока
 				for i=0,max_inv do
 					triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, array_player_1[playername][i+1], array_player_2[playername][i+1] )
-
-					if vehicleid then
-						local plate = getVehiclePlateText ( vehicleid )
-
-						if search_inv_player(playerid, 6, plate) ~= 0 or search_inv_player(playerid, 26, plate) ~= 0 then
-							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
-							triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
-						end
-					end
-
-					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
-					triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 				end
+
+				if vehicleid then
+					local plate = getVehiclePlateText ( vehicleid )
+
+					if search_inv_player(playerid, 6, plate) ~= 0 or search_inv_player(playerid, 26, plate) ~= 0 then
+						for i=0,max_inv do
+							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+						end
+						triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+					end
+				end
+
+				for i=0,max_inv do
+					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
+				end
+				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 
 				triggerClientEvent( playerid, "event_inv_create", playerid )
 				state_inv_player[playername] = 1
@@ -496,6 +508,16 @@ local playername = getPlayerName ( playerid )
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
 		end
+
+		if state_inv_player[playername] == 0 then--инв-рь игрока
+			if state_gui_window[playername] == 0 then
+				triggerClientEvent( playerid, "event_tune_create", playerid )
+				state_gui_window[playername] = 1
+			else
+				triggerClientEvent( playerid, "event_tune_delet", playerid )
+				state_gui_window[playername] = 0
+			end
+		end
 	end
 end
 
@@ -503,15 +525,7 @@ function z_down (playerid, key, keyState)--тюнинг окно
 local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then
-		if state_inv_player[playername] == 0 then--инв-рь игрока
-			if state_tune_window[playername] == 0 then
-				triggerClientEvent( playerid, "event_tune_create", playerid )
-				state_tune_window[playername] = 1
-			else
-				triggerClientEvent( playerid, "event_tune_delet", playerid )
-				state_tune_window[playername] = 0
-			end
-		end
+		
 	end
 end
 
@@ -578,6 +592,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 	elseif value == "car" then
 		if vehicleid then
+			
 			-----------------------------------------------------------------------------------------------------------------------
 			if id2 == 0 then
 				id1, id2 = 0, 0
