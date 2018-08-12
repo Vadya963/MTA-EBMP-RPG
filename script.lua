@@ -96,14 +96,6 @@ for i=1,max_earth do
 	earth[i] = {0,0,0,0,0}
 end
 
-function timer_earth()
-	for k,playerid in pairs(getElementsByType("player")) do
-		for i=1,max_earth do
-			triggerClientEvent( playerid, "event_earth_load", playerid, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
-		end
-	end
-end
-
 function timer_earth_clear()
 	for j=1,max_earth do
 		earth[j][1] = 0
@@ -147,7 +139,7 @@ local info_png = {
 	[23] = {"наручные часы Empire, состояние", "%"},
 	[24] = {"ящик, цена продажи", "$"},
 	[25] = {"ключ от дома с номером", ""},
-	[26] = {"ключ от автомобиля с номером", ""},
+	[26] = {"пусто", ""},
 	[27] = {"", "одежда"},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
@@ -176,7 +168,7 @@ local fuel = {}
 local array_house_1 = {}
 local array_house_2 = {}
 
-local state_inv_player = {}--состояние инв-ря 0-выкл, 1-вкл
+local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
 
 -----------------------------------------------------------------------------------------
@@ -213,10 +205,16 @@ function fuel_down()--система топлива авто
 			end
 		end
 	end
+end
 
+function timer_earth()--передача слотов земли на клиент
 	for k,playerid in pairs(getElementsByType("player")) do
-		local playername = getPlayerName ( playerid )
-		triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
+		for i=1,max_earth do
+			triggerClientEvent( playerid, "event_earth_load", playerid, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
+			
+			local playername = getPlayerName ( playerid )
+			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
+		end
 	end
 end
 
@@ -427,7 +425,7 @@ local vehicleid = getPlayerVehicle(playerid)
 				if vehicleid then
 					local plate = getVehiclePlateText ( vehicleid )
 
-					if search_inv_player(playerid, 6, plate) ~= 0 or search_inv_player(playerid, 26, plate) ~= 0 then
+					if search_inv_player(playerid, 6, plate) ~= 0 then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 						end
@@ -438,7 +436,7 @@ local vehicleid = getPlayerVehicle(playerid)
 				for i=0,max_inv do
 					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
 				end
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "1" )
 
 				triggerClientEvent( playerid, "event_inv_create", playerid )
 				state_inv_player[playername] = 1
@@ -481,6 +479,17 @@ local x,y,z = getElementPosition(playerid)
 local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then
+
+			if state_inv_player[playername] == 0 then--инв-рь игрока
+				if state_gui_window[playername] == 0 then
+					triggerClientEvent( playerid, "event_tune_create", playerid )
+					state_gui_window[playername] = 1
+				else
+					triggerClientEvent( playerid, "event_tune_delet", playerid )
+					state_gui_window[playername] = 0
+				end
+			end
+
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
@@ -506,16 +515,6 @@ local playername = getPlayerName ( playerid )
 				end
 
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-		end
-
-		if state_inv_player[playername] == 0 then--инв-рь игрока
-			if state_gui_window[playername] == 0 then
-				triggerClientEvent( playerid, "event_tune_create", playerid )
-				state_gui_window[playername] = 1
-			else
-				triggerClientEvent( playerid, "event_tune_delet", playerid )
-				state_gui_window[playername] = 0
 			end
 		end
 	end
@@ -559,7 +558,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 	if value == "player" then
 
-		if id1 == 6 or id1 == 26 then
+		if id1 == 6 then
 			if vehicleid then
 				local plate = getVehiclePlateText ( vehicleid )
 

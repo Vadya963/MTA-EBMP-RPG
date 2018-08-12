@@ -65,7 +65,7 @@ local use_button = nil
 local throw_button = nil
 
 --окно тюнинга
-local tune_window = nil
+local gui_window = nil
 
 local plate = ""
 local house = ""
@@ -135,7 +135,7 @@ local info_png = {
 	[23] = {"наручные часы Empire, состояние", "%"},
 	[24] = {"ящик, цена продажи", "$"},
 	[25] = {"ключ от дома с номером", ""},
-	[26] = {"ключ от автомобиля с номером", ""},
+	[26] = {"пусто", ""},
 	[27] = {"", "одежда"},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
@@ -258,7 +258,7 @@ function createText ()
 
 
 	if tune_color_2d then--выбор цвета для окна тюнинга
-		local width,height = guiGetPosition ( tune_window, false )
+		local width,height = guiGetPosition ( gui_window, false )
 		dxDrawRectangle( width+10, height+25, 160, 160, tocolor ( tune_color_r, tune_color_g, tune_color_b, 255 ), true )
 	end
 end
@@ -270,18 +270,18 @@ function tune_window_create ()--создание окна тюнинга
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
 	local width = 300+50+10
 	local height = 180.0+(25.0*1)
-	tune_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская", false )
-	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, tune_window )
-	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, tune_window )
-	local tune_text = guiCreateLabel ( 180, 75, dimensions1, 20, "Введите цвет в RGB", false, tune_window )
-	local tune_r_edit = guiCreateEdit ( 180, 100, 50, 20, "", false, tune_window )
-	local tune_g_edit = guiCreateEdit ( 240, 100, 50, 20, "", false, tune_window )
-	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, tune_window )
-	local tune_radio_button1 = guiCreateRadioButton ( 180, 125, 50, 15, "Авто", false, tune_window )
-	local tune_radio_button2 = guiCreateRadioButton ( 240, 125, 50, 15, "Фары", false, tune_window )
-	local tune_search_button = guiCreateButton( 180, 150, 170, 20, "Найти", false, tune_window )
-	local tune_install_button = guiCreateButton( 180, 175, 170, 20, "Установить", false, tune_window )
-	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "999_w_s.png", false, tune_window )
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская", false )
+	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
+	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
+	local tune_text = guiCreateLabel ( 180, 75, dimensions1, 20, "Введите цвет в RGB", false, gui_window )
+	local tune_r_edit = guiCreateEdit ( 180, 100, 50, 20, "", false, gui_window )
+	local tune_g_edit = guiCreateEdit ( 240, 100, 50, 20, "", false, gui_window )
+	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, gui_window )
+	local tune_radio_button1 = guiCreateRadioButton ( 180, 125, 50, 15, "Авто", false, gui_window )
+	local tune_radio_button2 = guiCreateRadioButton ( 240, 125, 50, 15, "Фары", false, gui_window )
+	local tune_search_button = guiCreateButton( 180, 150, 170, 20, "Найти", false, gui_window )
+	local tune_install_button = guiCreateButton( 180, 175, 170, 20, "Установить", false, gui_window )
+	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "999_w_s.png", false, gui_window )
 
 	showCursor( true )
 
@@ -814,10 +814,10 @@ addEvent( "event_inv_delet", true )
 addEventHandler ( "event_inv_delet", getRootElement(), inv_delet )
 
 function tune_close ( button, state, absoluteX, absoluteY )--закрытие окна
-	destroyElement(tune_window)
+	destroyElement(gui_window)
 
 	tune_color_2d = false
-	tune_window = nil
+	gui_window = nil
 	showCursor( false )
 end
 addEvent( "event_tune_delet", true )
