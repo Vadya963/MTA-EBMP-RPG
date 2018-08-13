@@ -27,10 +27,6 @@ function sendPlayerMessage(playerid, text, r, g, b)
 	outputChatBox(text, playerid, r, g, b)
 end
 
-function givePlayerWeapon( playerid, weapon, ammo )
-	giveWeapon(playerid, weapon, ammo)
-end
-
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
 	local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
@@ -105,9 +101,9 @@ function timer_earth_clear()
 		earth[j][5] = 0
 	end
 
-	for k,playerid in pairs(getElementsByType("player")) do
+	--[[for k,playerid in pairs(getElementsByType("player")) do
 		sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
-	end
+	end]]
 end
 
 local spawnX, spawnY, spawnZ = 1642, -2240, 13
@@ -139,7 +135,7 @@ local info_png = {
 	[23] = {"наручные часы Empire, состояние", "%"},
 	[24] = {"ящик, цена продажи", "$"},
 	[25] = {"ключ от дома с номером", ""},
-	[26] = {"пусто", ""},
+	[26] = {"silenced", "ID"},
 	[27] = {"", "одежда"},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
@@ -153,6 +149,28 @@ local info_png = {
 	[37] = {"бита", "ID"},
 	[38] = {"нож", "ID"},
 	[39] = {"бронежилет", "шт"},
+	[40] = {"лом", "ID"},
+	[41] = {"sniper", "ID"},
+}
+
+local weapon = {
+	[9] = {"граната", 16},
+	[12] = {"colt-45", 22},
+	[13] = {"deagle", 24},
+	[14] = {"AK-47", 30},
+	[15] = {"M4", 31},
+	[16] = {"tec-9", 32},
+	[17] = {"MP5", 29},
+	[18] = {"uzi", 28},
+	[19] = {"дымовая граната", 17},
+	[26] = {"silenced", 23},
+	[34] = {"shotgun", 25},
+	[35] = {"парашют", 46},
+	[36] = {"дубинка", 3},
+	[37] = {"бита", 5},
+	[38] = {"нож", 4},
+	[40] = {"лом", 15},
+	[41] = {"sniper", 34},
 }
 
 --инв-рь игрока
@@ -336,7 +354,7 @@ function()
 	setElementFrozen( playerid, false )--ИЗМЕНИТЬ НА TRUE!!!
 
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
-		setPedStat(playerid, stat, 999)
+		setPedStat(playerid, stat, 998)
 	end
 end)
 
@@ -616,7 +634,7 @@ function z_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then
-		if state_inv_player[playername] == 0 then--инв-рь игрока
+			if state_inv_player[playername] == 0 then--инв-рь игрока
 				if state_gui_window[playername] == 0 then
 					triggerClientEvent( playerid, "event_tune_create", playerid )
 					state_gui_window[playername] = 1
@@ -694,6 +712,23 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 			return
+		end
+
+		if weapon[id1] ~= nil then
+			giveWeapon(playerid, weapon[id1][2], 25)
+			me_chat(playerid, playername.." взял в руку "..weapon[id1][1])
+			id2 = 0
+		end
+
+		if id1 == 11 then
+			if getPedWeapon(playerid) == weapon[id2][2] then
+				giveWeapon(playerid, weapon[id2][2], 25)
+				me_chat(playerid, playername.." перезарядил "..weapon[id2][1])
+				id2 = 0
+			else
+				sendPlayerMessage(playerid, "[ERROR] В руках нет оружия", red[1], red[2], red[3] )
+				return
+			end
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -783,6 +818,10 @@ end)
 
 addCommandHandler ( "v",
 function ( playerid, cmd, id )
+	if id == nil then
+		return
+	end
+
 	local x,y,z = getElementPosition( playerid )
 	local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
 	local plate = getVehiclePlateText ( vehicleid )

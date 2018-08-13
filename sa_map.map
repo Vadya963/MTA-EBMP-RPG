@@ -1,4 +1,0 @@
-<map edf:definitions="editor_main">
-    <pickup id="pickup (health) (1)" type="health" interior="0" amount="100" respawn="30000" dimension="0" alpha="255" posX="1947.7" posY="-1717.9" posZ="13.5" rotX="0" rotY="0" rotZ="0"></pickup>
-    <vehicle id="vehicle (Elegy) (1)" sirens="false" paintjob="1" interior="0" alpha="255" model="562" plate="WPTL B1H" dimension="0" posX="1934.6" posY="-1709.9" posZ="13.3" rotX="0" rotY="0" rotZ="6" upgrades="1147,1041,1035,1010,1083,1037,1172,1149" color="254,241,241,114,117,27,223,1,1,28,37,156"></vehicle>
-</map>
