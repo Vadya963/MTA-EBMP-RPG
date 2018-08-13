@@ -193,8 +193,8 @@ local tune_color_b = 0
 function createText ()
 	--setTime( 0, 0 )
 
-	local playerid = getLocalPlayer()
 	local time = getRealTime()
+	local playerid = getLocalPlayer()
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
 

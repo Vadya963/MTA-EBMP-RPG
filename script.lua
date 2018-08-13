@@ -93,17 +93,21 @@ for i=1,max_earth do
 end
 
 function timer_earth_clear()
-	for j=1,max_earth do
-		earth[j][1] = 0
-		earth[j][2] = 0
-		earth[j][3] = 0
-		earth[j][4] = 0
-		earth[j][5] = 0
-	end
+	local time = getRealTime()
 
-	--[[for k,playerid in pairs(getElementsByType("player")) do
-		sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
-	end]]
+	if time["minute"] == 30 then
+		for j=1,max_earth do
+			earth[j][1] = 0
+			earth[j][2] = 0
+			earth[j][3] = 0
+			earth[j][4] = 0
+			earth[j][5] = 0
+		end
+
+		for k,playerid in pairs(getElementsByType("player")) do
+			sendPlayerMessage(playerid, "["..time["hour"]..":"..time["minute"]..":"..time["second"].."] [НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
+		end
+	end
 end
 
 local spawnX, spawnY, spawnZ = 1642, -2240, 13
@@ -311,7 +315,7 @@ end
 
 function displayLoadedRes ( res )--старт ресурсов
 	setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
-	setTimer(timer_earth_clear, 300000, 0)--очистка земли от предметов
+	setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 	setTimer(fuel_down, 500, 0)--система топлива
 
 	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
