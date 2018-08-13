@@ -269,7 +269,7 @@ function tune_window_create ()--создание окна тюнинга
 	local dimensions = dxGetTextWidth ( "Введите ИД", 1, "default-bold" )
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
 	local width = 300+50+10
-	local height = 180.0+(25.0*1)
+	local height = 180.0+(25.0*1)+10
 	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская", false )
 	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
@@ -279,8 +279,8 @@ function tune_window_create ()--создание окна тюнинга
 	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, gui_window )
 	local tune_radio_button1 = guiCreateRadioButton ( 180, 125, 50, 15, "Авто", false, gui_window )
 	local tune_radio_button2 = guiCreateRadioButton ( 240, 125, 50, 15, "Фары", false, gui_window )
-	local tune_search_button = guiCreateButton( 180, 150, 170, 20, "Найти", false, gui_window )
-	local tune_install_button = guiCreateButton( 180, 175, 170, 20, "Установить", false, gui_window )
+	local tune_search_button = guiCreateButton( 180, 150, 170, 25, "Найти", false, gui_window )
+	local tune_install_button = guiCreateButton( 180, 180, 170, 25, "Установить", false, gui_window )
 	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "999_w_s.png", false, gui_window )
 
 	showCursor( true )
@@ -720,9 +720,7 @@ function inv_create ()--создание инв-ря
 			local vehicleid = getPlayerVehicle(getLocalPlayer())
 
 			if vehicleid then
-				if getVehicleOccupant ( vehicleid, 0 ) then
-					triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
-				end
+				triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
 			end
 		elseif tab_house == guiGetSelectedTab(tabPanel) then
 			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "house", info3, info1, info2 )
@@ -748,9 +746,7 @@ function inv_create ()--создание инв-ря
 			local vehicleid = getPlayerVehicle(getLocalPlayer())
 
 			if vehicleid then
-				if getVehicleOccupant ( vehicleid, 0 ) then
-					triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
-				end
+				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
 			end
 		elseif tab_house == guiGetSelectedTab(tabPanel) then
 			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2 )

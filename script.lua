@@ -110,7 +110,7 @@ function timer_earth_clear()
 	end
 end
 
-local spawnX, spawnY, spawnZ = 1959.55, -1714.46, 17
+local spawnX, spawnY, spawnZ = 1642, -2240, 13
 
 local info_png = {
 	[0] = {"", ""},
@@ -170,6 +170,7 @@ local array_house_2 = {}
 
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
+local logged = {}--0-не вошел, 1-вошел
 
 -----------------------------------------------------------------------------------------
 function fuel_down()--система топлива авто
@@ -211,8 +212,10 @@ function timer_earth()--передача слотов земли на клиен
 	for k,playerid in pairs(getElementsByType("player")) do
 		for i=1,max_earth do
 			triggerClientEvent( playerid, "event_earth_load", playerid, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
-			
-			local playername = getPlayerName ( playerid )
+		end
+ 
+		local playername = getPlayerName ( playerid )
+		if logged[playername] ~= 0 then
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
 		end
 	end
@@ -292,6 +295,9 @@ function displayLoadedRes ( res )--старт ресурсов
 	setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
 	setTimer(timer_earth_clear, 300000, 0)--очистка земли от предметов
 	setTimer(fuel_down, 500, 0)--система топлива
+
+	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
 
@@ -300,11 +306,14 @@ function()
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
-	array_player_1[playername] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_player_2[playername] = {500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
 	local result = sqlite( "SELECT COUNT() FROM inventory WHERE name = '"..playername.."'" )
-	if result[1]["COUNT()"] == 1 then
+	if result[1]["COUNT()"] == 0 then
+		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
+	else
+		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
 		local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
@@ -312,11 +321,9 @@ function()
 		end
 	end
 
-	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
+	logged[playername] = 1--ИЗМЕНИТЬ НА 0!!!
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -326,6 +333,7 @@ function()
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
+	setElementFrozen( playerid, false )--ИЗМЕНИТЬ НА TRUE!!!
 
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 999)
@@ -336,10 +344,6 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
-	array_player_1[playername] = nil
-	array_player_2[playername] = nil
-
-	state_inv_player[playername] = nil
 end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
 
@@ -353,6 +357,85 @@ addEventHandler( "onPlayerWasted", getRootElement(),--смерть игрока
 function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, source )
 end)
+
+function nickChangeHandler(oldNick, newNick)
+	local playerid = source
+	local playername = getPlayerName ( playerid )
+
+	print(playername.." kick za NickName")
+	kickPlayer( playerid )
+end
+addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
+
+----------------------------------Регистрация--------------------------------------------
+function reg_fun(playerid, cmd)
+	local playername = getPlayerName ( playerid )
+	local serial = getPlayerSerial(playerid)
+	local ip = getPlayerIP(playerid)
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
+	if result[1]["COUNT()"] == 0 then
+		
+		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '0')" )
+
+		local result = sqlite( "INSERT INTO inventory (name, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+
+		local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+		for i=0,max_inv do
+			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
+			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
+		end
+
+		logged[playername] = 1
+
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+		setElementHealth( playerid, result[1]["heal"] )
+		setElementModel( playerid, result[1]["skin"] )
+		setElementFrozen( playerid, false )
+		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
+
+		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
+
+		print("[ACCOUNT REGISTER] "..playername)
+
+		triggerClientEvent( playerid, "event_delet_okno", playerid )
+	end
+end
+addEvent( "event_reg", true )
+addEventHandler("event_reg", getRootElement(), reg_fun)
+
+----------------------------------Авторизация--------------------------------------------
+function log_fun(playerid, cmd)
+	local playername = getPlayerName ( playerid )
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+
+		if md5(cmd) == result[1]["password"] then
+			local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+			for i=0,max_inv do
+				array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
+				array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
+			end
+
+			logged[playername] = 1
+
+			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+			setElementHealth( playerid, result[1]["heal"] )
+			setElementModel( playerid, result[1]["skin"] )
+			setElementFrozen( playerid, false )
+
+			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
+
+			triggerClientEvent( playerid, "event_delet_okno", playerid )
+		else
+			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
+		end
+	end
+end
+addEvent( "event_log", true )
+addEventHandler("event_log", getRootElement(), log_fun)
 
 ------------------------------------взрыв авто-------------------------------------------
 function explode_car()
@@ -394,6 +477,7 @@ addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
+
 	local randomize = math.random(0,9999)
 	local number_car = {"q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m"}
 	local number = ""
@@ -415,6 +499,10 @@ function tab_down (playerid, key, keyState)--открытие инв-ря игр
 local playername = getPlayerName ( playerid )
 local vehicleid = getPlayerVehicle(playerid)
 
+	if logged[playername] == 0 then
+		return
+	end
+
 	if keyState == "down" then
 		if state_gui_window[playername] == 0 then--гуи окно
 			if state_inv_player[playername] == 0 then--инв-рь игрока
@@ -425,7 +513,7 @@ local vehicleid = getPlayerVehicle(playerid)
 				if vehicleid then
 					local plate = getVehiclePlateText ( vehicleid )
 
-					if search_inv_player(playerid, 6, plate) ~= 0 then
+					if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 						end
@@ -477,10 +565,14 @@ addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_serv
 function e_down (playerid, key, keyState)--подбор предметов с земли
 local x,y,z = getElementPosition(playerid)
 local playername = getPlayerName ( playerid )
+	
+	if logged[playername] == 0 then
+		return
+	end
 
 	if keyState == "down" then
 
-			if state_inv_player[playername] == 0 then--инв-рь игрока
+			--[[if state_inv_player[playername] == 0 then--инв-рь игрока
 				if state_gui_window[playername] == 0 then
 					triggerClientEvent( playerid, "event_tune_create", playerid )
 					state_gui_window[playername] = 1
@@ -488,7 +580,7 @@ local playername = getPlayerName ( playerid )
 					triggerClientEvent( playerid, "event_tune_delet", playerid )
 					state_gui_window[playername] = 0
 				end
-			end
+			end]]
 
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
@@ -520,11 +612,19 @@ local playername = getPlayerName ( playerid )
 	end
 end
 
-function z_down (playerid, key, keyState)--тюнинг окно
+function z_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then
-		
+		if state_inv_player[playername] == 0 then--инв-рь игрока
+				if state_gui_window[playername] == 0 then
+					triggerClientEvent( playerid, "event_tune_create", playerid )
+					state_gui_window[playername] = 1
+				else
+					triggerClientEvent( playerid, "event_tune_delet", playerid )
+					state_gui_window[playername] = 0
+				end
+			end
 	end
 end
 
@@ -573,8 +673,27 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					sendPlayerMessage(playerid, "[ERROR] Этот ключ не подходит", red[1], red[2], red[3] )
 				end
-				return
+			else
+				for k,vehicleid in pairs(getElementsByType("vehicle")) do
+					local x,y,z = getElementPosition(vehicleid)
+					local x1,y1,z1 = getElementPosition(playerid)
+					local plate = getVehiclePlateText ( vehicleid )
+
+					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
+						if isVehicleLocked ( vehicleid ) then
+							setVehicleLocked ( vehicleid, false )
+							me_chat(playerid, playername.." открыл двери")
+						else
+							setVehicleLocked ( vehicleid, true )
+							me_chat(playerid, playername.." закрыл двери")
+						end
+						return
+					end
+				end
+
+				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
+			return
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -625,6 +744,11 @@ addEventHandler ( "event_use_inv", getRootElement(), use_inv )
 addCommandHandler ( "sub",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), tonumber(id2)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 then
+		return
+	end
 
 	if val1 == nil or val2 == nil then
 		return
@@ -640,6 +764,11 @@ end)
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 then
+		return
+	end
 
 	if val1 == nil or val2 == nil then
 		return
@@ -657,6 +786,11 @@ function ( playerid, cmd, id )
 	local x,y,z = getElementPosition( playerid )
 	local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
 	local plate = getVehiclePlateText ( vehicleid )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 then
+		return
+	end
 
 	array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
