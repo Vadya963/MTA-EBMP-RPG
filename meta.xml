@@ -1,8 +1,10 @@
 <meta>
     <info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
+	
     <script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client"/>
 	<script src="log_reg_gui.lua" type="client"/>
+	<script src="reload_c.lua" type="client"/>
 	
 	<file src="0.png" />
 	<file src="1.png" />

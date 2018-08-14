@@ -2,6 +2,7 @@ local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
 
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
+local max_fuel = 50
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -83,6 +84,12 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b )
 end
 addEvent( "event_setVehicleHeadLightColor", true )
 addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
+
+function reloadWeapon()
+	reloadPedWeapon(client)
+end
+addEvent("relWep", true)
+addEventHandler("relWep", resourceRoot, reloadWeapon)
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
@@ -118,7 +125,7 @@ local info_png = {
 	[2] = {"права на имя", ""},
 	[3] = {"сигареты Big Break Red", "шт в пачке"},
 	[4] = {"аптечка", "шт"},
-	[5] = {"канистра с", "галл."},
+	[5] = {"канистра с", "лит."},
 	[6] = {"ключ от автомобиля с номером", ""},
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
@@ -136,7 +143,7 @@ local info_png = {
 	[20] = {"наркотики", "гр"},
 	[21] = {"пиво старый эмпайр", "шт"},
 	[22] = {"пиво штольц", "шт"},
-	[23] = {"наручные часы Empire, состояние", "%"},
+	[23] = {"ремонтный набор", "шт"},
 	[24] = {"ящик, цена продажи", "$"},
 	[25] = {"ключ от дома с номером", ""},
 	[26] = {"silenced", "ID"},
@@ -218,14 +225,6 @@ function fuel_down()--система топлива авто
 					fuel[veh] = fuel[veh] - 0.05
 				end
 			end
-
-			for k,playerid in pairs(getElementsByType("player")) do
-				local car_player = getPlayerVehicle(playerid)
-
-				if car_player == vehicle then
-					triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
-				end
-			end
 		end
 	end
 end
@@ -237,8 +236,15 @@ function timer_earth()--передача слотов земли на клиен
 		end
  
 		local playername = getPlayerName ( playerid )
+		local vehicleid = getPlayerVehicle(playerid)
+
 		if logged[playername] ~= 0 then
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
+
+			if vehicleid then
+				local veh = getVehiclePlateText(vehicleid)
+				triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
+			end
 		end
 	end
 end
@@ -336,6 +342,7 @@ function()
 		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
 	else
 		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
+
 		local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
@@ -351,6 +358,7 @@ function()
 	bindKey(playerid, "tab", "down", tab_down )
 	bindKey(playerid, "e", "down", e_down )
 	bindKey(playerid, "z", "down", z_down )
+	bindKey(playerid, "2", "down", to_down )
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
 	fadeCamera(playerid, true)
@@ -474,15 +482,18 @@ end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
 --------------------------------------вход и выход в авто--------------------------------
-function enter_car ( vehicle, seat, jacked )--евент входа в авто
+function enter_car ( vehicleid, seat, jacked )--евент входа в авто
 	local playerid = source
 
+	setVehicleEngineState(vehicleid, false)
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
-function exit_car ( vehicle, seat, jacked )--евент выхода из авто
+function exit_car ( vehicleid, seat, jacked )--евент выхода из авто
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+
+	setVehicleEngineState(vehicleid, false)
 
 	for i=0,max_inv do
 		triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
@@ -562,14 +573,14 @@ function throw_earth_server (playerid, value, id3, id1, id2)--выброс пр�
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 
-	for i=1,max_earth do
-		if earth[i][4] == 0 then
+	for j=1,max_earth do
+		if earth[j][4] == 0 then
 
-			earth[i][1] = x
-			earth[i][2] = y
-			earth[i][3] = z
-			earth[i][4] = id1
-			earth[i][5] = id2
+			earth[j][1] = x
+			earth[j][2] = y
+			earth[j][3] = z
+			earth[j][4] = id1
+			earth[j][5] = id2
 
 			inv_server_load(playerid, value, id3, 0, 0)
 
@@ -577,6 +588,7 @@ function throw_earth_server (playerid, value, id3, id1, id2)--выброс пр�
 			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
 
 			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
+			print("[throw_earth] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 			return
 		end
 	end
@@ -618,6 +630,7 @@ local playername = getPlayerName ( playerid )
 						end
 
 						sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+						print("[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 
 						earth[j][1] = 0
 						earth[j][2] = 0
@@ -637,6 +650,10 @@ end
 function z_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 
+	if logged[playername] == 0 then
+		return
+	end
+
 	if keyState == "down" then
 			if state_inv_player[playername] == 0 then--инв-рь игрока
 				if state_gui_window[playername] == 0 then
@@ -647,6 +664,27 @@ local playername = getPlayerName ( playerid )
 					state_gui_window[playername] = 0
 				end
 			end
+	end
+end
+
+function to_down (playerid, key, keyState)--вкл выкл двигатель авто
+local playername = getPlayerName ( playerid )
+local vehicleid = getPlayerVehicle(playerid)
+
+	if keyState == "down" then
+		if vehicleid then
+			local plate = getVehiclePlateText ( vehicleid )
+
+			if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) then
+				if getVehicleEngineState(vehicleid) then
+					setVehicleEngineState(vehicleid, false)
+					me_chat(playerid, playername.." заглушил двигатель")
+				else
+					setVehicleEngineState(vehicleid, true)
+					me_chat(playerid, playername.." завел двигатель")
+				end
+			end
+		end
 	end
 end
 
@@ -680,62 +718,206 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 	if value == "player" then
 
-		if id1 == 6 then
+		if id1 == 6 then--ключ авто
+			for k,vehicleid in pairs(getElementsByType("vehicle")) do
+				local x,y,z = getElementPosition(vehicleid)
+				local x1,y1,z1 = getElementPosition(playerid)
+				local plate = getVehiclePlateText ( vehicleid )
+
+				if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
+					if isVehicleLocked ( vehicleid ) then
+						setVehicleLocked ( vehicleid, false )
+						me_chat(playerid, playername.." открыл двери")
+					else
+						setVehicleLocked ( vehicleid, true )
+						me_chat(playerid, playername.." закрыл двери")
+					end
+					return
+				end
+			end
+
+			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			return
+
+		elseif id1 == 2 then--права
+			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			return
+
+		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
+			if getElementHealth(playerid) == 100 then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			if id1 == 3 then
+				local hp = 100*0.05
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			elseif id1 == 7 then
+				local hp = 100*0.10
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			elseif id1 == 8 then
+				local hp = 100*0.15
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			end
+
+			me_chat(playerid, playername.." выкурил сигарету")
+
+		elseif id1 == 4 then--аптечка
+			if getElementHealth(playerid) == 100 then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			setElementHealth(playerid, 100)
+			sendPlayerMessage(playerid, "+100 хп", yellow[1], yellow[2], yellow[3])
+
+			me_chat(playerid, playername.." использовал аптечку")
+
+		elseif id1 == 5 then--канистра
 			if vehicleid then
 				local plate = getVehiclePlateText ( vehicleid )
 
-				if plate == id2 then
-					if getVehicleEngineState(vehicleid) then
-						setVehicleEngineState(vehicleid, false)
-						me_chat(playerid, playername.." заглушил двигатель")
+				if not getVehicleEngineState(vehicleid) then
+					if fuel[plate]+id2 <= max_fuel then
+						fuel[plate] = fuel[plate]+id2
+						me_chat(playerid, playername.." заправил машину из канистры")
+						id2 = 0
 					else
-						setVehicleEngineState(vehicleid, true)
-						me_chat(playerid, playername.." завел двигатель")
-					end
-				else
-					sendPlayerMessage(playerid, "[ERROR] Этот ключ не подходит", red[1], red[2], red[3] )
-				end
-			else
-				for k,vehicleid in pairs(getElementsByType("vehicle")) do
-					local x,y,z = getElementPosition(vehicleid)
-					local x1,y1,z1 = getElementPosition(playerid)
-					local plate = getVehiclePlateText ( vehicleid )
-
-					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
-						if isVehicleLocked ( vehicleid ) then
-							setVehicleLocked ( vehicleid, false )
-							me_chat(playerid, playername.." открыл двери")
-						else
-							setVehicleLocked ( vehicleid, true )
-							me_chat(playerid, playername.." закрыл двери")
-						end
+						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
 					end
+				else
+					sendPlayerMessage(playerid, "[ERROR] Заглушите двигатель", red[1], red[2], red[3])
+					return
 				end
+			else
+				return
+			end
 
-				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+		elseif id1 == 10 then--документы копа
+			if search_inv_player(playerid, 28, 1) ~= 0 then
+				me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			elseif search_inv_player(playerid, 29, 1) ~= 0 then
+				me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			elseif search_inv_player(playerid, 30, 1) ~= 0 then
+				me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			elseif search_inv_player(playerid, 31, 1) ~= 0 then
+				me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			elseif search_inv_player(playerid, 32, 1) ~= 0 then
+				me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			elseif search_inv_player(playerid, 33, 1) ~= 0 then
+				me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 			return
-		end
 
-		if weapon[id1] ~= nil then
+		elseif weapon[id1] ~= nil then--оружие
 			giveWeapon(playerid, weapon[id1][2], 25)
 			me_chat(playerid, playername.." взял в руку "..weapon[id1][1])
 			id2 = 0
-		end
 
-		if id1 == 11 then
+		elseif id1 == 11 then--боеприпасы
 			if getPedWeapon(playerid) == weapon[id2][2] then
 				giveWeapon(playerid, weapon[id2][2], 25)
-				me_chat(playerid, playername.." перезарядил "..weapon[id2][1])
+				me_chat(playerid, playername.." распаковал коробку боеприпасов")
 				id2 = 0
 			else
 				sendPlayerMessage(playerid, "[ERROR] В руках нет оружия", red[1], red[2], red[3] )
 				return
 			end
+
+		elseif id1 >= 28 and id1 <= 33 then--шевроны
+			return
+
+		elseif id1 == 20 then--нарко
+			if getElementHealth(playerid) == 100 then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			local hp = 100*0.50
+			setElementHealth(playerid, getElementHealth(playerid)+hp)
+			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
+			me_chat(playerid, playername.." употребил наркотики")
+
+		elseif id1 == 21 or id1 == 22 then--пиво
+			if getElementHealth(playerid) == 100 then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			if id1 == 21 then
+				local hp = 100*0.20
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			elseif id1 == 22 then
+				local hp = 100*0.25
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			end
+
+			me_chat(playerid, playername.." выпил пиво")
+
+		elseif id1 == 23 then--ремонтный набор
+			if vehicleid then
+				if getElementHealth(vehicleid) == 1000 then
+					sendPlayerMessage(playerid, "[ERROR] Авто не нуждается в ремонте", red[1], red[2], red[3] )
+					return
+				end
+
+				id2 = id2 - 1
+
+				fixVehicle ( vehicleid )
+
+				me_chat(playerid, playername.." починил авто")
+			else
+				return
+			end
+
+		elseif id1 == 24 then--ящик
+			return
+
+		elseif id1 == 25 then--ключ от дома
+			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			return
+
+		elseif id1 == 27 then--одежда
+			local skin = getElementModel(playerid)
+
+			setElementModel(playerid, id2)
+
+			sqlite( "UPDATE account SET skin = '"..id2.."' WHERE name = '"..playername.."'")
+
+			id2 = skin
+
+			me_chat(playerid, playername.." переоделся")
+
+		elseif id1 == 39 then--броник
+			if getPedArmor(playerid) ~= 0 then
+				sendPlayerMessage(playerid, "[ERROR] У вас надет бронежилет", red[1], red[2], red[3] )
+				return
+			end
+
+			setPedArmor(playerid, 100)
+
+			id2 = id2 - 1
+
+			me_chat(playerid, playername.." надел бронежилет")
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
+		print("[use_inv] "..playername.." [value - "..value.."] ["..id1..", "..id2.."("..id_2..")]")
 		if id2 == 0 then
 			id1, id2 = 0, 0
 		end
@@ -747,7 +929,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		inv_server_load(playerid, "player", id3, id1, id2)
 		triggerClientEvent( playerid, "event_inv_load", playerid, "player", id3, id1, id2 )
 
-	elseif value == "car" then
+	--[[elseif value == "car" then
 		if vehicleid then
 			
 			-----------------------------------------------------------------------------------------------------------------------
@@ -774,7 +956,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		end
 
 		inv_server_load(playerid, "house", id3, id1, id2)
-		triggerClientEvent( playerid, "event_inv_load", playerid, "house", id3, id1, id2 )
+		triggerClientEvent( playerid, "event_inv_load", playerid, "house", id3, id1, id2 )]]
 	end
 end
 addEvent( "event_use_inv", true )
@@ -837,7 +1019,7 @@ function ( playerid, cmd, id )
 
 	array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	fuel[plate] = 50
+	fuel[plate] = max_fuel
 
 	local val1, val2 = 6, plate
 	if inv_player_empty(playerid, val1, val2) then
@@ -891,19 +1073,18 @@ function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
 end)
 
-addCommandHandler("hp",
-function (playerid)
-	setElementHealth(playerid, 100)
-	sendPlayerMessage(playerid, "+100 hp", lyme[1], lyme[2], lyme[3])
-end)
-
 function input_Console ( text )
 	local x = "1 2 3"
 	local number = split(x, " ")
 	if text == "z" then
 		print(number[4])
 	elseif text == "x" then
-		
+		local allResources = getResources()
+		for index, res in ipairs(allResources) do
+			if getResourceState(res) == "running" then
+				restartResource(res)
+			end
+		end
 	end
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
