@@ -22,7 +22,7 @@ local blockedTasks =
 function reloadWeapon (key, keyState)
 
 	if keyState == "down" then
-		local task = getPedSimplestTask (localPlayer)
+		local task = getPedSimplestTask (getLocalPlayer())
 
 		for idx, badTask in ipairs(blockedTasks) do
 			if (task == badTask) then
@@ -30,6 +30,6 @@ function reloadWeapon (key, keyState)
 			end
 		end
 
-		triggerServerEvent("relWep", resourceRoot)
+		triggerServerEvent("relWep", getRootElement(), getLocalPlayer())
 	end
 end

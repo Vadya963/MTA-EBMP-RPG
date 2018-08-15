@@ -15,7 +15,7 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 local fuel = 0
 
-local max_subject = 41--кол-во предметов
+local max_subject = 42--кол-во предметов
 
 local earth = {}--слоты земли
 local max_earth = 50
@@ -151,6 +151,7 @@ local info_png = {
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
+	[42] = {"лекарство, цена продажи", "$"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки

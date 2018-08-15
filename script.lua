@@ -85,8 +85,8 @@ end
 addEvent( "event_setVehicleHeadLightColor", true )
 addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
 
-function reloadWeapon()
-	reloadPedWeapon(client)
+function reloadWeapon(playerid)
+	reloadPedWeapon(playerid)
 end
 addEvent("relWep", true)
 addEventHandler("relWep", resourceRoot, reloadWeapon)
@@ -162,6 +162,7 @@ local info_png = {
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
+	[42] = {"лекарство, цена продажи", "$"},
 }
 
 local weapon = {
@@ -366,7 +367,7 @@ function()
 	setElementFrozen( playerid, false )--ИЗМЕНИТЬ НА TRUE!!!
 
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
-		setPedStat(playerid, stat, 998)
+		setPedStat(playerid, stat, 1000)
 	end
 end)
 
@@ -1071,6 +1072,138 @@ end)
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
+end)
+
+local interior = {
+	{1, "Ammu-nation 1",	289.7870,	-35.7190,	1003.5160},
+	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
+	{1, "Caligulas Casino",	2235.2524,	1708.5146,	1010.6129},
+	{1, "Denise's Place",	244.0892,	304.8456,	999.1484},--комната со срачем
+	{1, "Shamal cabin",	1.6127,	34.7411,	1199.0},
+	{1, "Safe House 4",	2216.5400,	-1076.2900,	1050.4840},
+	{1, "Sindacco Abatoir",	963.6078,	2108.3970,	1011.0300},--мясокомбинат
+	{1, "Sub Urban",	203.8173,	-46.5385,	1001.8050},--магаз
+	{1, "Wu Zi Mu's Betting place",	-2159.9260,	641.4587,	1052.3820},--9 бук-ая контора с комнатой
+
+	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
+	{2, "The Pig Pen",	1213.4330,	-6.6830,	1000.9220},--стриптиз бар
+	{2, "Big Smoke's Crack Palace",	2543.6610,	-1303.9320,	1025.0700},--хата биг смоука
+	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
+	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
+	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
+	{2, "Katie's Place	", 267.2290,	304.7100,	999.1480},--16 комната
+
+	{3, "Jizzy's Pleasure Domes",	-2636.7190,	1402.9170,	906.4609},--стриптиз бар
+	{3, "Bike School",	1494.3350,	1305.6510,	1093.2890},
+	{3, "Big Spread Ranch",	1210.2570,	-29.2986,	1000.8790},--стриптиз бар
+	{3, "LV Tattoo Parlour",	-204.4390,	-43.6520,	1002.2990},
+	{3, "LVPD HQ",	289.7703,	171.7460,	1007.1790},
+	{3, "Pro-Laps",	207.3560,	-138.0029,	1003.3130},
+	{3, "Las Venturas Planning Dep.",	374.6708,	173.8050,	1008.3893},--мерия
+	{3, "Driving School",	-2027.9200,	-105.1830,	1035.1720},
+	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
+	{3, "Burglary House 5",	234.733,	1190.391,	1080.258},
+	{3, "Gay Gordo's Barbershop",	418.6530,	-82.6390,	1001.8050},--парик-ая
+	{3, "Helena's Place",	292.4459,	308.7790,	999.1484},--амбар
+	{3, "Inside Track Betting",	826.8863,	5.5091,	1004.4830},--букм-ая контора 2
+	{3, "Sex Shop",	-106.7268,	-19.6444,	1000.7190},--30
+
+	{4, "24/7 shop 1",	-27.3769,	-27.6416,	1003.5570},
+	{4, "Ammu-Nation 2",	285.8000,	-84.5470,	1001.5390},
+	{4, "Burglary House 6",	-262.91,	1454.966,	1084.367},
+	{4, "Burglary House 7",	221.4296,	1142.423,	1082.609},
+	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
+	{4, "Diner 2",	460.0,	-88.43,	999.62},
+	{4, "Dirtbike Stadium",	-1435.8690,	-662.2505,	1052.4650},
+	{4, "Michelle's Place",	302.6404,	304.8048,	999.1484},--38 странная хата, на одном сервере это пж-ая часть)
+
+	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--громный особняк
+	{5, "Well Stacked Pizza Co.",	377.7758,	-126.2766,	1001.4920},
+	{5, "Victim",	221.3310,	-6.6169,	1005.1977},--магаз одежды
+	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
+	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
+	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
+	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
+	{5, "Police Station (Barbara's)",	322.72,	306.43,	999.15},
+	{5, "Ganton Gym",	768.0793,	5.8606,	1000.7160},--тренажорка
+	{5, "Vank Hoff Hotel",	2232.8210,	-1110.0180,	1050.8830},--48 комната в отеле
+
+	{6, "Ammu-Nation 3",	297.4460,	-109.9680,	1001.5160},
+	{6, "Ammu-Nation 4",	317.2380,	-168.0520,	999.5930},
+	{6, "LSPD HQ",	246.4510,	65.5860,	1003.6410},
+	{6, "Safe House 3",	2333.0330,	-1073.9600,	1049.0230},
+	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
+	{6, "Safe House 6",	2308.8710,	-1210.7170,	1049.0230},
+	{6, "Cobra Marital Arts Gym",	774.0870,	-47.9830,	1000.5860},--тренажорка
+	{6, "24/7 shop 2",	-26.7180,	-55.9860,	1003.5470},
+	{6, "Millie's Bedroom",	344.5200,	304.8210,	999.1480},--плохая комната)
+	{6, "Fanny Batter's Brothel",	744.2710,	1437.2530,	1102.7030},
+	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
+	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},--60
+
+	{7, "Ammu-Nation 5 (2 Floors)",	315.3850,	-142.2420,	999.6010},
+	{7, "8-Track Stadium", -1417.8720,	-276.4260,	1051.1910},
+	{7, "Below the Belt Gym",	774.2430,	-76.0090,	1000.6540},--63 тренажорка
+
+	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
+	{8, "Burglary House 22",	-42.490,	1407.644,	1084.43},--65
+
+	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
+	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
+	{9, "Cluckin' Bell",	365.67,	-11.61,	1001.87},--68
+
+	{10, "Four Dragons Casino",	2009.4140,	1017.8990,	994.4680},
+	{10, "RC Zero's Battlefield",	-975.5766,	1061.1312,	1345.6719},
+	{10, "Burger Shot",	366.4220,	-73.4700,	1001.5080},
+	{10, "Burglary House 14",	21.241,	1342.153,	1084.375},
+	{10, "Hashbury safe house",	2264.5231,	-1210.5229,	1049.0234},
+	{10, "24/7 shop 3",	6.0780,	-28.6330,	1003.5490},
+	{10, "Abandoned AC Tower",	419.6140,	2536.6030,	10.0000},
+	{10, "SFPD HQ",	246.4410,	112.1640,	1003.2190},--76
+
+	{11, "Ten Green Bottles Bar",	502.3310,	-70.6820,	998.7570},--77
+
+	{12, "The Casino", 1132.9450,	-8.6750,	1000.6800},
+	{12, "Macisla's Barbershop",	411.6410,	-51.8460,	1001.8980},--парик-ая
+	{12, "Modern safe house",	2324.4990,	-1147.0710,	1050.7100},--80
+
+	{14, "Kickstart Stadium",	-1464.5360,	1557.6900,	1052.5310},
+	{14, "Didier Sachs",	204.1789,	-165.8740,	1000.5230},--82
+
+	{15, "Binco",	207.5430,	-109.0040,	1005.1330},--магаз одежды
+	{15, "Blood Bowl Stadium",	-1394.20,	987.62,	1023.96},--дерби арена
+	{15, "Jefferson Motel",	2217.6250,	-1150.6580,	1025.7970},
+	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
+	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
+	{15, "Burglary House 20",	384.644,	1471.479,	1080.195},
+	{15, "Burglary House 21",	295.467,	1474.697,	1080.258},--89
+
+	{16, "24/7 shop 4",	-25.3730,	-139.6540,	1003.5470},
+	{16, "LS Tattoo Parlour",	-204.5580,	-25.6970,	1002.2730},
+	{16, "Sumoring? stadium",	-1400,	1250,	1040},--92
+
+	{17, "24/7 shop 5",	-25.3930,	-185.9110,	1003.5470},
+	{17, "Club",	493.4687,	-23.0080,	1000.6796},
+	{17, "Rusty Brown's - Ring Donuts",	377.0030,	-192.5070,	1000.6330},--кафешка
+	{17, "The Sherman's Dam Generator Hall",	-942.1320,	1849.1420,	5.0050},--96 дамба
+
+	{18, "Lil Probe Inn",	-227.0280,	1401.2290,	27.7690},--бар
+	{18, "24/7 shop 6",	-30.9460,	-89.6090,	1003.5490},
+	{18, "Atrium",	1726.1370,	-1645.2300,	20.2260},--отель
+	{18, "Warehouse 2",	1296.6310,	0.5920,	1001.0230},
+	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
+}
+
+addCommandHandler ( "int",
+function ( playerid, cmd, id )
+	local id = tonumber(id)
+	if interior[id] ~= nil then
+		setElementInterior(playerid, 0)
+		setElementInterior(playerid, interior[id][1], interior[id][3], interior[id][4], interior[id][5])
+		sendPlayerMessage(playerid, "interior "..interior[id][2])
+	else
+		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
+	end
 end)
 
 function input_Console ( text )
