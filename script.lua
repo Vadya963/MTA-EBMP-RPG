@@ -506,29 +506,101 @@ function explode_car()
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
+addCommandHandler ( "v",--покупка авто
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	local id = tonumber(id)
+
+	if id == nil then
+		return
+	end
+
+	if id >= 400 and id <= 611 then
+		local number = randomize_number()
+
+		local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..number.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sendPlayerMessage(playerid, "[ERROR] Этот номер числится в базе автомобилей, пожалуйста повторите попытку снова", red[1], red[2], red[3] )
+			return
+		end
+
+		local val1, val2 = 6, number
+
+		if inv_player_empty(playerid, 6, val2) then
+			local x,y,z = getElementPosition( playerid )
+			local vehicleid = createVehicle(id, x+5, y, z+2, 0, 0, 0, val2)
+			local plate = getVehiclePlateText ( vehicleid )
+			local color = {getVehicleColor ( vehicleid, true )}
+
+			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			fuel[plate] = max_fuel
+
+			setElementDimension(vehicleid, getElementDimension(playerid))
+			setElementInterior(vehicleid, getElementInterior(playerid))
+
+			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+			sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( id ), lyme[1], lyme[2], lyme[3])
+
+			sqlite( "INSERT INTO carnumber_bd (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, r, g, b) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..color[1].."', '"..color[2].."', '"..color[3].."')" )
+
+			sqlite( "INSERT INTO carnumber_bd_inv (carnumber, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
+	end
+end)
+
 --------------------------------------вход и выход в авто--------------------------------
 function enter_car ( vehicleid, seat, jacked )--евент входа в авто
 	local playerid = source
+	local playername = getPlayerName ( playerid )
+	local plate = getVehiclePlateText ( vehicleid )
 
 	setVehicleEngineState(vehicleid, false)
+
+	if seat == 0 then
+		sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
+	end
+
+	print("[Entered_Vehicle] "..playername.." seat = "..seat..", plate = "..plate)
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
 function exit_car ( vehicleid, seat, jacked )--евент выхода из авто
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+	local plate = getVehiclePlateText ( vehicleid )
 
 	setVehicleEngineState(vehicleid, false)
 
-	for i=0,max_inv do
-		triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
+	if seat == 0 then
+		for i=0,max_inv do
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
+			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
-		if state_inv_player[playername] == 1 then
-			triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
+			if state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
+			end
+		end
+
+		local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			local x,y,z = getElementPosition(vehicleid)
+			local rx,ry,rz = getElementRotation(vehicleid)
+
+			sqlite( "UPDATE carnumber_bd SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
 		end
 	end
 
-	triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
+	print("[Vehicle_Exit] "..playername.." seat = "..seat..", plate = "..plate)
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 -----------------------------------------------------------------------------------------
@@ -707,6 +779,14 @@ local vehicleid = getPlayerVehicle(playerid)
 				else
 					setVehicleEngineState(vehicleid, true)
 					me_chat(playerid, playername.." завел двигатель")
+
+					local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+					if result[1]["COUNT()"] == 1 then
+						local time = getRealTime()
+						local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
+
+						sqlite( "UPDATE carnumber_bd SET day_engine_on = '"..client_time.."' WHERE carnumber = '"..plate.."'")
+					end
 				end
 			end
 		end
@@ -727,6 +807,11 @@ function inv_server_load (playerid, value, id3, id1, id2 )--изменение �
 
 			array_car_1[plate][id3+1] = id1
 			array_car_2[plate][id3+1] = id2
+
+			local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				sqlite( "UPDATE carnumber_bd_inv SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE name = '"..plate.."'")
+			end
 		end
 	elseif value == "house" then
 		array_house_1[1][id3+1] = id1
@@ -1036,41 +1121,6 @@ function (playerid, cmd, id1, id2 )
 		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 	else
 		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-	end
-end)
-
-addCommandHandler ( "v",
-function ( playerid, cmd, id )
-	if logged[playername] == 0 then
-		return
-	end
-
-	if id == nil then
-		return
-	end
-
-	if tonumber(id) >= 400 and tonumber(id) <= 611 then
-		local x,y,z = getElementPosition( playerid )
-		local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
-		local plate = getVehiclePlateText ( vehicleid )
-		local playername = getPlayerName ( playerid )
-
-		array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-		fuel[plate] = max_fuel
-
-		setElementDimension(vehicleid, getElementDimension(playerid))
-		setElementInterior(vehicleid, getElementInterior(playerid))
-
-		local val1, val2 = 6, plate
-
-		if inv_player_empty(playerid, val1, val2) then
-			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
-		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-		end
-
-		sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( tonumber ( id ) ))
 	end
 end)
 
