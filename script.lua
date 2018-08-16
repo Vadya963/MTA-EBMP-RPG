@@ -2,7 +2,8 @@ local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
 
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
-local max_fuel = 50
+local max_fuel = 50--объем бака авто
+local dimension = 0--от 0 до 65535 виртуальные миры
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -58,38 +59,6 @@ function me_chat(playerid, text)
 		end
 	end
 end
------------------------------------------------------------------------------------------
-
--------------------------------эвенты----------------------------------------------------
-function addVehicleUpgrade_fun( vehicleid, value )
-	addVehicleUpgrade ( vehicleid, value )
-end
-addEvent( "event_addVehicleUpgrade", true )
-addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
-
-function setVehiclePaintjob_fun( vehicleid, value )
-	setVehiclePaintjob ( vehicleid, value )
-end
-addEvent( "event_setVehiclePaintjob", true )
-addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
-
-function setVehicleColor_fun( vehicleid, r, g, b )
-	setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
-end
-addEvent( "event_setVehicleColor", true )
-addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun )
-
-function setVehicleHeadLightColor_fun( vehicleid, r, g, b )
-	setVehicleHeadLightColor ( vehicleid, r, g, b )
-end
-addEvent( "event_setVehicleHeadLightColor", true )
-addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
-
-function reloadWeapon(playerid)
-	reloadPedWeapon(playerid)
-end
-addEvent("relWep", true)
-addEventHandler("relWep", resourceRoot, reloadWeapon)
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
@@ -320,6 +289,38 @@ function inv_car_empty(playerid, id1, id2)--выдача предмета авт
 end
 -----------------------------------------------------------------------------------------
 
+-------------------------------эвенты----------------------------------------------------
+function addVehicleUpgrade_fun( vehicleid, value )
+	addVehicleUpgrade ( vehicleid, value )
+end
+addEvent( "event_addVehicleUpgrade", true )
+addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
+
+function setVehiclePaintjob_fun( vehicleid, value )
+	setVehiclePaintjob ( vehicleid, value )
+end
+addEvent( "event_setVehiclePaintjob", true )
+addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
+
+function setVehicleColor_fun( vehicleid, r, g, b )
+	setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
+end
+addEvent( "event_setVehicleColor", true )
+addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun )
+
+function setVehicleHeadLightColor_fun( vehicleid, r, g, b )
+	setVehicleHeadLightColor ( vehicleid, r, g, b )
+end
+addEvent( "event_setVehicleHeadLightColor", true )
+addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
+
+function reloadWeapon(playerid)
+	reloadPedWeapon(playerid)
+end
+addEvent("relWep", true)
+addEventHandler("relWep", resourceRoot, reloadWeapon)
+-----------------------------------------------------------------------------------------
+
 function displayLoadedRes ( res )--старт ресурсов
 	setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
 	setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
@@ -338,22 +339,22 @@ function()
 	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
-	local result = sqlite( "SELECT COUNT() FROM inventory WHERE name = '"..playername.."'" )
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
-		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
+		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
 	else
-		--triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
+		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
 
-		local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+		--[[local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
-		end
+		end]]
 	end
 
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
-	logged[playername] = 1--ИЗМЕНИТЬ НА 0!!!
+	logged[playername] = 0--ИЗМЕНИТЬ НА 0!!!
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -364,23 +365,40 @@ function()
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
-	setElementFrozen( playerid, false )--ИЗМЕНИТЬ НА TRUE!!!
+	setElementFrozen( playerid, true )--ИЗМЕНИТЬ НА true!!!
 
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
+
+	dimension = dimension+1
+	setElementDimension(playerid, dimension)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
+	if logged[playername] == 1 then
+		local heal = getElementHealth( playerid )
+		sqlite( "UPDATE account SET heal = '"..heal.."' WHERE name = '"..playername.."'")
+	else
+		dimension = dimension-1
+	end
 end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
 
 
 function player_Spawn (playerid)--спавн игрока
+	local playername = getPlayerName ( playerid )
+
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
+
+	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+	setElementModel( playerid, result[1]["skin"] )
+
+	sqlite( "UPDATE account SET heal = '5' WHERE name = '"..playername.."'")
+	setElementHealth( playerid, 5 )
 end
 
 
@@ -430,6 +448,9 @@ function reg_fun(playerid, cmd)
 		print("[ACCOUNT REGISTER] "..playername)
 
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
+
+		dimension = dimension-1
+		setElementDimension(playerid, 0)
 	end
 end
 addEvent( "event_reg", true )
@@ -460,6 +481,9 @@ function log_fun(playerid, cmd)
 			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
+
+			dimension = dimension-1
+			setElementDimension(playerid, 0)
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -696,7 +720,7 @@ function inv_server_load (playerid, value, id3, id1, id2 )--изменение �
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
-		local result = sqlite( "UPDATE inventory SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
+		sqlite( "UPDATE inventory SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
 	elseif value == "car" then
 		if vehicleid then
 			local plate = getVehiclePlateText ( vehicleid )
@@ -751,6 +775,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
+			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
 
 			if id1 == 3 then
 				local hp = 100*0.05
@@ -767,6 +792,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
+			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == 100 then
@@ -775,11 +801,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
+			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
 
 			setElementHealth(playerid, 100)
 			sendPlayerMessage(playerid, "+100 хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал аптечку")
+			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 5 then--канистра
 			if vehicleid then
@@ -844,11 +872,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
+			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
+
 			local hp = 100*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." употребил наркотики")
+			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 21 or id1 == 22 then--пиво
 			if getElementHealth(playerid) == 100 then
@@ -857,6 +888,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
+
+			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
 
 			if id1 == 21 then
 				local hp = 100*0.20
@@ -869,6 +902,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выпил пиво")
+			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
@@ -878,10 +912,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				id2 = id2 - 1
+				print("[getElementHealth(vehicleid) - DO] "..getElementHealth(vehicleid))
 
 				fixVehicle ( vehicleid )
 
 				me_chat(playerid, playername.." починил авто")
+				print("[getElementHealth(vehicleid) - POSLE] "..getElementHealth(vehicleid))
 			else
 				return
 			end
@@ -1005,31 +1041,37 @@ end)
 
 addCommandHandler ( "v",
 function ( playerid, cmd, id )
-	if id == nil then
-		return
-	end
-
-	local x,y,z = getElementPosition( playerid )
-	local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
-	local plate = getVehiclePlateText ( vehicleid )
-	local playername = getPlayerName ( playerid )
-
 	if logged[playername] == 0 then
 		return
 	end
 
-	array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	fuel[plate] = max_fuel
-
-	local val1, val2 = 6, plate
-	if inv_player_empty(playerid, val1, val2) then
-		sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
-	else
-		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+	if id == nil then
+		return
 	end
 
-	sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( tonumber ( id ) ))
+	if tonumber(id) >= 400 and tonumber(id) <= 611 then
+		local x,y,z = getElementPosition( playerid )
+		local vehicleid = createVehicle(tonumber(id), x+5, y, z+2, 0, 0, 0, randomize_number())
+		local plate = getVehiclePlateText ( vehicleid )
+		local playername = getPlayerName ( playerid )
+
+		array_car_1[plate] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		fuel[plate] = max_fuel
+
+		setElementDimension(vehicleid, getElementDimension(playerid))
+		setElementInterior(vehicleid, getElementInterior(playerid))
+
+		local val1, val2 = 6, plate
+
+		if inv_player_empty(playerid, val1, val2) then
+			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+
+		sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( tonumber ( id ) ))
+	end
 end)
 
 addCommandHandler ( "getupd",
@@ -1075,19 +1117,19 @@ function ( playerid, cmd, x, y, z )
 end)
 
 local interior = {
-	{1, "Ammu-nation 1",	289.7870,	-35.7190,	1003.5160},
+	{1, "Ammu-nation 1",	285.7870,	-41.7190,	1001.5160},
 	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
 	{1, "Caligulas Casino",	2235.2524,	1708.5146,	1010.6129},
 	{1, "Denise's Place",	244.0892,	304.8456,	999.1484},--комната со срачем
 	{1, "Shamal cabin",	1.6127,	34.7411,	1199.0},
-	{1, "Safe House 4",	2216.5400,	-1076.2900,	1050.4840},
+	{1, "Safe House 4",	2216.5400,	-1076.2900,	1050.4840},--комната в отеле
 	{1, "Sindacco Abatoir",	963.6078,	2108.3970,	1011.0300},--мясокомбинат
-	{1, "Sub Urban",	203.8173,	-46.5385,	1001.8050},--магаз
+	{1, "Sub Urban",	203.8173,	-46.5385,	1001.8050},--магаз одежды
 	{1, "Wu Zi Mu's Betting place",	-2159.9260,	641.4587,	1052.3820},--9 бук-ая контора с комнатой
 
 	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
 	{2, "The Pig Pen",	1213.4330,	-6.6830,	1000.9220},--стриптиз бар
-	{2, "Big Smoke's Crack Palace",	2543.6610,	-1303.9320,	1025.0700},--хата биг смоука
+	{2, "Big Smoke's Crack Palace",	2570.33,	-1302.31,	1044.12},--хата биг смоука
 	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
 	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
 	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
@@ -1098,7 +1140,7 @@ local interior = {
 	{3, "Big Spread Ranch",	1210.2570,	-29.2986,	1000.8790},--стриптиз бар
 	{3, "LV Tattoo Parlour",	-204.4390,	-43.6520,	1002.2990},
 	{3, "LVPD HQ",	289.7703,	171.7460,	1007.1790},
-	{3, "Pro-Laps",	207.3560,	-138.0029,	1003.3130},
+	{3, "Pro-Laps",	207.3560,	-138.0029,	1003.3130},--магаз одежды
 	{3, "Las Venturas Planning Dep.",	374.6708,	173.8050,	1008.3893},--мерия
 	{3, "Driving School",	-2027.9200,	-105.1830,	1035.1720},
 	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
@@ -1119,7 +1161,7 @@ local interior = {
 
 	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--громный особняк
 	{5, "Well Stacked Pizza Co.",	377.7758,	-126.2766,	1001.4920},
-	{5, "Victim",	221.3310,	-6.6169,	1005.1977},--магаз одежды
+	{5, "Victim",	225.3310,	-8.6169,	1002.1977},--магаз одежды
 	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
 	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
 	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
@@ -1135,7 +1177,7 @@ local interior = {
 	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
 	{6, "Safe House 6",	2308.8710,	-1210.7170,	1049.0230},
 	{6, "Cobra Marital Arts Gym",	774.0870,	-47.9830,	1000.5860},--тренажорка
-	{6, "24/7 shop 2",	-26.7180,	-55.9860,	1003.5470},
+	{6, "24/7 shop 2",	-26.7180,	-55.9860,	1003.5470},--буду юзать это инт
 	{6, "Millie's Bedroom",	344.5200,	304.8210,	999.1480},--плохая комната)
 	{6, "Fanny Batter's Brothel",	744.2710,	1437.2530,	1102.7030},
 	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
@@ -1168,7 +1210,7 @@ local interior = {
 	{12, "Modern safe house",	2324.4990,	-1147.0710,	1050.7100},--80
 
 	{14, "Kickstart Stadium",	-1464.5360,	1557.6900,	1052.5310},
-	{14, "Didier Sachs",	204.1789,	-165.8740,	1000.5230},--82
+	{14, "Didier Sachs",	204.1789,	-165.8740,	1000.5230},--82 --магаз одежды
 
 	{15, "Binco",	207.5430,	-109.0040,	1005.1330},--магаз одежды
 	{15, "Blood Bowl Stadium",	-1394.20,	987.62,	1023.96},--дерби арена
@@ -1204,6 +1246,13 @@ function ( playerid, cmd, id )
 	else
 		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
 	end
+end)
+
+addCommandHandler ( "dim",
+function ( playerid, cmd, id )
+	local id = tonumber(id)
+	setElementDimension ( playerid, id )
+	sendPlayerMessage(playerid, "setElementDimension "..id)
 end)
 
 function input_Console ( text )
