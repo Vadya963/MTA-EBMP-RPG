@@ -4,6 +4,7 @@ local me_radius = 10--радиус отображения действий иг�
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
 local dimension = 0--от 0 до 65535 виртуальные миры
+local car_spawn_value = 0
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -83,6 +84,8 @@ function timer_earth_clear()
 		for k,playerid in pairs(getElementsByType("player")) do
 			sendPlayerMessage(playerid, "["..time["hour"]..":"..time["minute"]..":"..time["second"].."] [НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
 		end
+
+		print("[timer_earth_clear] clear")
 	end
 end
 
@@ -322,21 +325,24 @@ addEventHandler("relWep", resourceRoot, reloadWeapon)
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
-	setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
-	setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
-	setTimer(fuel_down, 500, 0)--система топлива
+	if car_spawn_value == 0 then
+		car_spawn_value = 1
+		setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
+		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
+		setTimer(fuel_down, 500, 0)--система топлива
 
-	local result = sqlite( "SELECT COUNT() FROM carnumber_bd" )--спавн машин
-	local carnumber_chislo = result[1]["COUNT()"]
-	for i=1,carnumber_chislo do
-		local result = sqlite( "SELECT * FROM carnumber_bd" )
-		car_spawn(result[i]["carnumber"])
+		local result = sqlite( "SELECT COUNT() FROM carnumber_bd" )--спавн машин
+		local carnumber_chislo = result[1]["COUNT()"]
+		for i=1,carnumber_chislo do
+			local result = sqlite( "SELECT * FROM carnumber_bd" )
+			car_spawn(result[i]["carnumber"])
+		end
+
+		print("[chislo_car_spawn] "..carnumber_chislo)
+
+		array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	end
-
-	print("[chislo_car_spawn] "..carnumber_chislo)
-
-	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
 
@@ -368,7 +374,7 @@ function()
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
 	bindKey(playerid, "e", "down", e_down )
-	bindKey(playerid, "z", "down", z_down )
+	bindKey(playerid, "x", "down", x_down )
 	bindKey(playerid, "2", "down", to_down )
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
@@ -434,7 +440,7 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '0')" )
+		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26')" )
 
 		local result = sqlite( "INSERT INTO inventory (name, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
@@ -447,10 +453,10 @@ function reg_fun(playerid, cmd)
 		logged[playername] = 1
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 		setElementHealth( playerid, result[1]["heal"] )
 		setElementModel( playerid, result[1]["skin"] )
 		setElementFrozen( playerid, false )
-		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
@@ -483,6 +489,7 @@ function log_fun(playerid, cmd)
 			logged[playername] = 1
 
 			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 			setElementHealth( playerid, result[1]["heal"] )
 			setElementModel( playerid, result[1]["skin"] )
 			setElementFrozen( playerid, false )
@@ -772,7 +779,7 @@ local playername = getPlayerName ( playerid )
 	end
 end
 
-function z_down (playerid, key, keyState)
+function x_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 
 	if logged[playername] == 0 then
@@ -800,7 +807,12 @@ local vehicleid = getPlayerVehicle(playerid)
 		if vehicleid then
 			local plate = getVehiclePlateText ( vehicleid )
 
-			if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) then
+			if getSpeed(vehicleid) ~= 0 then
+				sendPlayerMessage(playerid, "[ERROR] Остановите машину", red[1], red[2], red[3])
+				return
+			end
+
+			if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and search_inv_player(playerid, 2, playername) ~= 0 then
 				if getVehicleEngineState(vehicleid) then
 					setVehicleEngineState(vehicleid, false)
 					me_chat(playerid, playername.." заглушил двигатель")
@@ -888,7 +900,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
+			print("[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 3 then
 				local hp = 100*0.05
@@ -905,7 +917,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
-			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
+			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == 100 then
@@ -914,13 +926,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
+			print("[heal_playerid - DO] "..getElementHealth(playerid))
 
 			setElementHealth(playerid, 100)
 			sendPlayerMessage(playerid, "+100 хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал аптечку")
-			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
+			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 5 then--канистра
 			if vehicleid then
@@ -928,9 +940,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				if not getVehicleEngineState(vehicleid) then
 					if fuel[plate]+id2 <= max_fuel then
+						print("[fuel - DO] "..fuel[plate])
+
 						fuel[plate] = fuel[plate]+id2
 						me_chat(playerid, playername.." заправил машину из канистры")
 						id2 = 0
+
+						print("[fuel - POSLE] "..fuel[plate])
 					else
 						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
@@ -985,14 +1001,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
+			print("[heal_playerid - DO] "..getElementHealth(playerid))
 
 			local hp = 100*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." употребил наркотики")
-			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
+			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 21 or id1 == 22 then--пиво
 			if getElementHealth(playerid) == 100 then
@@ -1002,7 +1018,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			print("[getElementHealth(playerid) - DO] "..getElementHealth(playerid))
+			print("[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 21 then
 				local hp = 100*0.20
@@ -1015,22 +1031,27 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выпил пиво")
-			print("[getElementHealth(playerid) - POSLE] "..getElementHealth(playerid))
+			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
+				if getVehicleEngineState(vehicleid) then
+					sendPlayerMessage(playerid, "[ERROR] Заглушите двигатель", red[1], red[2], red[3])
+					return
+				end
+
 				if getElementHealth(vehicleid) == 1000 then
 					sendPlayerMessage(playerid, "[ERROR] Авто не нуждается в ремонте", red[1], red[2], red[3] )
 					return
 				end
 
 				id2 = id2 - 1
-				print("[getElementHealth(vehicleid) - DO] "..getElementHealth(vehicleid))
+				print("[heal_vehicleid - DO] "..getElementHealth(vehicleid))
 
 				fixVehicle ( vehicleid )
 
 				me_chat(playerid, playername.." починил авто")
-				print("[getElementHealth(vehicleid) - POSLE] "..getElementHealth(vehicleid))
+				print("[heal_vehicleid - POSLE] "..getElementHealth(vehicleid))
 			else
 				return
 			end
@@ -1111,6 +1132,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 end
 addEvent( "event_use_inv", true )
 addEventHandler ( "event_use_inv", getRootElement(), use_inv )
+
+function give_subject( playerid, id3, id1, id2 )
+
+end
+addEvent( "event_give_subject", true )
+addEventHandler ( "event_give_subject", getRootElement(), give_subject )
 
 addCommandHandler ( "sub",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
@@ -1193,6 +1220,61 @@ addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
 end)
+
+--Muting commands
+addCommandHandler ( "mutevoice",
+	function (playerid, cmd, playerName )
+		if not playerName then
+			sendPlayerMessage (playerid, "[ERROR] Syntax: muteplayer <playerName>", red[1], red[2], red[3] )
+			return
+		end
+
+		local player = getPlayerFromName ( playerName )
+		if not player then
+			sendPlayerMessage (playerid, "[ERROR] mutevoice: не в сети '"..playerName.."'", red[1], red[2], red[3] )
+			return
+		end
+
+		if isPlayerMuted ( player ) then
+			sendPlayerMessage (playerid, "[ERROR] mutevoice: '"..playerName.."' уже приглушен", red[1], red[2], red[3] )
+			return
+		end
+
+		if player == playerid then
+			sendPlayerMessage (playerid, "[ERROR] mutevoice: Самого себя нельзя приглушить", red[1], red[2], red[3] )
+			return
+		end
+
+		setPlayerMuted ( player, true )
+		sendPlayerMessage (playerid, "mutevoice: '"..playerName.."' игрок приглушен", lyme[1], lyme[2], lyme[3] )
+		print("[admin_mute] "..getPlayerName(playerid).." mute "..playerName)
+	end
+)
+
+--Muting commands
+addCommandHandler ( "unmutevoice",
+	function (playerid, cmd, playerName )
+		if not playerName then
+			sendPlayerMessage (playerid, "[ERROR] Syntax: unmuteplayer <playerName>", red[1], red[2], red[3] )
+			return
+		end
+
+		local player = getPlayerFromName ( playerName )
+		if not player then
+			sendPlayerMessage (playerid, "[ERROR] unmutevoice: не в сети '"..playerName.."'", red[1], red[2], red[3] )
+			return
+		end
+
+		if not isPlayerMuted ( player ) then
+			sendPlayerMessage (playerid, "[ERROR] unmutevoice: '"..playerName.."' не был приглушен", red[1], red[2], red[3] )
+			return
+		end
+
+		setPlayerMuted ( player, false )
+		sendPlayerMessage (playerid, "unmutevoice: '"..playerName.."' игрок снова может говорить", lyme[1], lyme[2], lyme[3] )
+		print("[admin_mute] "..getPlayerName(playerid).." unmute "..playerName)
+	end
+)
 
 local interior = {
 	{1, "Ammu-nation 1",	285.7870,	-41.7190,	1001.5160},
