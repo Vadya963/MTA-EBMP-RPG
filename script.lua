@@ -326,6 +326,15 @@ function displayLoadedRes ( res )--старт ресурсов
 	setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 	setTimer(fuel_down, 500, 0)--система топлива
 
+	local result = sqlite( "SELECT COUNT() FROM carnumber_bd" )--спавн машин
+	local carnumber_chislo = result[1]["COUNT()"]
+	for i=1,carnumber_chislo do
+		local result = sqlite( "SELECT * FROM carnumber_bd" )
+		car_spawn(result[i]["carnumber"])
+	end
+
+	print("[chislo_car_spawn] "..carnumber_chislo)
+
 	array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 end
@@ -506,6 +515,28 @@ function explode_car()
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
+function car_spawn(number)
+
+		local plate = number
+		local result = sqlite( "SELECT * FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+		local vehicleid = createVehicle(result[1]["carmodel"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
+
+		fuel[plate] = result[1]["fuel"]
+		setVehicleColor_fun(vehicleid, result[1]["r"], result[1]["g"], result[1]["b"])
+
+		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+		local result = sqlite( "SELECT * FROM carnumber_bd_inv WHERE carnumber = '"..plate.."'" )
+		for i=0,max_inv do
+			array_car_1[plate][i+1] = result[1]["slot_"..i.."_1"]
+			array_car_2[plate][i+1] = result[1]["slot_"..i.."_2"]
+		end
+
+		print("[car_spawn] "..plate)
+
+end
+
 addCommandHandler ( "v",--покупка авто
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
@@ -540,9 +571,6 @@ function ( playerid, cmd, id )
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			fuel[plate] = max_fuel
-
-			setElementDimension(vehicleid, getElementDimension(playerid))
-			setElementInterior(vehicleid, getElementInterior(playerid))
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 			sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( id ), lyme[1], lyme[2], lyme[3])
@@ -810,7 +838,7 @@ function inv_server_load (playerid, value, id3, id1, id2 )--изменение �
 
 			local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
-				sqlite( "UPDATE carnumber_bd_inv SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE name = '"..plate.."'")
+				sqlite( "UPDATE carnumber_bd_inv SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
 			end
 		end
 	elseif value == "house" then
