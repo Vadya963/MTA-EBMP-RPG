@@ -157,20 +157,28 @@ local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
 local paint={
-	[483]={"VehiclePaintjob_Camper_0"},        -- camper
-	[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},    -- remington
-	[535]={"VehiclePaintjob_Slamvan_0","VehiclePaintjob_Slamvan_1","VehiclePaintjob_Slamvan_2"},    -- slamvan
-	[536]={"VehiclePaintjob_Blade_0","VehiclePaintjob_Blade_1","VehiclePaintjob_Blade_2"},    -- blade
-	[558]={"VehiclePaintjob_Uranus_0","VehiclePaintjob_Uranus_1","VehiclePaintjob_Uranus_2"},    -- uranus
-	[559]={"VehiclePaintjob_Jester_0","VehiclePaintjob_Jester_1","VehiclePaintjob_Jester_2"},    -- jester
-	[560]={"VehiclePaintjob_Sultan_0","VehiclePaintjob_Sultan_1","VehiclePaintjob_Sultan_2"},    -- sultan
-	[561]={"VehiclePaintjob_Stratum_0","VehiclePaintjob_Stratum_1","VehiclePaintjob_Stratum_2"},    -- stratum
-	[562]={"VehiclePaintjob_Elegy_0","VehiclePaintjob_Elegy_1","VehiclePaintjob_Elegy_2"},    -- elegy
-	[565]={"VehiclePaintjob_Flash_0","VehiclePaintjob_Flash_1","VehiclePaintjob_Flash_2"},    -- flash
-	[567]={"VehiclePaintjob_Savanna_0","VehiclePaintjob_Savanna_1","VehiclePaintjob_Savanna_2"},    -- savanna
-	[575]={"VehiclePaintjob_Broadway_0","VehiclePaintjob_Broadway_1"},      -- broadway
-	[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},    -- tornado
+	[483]={"VehiclePaintjob_Camper_0"},-- camper
+	[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},-- remington
+	[535]={"VehiclePaintjob_Slamvan_0","VehiclePaintjob_Slamvan_1","VehiclePaintjob_Slamvan_2"},-- slamvan
+	[536]={"VehiclePaintjob_Blade_0","VehiclePaintjob_Blade_1","VehiclePaintjob_Blade_2"},-- blade
+	[558]={"VehiclePaintjob_Uranus_0","VehiclePaintjob_Uranus_1","VehiclePaintjob_Uranus_2"},-- uranus
+	[559]={"VehiclePaintjob_Jester_0","VehiclePaintjob_Jester_1","VehiclePaintjob_Jester_2"},-- jester
+	[560]={"VehiclePaintjob_Sultan_0","VehiclePaintjob_Sultan_1","VehiclePaintjob_Sultan_2"},-- sultan
+	[561]={"VehiclePaintjob_Stratum_0","VehiclePaintjob_Stratum_1","VehiclePaintjob_Stratum_2"},-- stratum
+	[562]={"VehiclePaintjob_Elegy_0","VehiclePaintjob_Elegy_1","VehiclePaintjob_Elegy_2"},-- elegy
+	[565]={"VehiclePaintjob_Flash_0","VehiclePaintjob_Flash_1","VehiclePaintjob_Flash_2"},-- flash
+	[567]={"VehiclePaintjob_Savanna_0","VehiclePaintjob_Savanna_1","VehiclePaintjob_Savanna_2"},-- savanna
+	[575]={"VehiclePaintjob_Broadway_0","VehiclePaintjob_Broadway_1"},-- broadway
+	[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},-- tornado
 }
+
+local house_pos = {}
+local businesses_pos = {}
+function bussines_fun (i, x,y,z)
+	businesses[i] = {x,y,z}
+end
+addEvent( "event_bussines_fun", true )
+addEventHandler ( "event_bussines_fun", getRootElement(), bussines_fun )
 
 --перемещение картинки
 local lmb = 0--лкм
@@ -208,6 +216,27 @@ function createText ()
 	dxDrawText ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 	dxDrawText ( rx.." "..ry.." "..rz, 300.0+1, 55.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 	dxDrawText ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
+
+	if house_pos ~= nil then
+		for k,v in pairs(house_pos) do
+			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], 5) then
+				dxDrawText ( "House #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "House #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				break
+			end
+		end
+	end
+
+	if businesses ~= nil then
+		for k,v in pairs(businesses) do
+			if isPointInCircle3D(x,y,z, businesses[k][1],businesses[k][2],businesses[k][3], 5) then
+				dxDrawText ( "Businesses #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Businesses #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				break
+			end
+		end
+	end
 
 
 	local vehicle = getPlayerVehicle ( playerid )
@@ -402,7 +431,7 @@ function zamena_img()
 		inv_slot[info3_selection][2] = info1_selection_1
 		inv_slot[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection, info1_selection_1, info2_selection_1 )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(getLocalPlayer()) )
 		
 		change_image ( "player", info3_selection, info1_selection_1 )
 
@@ -411,7 +440,7 @@ function zamena_img()
 		inv_slot_car[info3_selection][2] = info1_selection_1
 		inv_slot_car[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection, info1_selection_1, info2_selection_1 )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection, info1_selection_1, info2_selection_1, plate )
 		
 		change_image ( "car", info3_selection, info1_selection_1 )
 
@@ -419,7 +448,7 @@ function zamena_img()
 		inv_slot_house[info3_selection][2] = info1_selection_1
 		inv_slot_house[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection, info1_selection_1, info2_selection_1 )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection, info1_selection_1, info2_selection_1, house )
 		
 		change_image ( "house", info3_selection, info1_selection_1 )
 	end
@@ -503,7 +532,7 @@ function inv_create ()--создание инв-ря
 				inv_slot[info3_selection_1][2] = info1_selection
 				inv_slot[info3_selection_1][3] = info2_selection
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection_1, info1_selection, info2_selection )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(getLocalPlayer()) )
 
 				change_image ( "player", info3_selection_1, info1_selection )
 
@@ -593,7 +622,7 @@ function inv_create ()--создание инв-ря
 				inv_slot_car[info3_selection_1][2] = info1_selection
 				inv_slot_car[info3_selection_1][3] = info2_selection
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection, plate )
 
 				change_image ( "car", info3_selection_1, info1_selection )
 
@@ -683,7 +712,7 @@ function inv_create ()--создание инв-ря
 				inv_slot_house[info3_selection_1][2] = info1_selection
 				inv_slot_house[info3_selection_1][3] = info2_selection
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection, house )
 
 				change_image ( "house", info3_selection_1, info1_selection )
 
@@ -722,14 +751,6 @@ function inv_create ()--создание инв-ря
 
 		if tab_player == guiGetSelectedTab(tabPanel) then
 			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
-		elseif tab_car == guiGetSelectedTab(tabPanel) then
-			local vehicleid = getPlayerVehicle(getLocalPlayer())
-
-			if vehicleid then
-				triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
-			end
-		elseif tab_house == guiGetSelectedTab(tabPanel) then
-			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "house", info3, info1, info2 )
 		end
 
 		gui_selection = false
@@ -747,15 +768,15 @@ function inv_create ()--создание инв-ря
 		end
 
 		if tab_player == guiGetSelectedTab(tabPanel) then
-			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
-		elseif tab_car == guiGetSelectedTab(tabPanel) then
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
+		--[[elseif tab_car == guiGetSelectedTab(tabPanel) then--возникает проблема с предметами
 			local vehicleid = getPlayerVehicle(getLocalPlayer())
 
 			if vehicleid then
-				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2 )
+				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
 			end
 		elseif tab_house == guiGetSelectedTab(tabPanel) then
-			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2 )
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )]]
 		end
 
 		gui_selection = false

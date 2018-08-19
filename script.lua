@@ -1,9 +1,21 @@
 local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
 
+function sqlite(text)
+	local result = dbQuery( database, text )
+	local result = dbPoll( result, -1 )
+	return result
+end
+
+--создание дб
+-- sqlite( "CREATE TABLE account (name       TEXT,password   TEXT,x          REAL,y          REAL,z          REAL,reg_ip     TEXT,reg_serial TEXT,heal       REAL,skin       INTEGER,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
+-- sqlite( "CREATE TABLE car (carnumber     TEXT,carmodel      INTEGER,x             REAL,y             REAL,z             REAL,rot           REAL,fuel          REAL,day_engine_on TEXT,r             INTEGER,g             INTEGER,b             INTEGER,tune          TEXT,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
+-- sqlite( "CREATE TABLE house (number    TEXT,x         REAL,y         REAL,z         REAL,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
+-- sqlite( "CREATE TABLE position (description TEXT,x           REAL,y           REAL,z           REAL)" )
+
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
-local dimension = 0--от 0 до 65535 виртуальные миры
+local dimension = 0--от 0 до 65 535 виртуальные миры
 local car_spawn_value = 0
 
 ----цвета----
@@ -20,12 +32,6 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 -------------------пользовательские функции----------------------------------------------
-function sqlite(text)
-	local result = dbQuery( database, text )
-	local result = dbPoll( result, -1 )
-	return result
-end
-
 function sendPlayerMessage(playerid, text, r, g, b)
 	outputChatBox(text, playerid, r, g, b)
 end
@@ -157,6 +163,126 @@ local weapon = {
 	[41] = {"sniper", 34},
 }
 
+local interior = {
+	{1, "Ammu-nation 1",	285.7870,	-41.7190,	1001.5160},
+	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
+	{1, "Caligulas Casino",	2235.2524,	1708.5146,	1010.6129},
+	{1, "Denise's Place",	244.0892,	304.8456,	999.1484},--комната со срачем
+	{1, "Shamal cabin",	1.6127,	34.7411,	1199.0},
+	{1, "Safe House 4",	2216.5400,	-1076.2900,	1050.4840},--комната в отеле
+	{1, "Sindacco Abatoir",	963.6078,	2108.3970,	1011.0300},--мясокомбинат
+	{1, "Sub Urban",	203.8173,	-46.5385,	1001.8050},--магаз одежды
+	{1, "Wu Zi Mu's Betting place",	-2159.9260,	641.4587,	1052.3820},--9 бук-ая контора с комнатой
+
+	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
+	{2, "The Pig Pen",	1213.4330,	-6.6830,	1000.9220},--стриптиз бар
+	{2, "Big Smoke's Crack Palace",	2570.33,	-1302.31,	1044.12},--хата биг смоука
+	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
+	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
+	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
+	{2, "Katie's Place	", 267.2290,	304.7100,	999.1480},--16 комната
+
+	{3, "Jizzy's Pleasure Domes",	-2636.7190,	1402.9170,	906.4609},--стриптиз бар
+	{3, "Bike School",	1494.3350,	1305.6510,	1093.2890},
+	{3, "Big Spread Ranch",	1210.2570,	-29.2986,	1000.8790},--стриптиз бар
+	{3, "LV Tattoo Parlour",	-204.4390,	-43.6520,	1002.2990},
+	{3, "LVPD HQ",	289.7703,	171.7460,	1007.1790},
+	{3, "Pro-Laps",	207.3560,	-138.0029,	1003.3130},--магаз одежды
+	{3, "Las Venturas Planning Dep.",	374.6708,	173.8050,	1008.3893},--мерия
+	{3, "Driving School",	-2027.9200,	-105.1830,	1035.1720},
+	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
+	{3, "Burglary House 5",	234.733,	1190.391,	1080.258},
+	{3, "Gay Gordo's Barbershop",	418.6530,	-82.6390,	1001.8050},--парик-ая
+	{3, "Helena's Place",	292.4459,	308.7790,	999.1484},--амбар
+	{3, "Inside Track Betting",	826.8863,	5.5091,	1004.4830},--букм-ая контора 2
+	{3, "Sex Shop",	-106.7268,	-19.6444,	1000.7190},--30
+
+	{4, "24/7 shop 1",	-27.3769,	-27.6416,	1003.5570},
+	{4, "Ammu-Nation 2",	285.8000,	-84.5470,	1001.5390},
+	{4, "Burglary House 6",	-262.91,	1454.966,	1084.367},
+	{4, "Burglary House 7",	221.4296,	1142.423,	1082.609},
+	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
+	{4, "Diner 2",	460.0,	-88.43,	999.62},
+	{4, "Dirtbike Stadium",	-1435.8690,	-662.2505,	1052.4650},
+	{4, "Michelle's Place",	302.6404,	304.8048,	999.1484},--38 странная хата, на одном сервере это пж-ая часть)
+
+	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--огромный особняк
+	{5, "Well Stacked Pizza Co.",	377.7758,	-126.2766,	1001.4920},
+	{5, "Victim",	225.3310,	-8.6169,	1002.1977},--магаз одежды
+	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
+	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
+	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
+	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
+	{5, "Police Station (Barbara's)",	322.72,	306.43,	999.15},
+	{5, "Ganton Gym",	768.0793,	5.8606,	1000.7160},--тренажорка
+	{5, "Vank Hoff Hotel",	2232.8210,	-1110.0180,	1050.8830},--48 комната в отеле
+
+	{6, "Ammu-Nation 3",	297.4460,	-109.9680,	1001.5160},
+	{6, "Ammu-Nation 4",	317.2380,	-168.0520,	999.5930},
+	{6, "LSPD HQ",	246.4510,	65.5860,	1003.6410},
+	{6, "Safe House 3",	2333.0330,	-1073.9600,	1049.0230},
+	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
+	{6, "Safe House 6",	2308.8710,	-1210.7170,	1049.0230},
+	{6, "Cobra Marital Arts Gym",	774.0870,	-47.9830,	1000.5860},--тренажорка
+	{6, "24/7 shop 2",	-26.7180,	-55.9860,	1003.5470},--буду юзать это инт
+	{6, "Millie's Bedroom",	344.5200,	304.8210,	999.1480},--плохая комната)
+	{6, "Fanny Batter's Brothel",	744.2710,	1437.2530,	1102.7030},
+	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
+	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},--60
+
+	{7, "Ammu-Nation 5 (2 Floors)",	315.3850,	-142.2420,	999.6010},
+	{7, "8-Track Stadium", -1417.8720,	-276.4260,	1051.1910},
+	{7, "Below the Belt Gym",	774.2430,	-76.0090,	1000.6540},--63 тренажорка
+
+	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
+	{8, "Burglary House 22",	-42.490,	1407.644,	1084.43},--65
+
+	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
+	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
+	{9, "Cluckin' Bell",	365.67,	-11.61,	1001.87},--68
+
+	{10, "Four Dragons Casino",	2009.4140,	1017.8990,	994.4680},
+	{10, "RC Zero's Battlefield",	-975.5766,	1061.1312,	1345.6719},
+	{10, "Burger Shot",	366.4220,	-73.4700,	1001.5080},
+	{10, "Burglary House 14",	21.241,	1342.153,	1084.375},
+	{10, "Hashbury safe house",	2264.5231,	-1210.5229,	1049.0234},
+	{10, "24/7 shop 3",	6.0780,	-28.6330,	1003.5490},
+	{10, "Abandoned AC Tower",	419.6140,	2536.6030,	10.0000},
+	{10, "SFPD HQ",	246.4410,	112.1640,	1003.2190},--76
+
+	{11, "Ten Green Bottles Bar",	502.3310,	-70.6820,	998.7570},--77
+
+	{12, "The Casino", 1132.9450,	-8.6750,	1000.6800},
+	{12, "Macisla's Barbershop",	411.6410,	-51.8460,	1001.8980},--парик-ая
+	{12, "Modern safe house",	2324.4990,	-1147.0710,	1050.7100},--80
+
+	{14, "Kickstart Stadium",	-1464.5360,	1557.6900,	1052.5310},
+	{14, "Didier Sachs",	204.1789,	-165.8740,	1000.5230},--82 --магаз одежды
+
+	{15, "Binco",	207.5430,	-109.0040,	1005.1330},--магаз одежды
+	{15, "Blood Bowl Stadium",	-1394.20,	987.62,	1023.96},--дерби арена
+	{15, "Jefferson Motel",	2217.6250,	-1150.6580,	1025.7970},
+	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
+	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
+	{15, "Burglary House 20",	384.644,	1471.479,	1080.195},
+	{15, "Burglary House 21",	295.467,	1474.697,	1080.258},--89
+
+	{16, "24/7 shop 4",	-25.3730,	-139.6540,	1003.5470},
+	{16, "LS Tattoo Parlour",	-204.5580,	-25.6970,	1002.2730},
+	{16, "Sumoring? stadium",	-1400,	1250,	1040},--92
+
+	{17, "24/7 shop 5",	-25.3930,	-185.9110,	1003.5470},
+	{17, "Club",	493.4687,	-23.0080,	1000.6796},
+	{17, "Rusty Brown's - Ring Donuts",	377.0030,	-192.5070,	1000.6330},--кафешка
+	{17, "The Sherman's Dam Generator Hall",	-942.1320,	1849.1420,	5.0050},--96 дамба
+
+	{18, "Lil Probe Inn",	-227.0280,	1401.2290,	27.7690},--бар
+	{18, "24/7 shop 6",	-30.9460,	-89.6090,	1003.5490},
+	{18, "Atrium",	1726.1370,	-1645.2300,	20.2260},--отель
+	{18, "Warehouse 2",	1296.6310,	0.5920,	1001.0230},
+	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
+}
+
 --инв-рь игрока
 local array_player_1 = {}
 local array_player_2 = {}
@@ -253,7 +379,7 @@ function inv_player_empty(playerid, id1, id2)--выдача предмета и�
 
 	for i=0,max_inv do
 		if array_player_1[playername][i+1] == 0 then
-			inv_server_load( playerid, "player", i, id1, id2 )
+			inv_server_load( playerid, "player", i, id1, id2, playername )
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, id1, id2 )
 
 			if state_inv_player[playername] == 1 then
@@ -276,7 +402,7 @@ function inv_car_empty(playerid, id1, id2)--выдача предмета авт
 
 		for i=0,max_inv do
 			if array_car_1[plate][i+1] == 0 then
-				inv_server_load( playerid, "car", i, id1, id2 )
+				inv_server_load( playerid, "car", i, id1, id2, plate )
 				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, id1, id2 )
 
 				if state_inv_player[playername] == 1 then
@@ -327,21 +453,36 @@ addEventHandler("relWep", resourceRoot, reloadWeapon)
 function displayLoadedRes ( res )--старт ресурсов
 	if car_spawn_value == 0 then
 		car_spawn_value = 1
+
 		setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 500, 0)--система топлива
 
-		local result = sqlite( "SELECT COUNT() FROM carnumber_bd" )--спавн машин
+		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
 		local carnumber_chislo = result[1]["COUNT()"]
 		for i=1,carnumber_chislo do
-			local result = sqlite( "SELECT * FROM carnumber_bd" )
+			local result = sqlite( "SELECT * FROM car_db" )
 			car_spawn(result[i]["carnumber"])
 		end
 
 		print("[chislo_car_spawn] "..carnumber_chislo)
 
-		array_house_1[1] = {2,3,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-		array_house_2[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		local result = sqlite( "SELECT COUNT() FROM house" )
+		local house_chislo = result[1]["COUNT()"]
+		for h=1,house_chislo do
+			local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 0 )
+
+			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+			for i=0,max_inv do
+				array_house_1[h][i+1] = result[1]["slot_"..i.."_1"]
+				array_house_2[h][i+1] = result[1]["slot_"..i.."_2"]
+			end
+		end
+
+		print("[house_chislo] "..house_chislo)
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -360,7 +501,7 @@ function()
 	else
 		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
 
-		--[[local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+		--[[local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
@@ -440,11 +581,9 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26')" )
+		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
-		local result = sqlite( "INSERT INTO inventory (name, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
-
-		local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
@@ -480,7 +619,7 @@ function log_fun(playerid, cmd)
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
 		if md5(cmd) == result[1]["password"] then
-			local result = sqlite( "SELECT * FROM inventory WHERE name = '"..playername.."'" )
+			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 			for i=0,max_inv do
 				array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 				array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
@@ -491,8 +630,19 @@ function log_fun(playerid, cmd)
 			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 			setElementHealth( playerid, result[1]["heal"] )
-			setElementModel( playerid, result[1]["skin"] )
 			setElementFrozen( playerid, false )
+
+			local result = sqlite( "SELECT COUNT() FROM house" )
+			local house_chislo = result[1]["COUNT()"]
+
+			for h=1,house_chislo do
+				local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+
+				if search_inv_player(playerid, 25, h) ~= 0 then
+					spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
+					break
+				end
+			end
 
 			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
@@ -500,6 +650,9 @@ function log_fun(playerid, cmd)
 
 			dimension = dimension-1
 			setElementDimension(playerid, 0)
+
+			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+			setElementModel( playerid, result[1]["skin"] )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -525,8 +678,10 @@ addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 function car_spawn(number)
 
 		local plate = number
-		local result = sqlite( "SELECT * FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
 		local vehicleid = createVehicle(result[1]["carmodel"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
+
+		setVehicleLocked ( vehicleid, true )
 
 		fuel[plate] = result[1]["fuel"]
 		setVehicleColor_fun(vehicleid, result[1]["r"], result[1]["g"], result[1]["b"])
@@ -534,7 +689,7 @@ function car_spawn(number)
 		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
-		local result = sqlite( "SELECT * FROM carnumber_bd_inv WHERE carnumber = '"..plate.."'" )
+		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
 		for i=0,max_inv do
 			array_car_1[plate][i+1] = result[1]["slot_"..i.."_1"]
 			array_car_2[plate][i+1] = result[1]["slot_"..i.."_2"]
@@ -561,7 +716,7 @@ function ( playerid, cmd, id )
 	if id >= 400 and id <= 611 then
 		local number = randomize_number()
 
-		local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..number.."'" )
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..number.."'" )
 		if result[1]["COUNT()"] == 1 then
 			sendPlayerMessage(playerid, "[ERROR] Этот номер числится в базе автомобилей, пожалуйста повторите попытку снова", red[1], red[2], red[3] )
 			return
@@ -575,6 +730,8 @@ function ( playerid, cmd, id )
 			local plate = getVehiclePlateText ( vehicleid )
 			local color = {getVehicleColor ( vehicleid, true )}
 
+			setVehicleLocked ( vehicleid, true )
+
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			fuel[plate] = max_fuel
@@ -582,9 +739,8 @@ function ( playerid, cmd, id )
 			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 			sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( id ), lyme[1], lyme[2], lyme[3])
 
-			sqlite( "INSERT INTO carnumber_bd (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, r, g, b) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..color[1].."', '"..color[2].."', '"..color[3].."')" )
+			local result = sqlite( "INSERT INTO car (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, r, g, b, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..color[1].."', '"..color[2].."', '"..color[3].."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
-			sqlite( "INSERT INTO carnumber_bd_inv (carnumber, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -619,26 +775,64 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 	if seat == 0 then
 		for i=0,max_inv do
 			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
-			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
 			if state_inv_player[playername] == 1 then
 				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
 			end
 		end
+		triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
-		local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
 			local x,y,z = getElementPosition(vehicleid)
 			local rx,ry,rz = getElementRotation(vehicleid)
 
-			sqlite( "UPDATE carnumber_bd SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
 		end
 	end
 
 	print("[Vehicle_Exit] "..playername.." seat = "..seat..", plate = "..plate)
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
------------------------------------------------------------------------------------------
+
+function to_down (playerid, key, keyState)--вкл выкл двигатель авто
+local playername = getPlayerName ( playerid )
+local vehicleid = getPlayerVehicle(playerid)
+
+	if keyState == "down" then
+		if vehicleid then
+			local plate = getVehiclePlateText ( vehicleid )
+
+			if getSpeed(vehicleid) > 5 then
+				sendPlayerMessage(playerid, "[ERROR] Остановите машину", red[1], red[2], red[3])
+				return
+			end
+
+			if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and search_inv_player(playerid, 2, playername) ~= 0 then
+				if getVehicleEngineState(vehicleid) then
+					setVehicleEngineState(vehicleid, false)
+					me_chat(playerid, playername.." заглушил двигатель")
+				else
+					setVehicleEngineState(vehicleid, true)
+					me_chat(playerid, playername.." завел двигатель")
+
+					local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+					if result[1]["COUNT()"] == 1 then
+						local time = getRealTime()
+						local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
+
+						sqlite( "UPDATE car_db SET day_engine_on = '"..client_time.."' WHERE carnumber = '"..plate.."'")
+					end
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] Чтобы завести авто надо выполнить 3 пункта:", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от авто", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 2) сидить на водительском месте", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 3) иметь права на свое имя", red[1], red[2], red[3])
+			end
+		end
+	end
+end
 
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
@@ -659,10 +853,12 @@ function randomize_number()--генератор номеров для авто
 
 	return number
 end
+-----------------------------------------------------------------------------------------
 
 function tab_down (playerid, key, keyState)--открытие инв-ря игрока
 local playername = getPlayerName ( playerid )
 local vehicleid = getPlayerVehicle(playerid)
+local x,y,z = getElementPosition(playerid)
 
 	if logged[playername] == 0 then
 		return
@@ -686,10 +882,20 @@ local vehicleid = getPlayerVehicle(playerid)
 					end
 				end
 
-				for i=0,max_inv do
-					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[1][i+1], array_house_2[1][i+1] )
+				local result = sqlite( "SELECT COUNT() FROM house" )
+				local house_chislo = result[1]["COUNT()"]
+
+				for h=1,house_chislo do
+					local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+
+					if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
+						for i=0,max_inv do
+							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
+						end
+						triggerClientEvent( playerid, "event_tab_load", playerid, "house", h )
+						break
+					end
 				end
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "1" )
 
 				triggerClientEvent( playerid, "event_inv_create", playerid )
 				state_inv_player[playername] = 1
@@ -701,9 +907,10 @@ local vehicleid = getPlayerVehicle(playerid)
 	end
 end
 
-function throw_earth_server (playerid, value, id3, id1, id2)--выброс предмета
+function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выброс предмета
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
 
 	for j=1,max_earth do
 		if earth[j][4] == 0 then
@@ -714,13 +921,40 @@ function throw_earth_server (playerid, value, id3, id1, id2)--выброс пр�
 			earth[j][4] = id1
 			earth[j][5] = id2
 
-			inv_server_load(playerid, value, id3, 0, 0)
+			if search_inv_player(playerid, 25, id2) ~= 0 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+				for i=0,max_inv do
+					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
+
+					if state_inv_player[playername] == 1 then
+						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
+					end
+				end
+				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+			end
+
+			if vehicleid then
+				local plate = getVehiclePlateText ( vehicleid )
+
+				if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate then--когда выбрасываешь ключ в инв-ре исчезают картинки
+					for i=0,max_inv do
+						triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
+
+						if state_inv_player[playername] == 1 then
+							triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
+						end
+					end
+					triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
+				end
+			end
+
+			inv_server_load(playerid, value, id3, 0, 0, tabpanel)
 
 			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, 0, 0 )
 			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
 
 			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 			print("[throw_earth] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+
 			return
 		end
 	end
@@ -754,7 +988,7 @@ local playername = getPlayerName ( playerid )
 			if area and earth[j][4] ~= 0 then
 				for i=0,max_inv do
 					if array_player_1[playername][i+1] == 0 then
-						inv_server_load( playerid, "player", i, earth[j][4], earth[j][5] )
+						inv_server_load( playerid, "player", i, earth[j][4], earth[j][5], playername )
 						triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, earth[j][4], earth[j][5] )
 
 						if state_inv_player[playername] == 1 then
@@ -799,63 +1033,36 @@ local playername = getPlayerName ( playerid )
 	end
 end
 
-function to_down (playerid, key, keyState)--вкл выкл двигатель авто
-local playername = getPlayerName ( playerid )
-local vehicleid = getPlayerVehicle(playerid)
-
-	if keyState == "down" then
-		if vehicleid then
-			local plate = getVehiclePlateText ( vehicleid )
-
-			if getSpeed(vehicleid) ~= 0 then
-				sendPlayerMessage(playerid, "[ERROR] Остановите машину", red[1], red[2], red[3])
-				return
-			end
-
-			if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and search_inv_player(playerid, 2, playername) ~= 0 then
-				if getVehicleEngineState(vehicleid) then
-					setVehicleEngineState(vehicleid, false)
-					me_chat(playerid, playername.." заглушил двигатель")
-				else
-					setVehicleEngineState(vehicleid, true)
-					me_chat(playerid, playername.." завел двигатель")
-
-					local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
-					if result[1]["COUNT()"] == 1 then
-						local time = getRealTime()
-						local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-
-						sqlite( "UPDATE carnumber_bd SET day_engine_on = '"..client_time.."' WHERE carnumber = '"..plate.."'")
-					end
-				end
-			end
-		end
-	end
-end
-
-function inv_server_load (playerid, value, id3, id1, id2 )--изменение инв-ря на сервере
-	local playername = getPlayerName ( playerid )
-	local vehicleid = getPlayerVehicle(playerid)
+function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--изменение инв-ря на сервере
+	local playername = tabpanel
+	local plate = tabpanel
+	local h = tabpanel
+	local x,y,z = getElementPosition(playerid)
 
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
-		sqlite( "UPDATE inventory SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
+		sqlite( "UPDATE account SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
 	elseif value == "car" then
-		if vehicleid then
-			local plate = getVehiclePlateText ( vehicleid )
 
 			array_car_1[plate][id3+1] = id1
 			array_car_2[plate][id3+1] = id2
 
-			local result = sqlite( "SELECT COUNT() FROM carnumber_bd WHERE carnumber = '"..plate.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
-				sqlite( "UPDATE carnumber_bd_inv SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
+				sqlite( "UPDATE car_db SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
 			end
-		end
+		
 	elseif value == "house" then
-		array_house_1[1][id3+1] = id1
-		array_house_2[1][id3+1] = id2
+
+			local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+
+			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
+				array_house_1[h][id3+1] = id1
+				array_house_2[h][id3+1] = id2
+
+				sqlite( "UPDATE house SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
+			end
 	end
 end
 addEvent( "event_inv_server_load", true )
@@ -1093,41 +1300,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			id1, id2 = 0, 0
 		end
 
-		if state_inv_player[playername] == 1 and id2 == 0 then
+		if id2 == 0 then
 			triggerClientEvent( playerid, "event_change_image", playerid, "player", id3, id1)
 		end
 
-		inv_server_load(playerid, "player", id3, id1, id2)
+		inv_server_load(playerid, "player", id3, id1, id2, playername)
 		triggerClientEvent( playerid, "event_inv_load", playerid, "player", id3, id1, id2 )
-
-	--[[elseif value == "car" then
-		if vehicleid then
-			
-			-----------------------------------------------------------------------------------------------------------------------
-			if id2 == 0 then
-				id1, id2 = 0, 0
-			end
-
-			if state_inv_player[playername] == 1 and id2 == 0 then
-				triggerClientEvent( playerid, "event_change_image", playerid, "car", id3, id1)
-			end
-
-			inv_server_load(playerid, "car", id3, id1, id2)
-			triggerClientEvent( playerid, "event_inv_load", playerid, "car", id3, id1, id2 )
-		end
-	elseif value == "house" then
-
-		-----------------------------------------------------------------------------------------------------------------------
-		if id2 == 0 then
-			id1, id2 = 0, 0
-		end
-
-		if state_inv_player[playername] == 1 and id2 == 0 then
-			triggerClientEvent( playerid, "event_change_image", playerid, "house", id3, id1)
-		end
-
-		inv_server_load(playerid, "house", id3, id1, id2)
-		triggerClientEvent( playerid, "event_inv_load", playerid, "house", id3, id1, id2 )]]
 	end
 end
 addEvent( "event_use_inv", true )
@@ -1218,7 +1396,12 @@ end)
 
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
+	local playername = getPlayerName ( playerid )
+
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
+
+	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+	setElementModel( playerid, result[1]["skin"] )
 end)
 
 --Muting commands
@@ -1272,129 +1455,9 @@ addCommandHandler ( "unmutevoice",
 
 		setPlayerMuted ( player, false )
 		sendPlayerMessage (playerid, "unmutevoice: '"..playerName.."' игрок снова может говорить", lyme[1], lyme[2], lyme[3] )
-		print("[admin_mute] "..getPlayerName(playerid).." unmute "..playerName)
+		print("[admin_unmute] "..getPlayerName(playerid).." unmute "..playerName)
 	end
 )
-
-local interior = {
-	{1, "Ammu-nation 1",	285.7870,	-41.7190,	1001.5160},
-	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
-	{1, "Caligulas Casino",	2235.2524,	1708.5146,	1010.6129},
-	{1, "Denise's Place",	244.0892,	304.8456,	999.1484},--комната со срачем
-	{1, "Shamal cabin",	1.6127,	34.7411,	1199.0},
-	{1, "Safe House 4",	2216.5400,	-1076.2900,	1050.4840},--комната в отеле
-	{1, "Sindacco Abatoir",	963.6078,	2108.3970,	1011.0300},--мясокомбинат
-	{1, "Sub Urban",	203.8173,	-46.5385,	1001.8050},--магаз одежды
-	{1, "Wu Zi Mu's Betting place",	-2159.9260,	641.4587,	1052.3820},--9 бук-ая контора с комнатой
-
-	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
-	{2, "The Pig Pen",	1213.4330,	-6.6830,	1000.9220},--стриптиз бар
-	{2, "Big Smoke's Crack Palace",	2570.33,	-1302.31,	1044.12},--хата биг смоука
-	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
-	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
-	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
-	{2, "Katie's Place	", 267.2290,	304.7100,	999.1480},--16 комната
-
-	{3, "Jizzy's Pleasure Domes",	-2636.7190,	1402.9170,	906.4609},--стриптиз бар
-	{3, "Bike School",	1494.3350,	1305.6510,	1093.2890},
-	{3, "Big Spread Ranch",	1210.2570,	-29.2986,	1000.8790},--стриптиз бар
-	{3, "LV Tattoo Parlour",	-204.4390,	-43.6520,	1002.2990},
-	{3, "LVPD HQ",	289.7703,	171.7460,	1007.1790},
-	{3, "Pro-Laps",	207.3560,	-138.0029,	1003.3130},--магаз одежды
-	{3, "Las Venturas Planning Dep.",	374.6708,	173.8050,	1008.3893},--мерия
-	{3, "Driving School",	-2027.9200,	-105.1830,	1035.1720},
-	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
-	{3, "Burglary House 5",	234.733,	1190.391,	1080.258},
-	{3, "Gay Gordo's Barbershop",	418.6530,	-82.6390,	1001.8050},--парик-ая
-	{3, "Helena's Place",	292.4459,	308.7790,	999.1484},--амбар
-	{3, "Inside Track Betting",	826.8863,	5.5091,	1004.4830},--букм-ая контора 2
-	{3, "Sex Shop",	-106.7268,	-19.6444,	1000.7190},--30
-
-	{4, "24/7 shop 1",	-27.3769,	-27.6416,	1003.5570},
-	{4, "Ammu-Nation 2",	285.8000,	-84.5470,	1001.5390},
-	{4, "Burglary House 6",	-262.91,	1454.966,	1084.367},
-	{4, "Burglary House 7",	221.4296,	1142.423,	1082.609},
-	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
-	{4, "Diner 2",	460.0,	-88.43,	999.62},
-	{4, "Dirtbike Stadium",	-1435.8690,	-662.2505,	1052.4650},
-	{4, "Michelle's Place",	302.6404,	304.8048,	999.1484},--38 странная хата, на одном сервере это пж-ая часть)
-
-	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--громный особняк
-	{5, "Well Stacked Pizza Co.",	377.7758,	-126.2766,	1001.4920},
-	{5, "Victim",	225.3310,	-8.6169,	1002.1977},--магаз одежды
-	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
-	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
-	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
-	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
-	{5, "Police Station (Barbara's)",	322.72,	306.43,	999.15},
-	{5, "Ganton Gym",	768.0793,	5.8606,	1000.7160},--тренажорка
-	{5, "Vank Hoff Hotel",	2232.8210,	-1110.0180,	1050.8830},--48 комната в отеле
-
-	{6, "Ammu-Nation 3",	297.4460,	-109.9680,	1001.5160},
-	{6, "Ammu-Nation 4",	317.2380,	-168.0520,	999.5930},
-	{6, "LSPD HQ",	246.4510,	65.5860,	1003.6410},
-	{6, "Safe House 3",	2333.0330,	-1073.9600,	1049.0230},
-	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
-	{6, "Safe House 6",	2308.8710,	-1210.7170,	1049.0230},
-	{6, "Cobra Marital Arts Gym",	774.0870,	-47.9830,	1000.5860},--тренажорка
-	{6, "24/7 shop 2",	-26.7180,	-55.9860,	1003.5470},--буду юзать это инт
-	{6, "Millie's Bedroom",	344.5200,	304.8210,	999.1480},--плохая комната)
-	{6, "Fanny Batter's Brothel",	744.2710,	1437.2530,	1102.7030},
-	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
-	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},--60
-
-	{7, "Ammu-Nation 5 (2 Floors)",	315.3850,	-142.2420,	999.6010},
-	{7, "8-Track Stadium", -1417.8720,	-276.4260,	1051.1910},
-	{7, "Below the Belt Gym",	774.2430,	-76.0090,	1000.6540},--63 тренажорка
-
-	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
-	{8, "Burglary House 22",	-42.490,	1407.644,	1084.43},--65
-
-	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
-	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
-	{9, "Cluckin' Bell",	365.67,	-11.61,	1001.87},--68
-
-	{10, "Four Dragons Casino",	2009.4140,	1017.8990,	994.4680},
-	{10, "RC Zero's Battlefield",	-975.5766,	1061.1312,	1345.6719},
-	{10, "Burger Shot",	366.4220,	-73.4700,	1001.5080},
-	{10, "Burglary House 14",	21.241,	1342.153,	1084.375},
-	{10, "Hashbury safe house",	2264.5231,	-1210.5229,	1049.0234},
-	{10, "24/7 shop 3",	6.0780,	-28.6330,	1003.5490},
-	{10, "Abandoned AC Tower",	419.6140,	2536.6030,	10.0000},
-	{10, "SFPD HQ",	246.4410,	112.1640,	1003.2190},--76
-
-	{11, "Ten Green Bottles Bar",	502.3310,	-70.6820,	998.7570},--77
-
-	{12, "The Casino", 1132.9450,	-8.6750,	1000.6800},
-	{12, "Macisla's Barbershop",	411.6410,	-51.8460,	1001.8980},--парик-ая
-	{12, "Modern safe house",	2324.4990,	-1147.0710,	1050.7100},--80
-
-	{14, "Kickstart Stadium",	-1464.5360,	1557.6900,	1052.5310},
-	{14, "Didier Sachs",	204.1789,	-165.8740,	1000.5230},--82 --магаз одежды
-
-	{15, "Binco",	207.5430,	-109.0040,	1005.1330},--магаз одежды
-	{15, "Blood Bowl Stadium",	-1394.20,	987.62,	1023.96},--дерби арена
-	{15, "Jefferson Motel",	2217.6250,	-1150.6580,	1025.7970},
-	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
-	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
-	{15, "Burglary House 20",	384.644,	1471.479,	1080.195},
-	{15, "Burglary House 21",	295.467,	1474.697,	1080.258},--89
-
-	{16, "24/7 shop 4",	-25.3730,	-139.6540,	1003.5470},
-	{16, "LS Tattoo Parlour",	-204.5580,	-25.6970,	1002.2730},
-	{16, "Sumoring? stadium",	-1400,	1250,	1040},--92
-
-	{17, "24/7 shop 5",	-25.3930,	-185.9110,	1003.5470},
-	{17, "Club",	493.4687,	-23.0080,	1000.6796},
-	{17, "Rusty Brown's - Ring Donuts",	377.0030,	-192.5070,	1000.6330},--кафешка
-	{17, "The Sherman's Dam Generator Hall",	-942.1320,	1849.1420,	5.0050},--96 дамба
-
-	{18, "Lil Probe Inn",	-227.0280,	1401.2290,	27.7690},--бар
-	{18, "24/7 shop 6",	-30.9460,	-89.6090,	1003.5490},
-	{18, "Atrium",	1726.1370,	-1645.2300,	20.2260},--отель
-	{18, "Warehouse 2",	1296.6310,	0.5920,	1001.0230},
-	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
-}
 
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
@@ -1416,10 +1479,16 @@ function ( playerid, cmd, id )
 end)
 
 function input_Console ( text )
-	local x = "1 2 3"
-	local number = split(x, " ")
+
 	if text == "z" then
-		print(number[4])
+		--[[local hFile = fileOpen("businesses.txt")
+
+		local spl = split(fileRead(hFile, fileGetSize ( hFile )), ",")
+		for i=1,108 do
+			--print(spl[i*6-5]..","..spl[i*6-4]..","..spl[i*6-3])
+			createBlip ( spl[i*6-5], spl[i*6-4], spl[i*6-3], 0, 2, 255,255,0 )
+		end]]
+
 	elseif text == "x" then
 		local allResources = getResources()
 		for index, res in ipairs(allResources) do
