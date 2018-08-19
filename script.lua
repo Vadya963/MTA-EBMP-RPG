@@ -467,10 +467,10 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		print("[chislo_car_spawn] "..carnumber_chislo)
 
-		local result = sqlite( "SELECT COUNT() FROM house" )
+		local result = sqlite( "SELECT COUNT() FROM house_db" )
 		local house_chislo = result[1]["COUNT()"]
 		for h=1,house_chislo do
-			local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 0 )
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -632,11 +632,11 @@ function log_fun(playerid, cmd)
 			setElementHealth( playerid, result[1]["heal"] )
 			setElementFrozen( playerid, false )
 
-			local result = sqlite( "SELECT COUNT() FROM house" )
+			local result = sqlite( "SELECT COUNT() FROM house_db" )
 			local house_chislo = result[1]["COUNT()"]
 
 			for h=1,house_chislo do
-				local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
 				if search_inv_player(playerid, 25, h) ~= 0 then
 					spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
@@ -882,11 +882,11 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
-				local result = sqlite( "SELECT COUNT() FROM house" )
+				local result = sqlite( "SELECT COUNT() FROM house_db" )
 				local house_chislo = result[1]["COUNT()"]
 
 				for h=1,house_chislo do
-					local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
 					if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
 						for i=0,max_inv do
@@ -1055,13 +1055,13 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--измен
 		
 	elseif value == "house" then
 
-			local result = sqlite( "SELECT * FROM house WHERE number = '"..h.."'" )
+			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
 			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
 				array_house_1[h][id3+1] = id1
 				array_house_2[h][id3+1] = id2
 
-				sqlite( "UPDATE house SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
+				sqlite( "UPDATE house_db SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
 			end
 	end
 end
