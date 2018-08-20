@@ -141,6 +141,7 @@ local info_png = {
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
 	[42] = {"лекарство, цена продажи", "$"},
+	[43] = {"лицензия на бизнес на имя", ""},
 }
 
 local weapon = {
@@ -438,6 +439,30 @@ function addVehicleUpgrade_fun( vehicleid, value, value1 )
 end
 addEvent( "event_addVehicleUpgrade", true )
 addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
+
+function removeVehicleUpgrade_fun( vehicleid, value, value1 )
+	removeVehicleUpgrade ( vehicleid, value )
+
+	if value1 == "save" then
+		local plate = getVehiclePlateText ( vehicleid )
+		local upgrades = getVehicleUpgrades(vehicleid)
+		local text = ""
+		for k,v in pairs(upgrades) do
+			text = text..v..","
+		end
+
+		if text == "" then
+			text = "0"
+		end
+
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
+		end
+	end
+end
+addEvent( "event_removeVehicleUpgrade", true )
+addEventHandler ( "event_removeVehicleUpgrade", getRootElement(), removeVehicleUpgrade_fun )
 
 function setVehiclePaintjob_fun( vehicleid, value, value1  )
 	setVehiclePaintjob ( vehicleid, value )

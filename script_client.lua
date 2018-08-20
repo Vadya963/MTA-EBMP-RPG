@@ -15,7 +15,7 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 local fuel = 0
 
-local max_subject = 42--кол-во предметов
+local max_subject = 43--кол-во предметов
 
 local earth = {}--слоты земли
 local max_earth = 50
@@ -152,6 +152,7 @@ local info_png = {
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
 	[42] = {"лекарство, цена продажи", "$"},
+	[43] = {"лицензия на бизнес на имя", ""},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -304,7 +305,7 @@ function tune_window_create ()--создание окна тюнинга
 	local dimensions = dxGetTextWidth ( "Введите ИД", 1, "default-bold" )
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
 	local width = 300+50+10
-	local height = 180.0+(25.0*1)+10
+	local height = 210.0+(25.0*1)+10
 	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская", false )
 	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
@@ -316,6 +317,7 @@ function tune_window_create ()--создание окна тюнинга
 	local tune_radio_button2 = guiCreateRadioButton ( 240, 125, 50, 15, "Фары", false, gui_window )
 	local tune_search_button = guiCreateButton( 180, 150, 170, 25, "Найти", false, gui_window )
 	local tune_install_button = guiCreateButton( 180, 180, 170, 25, "Установить", false, gui_window )
+	local tune_delet_button = guiCreateButton( 180, 210, 170, 25, "Удалить", false, gui_window )
 	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "999_w_s.png", false, gui_window )
 
 	showCursor( true )
@@ -394,6 +396,24 @@ function tune_window_create ()--создание окна тюнинга
 	end
 	addEventHandler ( "onClientGUIClick", tune_install_button, tune_upgrade, false )
 
+	function tune_delet ( button, state, absoluteX, absoluteY )--установка тюнинга
+		local text = guiGetText ( tune_text_edit )
+		local vehicleid = getPlayerVehicle(getLocalPlayer())
+
+		if text ~= "" and vehicleid then
+			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
+				local upgrades = getVehicleUpgrades ( vehicleid )
+
+				for v, upgrade in pairs ( upgrades ) do
+					if upgrade == tonumber(text) then
+						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
+						sendPlayerMessage("upgrade delet "..text)
+					end
+				end
+			end
+		end
+	end
+	addEventHandler ( "onClientGUIClick", tune_delet_button, tune_delet, false )
 
 	function tune_text_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_text_edit, "" )
