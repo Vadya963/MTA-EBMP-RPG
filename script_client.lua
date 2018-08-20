@@ -366,7 +366,7 @@ function tune_window_create ()--создание окна тюнинга
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text) )
+						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
 						sendPlayerMessage("upgrade "..text)
 					end
 				end
@@ -374,7 +374,7 @@ function tune_window_create ()--создание окна тюнинга
 				local model = getElementModel ( vehicleid )
 
 				if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
-					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text) )
+					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save" )
 					sendPlayerMessage("paintjob "..text)
 				end
 			end
@@ -383,10 +383,10 @@ function tune_window_create ()--создание окна тюнинга
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
 			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b )
+					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save" )
 					sendPlayerMessage("color car "..r.." "..g.." "..b)
 				elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b )
+					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save" )
 					sendPlayerMessage("color headlights "..r.." "..g.." "..b)
 				end
 			end

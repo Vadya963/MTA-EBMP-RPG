@@ -16,7 +16,7 @@ local me_radius = 10--радиус отображения действий иг�
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
 local dimension = 0--от 0 до 65 535 виртуальные миры
-local car_spawn_value = 0
+local car_spawn_value = 0--чтобы ресурсы не запускались два раза
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -419,26 +419,70 @@ end
 -----------------------------------------------------------------------------------------
 
 -------------------------------эвенты----------------------------------------------------
-function addVehicleUpgrade_fun( vehicleid, value )
+function addVehicleUpgrade_fun( vehicleid, value, value1 )
 	addVehicleUpgrade ( vehicleid, value )
+
+	if value1 == "save" then
+		local plate = getVehiclePlateText ( vehicleid )
+		local upgrades = getVehicleUpgrades(vehicleid)
+		local text = ""
+		for k,v in pairs(upgrades) do
+			text = text..v..","
+		end
+
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
+		end
+	end
 end
 addEvent( "event_addVehicleUpgrade", true )
 addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
 
-function setVehiclePaintjob_fun( vehicleid, value )
+function setVehiclePaintjob_fun( vehicleid, value, value1  )
 	setVehiclePaintjob ( vehicleid, value )
+
+	if value1 == "save" then
+		local plate = getVehiclePlateText ( vehicleid )
+		local text = value
+
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET paintjob = '"..text.."' WHERE carnumber = '"..plate.."'")
+		end
+	end
 end
 addEvent( "event_setVehiclePaintjob", true )
 addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
 
-function setVehicleColor_fun( vehicleid, r, g, b )
+function setVehicleColor_fun( vehicleid, r, g, b, value1 )
 	setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
+
+	if value1 == "save" then
+		local plate = getVehiclePlateText ( vehicleid )
+		local text = r..","..g..","..b
+
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE carnumber = '"..plate.."'")
+		end
+	end
 end
 addEvent( "event_setVehicleColor", true )
 addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun )
 
-function setVehicleHeadLightColor_fun( vehicleid, r, g, b )
+function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1 )
 	setVehicleHeadLightColor ( vehicleid, r, g, b )
+
+	if value1 == "save" then
+		local plate = getVehiclePlateText ( vehicleid )
+		local text = r..","..g..","..b
+
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET headlight_rgb = '"..text.."' WHERE carnumber = '"..plate.."'")
+		end
+	end
 end
 addEvent( "event_setVehicleHeadLightColor", true )
 addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
@@ -684,12 +728,23 @@ function car_spawn(number)
 		setVehicleLocked ( vehicleid, true )
 
 		fuel[plate] = result[1]["fuel"]
-		setVehicleColor_fun(vehicleid, result[1]["r"], result[1]["g"], result[1]["b"])
+
+		local spl = split(result[1]["tune"], ",")
+		for k,v in pairs(spl) do
+			addVehicleUpgrade_fun(vehicleid, v, "")
+		end
+
+		local spl = split(result[1]["car_rgb"], ",")
+		setVehicleColor_fun(vehicleid, spl[1], spl[2], spl[3], "")
+
+		local spl = split(result[1]["headlight_rgb"], ",")
+		setVehicleHeadLightColor_fun(vehicleid, spl[1], spl[2], spl[3], "")
+
+		setVehiclePaintjob_fun(vehicleid, result[1]["paintjob"], "")
 
 		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
-		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
 		for i=0,max_inv do
 			array_car_1[plate][i+1] = result[1]["slot_"..i.."_1"]
 			array_car_2[plate][i+1] = result[1]["slot_"..i.."_2"]
@@ -728,7 +783,14 @@ function ( playerid, cmd, id )
 			local x,y,z = getElementPosition( playerid )
 			local vehicleid = createVehicle(id, x+5, y, z+2, 0, 0, 0, val2)
 			local plate = getVehiclePlateText ( vehicleid )
+
 			local color = {getVehicleColor ( vehicleid, true )}
+			local car_rgb_text = color[1]..","..color[2]..","..color[3]
+
+			local color = {getVehicleHeadLightColor ( vehicleid )}
+			local headlight_rgb_text = color[1]..","..color[2]..","..color[3]
+
+			local paintjob_text = getVehiclePaintjob ( vehicleid )
 
 			setVehicleLocked ( vehicleid, true )
 
@@ -739,8 +801,9 @@ function ( playerid, cmd, id )
 			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 			sendPlayerMessage(playerid, "spawn vehicle "..id.." ["..plate.."] "..getVehicleNameFromModel ( id ), lyme[1], lyme[2], lyme[3])
 
-			local result = sqlite( "INSERT INTO car (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, r, g, b, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..color[1].."', '"..color[2].."', '"..color[3].."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			local result = sqlite( "INSERT INTO car_db (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
+			print("[buy_vehicle] "..playername.." plate["..plate.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -1404,7 +1467,7 @@ function ( playerid, cmd, x, y, z )
 	setElementModel( playerid, result[1]["skin"] )
 end)
 
---Muting commands
+--[[Muting commands
 addCommandHandler ( "mutevoice",
 	function (playerid, cmd, playerName )
 		if not playerName then
@@ -1434,7 +1497,6 @@ addCommandHandler ( "mutevoice",
 	end
 )
 
---Muting commands
 addCommandHandler ( "unmutevoice",
 	function (playerid, cmd, playerName )
 		if not playerName then
@@ -1457,7 +1519,7 @@ addCommandHandler ( "unmutevoice",
 		sendPlayerMessage (playerid, "unmutevoice: '"..playerName.."' игрок снова может говорить", lyme[1], lyme[2], lyme[3] )
 		print("[admin_unmute] "..getPlayerName(playerid).." unmute "..playerName)
 	end
-)
+)]]
 
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
