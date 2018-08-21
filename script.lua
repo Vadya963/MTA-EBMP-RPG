@@ -15,7 +15,6 @@ end
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
-local dimension = 0--от 0 до 65 535 виртуальные миры
 local car_spawn_value = 0--чтобы ресурсы не запускались два раза
 
 ----цвета----
@@ -596,8 +595,7 @@ function()
 		setPedStat(playerid, stat, 1000)
 	end
 
-	dimension = dimension+1
-	setElementDimension(playerid, dimension)
+	setElementDimension(playerid, 1)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -608,7 +606,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		local heal = getElementHealth( playerid )
 		sqlite( "UPDATE account SET heal = '"..heal.."' WHERE name = '"..playername.."'")
 	else
-		dimension = dimension-1
+		
 	end
 end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
@@ -672,7 +670,6 @@ function reg_fun(playerid, cmd)
 
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
 
-		dimension = dimension-1
 		setElementDimension(playerid, 0)
 	end
 end
@@ -717,7 +714,6 @@ function log_fun(playerid, cmd)
 
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
 
-			dimension = dimension-1
 			setElementDimension(playerid, 0)
 
 			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
