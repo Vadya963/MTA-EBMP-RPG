@@ -5,6 +5,14 @@ local height = 80.0+25+10
 
 local rl_window = nil
 
+function kik_player()
+	if rl_window == nil then
+		triggerServerEvent( "event_kickPlayer", getRootElement(), getLocalPlayer() )
+	end
+end
+
+setTimer(kik_player, 5000, 1)--кик если не видно окно входа
+
 function reg_log_okno (state)--создание окна регистрации или авторизации
 	showCursor( true )
 

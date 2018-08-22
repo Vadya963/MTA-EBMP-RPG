@@ -140,7 +140,9 @@ local info_png = {
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
 	[42] = {"лекарство, цена продажи", "$"},
-	[43] = {"лицензия на бизнес на имя", ""},
+	[43] = {"лицензия на бизнес, на имя", ""},
+	[44] = {"админский жетон", ""},
+	[45] = {"риэлторская лицензия на имя", ""},
 }
 
 local weapon = {
@@ -283,6 +285,36 @@ local interior = {
 	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
 }
 
+local interior_house = {--27
+	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
+	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
+	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
+	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
+	{3, "Burglary House 5",	234.733,	1190.391,	1080.258},
+	{4, "Burglary House 6",	-262.91,	1454.966,	1084.367},
+	{4, "Burglary House 7",	221.4296,	1142.423,	1082.609},
+	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
+	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
+	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
+	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
+	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
+	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
+	{10, "Burglary House 14",	21.241,	1342.153,	1084.375},
+	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
+	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},
+	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
+	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
+	{15, "Burglary House 20",	384.644,	1471.479,	1080.195},
+	{15, "Burglary House 21",	295.467,	1474.697,	1080.258},
+	{8, "Burglary House 22",	-42.490,	1407.644,	1084.43},
+	{6, "Safe House 3",	2333.0330,	-1073.9600,	1049.0230},
+	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
+	{6, "Safe House 6",	2308.8710,	-1210.7170,	1049.0230},
+	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
+	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
+	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
+}
+
 --инв-рь игрока
 local array_player_1 = {}
 local array_player_2 = {}
@@ -295,6 +327,7 @@ local fuel = {}
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
+local house_pos = {}
 
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
@@ -516,6 +549,12 @@ function reloadWeapon(playerid)
 end
 addEvent("relWep", true)
 addEventHandler("relWep", resourceRoot, reloadWeapon)
+
+function kickPlayer_fun(playerid)
+	kickPlayer(playerid)
+end
+addEvent("event_kickPlayer", true)
+addEventHandler("event_kickPlayer", getRootElement(), kickPlayer_fun)
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
@@ -527,19 +566,21 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(fuel_down, 500, 0)--система топлива
 
 		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
-		local carnumber_chislo = result[1]["COUNT()"]
-		for i=1,carnumber_chislo do
+		local carnumber_number = result[1]["COUNT()"]
+		for i=1,carnumber_number do
 			local result = sqlite( "SELECT * FROM car_db" )
 			car_spawn(result[i]["carnumber"])
 		end
 
-		print("[chislo_car_spawn] "..carnumber_chislo)
+		print("[number_car_spawn] "..carnumber_number)
 
 		local result = sqlite( "SELECT COUNT() FROM house_db" )
-		local house_chislo = result[1]["COUNT()"]
-		for h=1,house_chislo do
+		local house_number = result[1]["COUNT()"]
+		for h=1,house_number do
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 0 )
+			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, 500 )
+
+			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}--создание таблицы позиций домов
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -550,7 +591,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			end
 		end
 
-		print("[house_chislo] "..house_chislo)
+		print("[house_number] "..house_number)
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -559,6 +600,13 @@ addEventHandler("onPlayerJoin", getRootElement(),--конект игрока н�
 function()
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+	local serial = getPlayerSerial(playerid)
+
+	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
+	if result[1]["COUNT()"] == 1 then
+		kickPlayer(playerid, "kick for banserial")
+		return
+	end
 
 	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -567,6 +615,12 @@ function()
 	if result[1]["COUNT()"] == 0 then
 		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
 	else
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+		if result[1]["ban"] ~= "0" then
+			kickPlayer(playerid, "kick for ban")
+			return
+		end
+
 		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
 
 		--[[local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
@@ -574,6 +628,10 @@ function()
 			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
 		end]]
+	end
+
+	for h,v in pairs(house_pos) do
+		triggerClientEvent( playerid, "event_bussines_fun", playerid, h, v[1], v[2], v[3], "house" )
 	end
 
 	state_inv_player[playername] = 0
@@ -634,8 +692,7 @@ function nickChangeHandler(oldNick, newNick)
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
-	print(playername.." kick za NickName")
-	kickPlayer( playerid )
+	kickPlayer( playerid, "kick for ChangeNick" )
 end
 addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
 
@@ -648,7 +705,7 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -699,9 +756,9 @@ function log_fun(playerid, cmd)
 			setElementFrozen( playerid, false )
 
 			local result = sqlite( "SELECT COUNT() FROM house_db" )
-			local house_chislo = result[1]["COUNT()"]
+			local house_number = result[1]["COUNT()"]
 
-			for h=1,house_chislo do
+			for h=1,house_number do
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
 				if search_inv_player(playerid, 25, h) ~= 0 then
@@ -967,12 +1024,12 @@ local x,y,z = getElementPosition(playerid)
 				end
 
 				local result = sqlite( "SELECT COUNT() FROM house_db" )
-				local house_chislo = result[1]["COUNT()"]
+				local house_number = result[1]["COUNT()"]
 
-				for h=1,house_chislo do
+				for h=1,house_number do
 					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-					if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
+					if result[1]["world"] == getElementDimension(playerid) and getElementInterior(playerid) == result[1]["interior"] and search_inv_player(playerid, 25, h) ~= 0 then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
 						end
@@ -1141,7 +1198,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--измен
 
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) and search_inv_player(playerid, 25, h) ~= 0 then
+			if search_inv_player(playerid, 25, h) ~= 0 then
 				array_house_1[h][id3+1] = id1
 				array_house_2[h][id3+1] = id2
 
@@ -1155,6 +1212,7 @@ addEventHandler ( "event_inv_server_load", getRootElement(), inv_server_load )
 function use_inv (playerid, value, id3, id_1, id_2 )--использование предметов
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
+	local x,y,z = getElementPosition(playerid)
 	local id1, id2 = id_1, id_2
 
 	if value == "player" then
@@ -1180,7 +1238,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 
-		elseif id1 == 2 then--права
+		elseif id1 == 2 or id1 == 43 or id1 == 44 or id1 == 45 then--права, лиц на бизнес, АЖ, РЛ,
 			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 
@@ -1351,7 +1409,47 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 25 then--ключ от дома
-			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..id2.."'" )
+
+			if result[1]["COUNT()"] == 1 and not vehicleid then
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
+				local id = result[1]["interior"]
+
+				if getElementDimension(playerid) == 0 then
+					if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+						setElementDimension(playerid, result[1]["world"])
+						setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+
+						if id1 == 25 then
+							for i=0,max_inv do
+								triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
+
+								if state_inv_player[playername] == 1 then
+									triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
+								end
+							end
+							triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
+						end
+					else
+						me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					end
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == result[1]["interior"] then
+					setElementDimension(playerid, 0)
+					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+
+					if id1 == 25 then
+						for i=0,max_inv do
+							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
+
+							if state_inv_player[playername] == 1 then
+								triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
+							end
+						end
+						triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+					end
+				end
+			end
+
 			return
 
 		elseif id1 == 27 then--одежда
@@ -1367,7 +1465,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 39 then--броник
 			if getPedArmor(playerid) ~= 0 then
-				sendPlayerMessage(playerid, "[ERROR] У вас надет бронежилет", red[1], red[2], red[3] )
+				sendPlayerMessage(playerid, "[ERROR] На вас надет бронежилет", red[1], red[2], red[3] )
 				return
 			end
 
@@ -1380,6 +1478,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		-----------------------------------------------------------------------------------------------------------------------
 		print("[use_inv] "..playername.." [value - "..value.."] ["..id1..", "..id2.."("..id_2..")]")
+
 		if id2 == 0 then
 			id1, id2 = 0, 0
 		end
@@ -1400,6 +1499,53 @@ function give_subject( playerid, id3, id1, id2 )
 end
 addEvent( "event_give_subject", true )
 addEventHandler ( "event_give_subject", getRootElement(), give_subject )
+
+addCommandHandler ( "sellhouse",--команда для риэлторов
+function (playerid)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local house_count = 0
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if search_inv_player(playerid, 45, playername) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3] )
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM house_db" )
+	local house_number = result[1]["COUNT()"]
+	for i=1,house_number do
+
+		local result = sqlite( "SELECT * FROM house_db WHERE number = '"..i.."'" )
+		if not isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+			house_count = house_count+1
+		end
+	end
+
+	if house_count == house_number then
+		local dim = house_number+1
+
+		if inv_player_empty(playerid, 25, dim) then
+			house_pos[dim] = {x,y,z}
+			array_house_1[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			array_house_2[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
+
+			sqlite( "INSERT INTO house_db (number, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..x.."', '"..y.."', '"..z.."', '"..interior_house[1][1].."', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
+			
+			triggerClientEvent( playerid, "event_bussines_fun", playerid, dim, house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], "house" )
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] Рядом есть дом", red[1], red[2], red[3] )
+	end
+end)
 
 addCommandHandler ( "sub",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
@@ -1438,43 +1584,6 @@ function (playerid, cmd, id1, id2 )
 		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 	else
 		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-	end
-end)
-
-addCommandHandler ( "getupd",
-function ( playerid )
-	local text = ""
-	local vehicleid = getPlayerVehicle(playerid)
-	if vehicleid then
-		local model = getElementModel ( vehicleid )
-
-		sendPlayerMessage(playerid, "addCommandHandler getupd" )
-		sendPlayerMessage(playerid, "model - "..model )
-
-		local upgrades = getVehicleCompatibleUpgrades ( vehicleid )
-		for v, upgrade in pairs ( upgrades ) do
-			text = text..upgrade..","
-		end
-		sendPlayerMessage(playerid, text )
-	end
-end)
-
-addCommandHandler ( "getupd2",
-function ( playerid )
-	local text = ""
-	local vehicleid = getPlayerVehicle(playerid)
-	if vehicleid then
-		local model = getElementModel ( vehicleid )
-
-		sendPlayerMessage(playerid, "addCommandHandler getupd2" )
-		sendPlayerMessage(playerid, "model - "..model )
-
-			local upgrades = getVehicleUpgrades ( vehicleid )
-			for _, upgrade in pairs ( upgrades ) do
-				text = text..upgrade..","
-			end
-
-		sendPlayerMessage(playerid, text)
 	end
 end)
 
@@ -1545,10 +1654,10 @@ addCommandHandler ( "unmutevoice",
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
 	local id = tonumber(id)
-	if interior[id] ~= nil then
+	if interior_house[id] ~= nil then
 		setElementInterior(playerid, 0)
-		setElementInterior(playerid, interior[id][1], interior[id][3], interior[id][4], interior[id][5])
-		sendPlayerMessage(playerid, "interior "..interior[id][2])
+		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+		sendPlayerMessage(playerid, "interior "..interior_house[id][2])
 	else
 		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
 	end
