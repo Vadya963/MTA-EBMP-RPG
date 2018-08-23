@@ -6,12 +6,6 @@ function sqlite(text)
 	return result
 end
 
---создание дб
--- sqlite( "CREATE TABLE account (name       TEXT,password   TEXT,x          REAL,y          REAL,z          REAL,reg_ip     TEXT,reg_serial TEXT,heal       REAL,skin       INTEGER,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
--- sqlite( "CREATE TABLE car_db (carnumber     TEXT,carmodel      INTEGER,x             REAL,y             REAL,z             REAL,rot           REAL,fuel          REAL,day_engine_on TEXT,r             INTEGER,g             INTEGER,b             INTEGER,tune          TEXT,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
--- sqlite( "CREATE TABLE house_db (number    TEXT,x         REAL,y         REAL,z         REAL,slot_0_1  INTEGER,slot_0_2  INTEGER,slot_1_1  INTEGER,slot_1_2  INTEGER,slot_2_1  INTEGER,slot_2_2  INTEGER,slot_3_1  INTEGER,slot_3_2  INTEGER,slot_4_1  INTEGER,slot_4_2  INTEGER,slot_5_1  INTEGER,slot_5_2  INTEGER,slot_6_1  INTEGER,slot_6_2  INTEGER,slot_7_1  INTEGER,slot_7_2  INTEGER,slot_8_1  INTEGER,slot_8_2  INTEGER,slot_9_1  INTEGER,slot_9_2  INTEGER,slot_10_1 INTEGER,slot_10_2 INTEGER,slot_11_1 INTEGER,slot_11_2 INTEGER,slot_12_1 INTEGER,slot_12_2 INTEGER,slot_13_1 INTEGER,slot_13_2 INTEGER,slot_14_1 INTEGER,slot_14_2 INTEGER,slot_15_1 INTEGER,slot_15_2 INTEGER,slot_16_1 INTEGER,slot_16_2 INTEGER,slot_17_1 INTEGER,slot_17_2 INTEGER,slot_18_1 INTEGER,slot_18_2 INTEGER,slot_19_1 INTEGER,slot_19_2 INTEGER,slot_20_1 INTEGER,slot_20_2 INTEGER,slot_21_1 INTEGER,slot_21_2 INTEGER,slot_22_1 INTEGER,slot_22_2 INTEGER,slot_23_1 INTEGER,slot_23_2 INTEGER)" )
--- sqlite( "CREATE TABLE position (description TEXT,x           REAL,y           REAL,z           REAL)" )
-
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
@@ -631,7 +625,7 @@ function()
 	end
 
 	for h,v in pairs(house_pos) do
-		triggerClientEvent( playerid, "event_bussines_fun", playerid, h, v[1], v[2], v[3], "house" )
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house" )
 	end
 
 	state_inv_player[playername] = 0
@@ -1540,7 +1534,7 @@ function (playerid)
 			sqlite( "INSERT INTO house_db (number, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..x.."', '"..y.."', '"..z.."', '"..interior_house[1][1].."', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
-			triggerClientEvent( playerid, "event_bussines_fun", playerid, dim, house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], "house" )
+			triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], "house" )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -1554,7 +1548,7 @@ function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), tonumber(id2)
 	local playername = getPlayerName ( playerid )
 
-	if logged[playername] == 0 then
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
@@ -1574,7 +1568,7 @@ function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
 	local playername = getPlayerName ( playerid )
 
-	if logged[playername] == 0 then
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
@@ -1592,6 +1586,10 @@ end)
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
 
 	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
 
@@ -1655,6 +1653,12 @@ addCommandHandler ( "unmutevoice",
 
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
 	local id = tonumber(id)
 	if interior_house[id] ~= nil then
 		setElementInterior(playerid, 0)
@@ -1667,6 +1671,12 @@ end)
 
 addCommandHandler ( "dim",
 function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
 	local id = tonumber(id)
 	setElementDimension ( playerid, id )
 	sendPlayerMessage(playerid, "setElementDimension "..id)

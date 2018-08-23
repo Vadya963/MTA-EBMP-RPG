@@ -176,15 +176,15 @@ local paint={
 
 local house_pos = {}
 local businesses_pos = {}
-function bussines_fun (i, x,y,z, value)
+function bussines_house_fun (i, x,y,z, value)
 	if value == "biz" then
 		businesses[i] = {x,y,z}
 	elseif value == "house" then
 		house_pos[i] = {x,y,z}
 	end
 end
-addEvent( "event_bussines_fun", true )
-addEventHandler ( "event_bussines_fun", getRootElement(), bussines_fun )
+addEvent( "event_bussines_house_fun", true )
+addEventHandler ( "event_bussines_house_fun", getRootElement(), bussines_house_fun )
 
 --перемещение картинки
 local lmb = 0--лкм
