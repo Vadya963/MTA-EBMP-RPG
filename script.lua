@@ -457,6 +457,8 @@ function addVehicleUpgrade_fun( vehicleid, value, value1 )
 			text = text..v..","
 		end
 
+		print("[addVehicleUpgrade_fun] plate["..plate.."] ["..value.."]")
+
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
 			sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
@@ -481,6 +483,8 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1 )
 			text = "0"
 		end
 
+		print("[removeVehicleUpgrade_fun] plate["..plate.."] ["..value.."]")
+
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
 			sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
@@ -496,6 +500,8 @@ function setVehiclePaintjob_fun( vehicleid, value, value1  )
 	if value1 == "save" then
 		local plate = getVehiclePlateText ( vehicleid )
 		local text = value
+
+		print("[setVehiclePaintjob_fun] plate["..plate.."] ["..text.."]")
 
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
@@ -513,6 +519,8 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1 )
 		local plate = getVehiclePlateText ( vehicleid )
 		local text = r..","..g..","..b
 
+		print("[setVehicleColor_fun] plate["..plate.."] ["..text.."]")
+
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
 			sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE carnumber = '"..plate.."'")
@@ -528,6 +536,8 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1 )
 	if value1 == "save" then
 		local plate = getVehiclePlateText ( vehicleid )
 		local text = r..","..g..","..b
+
+		print("[setVehicleHeadLightColor_fun] plate["..plate.."] ["..text.."]")
 
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
@@ -611,7 +621,7 @@ function()
 	else
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		if result[1]["ban"] ~= "0" then
-			kickPlayer(playerid, "kick for ban")
+			kickPlayer(playerid, result[1]["reason"])
 			return
 		end
 
@@ -699,7 +709,7 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, ban, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -782,12 +792,9 @@ function explode_car()
 	local vehicleid = source
 	local plate = getVehiclePlateText ( vehicleid )
 
-	array_car_1[plate] = nil
-	array_car_2[plate] = nil
-	fuel[plate] = nil
-
-	destroyElement(vehicleid)
-	sendPlayerMessage(getRootElement(), "vehicle delet ["..plate.."]")
+	fixVehicle(vehicleid)
+	
+	print("[explode_car] ["..plate.."]")
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
@@ -1692,6 +1699,8 @@ function input_Console ( text )
 			--print(spl[i*6-5]..","..spl[i*6-4]..","..spl[i*6-3])
 			createBlip ( spl[i*6-5], spl[i*6-4], spl[i*6-3], 0, 2, 255,255,0 )
 		end]]
+
+		
 
 	elseif text == "x" then
 		local allResources = getResources()
