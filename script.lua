@@ -1029,7 +1029,7 @@ local x,y,z = getElementPosition(playerid)
 				for h=1,house_number do
 					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-					if result[1]["world"] == getElementDimension(playerid) and getElementInterior(playerid) == result[1]["interior"] and search_inv_player(playerid, 25, h) ~= 0 then
+					if result[1]["world"] == getElementDimension(playerid) and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
 						end
@@ -1433,7 +1433,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					else
 						me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 					end
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == result[1]["interior"] then
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
 					setElementDimension(playerid, 0)
 					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
@@ -1448,6 +1448,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 					end
 				end
+			else
+				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 
 			return
