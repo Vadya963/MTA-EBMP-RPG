@@ -293,7 +293,7 @@ local interior_house = {--27
 	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
 	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
 	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
-	{10, "Burglary House 14",	21.241,	1342.153,	1084.375},
+	{10, "Burglary House 14",	21.241,		1342.153,	1084.375},
 	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
 	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},
 	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
@@ -788,11 +788,16 @@ addEvent( "event_log", true )
 addEventHandler("event_log", getRootElement(), log_fun)
 
 ------------------------------------взрыв авто-------------------------------------------
+function fixVehicle_fun( vehicleid )
+	fixVehicle(vehicleid)
+	fixVehicle(vehicleid)
+end
+
 function explode_car()
 	local vehicleid = source
 	local plate = getVehiclePlateText ( vehicleid )
 
-	fixVehicle(vehicleid)
+	setTimer(fixVehicle_fun, 5000, 1, vehicleid)
 	
 	print("[explode_car] ["..plate.."]")
 end
@@ -1550,6 +1555,7 @@ function (playerid)
 	end
 end)
 
+--------------------------------------------админские команды----------------------------
 addCommandHandler ( "sub",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), tonumber(id2)
@@ -1570,6 +1576,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
+local sub_text = {2,6,10,43,44,45}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
@@ -1583,22 +1590,31 @@ function (playerid, cmd, id1, id2 )
 		return
 	end
 
-	if inv_player_empty(playerid, val1, val2) then
-		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
-	else
-		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+	for k,v in pairs(sub_text) do
+		if val1 == v then
+			if inv_player_empty(playerid, val1, val2) then
+				sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+		end
 	end
 end)
 
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	local playername = getPlayerName ( playerid )
+	local x,y,z = tonumber(x), tonumber(y), tonumber(z)
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	spawnPlayer(playerid, tonumber(x), tonumber(y), tonumber(z))
+	if x == nil or y == nil or z == nil then
+		return
+	end
+
+	spawnPlayer(playerid, x, y, z)
 
 	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 	setElementModel( playerid, result[1]["skin"] )
@@ -1661,12 +1677,16 @@ addCommandHandler ( "unmutevoice",
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	local id = tonumber(id)
+	if id == nil then
+		return
+	end
+
 	if interior_house[id] ~= nil then
 		setElementInterior(playerid, 0)
 		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
@@ -1679,15 +1699,20 @@ end)
 addCommandHandler ( "dim",
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	local id = tonumber(id)
+	if id == nil then
+		return
+	end
+
 	setElementDimension ( playerid, id )
 	sendPlayerMessage(playerid, "setElementDimension "..id)
 end)
+-----------------------------------------------------------------------------------------
 
 function input_Console ( text )
 
