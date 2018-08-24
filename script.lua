@@ -290,11 +290,11 @@ local interior_house = {--27
 	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
 	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
 	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
-	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},
+	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},--дорогой дом
 	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
 	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
 	{10, "Burglary House 14",	21.241,		1342.153,	1084.375},
-	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},
+	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},--дорогой дом
 	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},
 	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
 	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
@@ -316,12 +316,13 @@ local array_player_2 = {}
 --инв-рь авто
 local array_car_1 = {}
 local array_car_2 = {}
-local fuel = {}
+local fuel = {}--топливный бак
 
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
-local house_pos = {}
+local house_pos = {}--позиции домов для dxDrawText
+local house_door = {}--состояние двери 0-закрыта, 1-открыта
 
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
@@ -584,7 +585,8 @@ function displayLoadedRes ( res )--старт ресурсов
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, 500 )
 
-			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}--создание таблицы позиций домов
+			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
+			house_door[h] = 0
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -759,10 +761,7 @@ function log_fun(playerid, cmd)
 			setElementHealth( playerid, result[1]["heal"] )
 			setElementFrozen( playerid, false )
 
-			local result = sqlite( "SELECT COUNT() FROM house_db" )
-			local house_number = result[1]["COUNT()"]
-
-			for h=1,house_number do
+			for h,v in pairs(house_pos) do
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
 				if search_inv_player(playerid, 25, h) ~= 0 then
@@ -1029,16 +1028,14 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
-				local result = sqlite( "SELECT COUNT() FROM house_db" )
-				local house_number = result[1]["COUNT()"]
-
-				for h=1,house_number do
+				for h,v in pairs(house_pos) do
 					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-					if result[1]["world"] == getElementDimension(playerid) and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 then
+					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
 						end
+
 						triggerClientEvent( playerid, "event_tab_load", playerid, "house", h )
 						break
 					end
@@ -1129,6 +1126,8 @@ local playername = getPlayerName ( playerid )
 				end
 			end]]
 
+			house_enter(playerid)
+
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
@@ -1180,6 +1179,53 @@ local playername = getPlayerName ( playerid )
 	end
 end
 
+function house_enter(playerid)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
+
+	for id2,v in pairs(house_pos) do
+		if not vehicleid then
+			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
+			local id = result[1]["interior"]
+
+			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+
+				if house_door[id2] == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
+					return
+				end
+
+				setElementDimension(playerid, result[1]["world"])
+				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+
+				if state_inv_player[playername] == 1 then
+					for i=0,max_inv do
+						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
+						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
+					end
+				end
+
+				triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
+			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
+				setElementDimension(playerid, 0)
+				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+
+				if state_inv_player[playername] == 1 then
+					for i=0,max_inv do
+						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
+						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
+					end
+				end
+
+				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+			end
+
+			return
+		end
+	end
+end
+
 function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--изменение инв-ря на сервере
 	local playername = tabpanel
 	local plate = tabpanel
@@ -1225,17 +1271,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		if id1 == 6 then--ключ авто
 			for k,vehicleid in pairs(getElementsByType("vehicle")) do
-				local x,y,z = getElementPosition(vehicleid)
-				local x1,y1,z1 = getElementPosition(playerid)
+				local x1,y1,z1 = getElementPosition(vehicleid)
 				local plate = getVehiclePlateText ( vehicleid )
 
 				if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
 					if isVehicleLocked ( vehicleid ) then
 						setVehicleLocked ( vehicleid, false )
-						me_chat(playerid, playername.." открыл двери")
+						me_chat(playerid, playername.." открыл двери авто")
 					else
 						setVehicleLocked ( vehicleid, true )
-						me_chat(playerid, playername.." закрыл двери")
+						me_chat(playerid, playername.." закрыл двери авто")
 					end
 					return
 				end
@@ -1415,48 +1460,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 25 then--ключ от дома
-			local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..id2.."'" )
+				local h = id2
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-			if result[1]["COUNT()"] == 1 and not vehicleid then
-				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
-				local id = result[1]["interior"]
-
-				if getElementDimension(playerid) == 0 then
-					if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
-						setElementDimension(playerid, result[1]["world"])
-						setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
-
-						if id1 == 25 then
-							for i=0,max_inv do
-								triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
-
-								if state_inv_player[playername] == 1 then
-									triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
-								end
-							end
-							triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
-						end
+				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+					if house_door[h] == 0 then
+						house_door[h] = 1
+						me_chat(playerid, playername.." открыл дверь дома")
 					else
-						me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+						house_door[h] = 0
+						me_chat(playerid, playername.." закрыл дверь дома")
 					end
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
-					setElementDimension(playerid, 0)
-					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
-					if id1 == 25 then
-						for i=0,max_inv do
-							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
-
-							if state_inv_player[playername] == 1 then
-								triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
-							end
-						end
-						triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
-					end
+					return
 				end
-			else
-				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
-			end
+
+			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
 			return
 
@@ -1540,6 +1559,7 @@ function (playerid)
 			house_pos[dim] = {x,y,z}
 			array_house_1[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			house_door[dim] = 0
 
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
 
@@ -1553,6 +1573,36 @@ function (playerid)
 	else
 		sendPlayerMessage(playerid, "[ERROR] Рядом есть дом", red[1], red[2], red[3] )
 	end
+end)
+
+addCommandHandler ( "interiorhouse",--команда по смене интерьера дома
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	if id >= 1 and id <= 27 then
+		for h,v in pairs(house_pos) do
+			if search_inv_player(playerid, 25, h) ~= 0 and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
+				sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
+
+				sendPlayerMessage(playerid, "Вы изменили интерьер на "..id, orange[1], orange[2], orange[3])
+				return
+			end
+		end
+
+		sendPlayerMessage(playerid, "[ERROR] У вас нет дома или вы в доме", red[1], red[2], red[3] )
+	else
+		sendPlayerMessage(playerid, "[ERROR] от 1 до 27", red[1], red[2], red[3] )
+	end
+
 end)
 
 --------------------------------------------админские команды----------------------------
