@@ -279,7 +279,8 @@ local interior = {
 	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
 }
 
-local interior_house = {--27
+local max_interior = 28
+local interior_house = {
 	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
 	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
 	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
@@ -307,6 +308,7 @@ local interior_house = {--27
 	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
 	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
 	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
+	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--огромный особняк
 }
 
 --инв-рь игрока
@@ -610,7 +612,8 @@ function()
 
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
-		kickPlayer(playerid, "kick for banserial")
+		local result = sqlite( "SELECT * FROM banserial_list WHERE serial = '"..serial.."'" )
+		kickPlayer(playerid, "banserial reason: "..result[1]["reason"])
 		return
 	end
 
@@ -623,7 +626,7 @@ function()
 	else
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		if result[1]["ban"] ~= "0" then
-			kickPlayer(playerid, result[1]["reason"])
+			kickPlayer(playerid, "banplayer reason: "..result[1]["reason"])
 			return
 		end
 
@@ -1555,7 +1558,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if id >= 1 and id <= 27 then
+	if id >= 1 and id <= max_interior then
 		for h,v in pairs(house_pos) do
 			if search_inv_player(playerid, 25, h) ~= 0 and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
 				sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
@@ -1588,6 +1591,8 @@ function (playerid, cmd, id1, id2 )
 
 	if inv_player_empty(playerid, val1, val2) then
 		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+
+		print("[admin_sub] "..playername.." ["..val1..", "..val2.."]")
 	else
 		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
@@ -1611,6 +1616,8 @@ function (playerid, cmd, id1, id2 )
 		if val1 == v then
 			if inv_player_empty(playerid, val1, val2) then
 				sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+
+				print("[admin_subt] "..playername.." ["..val1..", "..val2.."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
@@ -1652,6 +1659,110 @@ function ( playerid, cmd, id )
 
 	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..id.."', '"..x.."', '"..y.."', '"..z.."')" )
 	sendPlayerMessage(playerid, id, lyme[1], lyme[2], lyme[3])
+end)
+
+addCommandHandler ( "banplayer",
+function ( playerid, cmd, id, reason )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil or reason == nil then
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
+		if result[1]["ban"] == "1" then
+			sendPlayerMessage(playerid, "[ERROR] Игрок уже забанен", red[1], red[2], red[3])
+			return
+		end
+
+		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
+
+		sendPlayerMessage(playerid, "Вы забанили "..id.." по причине "..reason, lyme[1], lyme[2], lyme[3])
+
+		local player = getPlayerFromName ( id )
+		if player then
+			kickPlayer(player, "banplayer reason: "..reason)
+		end
+
+		print("[admin_ban] "..playername.." ban "..id.." reason "..reason)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+	end
+end)
+
+addCommandHandler ( "unbanplayer",
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
+		if result[1]["ban"] == "0" then
+			sendPlayerMessage(playerid, "[ERROR] Игрок не забанен", red[1], red[2], red[3])
+			return
+		end
+
+		sqlite( "UPDATE account SET ban = '0', reason = '0' WHERE name = '"..id.."'")
+
+		sendPlayerMessage(playerid, "Вы разбанили "..id, lyme[1], lyme[2], lyme[3])
+
+		print("[admin_unban] "..playername.." unban "..id)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+	end
+end)
+
+addCommandHandler ( "banserial",
+function ( playerid, cmd, id, reason )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil or reason == nil then
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+
+		local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE name = '"..id.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sendPlayerMessage(playerid, "[ERROR] Серийник игрока уже забанен", red[1], red[2], red[3])
+			return
+		end
+
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
+		local result = sqlite( "INSERT INTO banserial_list (name, serial, reason) VALUES ('"..id.."', '"..result[1]["reg_serial"].."', '"..reason.."')" )
+
+		sendPlayerMessage(playerid, "Вы забанили "..id.." по серийнику по причине "..reason, lyme[1], lyme[2], lyme[3])
+
+		local player = getPlayerFromName ( id )
+		if player then
+			kickPlayer(player, "banserial reason: "..reason)
+		end
+
+		print("[admin_banserial] "..playername.." banserial "..id.." reason "..reason)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+	end
 end)
 
 addCommandHandler ( "int",
