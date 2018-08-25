@@ -1204,9 +1204,8 @@ function house_enter(playerid)
 						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
 						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
 					end
+					triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
 				end
-
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
@@ -1216,9 +1215,8 @@ function house_enter(playerid)
 						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
 						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
 					end
+					triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 				end
-
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 			end
 
 			return
