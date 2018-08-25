@@ -321,7 +321,7 @@ local fuel = {}--топливный бак
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
-local house_pos = {}--позиции домов для dxDrawText
+local house_pos = {}--позиции домов для dxdrawtext
 local house_door = {}--состояние двери 0-закрыта, 1-открыта
 
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
@@ -721,7 +721,6 @@ function reg_fun(playerid, cmd)
 
 		logged[playername] = 1
 
-		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 		setElementHealth( playerid, result[1]["heal"] )
 		setElementModel( playerid, result[1]["skin"] )
@@ -748,7 +747,6 @@ function log_fun(playerid, cmd)
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
 		if md5(cmd) == result[1]["password"] then
-			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 			for i=0,max_inv do
 				array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
 				array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
@@ -756,10 +754,7 @@ function log_fun(playerid, cmd)
 
 			logged[playername] = 1
 
-			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
-			setElementHealth( playerid, result[1]["heal"] )
-			setElementFrozen( playerid, false )
 
 			for h,v in pairs(house_pos) do
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
@@ -776,8 +771,9 @@ function log_fun(playerid, cmd)
 
 			setElementDimension(playerid, 0)
 
-			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 			setElementModel( playerid, result[1]["skin"] )
+			setElementHealth( playerid, result[1]["heal"] )
+			setElementFrozen( playerid, false )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -919,13 +915,6 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 	setVehicleEngineState(vehicleid, false)
 
 	if seat == 0 then
-		for i=0,max_inv do
-			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
-
-			if state_inv_player[playername] == 1 then
-				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
-			end
-		end
 		triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
@@ -1066,13 +1055,6 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 			earth[j][5] = id2
 
 			if search_inv_player(playerid, 25, id2) ~= 0 then--когда выбрасываешь ключ в инв-ре исчезают картинки
-				for i=0,max_inv do
-					triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
-
-					if state_inv_player[playername] == 1 then
-						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
-					end
-				end
 				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 			end
 
@@ -1080,13 +1062,6 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 				local plate = getVehiclePlateText ( vehicleid )
 
 				if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate then--когда выбрасываешь ключ в инв-ре исчезают картинки
-					for i=0,max_inv do
-						triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
-
-						if state_inv_player[playername] == 1 then
-							triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0)
-						end
-					end
 					triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 				end
 			end
@@ -1196,25 +1171,19 @@ function house_enter(playerid)
 					return
 				end
 
+				if state_inv_player[playername] == 1 then
+					sendPlayerMessage(playerid, "[ERROR] Закройте инвентарь", red[1], red[2], red[3] )
+					return
+				end
+
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 
-				if state_inv_player[playername] == 1 and search_inv_player(playerid, 25, id2) ~= 0 then
-					for i=0,max_inv do
-						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
-						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
-					end
-					triggerClientEvent( playerid, "event_tab_load", playerid, "house", id2 )
-				end
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
-				if state_inv_player[playername] == 1 and search_inv_player(playerid, 25, id2) ~= 0 then
-					for i=0,max_inv do
-						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
-						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)
-					end
+				if search_inv_player(playerid, 25, id2) ~= 0 then
 					triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 				end
 			end

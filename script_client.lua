@@ -13,7 +13,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
-local fuel = 0
+local fuel = 0--топливо авто для dxdrawtext
 
 local max_subject = 45--кол-во предметов
 --выделение картинки
@@ -490,8 +490,6 @@ function inv_create ()--создание инв-ря
 	stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 	tabPanel = guiCreateTabPanel ( 0.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
 	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( getLocalPlayer() ), tabPanel )
-	tab_car = guiCreateTab( "Авто "..plate, tabPanel )
-	tab_house = guiCreateTab( "Дом "..house, tabPanel )
 
 	showCursor( true )
 
@@ -585,184 +583,190 @@ function inv_create ()--создание инв-ря
 		addEventHandler( "onClientMouseEnter", inv_slot[i][1], outputEditBox, false )
 	end
 
-	inv_slot_car[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_car[0][2]..".png", false, tab_car )
-	inv_slot_car[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_car[1][2]..".png", false, tab_car )
-	inv_slot_car[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_car[2][2]..".png", false, tab_car )
-	inv_slot_car[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_car[3][2]..".png", false, tab_car )
-	inv_slot_car[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_car[4][2]..".png", false, tab_car )
-	inv_slot_car[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_car[5][2]..".png", false, tab_car )
+	if plate ~= "" then
+		tab_car = guiCreateTab( "Авто "..plate, tabPanel )
+		inv_slot_car[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_car[0][2]..".png", false, tab_car )
+		inv_slot_car[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_car[1][2]..".png", false, tab_car )
+		inv_slot_car[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_car[2][2]..".png", false, tab_car )
+		inv_slot_car[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_car[3][2]..".png", false, tab_car )
+		inv_slot_car[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_car[4][2]..".png", false, tab_car )
+		inv_slot_car[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_car[5][2]..".png", false, tab_car )
 
-	inv_slot_car[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_car[6][2]..".png", false, tab_car )
-	inv_slot_car[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_car[7][2]..".png", false, tab_car )
-	inv_slot_car[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_car[8][2]..".png", false, tab_car )
-	inv_slot_car[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_car[9][2]..".png", false, tab_car )
-	inv_slot_car[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_car[10][2]..".png", false, tab_car )
-	inv_slot_car[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_car[11][2]..".png", false, tab_car )
+		inv_slot_car[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_car[6][2]..".png", false, tab_car )
+		inv_slot_car[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_car[7][2]..".png", false, tab_car )
+		inv_slot_car[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_car[8][2]..".png", false, tab_car )
+		inv_slot_car[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_car[9][2]..".png", false, tab_car )
+		inv_slot_car[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_car[10][2]..".png", false, tab_car )
+		inv_slot_car[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_car[11][2]..".png", false, tab_car )
 
-	inv_slot_car[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_car[12][2]..".png", false, tab_car )
-	inv_slot_car[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_car[13][2]..".png", false, tab_car )
-	inv_slot_car[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_car[14][2]..".png", false, tab_car )
-	inv_slot_car[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_car[15][2]..".png", false, tab_car )
-	inv_slot_car[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_car[16][2]..".png", false, tab_car )
-	inv_slot_car[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_car[17][2]..".png", false, tab_car )
+		inv_slot_car[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_car[12][2]..".png", false, tab_car )
+		inv_slot_car[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_car[13][2]..".png", false, tab_car )
+		inv_slot_car[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_car[14][2]..".png", false, tab_car )
+		inv_slot_car[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_car[15][2]..".png", false, tab_car )
+		inv_slot_car[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_car[16][2]..".png", false, tab_car )
+		inv_slot_car[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_car[17][2]..".png", false, tab_car )
 
-	inv_slot_car[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_car[18][2]..".png", false, tab_car )
-	inv_slot_car[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_car[19][2]..".png", false, tab_car )
-	inv_slot_car[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_car[20][2]..".png", false, tab_car )
-	inv_slot_car[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_car[21][2]..".png", false, tab_car )
-	inv_slot_car[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_car[22][2]..".png", false, tab_car )
-	inv_slot_car[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_car[23][2]..".png", false, tab_car )
+		inv_slot_car[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_car[18][2]..".png", false, tab_car )
+		inv_slot_car[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_car[19][2]..".png", false, tab_car )
+		inv_slot_car[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_car[20][2]..".png", false, tab_car )
+		inv_slot_car[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_car[21][2]..".png", false, tab_car )
+		inv_slot_car[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_car[22][2]..".png", false, tab_car )
+		inv_slot_car[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_car[23][2]..".png", false, tab_car )
 
-	for i=0,max_inv do
-		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			local x,y = guiGetPosition ( inv_slot_car[i][1], false )
+		for i=0,max_inv do
+			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
+				local x,y = guiGetPosition ( inv_slot_car[i][1], false )
 
-			info3 = i
-			info1 = inv_slot_car[i][2]
-			info2 = inv_slot_car[i][3]
+				info3 = i
+				info1 = inv_slot_car[i][2]
+				info2 = inv_slot_car[i][3]
 
-			if lmb == 0 then
-				if info1 == 1 or info1 == 0 or plate == "" then
-					return
+				if lmb == 0 then
+					if info1 == 1 or info1 == 0 then
+						return
+					end
+
+					gui_selection = true
+					info_tab = tab_car
+					gui_selection_pos_x = x
+					gui_selection_pos_y = y
+					info3_selection = info3
+					info1_selection = info1
+					info2_selection = info2
+					lmb = 1
+				else
+					info3_selection_1 = info3
+					info1_selection_1 = info1
+					info2_selection_1 = info2
+
+					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+					if inv_slot_car[info3_selection_1][2] ~= 0 then
+						return
+					end
+
+					inv_slot_car[info3_selection_1][2] = info1_selection
+					inv_slot_car[info3_selection_1][3] = info2_selection
+
+					triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection, plate )
+
+					change_image ( "car", info3_selection_1, info1_selection )
+
+					zamena_img()
+
+					gui_selection = false
+					info_tab = nil
+					lmb = 0
 				end
 
-				gui_selection = true
-				info_tab = tab_car
-				gui_selection_pos_x = x
-				gui_selection_pos_y = y
-				info3_selection = info3
-				info1_selection = info1
-				info2_selection = info2
-				lmb = 1
-			else
-				info3_selection_1 = info3
-				info1_selection_1 = info1
-				info2_selection_1 = info2
-
-				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_car[info3_selection_1][2] ~= 0 or plate == "" then
-					return
-				end
-
-				inv_slot_car[info3_selection_1][2] = info1_selection
-				inv_slot_car[info3_selection_1][3] = info2_selection
-
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection, plate )
-
-				change_image ( "car", info3_selection_1, info1_selection )
-
-				zamena_img()
-
-				gui_selection = false
-				info_tab = nil
-				lmb = 0
+				--sendPlayerMessage(info3.." "..info1.." "..info2)
 			end
-
-			--sendPlayerMessage(info3.." "..info1.." "..info2)
+			addEventHandler ( "onClientGUIClick", inv_slot_car[i][1], outputEditBox, false )
 		end
-		addEventHandler ( "onClientGUIClick", inv_slot_car[i][1], outputEditBox, false )
-	end
 
-	for i=0,max_inv do
-		function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
-			gui_2dtext = true
-			local x,y = guiGetPosition ( inv_slot_car[i][1], false )
-			gui_pos_x = x
-			gui_pos_y = y
-			info1_png = inv_slot_car[i][2]
-			info2_png = inv_slot_car[i][3]
-		end
-		addEventHandler( "onClientMouseEnter", inv_slot_car[i][1], outputEditBox, false )
-	end
-
-	inv_slot_house[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_house[0][2]..".png", false, tab_house )
-	inv_slot_house[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_house[1][2]..".png", false, tab_house )
-	inv_slot_house[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_house[2][2]..".png", false, tab_house )
-	inv_slot_house[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_house[3][2]..".png", false, tab_house )
-	inv_slot_house[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_house[4][2]..".png", false, tab_house )
-	inv_slot_house[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_house[5][2]..".png", false, tab_house )
-
-	inv_slot_house[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_house[6][2]..".png", false, tab_house )
-	inv_slot_house[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_house[7][2]..".png", false, tab_house )
-	inv_slot_house[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_house[8][2]..".png", false, tab_house )
-	inv_slot_house[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_house[9][2]..".png", false, tab_house )
-	inv_slot_house[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_house[10][2]..".png", false, tab_house )
-	inv_slot_house[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_house[11][2]..".png", false, tab_house )
-
-	inv_slot_house[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_house[12][2]..".png", false, tab_house )
-	inv_slot_house[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_house[13][2]..".png", false, tab_house )
-	inv_slot_house[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_house[14][2]..".png", false, tab_house )
-	inv_slot_house[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_house[15][2]..".png", false, tab_house )
-	inv_slot_house[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_house[16][2]..".png", false, tab_house )
-	inv_slot_house[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_house[17][2]..".png", false, tab_house )
-
-	inv_slot_house[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_house[18][2]..".png", false, tab_house )
-	inv_slot_house[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_house[19][2]..".png", false, tab_house )
-	inv_slot_house[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_house[20][2]..".png", false, tab_house )
-	inv_slot_house[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_house[21][2]..".png", false, tab_house )
-	inv_slot_house[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_house[22][2]..".png", false, tab_house )
-	inv_slot_house[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_house[23][2]..".png", false, tab_house )
-
-	for i=0,max_inv do
-		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			local x,y = guiGetPosition ( inv_slot_house[i][1], false )
-
-			info3 = i
-			info1 = inv_slot_house[i][2]
-			info2 = inv_slot_house[i][3]
-
-			if lmb == 0 then
-				if info1 == 1 or info1 == 0 or house == "" then
-					return
-				end
-
-				gui_selection = true
-				info_tab = tab_house
-				gui_selection_pos_x = x
-				gui_selection_pos_y = y
-				info3_selection = info3
-				info1_selection = info1
-				info2_selection = info2
-				lmb = 1
-			else
-				info3_selection_1 = info3
-				info1_selection_1 = info1
-				info2_selection_1 = info2
-
-				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_house[info3_selection_1][2] ~= 0 or house == "" then
-					return
-				end
-
-				inv_slot_house[info3_selection_1][2] = info1_selection
-				inv_slot_house[info3_selection_1][3] = info2_selection
-
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection, house )
-
-				change_image ( "house", info3_selection_1, info1_selection )
-
-				zamena_img()
-
-				gui_selection = false
-				info_tab = nil
-				lmb = 0
+		for i=0,max_inv do
+			function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
+				gui_2dtext = true
+				local x,y = guiGetPosition ( inv_slot_car[i][1], false )
+				gui_pos_x = x
+				gui_pos_y = y
+				info1_png = inv_slot_car[i][2]
+				info2_png = inv_slot_car[i][3]
 			end
-
-			--sendPlayerMessage(info3.." "..info1.." "..info2)
+			addEventHandler( "onClientMouseEnter", inv_slot_car[i][1], outputEditBox, false )
 		end
-		addEventHandler ( "onClientGUIClick", inv_slot_house[i][1], outputEditBox, false )
 	end
 
-	for i=0,max_inv do
-		function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
-			gui_2dtext = true
-			local x,y = guiGetPosition ( inv_slot_house[i][1], false )
-			gui_pos_x = x
-			gui_pos_y = y
-			info1_png = inv_slot_house[i][2]
-			info2_png = inv_slot_house[i][3]
+	if house ~= "" then
+		tab_house = guiCreateTab( "Дом "..house, tabPanel )
+		inv_slot_house[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_house[0][2]..".png", false, tab_house )
+		inv_slot_house[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_house[1][2]..".png", false, tab_house )
+		inv_slot_house[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_house[2][2]..".png", false, tab_house )
+		inv_slot_house[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_house[3][2]..".png", false, tab_house )
+		inv_slot_house[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_house[4][2]..".png", false, tab_house )
+		inv_slot_house[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_house[5][2]..".png", false, tab_house )
+
+		inv_slot_house[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_house[6][2]..".png", false, tab_house )
+		inv_slot_house[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_house[7][2]..".png", false, tab_house )
+		inv_slot_house[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_house[8][2]..".png", false, tab_house )
+		inv_slot_house[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_house[9][2]..".png", false, tab_house )
+		inv_slot_house[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_house[10][2]..".png", false, tab_house )
+		inv_slot_house[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_house[11][2]..".png", false, tab_house )
+
+		inv_slot_house[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_house[12][2]..".png", false, tab_house )
+		inv_slot_house[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_house[13][2]..".png", false, tab_house )
+		inv_slot_house[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_house[14][2]..".png", false, tab_house )
+		inv_slot_house[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_house[15][2]..".png", false, tab_house )
+		inv_slot_house[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_house[16][2]..".png", false, tab_house )
+		inv_slot_house[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_house[17][2]..".png", false, tab_house )
+
+		inv_slot_house[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_house[18][2]..".png", false, tab_house )
+		inv_slot_house[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_house[19][2]..".png", false, tab_house )
+		inv_slot_house[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_house[20][2]..".png", false, tab_house )
+		inv_slot_house[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_house[21][2]..".png", false, tab_house )
+		inv_slot_house[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_house[22][2]..".png", false, tab_house )
+		inv_slot_house[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_house[23][2]..".png", false, tab_house )
+
+		for i=0,max_inv do
+			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
+				local x,y = guiGetPosition ( inv_slot_house[i][1], false )
+
+				info3 = i
+				info1 = inv_slot_house[i][2]
+				info2 = inv_slot_house[i][3]
+
+				if lmb == 0 then
+					if info1 == 1 or info1 == 0 then
+						return
+					end
+
+					gui_selection = true
+					info_tab = tab_house
+					gui_selection_pos_x = x
+					gui_selection_pos_y = y
+					info3_selection = info3
+					info1_selection = info1
+					info2_selection = info2
+					lmb = 1
+				else
+					info3_selection_1 = info3
+					info1_selection_1 = info1
+					info2_selection_1 = info2
+
+					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+					if inv_slot_house[info3_selection_1][2] ~= 0 then
+						return
+					end
+
+					inv_slot_house[info3_selection_1][2] = info1_selection
+					inv_slot_house[info3_selection_1][3] = info2_selection
+
+					triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection, house )
+
+					change_image ( "house", info3_selection_1, info1_selection )
+
+					zamena_img()
+
+					gui_selection = false
+					info_tab = nil
+					lmb = 0
+				end
+
+				--sendPlayerMessage(info3.." "..info1.." "..info2)
+			end
+			addEventHandler ( "onClientGUIClick", inv_slot_house[i][1], outputEditBox, false )
 		end
-		addEventHandler( "onClientMouseEnter", inv_slot_house[i][1], outputEditBox, false )
+
+		for i=0,max_inv do
+			function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
+				gui_2dtext = true
+				local x,y = guiGetPosition ( inv_slot_house[i][1], false )
+				gui_pos_x = x
+				gui_pos_y = y
+				info1_png = inv_slot_house[i][2]
+				info2_png = inv_slot_house[i][3]
+			end
+			addEventHandler( "onClientMouseEnter", inv_slot_house[i][1], outputEditBox, false )
+		end
 	end
 
 	use_button = guiCreateButton( 400.0, 44.0, 100.0, 25.0, "Использовать", false, stats_window )
@@ -847,11 +851,13 @@ function inv_delet ()--удаление инв-ря
 	info1_selection_1 = -1
 	info2_selection_1 = -1
 
-	info1 = -1;
-	info2 = -1;
-	info3 = -1;
+	info1 = -1
+	info2 = -1
+	info3 = -1
 
 	info_tab = nil
+	tab_car = nil
+	tab_house = nil
 	lmb = 0
 
 	destroyElement(stats_window)
@@ -888,12 +894,27 @@ addEventHandler ( "event_inv_load", getRootElement(), inv_load )
 
 function tab_load (value, text)--загрузка надписей в табе
 	if value == "car" then
+
+		if text == "" and tab_car ~= nil then
+			destroyElement(tab_car)
+		end
+
 		plate = text
 		gui_selection = false
 		info_tab = nil
+		tab_car = nil
 		lmb = 0
 	elseif value == "house" then
+
+		if text == "" and tab_house ~= nil then
+			destroyElement(tab_house)
+		end
+
 		house = text
+		gui_selection = false
+		info_tab = nil
+		tab_house = nil
+		lmb = 0
 	end
 end
 addEvent( "event_tab_load", true )
