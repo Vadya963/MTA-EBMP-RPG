@@ -1031,7 +1031,7 @@ local x,y,z = getElementPosition(playerid)
 				for h,v in pairs(house_pos) do
 					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] then
+					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
 						end
@@ -1199,7 +1199,7 @@ function house_enter(playerid)
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 
-				if state_inv_player[playername] == 1 then
+				if state_inv_player[playername] == 1 and search_inv_player(playerid, 25, id2) ~= 0 then
 					for i=0,max_inv do
 						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[id2][i+1], array_house_2[id2][i+1] )
 						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, array_house_1[id2][i+1])
@@ -1211,7 +1211,7 @@ function house_enter(playerid)
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
-				if state_inv_player[playername] == 1 then
+				if state_inv_player[playername] == 1 and search_inv_player(playerid, 25, id2) ~= 0 then
 					for i=0,max_inv do
 						triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, 0, 0 )
 						triggerClientEvent( playerid, "event_change_image", playerid, "house", i, 0)

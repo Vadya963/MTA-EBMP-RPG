@@ -227,8 +227,8 @@ function createText ()
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
 			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], 5) then
-				dxDrawText ( "House #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "House #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Дом #"..k.." (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Дом #"..k.." (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -237,8 +237,8 @@ function createText ()
 	if businesses ~= nil then
 		for k,v in pairs(businesses) do
 			if isPointInCircle3D(x,y,z, businesses[k][1],businesses[k][2],businesses[k][3], 5) then
-				dxDrawText ( "Businesses #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Businesses #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
