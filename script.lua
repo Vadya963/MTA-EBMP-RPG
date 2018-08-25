@@ -1637,6 +1637,87 @@ function ( playerid, cmd, x, y, z )
 	setElementModel( playerid, result[1]["skin"] )
 end)
 
+addCommandHandler ( "pos",
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..id.."', '"..x.."', '"..y.."', '"..z.."')" )
+	sendPlayerMessage(playerid, id, lyme[1], lyme[2], lyme[3])
+end)
+
+addCommandHandler ( "int",
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	if interior_house[id] ~= nil then
+		setElementInterior(playerid, 0)
+		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+		sendPlayerMessage(playerid, "interior "..interior_house[id][2], lyme[1], lyme[2], lyme[3])
+	else
+		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
+	end
+end)
+
+addCommandHandler ( "dim",
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	setElementDimension ( playerid, id )
+	sendPlayerMessage(playerid, "setElementDimension "..id, lyme[1], lyme[2], lyme[3])
+end)
+-----------------------------------------------------------------------------------------
+
+function input_Console ( text )
+
+	if text == "z" then
+		--[[local hFile = fileOpen("businesses.txt")
+
+		local spl = split(fileRead(hFile, fileGetSize ( hFile )), ",")
+		for i=1,108 do
+			--print(spl[i*6-5]..","..spl[i*6-4]..","..spl[i*6-3])
+			createBlip ( spl[i*6-5], spl[i*6-4], spl[i*6-3], 0, 2, 255,255,0 )
+		end]]
+
+		
+
+	elseif text == "x" then
+		local allResources = getResources()
+		for index, res in ipairs(allResources) do
+			if getResourceState(res) == "running" then
+				restartResource(res)
+			end
+		end
+	end
+end
+addEventHandler ( "onConsole", getRootElement(), input_Console )
+
 --[[Muting commands
 addCommandHandler ( "mutevoice",
 	function (playerid, cmd, playerName )
@@ -1690,67 +1771,3 @@ addCommandHandler ( "unmutevoice",
 		print("[admin_unmute] "..getPlayerName(playerid).." unmute "..playerName)
 	end
 )]]
-
-addCommandHandler ( "int",
-function ( playerid, cmd, id )
-	local playername = getPlayerName ( playerid )
-	local id = tonumber(id)
-
-	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
-		return
-	end
-
-	if id == nil then
-		return
-	end
-
-	if interior_house[id] ~= nil then
-		setElementInterior(playerid, 0)
-		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
-		sendPlayerMessage(playerid, "interior "..interior_house[id][2])
-	else
-		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
-	end
-end)
-
-addCommandHandler ( "dim",
-function ( playerid, cmd, id )
-	local playername = getPlayerName ( playerid )
-	local id = tonumber(id)
-
-	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
-		return
-	end
-
-	if id == nil then
-		return
-	end
-
-	setElementDimension ( playerid, id )
-	sendPlayerMessage(playerid, "setElementDimension "..id)
-end)
------------------------------------------------------------------------------------------
-
-function input_Console ( text )
-
-	if text == "z" then
-		--[[local hFile = fileOpen("businesses.txt")
-
-		local spl = split(fileRead(hFile, fileGetSize ( hFile )), ",")
-		for i=1,108 do
-			--print(spl[i*6-5]..","..spl[i*6-4]..","..spl[i*6-3])
-			createBlip ( spl[i*6-5], spl[i*6-4], spl[i*6-3], 0, 2, 255,255,0 )
-		end]]
-
-		
-
-	elseif text == "x" then
-		local allResources = getResources()
-		for index, res in ipairs(allResources) do
-			if getResourceState(res) == "running" then
-				restartResource(res)
-			end
-		end
-	end
-end
-addEventHandler ( "onConsole", getRootElement(), input_Console )
