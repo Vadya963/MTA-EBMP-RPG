@@ -374,7 +374,8 @@ function tune_window_create ()--создание окна тюнинга
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
 						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
-						sendPlayerMessage("upgrade "..text)
+						sendPlayerMessage("Апгрейд "..text.." установлен")
+						break
 					end
 				end
 			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
@@ -382,7 +383,7 @@ function tune_window_create ()--создание окна тюнинга
 
 				if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
 					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save" )
-					sendPlayerMessage("paintjob "..text)
+					sendPlayerMessage("Установлена пакрасочная работа "..text)
 				end
 			end
 		end
@@ -391,10 +392,10 @@ function tune_window_create ()--создание окна тюнинга
 			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
 					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save" )
-					sendPlayerMessage("color car "..r.." "..g.." "..b)
+					sendPlayerMessage("Установлен цвет авто "..r.." "..g.." "..b)
 				elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
 					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save" )
-					sendPlayerMessage("color headlights "..r.." "..g.." "..b)
+					sendPlayerMessage("Установлен цвет фар "..r.." "..g.." "..b)
 				end
 			end
 		end
@@ -412,7 +413,8 @@ function tune_window_create ()--создание окна тюнинга
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
 						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
-						sendPlayerMessage("upgrade delet "..text)
+						sendPlayerMessage("Апгрейд "..text.." удален")
+						break
 					end
 				end
 			end
