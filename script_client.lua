@@ -64,7 +64,7 @@ local info_png = {
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
 	[42] = {"лекарство, цена продажи", "$"},
-	[43] = {"лицензия на бизнес, на имя", ""},
+	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
 }
@@ -175,10 +175,10 @@ local paint={
 }
 
 local house_pos = {}
-local businesses_pos = {}
+local business_pos = {}
 function bussines_house_fun (i, x,y,z, value)
 	if value == "biz" then
-		businesses[i] = {x,y,z}
+		business_pos[i] = {x,y,z}
 	elseif value == "house" then
 		house_pos[i] = {x,y,z}
 	end
@@ -234,9 +234,9 @@ function createText ()
 		end
 	end
 
-	if businesses ~= nil then
-		for k,v in pairs(businesses) do
-			if isPointInCircle3D(x,y,z, businesses[k][1],businesses[k][2],businesses[k][3], 5) then
+	if business_pos ~= nil then
+		for k,v in pairs(business_pos) do
+			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], 5) then
 				dxDrawText ( "Бизнес #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 				dxDrawText ( "Бизнес #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
@@ -323,7 +323,7 @@ function tune_window_create ()--создание окна тюнинга
 	local tune_search_button = guiCreateButton( 180, 150, 170, 25, "Найти", false, gui_window )
 	local tune_install_button = guiCreateButton( 180, 180, 170, 25, "Установить", false, gui_window )
 	local tune_delet_button = guiCreateButton( 180, 210, 170, 25, "Удалить", false, gui_window )
-	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "999_w_s.png", false, gui_window )
+	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
 
 	showCursor( true )
 
@@ -335,7 +335,7 @@ function tune_window_create ()--создание окна тюнинга
 		if text ~= "" then
 			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
 				tune_color_2d = false
-				guiStaticImageLoadImage ( tune_img, text.."_w_s.jpg" )
+				guiStaticImageLoadImage ( tune_img, "upgrade/"..text.."_w_s.jpg" )
 			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
 				local vehicleid = getPlayerVehicle(getLocalPlayer())
 
@@ -344,7 +344,7 @@ function tune_window_create ()--создание окна тюнинга
 
 					if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
 						tune_color_2d = false
-						guiStaticImageLoadImage ( tune_img, paint[model][tonumber(text)+1]..".png" )
+						guiStaticImageLoadImage ( tune_img, "paintjob/"..paint[model][tonumber(text)+1]..".png" )
 					end
 				end
 			end
@@ -551,6 +551,16 @@ function inv_create ()--создание инв-ря
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 				if inv_slot[info3_selection_1][2] ~= 0 then
+					if info1 == 1 or info1 == 0 then
+						return
+					end
+
+					info_tab = tab_player
+					gui_selection_pos_x = x
+					gui_selection_pos_y = y
+					info3_selection = info3
+					info1_selection = info1
+					info2_selection = info2
 					return
 				end
 
@@ -643,6 +653,16 @@ function inv_create ()--создание инв-ря
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					if inv_slot_car[info3_selection_1][2] ~= 0 then
+						if info1 == 1 or info1 == 0 then
+							return
+						end
+						
+						info_tab = tab_car
+						gui_selection_pos_x = x
+						gui_selection_pos_y = y
+						info3_selection = info3
+						info1_selection = info1
+						info2_selection = info2
 						return
 					end
 
@@ -736,6 +756,16 @@ function inv_create ()--создание инв-ря
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					if inv_slot_house[info3_selection_1][2] ~= 0 then
+						if info1 == 1 or info1 == 0 then
+							return
+						end
+						
+						info_tab = tab_house
+						gui_selection_pos_x = x
+						gui_selection_pos_y = y
+						info3_selection = info3
+						info1_selection = info1
+						info2_selection = info2
 						return
 					end
 
