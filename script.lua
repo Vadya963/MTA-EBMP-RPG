@@ -281,12 +281,12 @@ local interior = {
 
 local max_interior_business = 6
 local interior_business = {
-	{1, "Ammu-nation",	285.7870,	-41.7190,	1001.5160},
-	{5, "Victim",	225.3310,	-8.6169,	1002.1977},--магаз одежды
-	{6, "24/7 shop",	-26.7180,	-55.9860,	1003.5470},--буду юзать это инт
-	{17, "Club",	493.4687,	-23.0080,	1000.6796},
-	{0, "Filling station",	0,	0,	0},
-	{0, "Tuning car",	0,	0,	0},
+	{1, "Ammu-nation",	285.7870,	-41.7190,	1001.5160, 6},
+	{5, "Victim",	225.3310,	-8.6169,	1002.1977, 45},--магаз одежды
+	{6, "24/7 shop",	-26.7180,	-55.9860,	1003.5470, 50},--буду юзать это инт
+	{17, "Club",	493.4687,	-23.0080,	1000.6796, 48},
+	{0, "Filling station",	0,	0,	0, 56},
+	{0, "Tuning car",	0,	0,	0, 27},
 }
 
 local max_interior_house = 29
@@ -343,6 +343,8 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
 local logged = {}--0-не вошел, 1-вошел
+local enter_house = {}--0-не вошел, 1-вошел
+local enter_business = {}--0-не вошел, 1-вошел
 
 -----------------------------------------------------------------------------------------
 function fuel_down()--система топлива авто
@@ -452,6 +454,21 @@ function inv_car_empty(playerid, id1, id2)--выдача предмета в а�
 				if state_inv_player[playername] == 1 then
 					triggerClientEvent( playerid, "event_change_image", playerid, "car", i, id1 )
 				end
+			end
+		end
+	end
+end
+
+function inv_car_2_parameter(playerid, id1)--вывод 2 параметра предмета в авто
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	
+	if vehicleid then
+		local plate = getVehiclePlateText ( vehicleid )
+
+		for i=0,max_inv do
+			if array_car_1[plate][i+1] == id1 then
+				return array_car_2[plate][i+1]
 			end
 		end
 	end
@@ -592,6 +609,49 @@ function kickPlayer_fun(playerid)
 end
 addEvent("event_kickPlayer", true)
 addEventHandler("event_kickPlayer", getRootElement(), kickPlayer_fun)
+
+function pickupUse( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	for k,v in pairs(business_pos) do 
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+			for i=0,max_inv do
+				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
+					sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+					break
+				end
+			end
+
+			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
+			sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Стоимость товара "..result[1]["price"].."$", green[1], green[2], green[3])
+			sendPlayerMessage(playerid, "Цена покупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
+
+			if search_inv_player(playerid, 43, k) ~= 0 then
+				sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
+			end
+			return
+		end
+	end
+
+	for k,v in pairs(house_pos) do
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+			for i=0,max_inv do
+				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
+					sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+					break
+				end
+			end
+			return
+		end
+	end
+end
+addEventHandler( "onPickupUse", root, pickupUse )
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
@@ -616,6 +676,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		for h=1,house_number do
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, 500 )
+			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1273, 10000 )
 
 			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
 			house_door[h] = 0
@@ -635,7 +696,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		local business_number = result[1]["COUNT()"]
 		for h=1,business_number do
 			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..h.."'" )
-			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, 500 )
+			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, 500 )
+			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1274, 10000 )
 
 			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
 		end
@@ -691,6 +753,8 @@ function()
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
 	logged[playername] = 0--ИЗМЕНИТЬ НА 0!!!
+	enter_house[playername] = 0
+	enter_business[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -1214,16 +1278,26 @@ function house_enter(playerid)
 			local id = result[1]["interior"]
 
 			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+				if house_door[id2] == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
+					return
+				end
+
+				enter_house[playername] = 1
+				setElementDimension(playerid, result[1]["world"])
+				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+
+			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
+				if enter_house[playername] == 0 then
+					return
+				end
 
 				if house_door[id2] == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 					return
 				end
 
-				setElementDimension(playerid, result[1]["world"])
-				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
-
-			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
+				enter_house[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
@@ -1246,14 +1320,20 @@ function business_enter(playerid)
 			local id = result[1]["interior"]
 
 			if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
-				if id == 0 then
+				if id == 5 or id == 6 then
 					return
 				end
 
+				enter_business[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] then
+				if enter_business[playername] == 0 then
+					return
+				end
+
+				enter_business[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 			end
@@ -1305,26 +1385,30 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	if value == "player" then
 
 		if id1 == 6 then--ключ авто
-			for k,vehicleid in pairs(getElementsByType("vehicle")) do
-				local x1,y1,z1 = getElementPosition(vehicleid)
-				local plate = getVehiclePlateText ( vehicleid )
+			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
+			if result[1]["COUNT()"] == 1 then
 
-				if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
-					if isVehicleLocked ( vehicleid ) then
-						setVehicleLocked ( vehicleid, false )
-						me_chat(playerid, playername.." открыл двери авто")
-					else
-						setVehicleLocked ( vehicleid, true )
-						me_chat(playerid, playername.." закрыл двери авто")
+				for k,vehicleid in pairs(getElementsByType("vehicle")) do
+					local x1,y1,z1 = getElementPosition(vehicleid)
+					local plate = getVehiclePlateText ( vehicleid )
+
+					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
+						if isVehicleLocked ( vehicleid ) then
+							setVehicleLocked ( vehicleid, false )
+							me_chat(playerid, playername.." открыл двери авто")
+						else
+							setVehicleLocked ( vehicleid, true )
+							me_chat(playerid, playername.." закрыл двери авто")
+						end
+						return
 					end
-					return
 				end
-			end
 
-			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			end
 			return
 
-		elseif id1 == 2 or id1 == 43 or id1 == 44 or id1 == 45 then--права, лиц на бизнес, АЖ, РЛ,
+		elseif id1 == 2 or id1 == 44 or id1 == 45 then--права, АЖ, РЛ,
 			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 
@@ -1495,9 +1579,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 25 then--ключ от дома
-				local h = id2
-				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
+			local h = id2
+			local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..h.."'" )
+			if result[1]["COUNT()"] == 1 then
 
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
 					if house_door[h] == 0 then
 						house_door[h] = 1
@@ -1510,8 +1596,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 
-			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
-
+				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			end
 			return
 
 		elseif id1 == 27 then--одежда
@@ -1536,6 +1622,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			id2 = id2 - 1
 
 			me_chat(playerid, playername.." надел бронежилет")
+
+		elseif id1 == 43 then--документы на бизнес
+			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
+			if result[1]["COUNT()"] == 1 then
+				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			end
+			return
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -1597,6 +1690,7 @@ function (playerid)
 			house_door[dim] = 0
 
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
+			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, 1273, 10000 )
 
 			sqlite( "INSERT INTO house_db (number, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
@@ -1648,15 +1742,12 @@ function (playerid, cmd, id)
 			if inv_player_empty(playerid, 43, dim) then
 				business_pos[dim] = {x,y,z}
 
-				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
+				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
+				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1274, 10000 )
 
-				sqlite( "INSERT INTO business_db (number, type, price, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
+				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
-				if id == 5 or id == 6 then
-					sqlite( "UPDATE business_db SET interior = '0' WHERE number = '"..dim.."'")
-				end
-
-				sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
+				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
 				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], "biz" )
 			else
