@@ -1385,19 +1385,19 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	if value == "player" then
 
 		if id1 == 6 then--ключ авто
-			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
 
-				for k,vehicleid in pairs(getElementsByType("vehicle")) do
-					local x1,y1,z1 = getElementPosition(vehicleid)
-					local plate = getVehiclePlateText ( vehicleid )
+				for k,vehicle in pairs(getElementsByType("vehicle")) do
+					local x1,y1,z1 = getElementPosition(vehicle)
+					local plate = getVehiclePlateText ( vehicle )
 
 					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and plate == id2 then
-						if isVehicleLocked ( vehicleid ) then
-							setVehicleLocked ( vehicleid, false )
+						if isVehicleLocked ( vehicle ) then
+							setVehicleLocked ( vehicle, false )
 							me_chat(playerid, playername.." открыл двери авто")
 						else
-							setVehicleLocked ( vehicleid, true )
+							setVehicleLocked ( vehicle, true )
 							me_chat(playerid, playername.." закрыл двери авто")
 						end
 						return
