@@ -343,8 +343,6 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
 local logged = {}--0-не вошел, 1-вошел
-local enter_house = {}--0-не вошел, 1-вошел
-local enter_business = {}--0-не вошел, 1-вошел
 
 -----------------------------------------------------------------------------------------
 function fuel_down()--система топлива авто
@@ -753,8 +751,6 @@ function()
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
 	logged[playername] = 0--ИЗМЕНИТЬ НА 0!!!
-	enter_house[playername] = 0
-	enter_business[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -1253,22 +1249,16 @@ function house_enter(playerid)
 					return
 				end
 
-				enter_house[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 				break
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
-				if enter_house[playername] == 0 then
-					return
-				end
-
 				if house_door[id2] == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 					return
 				end
 
-				enter_house[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
@@ -1296,17 +1286,12 @@ function business_enter(playerid)
 					return
 				end
 
-				enter_business[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 				break
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] then
-				if enter_business[playername] == 0 then
-					return
-				end
 
-				enter_business[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 				break
