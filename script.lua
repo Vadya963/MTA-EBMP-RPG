@@ -340,9 +340,20 @@ local house_door = {}--состояние двери 0-закрыта, 1-отк�
 --бизнесы
 local business_pos = {}--позиции бизнесов для dxdrawtext
 
+--здания для работ и фракций
+local interior_job = {
+	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51},--мясокомбинат
+	{6, "LSPD", 246.4510,65.5860,1003.6410, 1553.779052,-1675.300048,16.195312, 30},
+	{10, "SFPD", 246.4410,112.1640,1003.2190, -1605.508666,711.299377,13.867187, 30},
+	{3, "LVPD", 289.7703,171.7460,1007.1790, 2287.120117,2431.524169,10.820312, 30},
+}
+
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
 local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
 local logged = {}--0-не вошел, 1-вошел
+local enter_house = {}--0-не вошел, 1-вошел (не удалять)
+local enter_business = {}--0-не вошел, 1-вошел (не удалять)
+local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 
 -----------------------------------------------------------------------------------------
 function fuel_down()--система топлива авто
@@ -648,6 +659,13 @@ function pickupUse( playerid )
 			return
 		end
 	end
+
+	for k,v in pairs(interior_job) do 
+		if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+			sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
+			break
+		end
+	end
 end
 addEventHandler( "onPickupUse", root, pickupUse )
 -----------------------------------------------------------------------------------------
@@ -701,6 +719,11 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 
 		print("[business_number] "..business_number)
+
+		for k,v in pairs(interior_job) do 
+			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, 500 )
+			createPickup ( v[6], v[7], v[8], 3, 1318, 10000 )
+		end
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -732,12 +755,6 @@ function()
 		end
 
 		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
-
-		--[[local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-		for i=0,max_inv do
-			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
-			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
-		end]]
 	end
 
 	for h,v in pairs(house_pos) do
@@ -748,9 +765,16 @@ function()
 		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz" )
 	end
 
+	for h,v in pairs(interior_job) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
+	end
+
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
-	logged[playername] = 0--ИЗМЕНИТЬ НА 0!!!
+	logged[playername] = 0
+	enter_house[playername] = 0
+	enter_business[playername] = 0
+	enter_job[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -761,7 +785,7 @@ function()
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, 1)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
-	setElementFrozen( playerid, true )--ИЗМЕНИТЬ НА true!!!
+	setElementFrozen( playerid, true )
 
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -1188,6 +1212,8 @@ local playername = getPlayerName ( playerid )
 
 			business_enter(playerid)
 
+			job_enter(playerid)
+
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
@@ -1249,6 +1275,7 @@ function house_enter(playerid)
 					return
 				end
 
+				enter_house[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 				break
@@ -1259,6 +1286,11 @@ function house_enter(playerid)
 					return
 				end
 
+				if enter_house[playername] == 0 then
+					return
+				end
+
+				enter_house[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 
@@ -1286,14 +1318,44 @@ function business_enter(playerid)
 					return
 				end
 
+				enter_business[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 				break
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] then
+				if enter_business[playername] == 0 then
+					return
+				end
 
+				enter_business[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+				break
+			end
+		end
+	end
+end
+
+function job_enter(playerid)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
+
+	for id,v in pairs(interior_job) do 
+		if not vehicleid then
+			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+
+				enter_job[playername] = 1
+				setElementInterior(playerid, interior_job[id][1], interior_job[id][3], interior_job[id][4], interior_job[id][5])
+				break
+			elseif getElementInterior(playerid) == interior_job[id][1] then
+				if enter_job[playername] == 0 then
+					return
+				end
+
+				enter_job[playername] = 0
+				setElementInterior(playerid, 0, v[6],v[7],v[8])
 				break
 			end
 		end

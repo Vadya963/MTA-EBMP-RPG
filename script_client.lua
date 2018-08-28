@@ -176,11 +176,14 @@ local paint={
 
 local house_pos = {}
 local business_pos = {}
+local job_pos = {}
 function bussines_house_fun (i, x,y,z, value)
 	if value == "biz" then
 		business_pos[i] = {x,y,z}
 	elseif value == "house" then
 		house_pos[i] = {x,y,z}
+	elseif value == "job" then
+		job_pos[i] = {x,y,z}
 	end
 end
 addEvent( "event_bussines_house_fun", true )
@@ -237,8 +240,18 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], 5) then
-				dxDrawText ( "Бизнес #"..k, 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Бизнес #"..k, 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k.." (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k.." (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				break
+			end
+		end
+	end
+
+	if job_pos ~= nil then
+		for k,v in pairs(job_pos) do
+			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 5) then
+				dxDrawText ( "Здание (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Здание (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
