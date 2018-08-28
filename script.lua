@@ -10,6 +10,7 @@ local me_radius = 10--радиус отображения действий иг�
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
 local car_spawn_value = 0--чтобы ресурсы не запускались два раза
+local max_blip = 250--радиус блипов
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -281,12 +282,12 @@ local interior = {
 
 local max_interior_business = 6
 local interior_business = {
-	{1, "Ammu-nation",	285.7870,	-41.7190,	1001.5160, 6},
-	{5, "Victim",	225.3310,	-8.6169,	1002.1977, 45},--магаз одежды
-	{6, "24/7 shop",	-26.7180,	-55.9860,	1003.5470, 50},--буду юзать это инт
-	{17, "Club",	493.4687,	-23.0080,	1000.6796, 48},
-	{0, "Filling station",	0,	0,	0, 56},
-	{0, "Tuning car",	0,	0,	0, 27},
+	{1, "Ammu-nation", 285.7870,-41.7190,1001.5160, 6},
+	{5, "Victim", 225.3310,-8.6169,1002.1977, 45},--магаз одежды
+	{6, "24/7 shop", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
+	{17, "Club", 493.4687,-23.0080,1000.6796, 48},
+	{0, "Filling station", 0,0,0, 56},
+	{0, "Tuning car", 0,0,0, 27},
 }
 
 local max_interior_house = 29
@@ -342,10 +343,12 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 
 --здания для работ и фракций
 local interior_job = {
-	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51},--мясокомбинат
-	{6, "LSPD", 246.4510,65.5860,1003.6410, 1553.779052,-1675.300048,16.195312, 30},
-	{10, "SFPD", 246.4410,112.1640,1003.2190, -1605.508666,711.299377,13.867187, 30},
-	{3, "LVPD", 289.7703,171.7460,1007.1790, 2287.120117,2431.524169,10.820312, 30},
+	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1},
+	{6, "LSPD", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2},
+	{10, "SFPD", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3},
+	{3, "LVPD", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4},
+	{3, "Мерия", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5},
+	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6},
 }
 
 local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
@@ -691,7 +694,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		local house_number = result[1]["COUNT()"]
 		for h=1,house_number do
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, 500 )
+			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, max_blip )
 			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1273, 10000 )
 
 			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
@@ -712,7 +715,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		local business_number = result[1]["COUNT()"]
 		for h=1,business_number do
 			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..h.."'" )
-			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, 500 )
+			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1274, 10000 )
 
 			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
@@ -721,9 +724,11 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("[business_number] "..business_number)
 
 		for k,v in pairs(interior_job) do 
-			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, 500 )
+			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( v[6], v[7], v[8], 3, 1318, 10000 )
 		end
+
+		createBlip ( 2308.81640625, -13.25, 26.7421875, 52, 0, 0,0,0,0, 0, max_blip )--банк
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -1347,14 +1352,16 @@ function job_enter(playerid)
 			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
 
 				enter_job[playername] = 1
+				setElementDimension(playerid, v[10])
 				setElementInterior(playerid, interior_job[id][1], interior_job[id][3], interior_job[id][4], interior_job[id][5])
 				break
-			elseif getElementInterior(playerid) == interior_job[id][1] then
+			elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] then
 				if enter_job[playername] == 0 then
 					return
 				end
 
 				enter_job[playername] = 0
+				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, v[6],v[7],v[8])
 				break
 			end
