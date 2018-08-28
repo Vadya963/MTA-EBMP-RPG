@@ -762,7 +762,7 @@ function()
 	bindKey(playerid, "x", "down", x_down )
 	bindKey(playerid, "2", "down", to_down )
 
-	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
+	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, 1)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )--ИЗМЕНИТЬ НА true!!!
@@ -770,8 +770,6 @@ function()
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
-
-	setElementDimension(playerid, 1)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -790,11 +788,9 @@ addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
 
 function player_Spawn (playerid)--спавн игрока
 	local playername = getPlayerName ( playerid )
-
-	spawnPlayer(playerid, spawnX, spawnY, spawnZ)
-
 	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-	setElementModel( playerid, result[1]["skin"] )
+
+	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, result[1]["skin"])
 
 	sqlite( "UPDATE account SET heal = '5' WHERE name = '"..playername.."'")
 	setElementHealth( playerid, 5 )
@@ -833,9 +829,8 @@ function reg_fun(playerid, cmd)
 
 		logged[playername] = 1
 
-		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
+		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 		setElementHealth( playerid, result[1]["heal"] )
-		setElementModel( playerid, result[1]["skin"] )
 		setElementFrozen( playerid, false )
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
@@ -843,8 +838,6 @@ function reg_fun(playerid, cmd)
 		print("[ACCOUNT REGISTER] "..playername)
 
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
-
-		setElementDimension(playerid, 0)
 	end
 end
 addEvent( "event_reg", true )
@@ -866,24 +859,21 @@ function log_fun(playerid, cmd)
 
 			logged[playername] = 1
 
-			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
+			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 
 			for h,v in pairs(house_pos) do
 				if search_inv_player(playerid, 25, h) ~= 0 then
-					spawnPlayer(playerid, v[1], v[2], v[3])
+					spawnPlayer(playerid, v[1], v[2], v[3], 0, result[1]["skin"], 0, 0)
 					break
 				end
 			end
 
+			setElementHealth( playerid, result[1]["heal"] )
+			setElementFrozen( playerid, false )
+
 			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
-
-			setElementDimension(playerid, 0)
-
-			setElementModel( playerid, result[1]["skin"] )
-			setElementHealth( playerid, result[1]["heal"] )
-			setElementFrozen( playerid, false )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -1852,10 +1842,8 @@ function ( playerid, cmd, x, y, z )
 		return
 	end
 
-	spawnPlayer(playerid, x, y, z)
-
 	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-	setElementModel( playerid, result[1]["skin"] )
+	spawnPlayer(playerid, x, y, z, 0, result[1]["skin"], getElementInterior(playerid), getElementDimension(playerid))
 end)
 
 addCommandHandler ( "pos",
