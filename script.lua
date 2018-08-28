@@ -62,7 +62,7 @@ end
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
-local max_earth = 50
+local max_earth = 100
 
 for i=1,max_earth do
 	earth[i] = {0,0,0,0,0}
@@ -135,7 +135,7 @@ local info_png = {
 	[41] = {"sniper", "ID"},
 	[42] = {"лекарство, цена продажи", "$"},
 	[43] = {"документы на", "бизнес"},
-	[44] = {"админский жетон", ""},
+	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
 }
 
@@ -869,10 +869,8 @@ function log_fun(playerid, cmd)
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
 
 			for h,v in pairs(house_pos) do
-				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-
 				if search_inv_player(playerid, 25, h) ~= 0 then
-					spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"])
+					spawnPlayer(playerid, v[1], v[2], v[3])
 					break
 				end
 			end
@@ -940,9 +938,7 @@ function car_spawn(number)
 			array_car_1[plate][i+1] = result[1]["slot_"..i.."_1"]
 			array_car_2[plate][i+1] = result[1]["slot_"..i.."_2"]
 		end
-
-		print("[car_spawn] "..plate)
-
+		
 end
 
 addCommandHandler ( "v",--покупка авто
@@ -1202,16 +1198,6 @@ local playername = getPlayerName ( playerid )
 
 	if keyState == "down" then
 
-			--[[if state_inv_player[playername] == 0 then--инв-рь игрока
-				if state_gui_window[playername] == 0 then
-					triggerClientEvent( playerid, "event_tune_create", playerid )
-					state_gui_window[playername] = 1
-				else
-					triggerClientEvent( playerid, "event_tune_delet", playerid )
-					state_gui_window[playername] = 0
-				end
-			end]]
-
 			house_enter(playerid)
 
 			business_enter(playerid)
@@ -1220,28 +1206,22 @@ local playername = getPlayerName ( playerid )
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
 			if area and earth[j][4] ~= 0 then
-				for i=0,max_inv do
-					if array_player_1[playername][i+1] == 0 then
-						inv_server_load( playerid, "player", i, earth[j][4], earth[j][5], playername )
-						triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, earth[j][4], earth[j][5] )
+				if inv_player_empty(playerid, earth[j][4], earth[j][5]) then
+						
+					sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-						if state_inv_player[playername] == 1 then
-							triggerClientEvent( playerid, "event_change_image", playerid, "player", i, earth[j][4])
-						end
+					print("[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 
-						sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
-						print("[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
-
-						earth[j][1] = 0
-						earth[j][2] = 0
-						earth[j][3] = 0
-						earth[j][4] = 0
-						earth[j][5] = 0
-						return
-					end
+					earth[j][1] = 0
+					earth[j][2] = 0
+					earth[j][3] = 0
+					earth[j][4] = 0
+					earth[j][5] = 0
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				return
 			end
 		end
 	end
@@ -1286,6 +1266,7 @@ function house_enter(playerid)
 				enter_house[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
+				break
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
 				if enter_house[playername] == 0 then
@@ -1304,6 +1285,7 @@ function house_enter(playerid)
 				if search_inv_player(playerid, 25, id2) ~= 0 then
 					triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 				end
+				break
 			end
 		end
 	end
@@ -1327,6 +1309,7 @@ function business_enter(playerid)
 				enter_business[playername] = 1
 				setElementDimension(playerid, result[1]["world"])
 				setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
+				break
 
 			elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] then
 				if enter_business[playername] == 0 then
@@ -1336,6 +1319,7 @@ function business_enter(playerid)
 				enter_business[playername] = 0
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+				break
 			end
 		end
 	end
@@ -1660,6 +1644,7 @@ function (playerid)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local house_count = 0
+	local business_count = 0
 
 	if logged[playername] == 0 then
 		return
@@ -1672,15 +1657,21 @@ function (playerid)
 
 	local result = sqlite( "SELECT COUNT() FROM house_db" )
 	local house_number = result[1]["COUNT()"]
-	for i=1,house_number do
-
-		local result = sqlite( "SELECT * FROM house_db WHERE number = '"..i.."'" )
-		if not isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+	for h,v in pairs(house_pos) do
+		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
 			house_count = house_count+1
 		end
 	end
 
-	if house_count == house_number then
+	local result = sqlite( "SELECT COUNT() FROM business_db" )
+	local business_number = result[1]["COUNT()"]
+	for h,v in pairs(business_pos) do 
+		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+			business_count = business_count+1
+		end
+	end
+
+	if business_count == business_number and house_count == house_number then
 		local dim = house_number+1
 
 		if inv_player_empty(playerid, 25, dim) then
@@ -1701,7 +1692,7 @@ function (playerid)
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Рядом есть дом", red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] Рядом есть дом или бизнес", red[1], red[2], red[3] )
 	end
 end)
 
@@ -1709,6 +1700,7 @@ addCommandHandler ( "sellbusiness",--команда для риэлторов
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local business_count = 0
 	local house_count = 0
 	local id = tonumber(id)
 
@@ -1727,17 +1719,23 @@ function (playerid, cmd, id)
 		end
 
 		local result = sqlite( "SELECT COUNT() FROM business_db" )
-		local house_number = result[1]["COUNT()"]
-		for i=1,house_number do
+		local business_number = result[1]["COUNT()"]
+		for h,v in pairs(business_pos) do 
+			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+				business_count = business_count+1
+			end
+		end
 
-			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..i.."'" )
-			if not isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+		local result = sqlite( "SELECT COUNT() FROM house_db" )
+		local house_number = result[1]["COUNT()"]
+		for h,v in pairs(house_pos) do
+			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
 				house_count = house_count+1
 			end
 		end
 
-		if house_count == house_number then
-			local dim = house_number+1
+		if business_count == business_number and house_count == house_number then
+			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
 				business_pos[dim] = {x,y,z}
@@ -1754,7 +1752,7 @@ function (playerid, cmd, id)
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес или дом", red[1], red[2], red[3] )
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_business, red[1], red[2], red[3] )
