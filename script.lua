@@ -732,7 +732,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1239, 10000 )
 
-			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
+			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"], result[1]["type"]}
 		end
 
 		print("[business_number] "..business_number)
@@ -1254,21 +1254,34 @@ end
 
 function x_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
+local x,y,z = getElementPosition(playerid)
 
 	if logged[playername] == 0 then
 		return
 	end
 
 	if keyState == "down" then
+		for k,v in pairs(business_pos) do 
 			if state_inv_player[playername] == 0 then--инв-рь игрока
 				if state_gui_window[playername] == 0 then
-					triggerClientEvent( playerid, "event_tune_create", playerid )
-					state_gui_window[playername] = 1
+
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) and v[4] == interior_business[6][2] then
+						triggerClientEvent( playerid, "event_tune_create", playerid )
+						state_gui_window[playername] = 1
+					else
+
+					end
+
 				else
-					triggerClientEvent( playerid, "event_tune_delet", playerid )
-					state_gui_window[playername] = 0
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) and v[4] == interior_business[6][2] then
+						triggerClientEvent( playerid, "event_tune_delet", playerid )
+						state_gui_window[playername] = 0
+					else
+
+					end
 				end
 			end
+		end
 	end
 end
 
@@ -1740,8 +1753,6 @@ function delet_subject(playerid, id)--удаление предметов из �
 		local sic2p = search_inv_car_2_parameter(playerid, id)
 		local count = search_inv_car(playerid, id, sic2p)
 
-		--todo добавить выдачу предметов бизнесу на его позиции
-
 		if count ~= 0 then
 
 			for k,v in pairs(business_pos) do
@@ -1928,7 +1939,7 @@ function (playerid, cmd, id)
 			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
-				business_pos[dim] = {x,y,z}
+				business_pos[dim] = {x,y,z, interior_business[id][2]}
 
 				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
 				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1274, 10000 )
