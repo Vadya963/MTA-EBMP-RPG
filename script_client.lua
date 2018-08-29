@@ -45,7 +45,7 @@ local info_png = {
 	[21] = {"пиво старый эмпайр", "шт"},
 	[22] = {"пиво штольц", "шт"},
 	[23] = {"ремонтный набор", "шт"},
-	[24] = {"ящик, цена продажи", "$"},
+	[24] = {"ящик", "$ за штуку"},
 	[25] = {"ключ от дома с номером", ""},
 	[26] = {"silenced", "ID"},
 	[27] = {"", "одежда"},
@@ -63,7 +63,7 @@ local info_png = {
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
-	[42] = {"лекарство, цена продажи", "$"},
+	[42] = {"лекарство", "$ за штуку"},
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
@@ -230,8 +230,8 @@ function createText ()
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
 			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], 5) then
-				dxDrawText ( "Дом #"..k.." (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Дом #"..k.." (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -240,8 +240,8 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], 5) then
-				dxDrawText ( "Бизнес #"..k.." (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Бизнес #"..k.." (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -250,8 +250,8 @@ function createText ()
 	if job_pos ~= nil then
 		for k,v in pairs(job_pos) do
 			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 5) then
-				dxDrawText ( "Здание (Нажмите Е)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Здание (Нажмите Е)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxDrawText ( "Здание (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( "Здание (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
