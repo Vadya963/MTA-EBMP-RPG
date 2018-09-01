@@ -11,6 +11,7 @@ local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
 local car_spawn_value = 0--чтобы ресурсы не запускались два раза
 local max_blip = 250--радиус блипов
+local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -280,7 +281,6 @@ local interior = {
 	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
 }
 
-local max_interior_business = 7
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
 	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},--магаз одежды
@@ -291,7 +291,6 @@ local interior_business = {
 	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
-local max_interior_house = 29
 local interior_house = {
 	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
 	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
@@ -640,7 +639,7 @@ function pickupUse( playerid )
 	local x,y,z = getElementPosition(playerid)
 
 	for k,v in pairs(business_pos) do 
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 			for i=0,max_inv do
 				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -664,7 +663,7 @@ function pickupUse( playerid )
 	end
 
 	for k,v in pairs(house_pos) do
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 			for i=0,max_inv do
 				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -685,6 +684,20 @@ function pickupUse( playerid )
 	end
 end
 addEventHandler( "onPickupUse", root, pickupUse )
+
+function house_bussiness_job_pos_load( playerid )
+	for h,v in pairs(house_pos) do
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house" )
+	end
+
+	for h,v in pairs(business_pos) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz" )
+	end
+
+	for h,v in pairs(interior_job) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
+	end
+end
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
@@ -693,7 +706,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
-		setTimer(fuel_down, 500, 0)--система топлива
+		setTimer(fuel_down, 1000, 0)--система топлива
 
 		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
 		local carnumber_number = result[1]["COUNT()"]
@@ -776,18 +789,6 @@ function()
 		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
 	end
 
-	for h,v in pairs(house_pos) do
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house" )
-	end
-
-	for h,v in pairs(business_pos) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz" )
-	end
-
-	for h,v in pairs(interior_job) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
-	end
-
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
 	logged[playername] = 0
@@ -810,6 +811,8 @@ function()
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
+
+	log_fun(playerid, "1")
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -878,6 +881,8 @@ function reg_fun(playerid, cmd)
 		print("[ACCOUNT REGISTER] "..playername)
 
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
+
+		house_bussiness_job_pos_load( playerid )
 	end
 end
 addEvent( "event_reg", true )
@@ -914,6 +919,8 @@ function log_fun(playerid, cmd)
 			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
+
+			house_bussiness_job_pos_load( playerid )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -1265,20 +1272,26 @@ local x,y,z = getElementPosition(playerid)
 			if state_inv_player[playername] == 0 then--инв-рь игрока
 				if state_gui_window[playername] == 0 then
 
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) and v[4] == interior_business[6][2] then
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
 						triggerClientEvent( playerid, "event_tune_create", playerid )
 						state_gui_window[playername] = 1
-					else
+						return
+					end
 
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
+						for j,i in pairs(interior_business) do
+							if v[4] == interior_business[j][2] then
+								triggerClientEvent( playerid, "event_business_menu", playerid, k )
+								state_gui_window[playername] = 1
+								return
+							end
+						end
 					end
 
 				else
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) and v[4] == interior_business[6][2] then
-						triggerClientEvent( playerid, "event_tune_delet", playerid )
-						state_gui_window[playername] = 0
-					else
-
-					end
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+					state_gui_window[playername] = 0
+					return
 				end
 			end
 		end
@@ -1301,7 +1314,7 @@ function lalt_down (playerid, key, keyState)
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
-				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
 					if house_door[id2] == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 						return
@@ -1340,7 +1353,7 @@ function lalt_down (playerid, key, keyState)
 				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
-				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
 					if id == 5 or id == 6 then
 						return
 					end
@@ -1632,7 +1645,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if result[1]["COUNT()"] == 1 then
 
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, 5) then
+				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
 					if house_door[h] == 0 then
 						house_door[h] = 1
 						me_chat(playerid, playername.." открыл дверь дома")
@@ -1756,7 +1769,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 		if count ~= 0 then
 
 			for k,v in pairs(business_pos) do
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 
 					if id ~= 24 then
 						sendPlayerMessage(playerid, "[ERROR] Нужны только ящики", red[1], red[2], red[3] )
@@ -1846,6 +1859,7 @@ function (playerid)
 	local x,y,z = getElementPosition(playerid)
 	local house_count = 0
 	local business_count = 0
+	local job_count = 0
 
 	if logged[playername] == 0 then
 		return
@@ -1859,7 +1873,7 @@ function (playerid)
 	local result = sqlite( "SELECT COUNT() FROM house_db" )
 	local house_number = result[1]["COUNT()"]
 	for h,v in pairs(house_pos) do
-		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 			house_count = house_count+1
 		end
 	end
@@ -1867,12 +1881,19 @@ function (playerid)
 	local result = sqlite( "SELECT COUNT() FROM business_db" )
 	local business_number = result[1]["COUNT()"]
 	for h,v in pairs(business_pos) do 
-		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 			business_count = business_count+1
 		end
 	end
 
-	if business_count == business_number and house_count == house_number then
+	local job_number = #interior_job
+	for h,v in pairs(interior_job) do
+		if not isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+			job_count = job_count+1
+		end
+	end
+
+	if business_count == business_number and house_count == house_number and job_count == job_number then
 		local dim = house_number+1
 
 		if inv_player_empty(playerid, 25, dim) then
@@ -1893,7 +1914,7 @@ function (playerid)
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Рядом есть дом или бизнес", red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3] )
 	end
 end)
 
@@ -1903,6 +1924,7 @@ function (playerid, cmd, id)
 	local x,y,z = getElementPosition(playerid)
 	local business_count = 0
 	local house_count = 0
+	local job_count = 0
 	local id = tonumber(id)
 
 	if logged[playername] == 0 then
@@ -1913,7 +1935,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if id >= 1 and id <= max_interior_business then
+	if id >= 1 and id <= #interior_business then
 		if search_inv_player(playerid, 45, playername) == 0 then
 			sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3] )
 			return
@@ -1922,7 +1944,7 @@ function (playerid, cmd, id)
 		local result = sqlite( "SELECT COUNT() FROM business_db" )
 		local business_number = result[1]["COUNT()"]
 		for h,v in pairs(business_pos) do 
-			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 				business_count = business_count+1
 			end
 		end
@@ -1930,12 +1952,19 @@ function (playerid, cmd, id)
 		local result = sqlite( "SELECT COUNT() FROM house_db" )
 		local house_number = result[1]["COUNT()"]
 		for h,v in pairs(house_pos) do
-			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, 5) then
+			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 				house_count = house_count+1
 			end
 		end
 
-		if business_count == business_number and house_count == house_number then
+		local job_number = #interior_job
+		for h,v in pairs(interior_job) do
+			if not isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+				job_count = job_count+1
+			end
+		end
+
+		if business_count == business_number and house_count == house_number and job_count == job_number then
 			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
@@ -1953,16 +1982,17 @@ function (playerid, cmd, id)
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес или дом", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3] )
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_business, red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_business, red[1], red[2], red[3] )
 	end
 end)
 
 addCommandHandler ( "interiorhouse",--команда по смене интерьера дома
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
 
 	if logged[playername] == 0 then
@@ -1973,19 +2003,24 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if id >= 1 and id <= max_interior_house then
+	if id >= 1 and id <= #interior_house then
 		for h,v in pairs(house_pos) do
-			if search_inv_player(playerid, 25, h) ~= 0 and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
-				sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
+			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
+				if search_inv_player(playerid, 25, h) ~= 0 then
+					sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
 
-				sendPlayerMessage(playerid, "Вы изменили интерьер на "..id, orange[1], orange[2], orange[3])
+					sendPlayerMessage(playerid, "Вы изменили интерьер на "..id, orange[1], orange[2], orange[3])
+				else
+					sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3] )
+				end
+
 				return
 			end
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] У вас нет дома или вы в доме", red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3] )
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_house, red[1], red[2], red[3] )
 	end
 
 end)

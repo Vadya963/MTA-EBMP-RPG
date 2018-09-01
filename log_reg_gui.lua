@@ -11,7 +11,7 @@ function kik_player()
 	end
 end
 
-setTimer(kik_player, 5000, 1)--кик если не видно окно входа
+--setTimer(kik_player, 5000, 1)--кик если не видно окно входа
 
 function reg_log_okno (state)--создание окна регистрации или авторизации
 	showCursor( true )

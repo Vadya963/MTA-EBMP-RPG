@@ -5,6 +5,9 @@
 	<script src="script_client.lua" type="client"/>
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
+
+	<file src="speed_v.png" />
+	<file src="arrow_speed_v.png" />
 	
 	<file src="0.png" />
 	<file src="1.png" />

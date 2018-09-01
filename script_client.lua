@@ -16,6 +16,7 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 local fuel = 0--топливо авто для dxdrawtext
 
 local max_subject = 45--кол-во предметов
+
 --выделение картинки
 local gui_2dtext = false
 local gui_pos_x = 0 --положение картинки x
@@ -174,6 +175,7 @@ local paint={
 	[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},-- tornado
 }
 
+local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 local house_pos = {}
 local business_pos = {}
 local job_pos = {}
@@ -226,10 +228,31 @@ function createText ()
 	dxDrawText ( rx.." "..ry.." "..rz, 300.0+1, 55.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 	dxDrawText ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
+	local vehicle = getPlayerVehicle ( playerid )
+	if vehicle then--отображение скорости авто
+		local speed_table = split(getSpeed(vehicle), ".")
+		local heal_table = split(getElementHealth(vehicle), ".")
+		local fuel_table = split(fuel, ".")
+		local speed_car = 0
+
+		if getSpeed(vehicle) >= 240 then
+			speed_car = 240*1.125+43
+		else
+			speed_car = getSpeed(vehicle)*1.125+43
+		end
+
+		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel
+		dxDrawText ( speed_vehicle, 5+1, screenHeight-16+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+		dxDrawText ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
+		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speed_v.png" )
+		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "arrow_speed_v.png", speed_car )
+	end
+
 
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
-			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], 5) then
+			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], house_bussiness_radius) then
 				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
@@ -239,7 +262,7 @@ function createText ()
 
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
-			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], 5) then
+			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then
 				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
@@ -255,18 +278,6 @@ function createText ()
 				break
 			end
 		end
-	end
-
-
-	local vehicle = getPlayerVehicle ( playerid )
-	if vehicle then--отображение скорости авто
-		local speed_table = split(getSpeed(vehicle), ".")
-		local heal_table = split(getElementHealth(vehicle), ".")
-		local fuel_table = split(fuel, ".")
-
-		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel
-		dxDrawText ( speed_vehicle, 5+1, screenHeight-16+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-		dxDrawText ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 	end
 
 
@@ -464,6 +475,30 @@ function tune_window_create ()--создание окна тюнинга
 end
 addEvent( "event_tune_create", true )
 addEventHandler ( "event_tune_create", getRootElement(), tune_window_create )
+
+
+local number_business = 0
+function business_menu(number)--создание окна бизнеса
+	number_business = number
+
+	showCursor( true )
+
+	local dimensions = dxGetTextWidth ( "Укажите сумму", 1, "default-bold" )
+	local width = 220+10
+	local height = 165.0+(25.0*1)+10
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Меню "..number_business.." бизнеса", false )
+	local tune_text = guiCreateLabel ( (width/2)-(dimensions/2), 20, dimensions, 20, "Укажите сумму", false, gui_window )
+	local tune_text_edit = guiCreateEdit ( 0, 40, 220, 20, "", false, gui_window )
+	local tune_radio_button1 = guiCreateRadioButton ( 0, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
+	local tune_radio_button2 = guiCreateRadioButton ( 0, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
+	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 220, 15, "Установить стоимость товара", false, gui_window )
+	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену покупки товара", false, gui_window )
+	local tune_search_button = guiCreateButton( 0, 165, 220, 25, "Выполнить", false, gui_window )
+
+end
+addEvent( "event_business_menu", true )
+addEventHandler ( "event_business_menu", getRootElement(), business_menu )
+
 
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
@@ -919,8 +954,8 @@ function tune_close ( button, state, absoluteX, absoluteY )--закрытие о
 	gui_window = nil
 	showCursor( false )
 end
-addEvent( "event_tune_delet", true )
-addEventHandler ( "event_tune_delet", getRootElement(), tune_close )
+addEvent( "event_gui_delet", true )
+addEventHandler ( "event_gui_delet", getRootElement(), tune_close )
 
 function inv_load (value, id3, id1, id2)--загрузка инв-ря
 	if value == "player" then
