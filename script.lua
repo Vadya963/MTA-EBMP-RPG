@@ -2092,6 +2092,27 @@ function ( playerid, cmd, x, y, z )
 	spawnPlayer(playerid, x, y, z, 0, result[1]["skin"], getElementInterior(playerid), getElementDimension(playerid))
 end)
 
+addCommandHandler ( "fuel",
+function ( playerid, cmd, id )
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	local id = tonumber(id)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		return
+	end
+
+	if vehicleid and id >=0 and id <= 50 then
+		local plate = getVehiclePlateText(vehicleid)
+		fuel[plate] = id
+		sendPlayerMessage(playerid, "fuel car "..id, lyme[1], lyme[2], lyme[3])
+	end
+end)
+
 addCommandHandler ( "pos",
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
@@ -2252,7 +2273,7 @@ function ( playerid, cmd, id )
 	sendPlayerMessage(playerid, "setElementDimension "..id, lyme[1], lyme[2], lyme[3])
 end)
 
-addCommandHandler ( "v",--покупка авто
+addCommandHandler ( "v",--спавн авто для админов
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
 

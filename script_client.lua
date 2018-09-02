@@ -247,6 +247,7 @@ function createText ()
 
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speed_v.png" )
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "arrow_speed_v.png", speed_car )
+		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "fuel_v.png" )
 	end
 
 
