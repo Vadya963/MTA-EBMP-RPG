@@ -13,7 +13,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
-local fuel = 0--топливо авто для dxdrawtext
+local fuel = 0--топливо авто для dxdrawimage
 
 local max_subject = 45--кол-во предметов
 
@@ -241,13 +241,13 @@ function createText ()
 			speed_car = getSpeed(vehicle)*1.125+43
 		end
 
-		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel
+		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
 		dxDrawText ( speed_vehicle, 5+1, screenHeight-16+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
 		dxDrawText ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
-		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speed_v.png" )
-		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "arrow_speed_v.png", speed_car )
-		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "fuel_v.png" )
+		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
+		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
+		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
 	end
 
 

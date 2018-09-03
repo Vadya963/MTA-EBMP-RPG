@@ -766,6 +766,12 @@ function()
 	local playername = getPlayerName ( playerid )
 	local serial = getPlayerSerial(playerid)
 
+	local s_find = string.find(playername, " ")
+	if s_find then
+		kickPlayer(playerid, "недопустимый ник")
+		return
+	end
+
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM banserial_list WHERE serial = '"..serial.."'" )
@@ -1081,6 +1087,11 @@ local vehicleid = getPlayerVehicle(playerid)
 	if keyState == "down" then
 		if vehicleid then
 			local plate = getVehiclePlateText ( vehicleid )
+
+			if fuel[plate] <= 0 then
+				sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
+				return
+			end
 
 			if getSpeed(vehicleid) > 5 then
 				sendPlayerMessage(playerid, "[ERROR] Остановите машину", red[1], red[2], red[3])
@@ -2292,7 +2303,7 @@ function ( playerid, cmd, id )
 
 		local val1, val2 = 6, number
 
-		if inv_player_empty(playerid, 6, val2) then
+		--if inv_player_empty(playerid, 6, val2) then
 			local x,y,z = getElementPosition( playerid )
 			local vehicleid = createVehicle(id, x+5, y, z+2, 0, 0, 0, val2)
 			local plate = getVehiclePlateText ( vehicleid )
@@ -2300,13 +2311,14 @@ function ( playerid, cmd, id )
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			fuel[plate] = max_fuel
+			--setVehicleDamageProof(vehicleid, true)
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+			--sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
 			print("[admin_car] "..playername.." plate ["..plate.."]")
-		else
+		--[[else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-		end
+		end]]
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end
