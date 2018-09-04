@@ -766,12 +766,6 @@ function()
 	local playername = getPlayerName ( playerid )
 	local serial = getPlayerSerial(playerid)
 
-	local s_find = string.find(playername, " ")
-	if s_find then
-		kickPlayer(playerid, "недопустимый ник")
-		return
-	end
-
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM banserial_list WHERE serial = '"..serial.."'" )
