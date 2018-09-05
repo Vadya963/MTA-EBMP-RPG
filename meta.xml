@@ -1,5 +1,7 @@
 <meta>
     <info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
+
+    <min_mta_version client="1.5.5" server="1.5.5" />
 	
     <script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client"/>
@@ -9,6 +11,33 @@
 	<file src="speedometer/speed_v.png" />
 	<file src="speedometer/arrow_speed_v.png" />
 	<file src="speedometer/fuel_v.png" />
+
+	<file src="car/admiral(Smith_Custom_200).txd" />
+	<file src="car/admiral(Smith_Custom_200).dff" />
+
+	<file src="car/banshee.txd" />
+	<file src="car/banshee.dff" />
+
+	<file src="car/hotknife.txd" />
+	<file src="car/hotknife.dff" />
+
+	<file src="car/stretch.txd" />
+	<file src="car/stretch.dff" />
+
+	<file src="car/sabre.txd" />
+	<file src="car/sabre.dff" />
+
+	<file src="car/barracks.txd" />
+	<file src="car/barracks.dff" />
+
+	<file src="car/sentinel.txd" />
+	<file src="car/sentinel.dff" />
+
+	<file src="car/hermes.txd" />
+	<file src="car/hermes.dff" />
+
+	<file src="car/cadrona.txd" />
+	<file src="car/cadrona.dff" />
 	
 	<file src="0.png" />
 	<file src="1.png" />
@@ -289,5 +318,19 @@
 	<file src="paintjob/VehiclePaintjob_Uranus_0.png" />
 	<file src="paintjob/VehiclePaintjob_Uranus_1.png" />
 	<file src="paintjob/VehiclePaintjob_Uranus_2.png" />
+
+	<script src="parachute/utility.lua" type="client"/>
+	<script src="parachute/parachute.lua"/>
+	<script src="parachute/parachute_cl.lua" type="client"/>
+	<script src="parachute/skydiving_cl.lua" type="client"/>
+	<script src="parachute/openChute.lua" type="client"/>
+	<script src="parachute/client_anim.lua" type="client"/>
+	<file src="parachute/parachuteopen.mp3" />
+
+	<export function="removeParachute" type="client"/>
+	<export function="stopSkyDiving" type="client"/>
+
+	<export function="isPlayerSkyDiving" type="client"/>
+	<export function="isPlayerParachuting" type="client"/>
 	
 </meta>

@@ -159,6 +159,44 @@ function getSpeed(vehicle)
 	end
 end
 
+local table_import_car = {
+[451] = "car/admiral(Smith_Custom_200)",
+[429] = "car/banshee",
+[434] = "car/hotknife",
+[409] = "car/stretch",
+[475] = "car/sabre",
+[433] = "car/barracks",
+[405] = "car/sentinel",
+[474] = "car/hermes",
+[527] = "car/cadrona",
+}
+
+function car_import_fun(model)
+	for k,v in pairs(table_import_car) do
+		if k == model then
+			local txd = engineLoadTXD ( v..".txd" )
+			engineImportTXD ( txd, k )
+			local dff = engineLoadDFF ( v..".dff" )
+			engineReplaceModel ( dff, k )
+			return
+		end
+	end
+end
+addEvent( "event_car_import_fun", true )
+addEventHandler("event_car_import_fun",getRootElement(), car_import_fun)
+
+local script_client = 0
+addEventHandler( "onClientResourceStart", getRootElement( ),
+function ( startedRes )
+	if script_client == 0 then
+		script_client = 1
+
+		for k,v in pairs(table_import_car) do
+			car_import_fun(k)
+		end
+	end
+end)
+
 local paint={
 	[483]={"VehiclePaintjob_Camper_0"},-- camper
 	[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},-- remington
