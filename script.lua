@@ -698,6 +698,18 @@ function house_bussiness_job_pos_load( playerid )
 		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
 	end
 end
+
+function reg_or_log_fun(playerid, text)
+	local playername = getPlayerName ( playerid )
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
+	if result[1]["COUNT()"] == 0 then
+		reg_fun(playerid, text)
+	else
+		log_fun(playerid, text)
+	end
+end
+addEvent( "event_reg_or_log_fun", true )
+addEventHandler ( "event_reg_or_log_fun", getRootElement(), reg_or_log_fun )
 -----------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
@@ -773,21 +785,14 @@ function()
 		return
 	end
 
+	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+	if result[1]["ban"] ~= "0" then
+		kickPlayer(playerid, "banplayer reason: "..result[1]["reason"])
+		return
+	end
+
 	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
-	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
-	if result[1]["COUNT()"] == 0 then
-		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "reg" )
-	else
-		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-		if result[1]["ban"] ~= "0" then
-			kickPlayer(playerid, "banplayer reason: "..result[1]["reason"])
-			return
-		end
-
-		triggerClientEvent( playerid, "event_reg_log_okno", playerid, "log" )
-	end
 
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
@@ -811,8 +816,6 @@ function()
 	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
-
-	log_fun(playerid, "1")
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
