@@ -12,32 +12,32 @@
 	<file src="speedometer/arrow_speed_v.png" />
 	<file src="speedometer/fuel_v.png" />
 
-	<file src="car/admiral(Smith_Custom_200).txd" />
-	<file src="car/admiral(Smith_Custom_200).dff" />
+	<file src="car/admiral(smith-custom-iz-mafia-2).txd" />
+	<file src="car/admiral(smith-custom-iz-mafia-2).dff" />
 
-	<file src="car/banshee.txd" />
-	<file src="car/banshee.dff" />
+	<file src="car/banshee(isw-508-from-mafia-2).txd" />
+	<file src="car/banshee(isw-508-from-mafia-2).dff" />
 
-	<file src="car/hotknife.txd" />
-	<file src="car/hotknife.dff" />
+	<file src="car/hotknife(smith-34-hot-rod-mafia-2).txd" />
+	<file src="car/hotknife(smith-34-hot-rod-mafia-2).dff" />
 
-	<file src="car/stretch.txd" />
-	<file src="car/stretch.dff" />
+	<file src="car/stretch(lassiter-series-75-hollywood-iz-mafia-2).txd" />
+	<file src="car/stretch(lassiter-series-75-hollywood-iz-mafia-2).dff" />
 
-	<file src="car/sabre.txd" />
-	<file src="car/sabre.dff" />
+	<file src="car/sabre(smith-thunderbolt-from-mafia-2).txd" />
+	<file src="car/sabre(smith-thunderbolt-from-mafia-2).dff" />
 
-	<file src="car/barracks.txd" />
-	<file src="car/barracks.dff" />
+	<file src="car/barracks(millitary-truck-from-mafia-2).txd" />
+	<file src="car/barracks(millitary-truck-from-mafia-2).dff" />
 
-	<file src="car/sentinel.txd" />
-	<file src="car/sentinel.dff" />
+	<file src="car/sentinel(houstan-wasp-mafia-2).txd" />
+	<file src="car/sentinel(houstan-wasp-mafia-2).dff" />
 
-	<file src="car/hermes.txd" />
-	<file src="car/hermes.dff" />
+	<file src="car/hermes(hudson_hornet_1952).txd" />
+	<file src="car/hermes(hudson_hornet_1952).dff" />
 
-	<file src="car/cadrona.txd" />
-	<file src="car/cadrona.dff" />
+	<file src="car/cadrona(ford_thunderbird_1957).txd" />
+	<file src="car/cadrona(ford_thunderbird_1957).dff" />
 	
 	<file src="0.png" />
 	<file src="1.png" />

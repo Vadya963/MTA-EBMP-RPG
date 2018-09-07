@@ -160,15 +160,15 @@ function getSpeed(vehicle)
 end
 
 local table_import_car = {
-[451] = "car/admiral(Smith_Custom_200)",
-[429] = "car/banshee",
-[434] = "car/hotknife",
-[409] = "car/stretch",
-[475] = "car/sabre",
-[433] = "car/barracks",
-[405] = "car/sentinel",
-[474] = "car/hermes",
-[527] = "car/cadrona",
+[445] = "car/admiral(smith-custom-iz-mafia-2)",
+[429] = "car/banshee(isw-508-from-mafia-2)",
+[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
+[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
+[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
+[433] = "car/barracks(millitary-truck-from-mafia-2)",
+[405] = "car/sentinel(houstan-wasp-mafia-2)",
+[474] = "car/hermes(hudson_hornet_1952)",
+[527] = "car/cadrona(ford_thunderbird_1957)",
 }
 
 function car_import_fun(model)
@@ -368,13 +368,15 @@ function createText ()
 end
 addEventHandler ( "onClientRender", getRootElement(), createText )
 
-function tune_window_create ()--создание окна тюнинга
+local number_business = 0
+function tune_window_create (number)--создание окна тюнинга
+	number_business = number
 
 	local dimensions = dxGetTextWidth ( "Введите ИД", 1, "default-bold" )
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
 	local width = 300+50+10
 	local height = 210.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская", false )
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская "..number_business.." бизнеса", false )
 	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
 	local tune_text = guiCreateLabel ( 180, 75, dimensions1, 20, "Введите цвет в RGB", false, gui_window )
@@ -436,8 +438,7 @@ function tune_window_create ()--создание окна тюнинга
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
-						sendPlayerMessage("Апгрейд "..text.." установлен")
+						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
 						break
 					end
 				end
@@ -445,8 +446,7 @@ function tune_window_create ()--создание окна тюнинга
 				local model = getElementModel ( vehicleid )
 
 				if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
-					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save" )
-					sendPlayerMessage("Установлена пакрасочная работа "..text)
+					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
 				end
 			end
 		end
@@ -454,11 +454,10 @@ function tune_window_create ()--создание окна тюнинга
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
 			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save" )
-					sendPlayerMessage("Установлен цвет авто "..r.." "..g.." "..b)
+					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save", getLocalPlayer(), number_business )
+
 				elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save" )
-					sendPlayerMessage("Установлен цвет фар "..r.." "..g.." "..b)
+					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save", getLocalPlayer(), number_business )
 				end
 			end
 		end
@@ -475,8 +474,7 @@ function tune_window_create ()--создание окна тюнинга
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save" )
-						sendPlayerMessage("Апгрейд "..text.." удален")
+						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
 						break
 					end
 				end
@@ -516,7 +514,6 @@ addEvent( "event_tune_create", true )
 addEventHandler ( "event_tune_create", getRootElement(), tune_window_create )
 
 
-local number_business = 0
 function business_menu(number)--создание окна бизнеса
 	number_business = number
 
@@ -531,8 +528,28 @@ function business_menu(number)--создание окна бизнеса
 	local tune_radio_button1 = guiCreateRadioButton ( 0, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = guiCreateRadioButton ( 0, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
 	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 220, 15, "Установить стоимость товара", false, gui_window )
-	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену покупки товара", false, gui_window )
+	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену закупки товара", false, gui_window )
 	local tune_search_button = guiCreateButton( 0, 165, 220, 25, "Выполнить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGetText ( tune_text_edit )
+
+		if tonumber(text) ~= nil and tonumber(text) >= 1 then
+			if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
+				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "withdraw" )
+
+			elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
+				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "deposit" )
+
+			elseif guiRadioButtonGetSelected( tune_radio_button3 ) == true then
+				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "price" )
+
+			elseif guiRadioButtonGetSelected( tune_radio_button4 ) == true then
+				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "buyprod" )
+			end
+		end
+	end
+	addEventHandler ( "onClientGUIClick", tune_search_button, complete, false )
 
 end
 addEvent( "event_business_menu", true )
