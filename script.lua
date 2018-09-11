@@ -1132,7 +1132,7 @@ function reg_fun(playerid, cmd)
 
 		sqlite_save_player_action( "CREATE TABLE "..playername.." (player_action TEXT)" )
 
-		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]"))
+		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 	end
 end
 addEvent( "event_reg", true )
@@ -2582,15 +2582,7 @@ end)
 function input_Console ( text )
 
 	if text == "z" then
-		--[[local hFile = fileOpen("businesses.txt")
-
-		local spl = split(fileRead(hFile, fileGetSize ( hFile )), ",")
-		for i=1,108 do
-			--print(spl[i*6-5]..","..spl[i*6-4]..","..spl[i*6-3])
-			createBlip ( spl[i*6-5], spl[i*6-4], spl[i*6-3], 0, 2, 255,255,0 )
-		end]]
-
-		
+		print(text)
 
 	elseif text == "x" then
 		local allResources = getResources()
@@ -2602,57 +2594,3 @@ function input_Console ( text )
 	end
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
-
---[[Muting commands
-addCommandHandler ( "mutevoice",
-	function (playerid, cmd, playerName )
-		if not playerName then
-			sendPlayerMessage (playerid, "[ERROR] Syntax: muteplayer <playerName>", red[1], red[2], red[3] )
-			return
-		end
-
-		local player = getPlayerFromName ( playerName )
-		if not player then
-			sendPlayerMessage (playerid, "[ERROR] mutevoice: не в сети '"..playerName.."'", red[1], red[2], red[3] )
-			return
-		end
-
-		if isPlayerMuted ( player ) then
-			sendPlayerMessage (playerid, "[ERROR] mutevoice: '"..playerName.."' уже приглушен", red[1], red[2], red[3] )
-			return
-		end
-
-		if player == playerid then
-			sendPlayerMessage (playerid, "[ERROR] mutevoice: Самого себя нельзя приглушить", red[1], red[2], red[3] )
-			return
-		end
-
-		setPlayerMuted ( player, true )
-		sendPlayerMessage (playerid, "mutevoice: '"..playerName.."' игрок приглушен", lyme[1], lyme[2], lyme[3] )
-		print("[admin_mute] "..getPlayerName(playerid).." mute "..playerName)
-	end
-)
-
-addCommandHandler ( "unmutevoice",
-	function (playerid, cmd, playerName )
-		if not playerName then
-			sendPlayerMessage (playerid, "[ERROR] Syntax: unmuteplayer <playerName>", red[1], red[2], red[3] )
-			return
-		end
-
-		local player = getPlayerFromName ( playerName )
-		if not player then
-			sendPlayerMessage (playerid, "[ERROR] unmutevoice: не в сети '"..playerName.."'", red[1], red[2], red[3] )
-			return
-		end
-
-		if not isPlayerMuted ( player ) then
-			sendPlayerMessage (playerid, "[ERROR] unmutevoice: '"..playerName.."' не был приглушен", red[1], red[2], red[3] )
-			return
-		end
-
-		setPlayerMuted ( player, false )
-		sendPlayerMessage (playerid, "unmutevoice: '"..playerName.."' игрок снова может говорить", lyme[1], lyme[2], lyme[3] )
-		print("[admin_unmute] "..getPlayerName(playerid).." unmute "..playerName)
-	end
-)]]
