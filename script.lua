@@ -2395,14 +2395,19 @@ function ( playerid, cmd, id )
 end)
 
 addCommandHandler ( "banplayer",
-function ( playerid, cmd, id, reason )
+function ( playerid, cmd, id, ... )
 	local playername = getPlayerName ( playerid )
+	local reason = ""
+
+	for k,v in ipairs(arg) do
+		reason = reason..v.." "
+	end
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	if id == nil or reason == nil then
+	if id == nil or reason == "" then
 		return
 	end
 
@@ -2462,14 +2467,19 @@ function ( playerid, cmd, id )
 end)
 
 addCommandHandler ( "banserial",
-function ( playerid, cmd, id, reason )
+function ( playerid, cmd, id, ... )
 	local playername = getPlayerName ( playerid )
+	local reason = ""
+
+	for k,v in ipairs(arg) do
+		reason = reason..v.." "
+	end
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	if id == nil or reason == nil then
+	if id == nil or reason == "" then
 		return
 	end
 
