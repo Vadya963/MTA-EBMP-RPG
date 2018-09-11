@@ -75,6 +75,22 @@ function save_player_action( playerid, text )
 
 	sqlite_save_player_action( "INSERT INTO "..playername.." (player_action) VALUES ('"..client_time..text.."')" )
 end
+
+function save_admin_action( playerid, text )
+	local playername = getPlayerName(playerid)
+	local time = getRealTime()
+	local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"].."] "
+
+	sqlite( "INSERT INTO save_admin_action (admin_action) VALUES ('"..client_time..text.."')" )
+end
+
+function save_realtor_action( playerid, text )
+	local playername = getPlayerName(playerid)
+	local time = getRealTime()
+	local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"].."] "
+
+	sqlite( "INSERT INTO save_realtor_action (realtor_action) VALUES ('"..client_time..text.."')" )
+end
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
@@ -978,6 +994,7 @@ function()
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 	local serial = getPlayerSerial(playerid)
+	local ip = getPlayerIP ( playerid )
 
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
@@ -1061,7 +1078,7 @@ function(ammo, attacker, weapon, bodypart)
 	save_player_action(playerid, "[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart).."]")
 end)
 
-function playerDamage_text ( attacker, weapon, bodypart, loss )
+function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 	local reason = weapon
@@ -1115,7 +1132,7 @@ function reg_fun(playerid, cmd)
 
 		sqlite_save_player_action( "CREATE TABLE "..playername.." (player_action TEXT)" )
 
-		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername)
+		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]"))
 	end
 end
 addEvent( "event_reg", true )
@@ -1124,6 +1141,8 @@ addEventHandler("event_reg", getRootElement(), reg_fun)
 ----------------------------------Авторизация--------------------------------------------
 function log_fun(playerid, cmd)
 	local playername = getPlayerName ( playerid )
+	local serial = getPlayerSerial(playerid)
+	local ip = getPlayerIP(playerid)
 
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 1 then
@@ -1155,7 +1174,7 @@ function log_fun(playerid, cmd)
 
 			house_bussiness_job_pos_load( playerid )
 
-			save_player_action(playerid, "[log_fun] "..playername)
+			save_player_action(playerid, "[log_fun] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -2144,13 +2163,15 @@ function (playerid)
 			house_door[dim] = 0
 
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
-			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, 1273, 10000 )
+			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, 1239, 10000 )
 
 			sqlite( "INSERT INTO house_db (number, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
 			triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], "house" )
+
+			save_realtor_action(playerid, "[sellhouse] "..playername.." [house - "..dim..", x - "..house_pos[dim][1]..", y - "..house_pos[dim][2]..", z - "..house_pos[dim][3].."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -2212,13 +2233,15 @@ function (playerid, cmd, id)
 				business_pos[dim] = {x,y,z, interior_business[id][2]}
 
 				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
-				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1274, 10000 )
+				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1239, 10000 )
 
 				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
 				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], "biz" )
+
+				save_realtor_action(playerid, "[sellbusiness] "..playername.." [business - "..dim..", x - "..business_pos[dim][1]..", y - "..business_pos[dim][2]..", z - "..business_pos[dim][3].."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
@@ -2283,7 +2306,7 @@ function (playerid, cmd, id1, id2 )
 	if inv_player_empty(playerid, val1, val2) then
 		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
-		print("[admin_sub] "..playername.." ["..val1..", "..val2.."]")
+		save_admin_action(playerid, "[admin_sub] "..playername.." ["..val1..", "..val2.."]")
 	else
 		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
@@ -2308,7 +2331,7 @@ function (playerid, cmd, id1, id2 )
 			if inv_player_empty(playerid, val1, val2) then
 				sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
-				print("[admin_subt] "..playername.." ["..val1..", "..val2.."]")
+				save_admin_action(playerid, "[admin_subt] "..playername.." ["..val1..", "..val2.."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
@@ -2401,7 +2424,7 @@ function ( playerid, cmd, id, reason )
 			kickPlayer(player, "banplayer reason: "..reason)
 		end
 
-		print("[admin_ban] "..playername.." ban "..id.." reason "..reason)
+		save_admin_action(playerid, "[admin_ban] "..playername.." ban "..id.." reason "..reason)
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -2432,7 +2455,7 @@ function ( playerid, cmd, id )
 
 		sendPlayerMessage(playerid, "Вы разбанили "..id, lyme[1], lyme[2], lyme[3])
 
-		print("[admin_unban] "..playername.." unban "..id)
+		save_admin_action(playerid, "[admin_unban] "..playername.." unban "..id)
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -2469,7 +2492,7 @@ function ( playerid, cmd, id, reason )
 			kickPlayer(player, "banserial reason: "..reason)
 		end
 
-		print("[admin_banserial] "..playername.." banserial "..id.." reason "..reason)
+		save_admin_action(playerid, "[admin_banserial] "..playername.." banserial "..id.." reason "..reason)
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -2546,7 +2569,7 @@ function ( playerid, cmd, id )
 
 			--sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
-			print("[admin_car] "..playername.." plate ["..plate.."]")
+			save_admin_action(playerid, "[admin_car] "..playername.." plate ["..plate.."]")
 		--[[else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end]]
