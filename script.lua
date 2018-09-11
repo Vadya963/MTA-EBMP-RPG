@@ -1,7 +1,13 @@
 local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
-
 function sqlite(text)
 	local result = dbQuery( database, text )
+	local result = dbPoll( result, -1 )
+	return result
+end
+
+local database_save_player_action = dbConnect( "sqlite", "save_player_action.db" )
+function sqlite_save_player_action(text)
+	local result = dbQuery( database_save_player_action, text )
 	local result = dbPoll( result, -1 )
 	return result
 end
@@ -60,6 +66,14 @@ function me_chat(playerid, text)
 			sendPlayerMessage(player, text, pink[1], pink[2], pink[3])
 		end
 	end
+end
+
+function save_player_action( playerid, text )
+	local playername = getPlayerName(playerid)
+	local time = getRealTime()
+	local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"].."] "
+
+	sqlite_save_player_action( "INSERT INTO "..playername.." (player_action) VALUES ('"..client_time..text.."')" )
 end
 -----------------------------------------------------------------------------------------
 
@@ -159,6 +173,22 @@ local weapon = {
 	[38] = {"нож", 4},
 	[40] = {"лом", 15},
 	[41] = {"sniper", 34},
+}
+
+local deathReasons = {
+	[19] = "Rocket",
+	[37] = "Burnt",
+	[49] = "Rammed",
+	[50] = "Ranover/Helicopter Blades",
+	[51] = "Explosion",
+	[52] = "Driveby",
+	[53] = "Drowned",
+	[54] = "Fall",
+	[55] = "Unknown",
+	[56] = "Melee",
+	[57] = "Weapon",
+	[59] = "Tank Grenade",
+	[63] = "Blown"
 }
 
 local interior = {
@@ -521,7 +551,7 @@ end
 
 function info_bisiness( number )
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-	return "business "..number.." [type "..result[1]["type"]..", price "..result[1]["price"]..", buyprod "..result[1]["buyprod"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
+	return "[business "..number..", type "..result[1]["type"]..", price "..result[1]["price"]..", buyprod "..result[1]["buyprod"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
 end
 ---------------------------------------------------------------------------------------------------------
 
@@ -551,7 +581,7 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				print("[addVehicleUpgrade_fun] plate ["..plate.."] ["..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				save_player_action(playerid, "[addVehicleUpgrade_fun] plate ["..plate.."] ["..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -607,7 +637,7 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				print("[removeVehicleUpgrade_fun] plate ["..plate.."] ["..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				save_player_action(playerid, "[removeVehicleUpgrade_fun] plate ["..plate.."] ["..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -645,7 +675,7 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				print("[setVehiclePaintjob_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				save_player_action(playerid, "[setVehiclePaintjob_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -683,7 +713,7 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				print("[setVehicleColor_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				save_player_action(playerid, "[setVehicleColor_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -721,7 +751,7 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				print("[setVehicleHeadLightColor_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				save_player_action(playerid, "[setVehicleHeadLightColor_fun] plate ["..plate.."] ["..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -752,7 +782,7 @@ function till_fun( playerid, number, money, value )
 
 			sendPlayerMessage(playerid, "Вы забрали из кассы "..money.."$", green[1], green[2], green[3])
 
-			print("[till_fun_withdraw] "..playername.." [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+			save_player_action(playerid, "[till_fun_withdraw] "..playername.." [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 		else
 			sendPlayerMessage(playerid, "[ERROR] В кассе недостаточно средств", red[1], red[2], red[3])
 		end
@@ -766,7 +796,7 @@ function till_fun( playerid, number, money, value )
 
 			sendPlayerMessage(playerid, "Вы положили в кассу "..money.."$", orange[1], orange[2], orange[3])
 
-			print("[till_fun_deposit] "..playername.." [-"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+			save_player_action(playerid, "[till_fun_deposit] "..playername.." [-"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 		else
 			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		end
@@ -778,7 +808,7 @@ function till_fun( playerid, number, money, value )
 
 		sendPlayerMessage(playerid, "Вы установили стоимость товара "..money.."$", yellow[1], yellow[2], yellow[3])
 
-		print("[till_fun_price] "..playername.." "..info_bisiness(number))
+		save_player_action(playerid, "[till_fun_price] "..playername.." "..info_bisiness(number))
 
 	elseif value == "buyprod" then
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
@@ -787,7 +817,7 @@ function till_fun( playerid, number, money, value )
 
 		sendPlayerMessage(playerid, "Вы установили цену закупки товара "..money.."$", yellow[1], yellow[2], yellow[3])
 
-		print("[till_fun_buyprod] "..playername.." "..info_bisiness(number))
+		save_player_action(playerid, "[till_fun_buyprod] "..playername.." "..info_bisiness(number))
 	end
 end
 addEvent( "event_till_fun", true )
@@ -996,12 +1026,13 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 	if logged[playername] == 1 then
 		local heal = getElementHealth( playerid )
 		sqlite( "UPDATE account SET heal = '"..heal.."' WHERE name = '"..playername.."'")
+
+		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
 	else
 		
 	end
 end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
-
 
 function player_Spawn (playerid)--спавн игрока
 	local playername = getPlayerName ( playerid )
@@ -1013,11 +1044,37 @@ function player_Spawn (playerid)--спавн игрока
 	setElementHealth( playerid, 5 )
 end
 
-
 addEventHandler( "onPlayerWasted", getRootElement(),--смерть игрока
 function(ammo, attacker, weapon, bodypart)
-	setTimer( player_Spawn, 5000, 1, source )
+	local playerid = source
+	local playername = getPlayerName ( playerid )
+	local reason = weapon
+
+	for k,v in pairs(deathReasons) do 
+		if k == reason then
+			reason = v
+		end
+	end
+	
+	setTimer( player_Spawn, 5000, 1, playerid )
+
+	save_player_action(playerid, "[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart).."]")
 end)
+
+function playerDamage_text ( attacker, weapon, bodypart, loss )
+	local playerid = source
+	local playername = getPlayerName ( playerid )
+	local reason = weapon
+
+	for k,v in pairs(deathReasons) do 
+		if k == reason then
+			reason = v
+		end
+	end
+
+	save_player_action(playerid, "[onPlayerDamage] "..playername.." [attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart)..", loss - "..tostring(loss).."]")
+end
+addEventHandler ( "onPlayerDamage", getRootElement (), playerDamage_text )
 
 function nickChangeHandler(oldNick, newNick)
 	local playerid = source
@@ -1052,11 +1109,13 @@ function reg_fun(playerid, cmd)
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
-		print("[ACCOUNT REGISTER] "..playername)
-
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
 
 		house_bussiness_job_pos_load( playerid )
+
+		sqlite_save_player_action( "CREATE TABLE "..playername.." (player_action TEXT)" )
+
+		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername)
 	end
 end
 addEvent( "event_reg", true )
@@ -1095,6 +1154,8 @@ function log_fun(playerid, cmd)
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
 
 			house_bussiness_job_pos_load( playerid )
+
+			save_player_action(playerid, "[log_fun] "..playername)
 		else
 			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
 		end
@@ -1200,7 +1261,7 @@ function ( playerid, cmd, id )
 
 			local result = sqlite( "INSERT INTO car_db (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
-			print("[buy_vehicle] "..playername.." plate["..plate.."]")
+			save_player_action(playerid, "[buy_vehicle] "..playername.." plate["..plate.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -1221,7 +1282,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 		sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
 	end
 
-	print("[Entered_Vehicle] "..playername.." seat = "..seat..", plate = "..plate)
+	save_player_action(playerid, "[Entered_Vehicle] "..playername.." [seat - "..seat..", plate - "..plate.."]")
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
@@ -1244,7 +1305,7 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 		end
 	end
 
-	print("[Vehicle_Exit] "..playername.." seat = "..seat..", plate = "..plate)
+	save_player_action(playerid, "[Vehicle_Exit] "..playername.." [seat - "..seat..", plate - "..plate.."]")
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 
@@ -1395,7 +1456,8 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
 
 			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
-			print("[throw_earth] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+
+			save_player_action(playerid, "[throw_earth] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 
 			return
 		end
@@ -1421,7 +1483,7 @@ local playername = getPlayerName ( playerid )
 						
 					sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-					print("[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+					save_player_action(playerid, "[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 
 					earth[j][1] = 0
 					earth[j][2] = 0
@@ -1659,7 +1721,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			print("[heal_playerid - DO] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 3 then
 				local hp = 100*0.05
@@ -1676,7 +1738,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
-			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == 100 then
@@ -1685,13 +1747,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			print("[heal_playerid - DO] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			setElementHealth(playerid, 100)
 			sendPlayerMessage(playerid, "+100 хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал аптечку")
-			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 5 then--канистра
 			if vehicleid then
@@ -1699,13 +1761,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				if not getVehicleEngineState(vehicleid) then
 					if fuel[plate]+id2 <= max_fuel then
-						print("[fuel - DO] "..fuel[plate])
+						save_player_action(playerid, "[fuel - DO] "..fuel[plate])
 
 						fuel[plate] = fuel[plate]+id2
 						me_chat(playerid, playername.." заправил машину из канистры")
 						id2 = 0
 
-						print("[fuel - POSLE] "..fuel[plate])
+						save_player_action(playerid, "[fuel - POSLE] "..fuel[plate])
 					else
 						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
@@ -1760,14 +1822,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			print("[heal_playerid - DO] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			local hp = 100*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." употребил наркотики")
-			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 21 or id1 == 22 then--пиво
 			if getElementHealth(playerid) == 100 then
@@ -1777,7 +1839,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			print("[heal_playerid - DO] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 21 then
 				local hp = 100*0.20
@@ -1790,7 +1852,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выпил пиво")
-			print("[heal_playerid - POSLE] "..getElementHealth(playerid))
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
@@ -1805,12 +1867,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				id2 = id2 - 1
-				print("[heal_vehicleid - DO] "..getElementHealth(vehicleid))
+				save_player_action(playerid, "[heal_vehicleid - DO] "..getElementHealth(vehicleid))
 
 				fixVehicle ( vehicleid )
 
 				me_chat(playerid, playername.." починил авто")
-				print("[heal_vehicleid - POSLE] "..getElementHealth(vehicleid))
+				save_player_action(playerid, "[heal_vehicleid - POSLE] "..getElementHealth(vehicleid))
 			else
 				return
 			end
@@ -1872,7 +1934,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
-		print("[use_inv] "..playername.." [value - "..value.."] ["..id1..", "..id2.."("..id_2..")]")
+		save_player_action(playerid, "[use_inv] "..playername.." [value - "..value.."] ["..id1..", "..id2.."("..id_2..")]")
 
 		if id2 == 0 then
 			id1, id2 = 0, 0
@@ -1900,7 +1962,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-			print("[give_subject] "..playername.." [value - "..value.."] ["..id1..", "..id2.."]")
+			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] ["..id1..", "..id2.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -1922,7 +1984,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			sendPlayerMessage(playerid, "Вы загрузили в авто "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-			print("[give_subject] "..playername.." [value - "..value.."] [count - "..count.."] ["..id1..", "..id2.."]")
+			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] [count - "..count.."] ["..id1..", "..id2.."]")
 		end
 	end
 
@@ -1980,7 +2042,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 
-					print("[save_money_business] "..playername.." count - "..count..", [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(k))
 					return
 				end
 			end
@@ -1996,7 +2058,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 			sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 
-			print("[save_money_job] "..playername.." count - "..count..", price - "..sic2p.." [+"..money.."$, "..array_player_2[playername][1].."$]")
+			save_player_action(playerid, "[delet_subject_job] "..playername.." [count - "..count..", price - "..sic2p.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
 		end
 	end
 end
