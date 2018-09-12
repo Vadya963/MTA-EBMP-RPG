@@ -91,6 +91,30 @@ function save_realtor_action( playerid, text )
 
 	sqlite( "INSERT INTO save_realtor_action (realtor_action) VALUES ('"..client_time..text.."')" )
 end
+
+function reloadWeapon(playerid)
+	reloadPedWeapon(playerid)
+end
+addEvent("relWep", true)
+addEventHandler("relWep", resourceRoot, reloadWeapon)
+
+function kickPlayer_fun(playerid)
+	kickPlayer(playerid)
+end
+addEvent("event_kickPlayer", true)
+addEventHandler("event_kickPlayer", getRootElement(), kickPlayer_fun)
+
+function set_weather()
+	local hour, minute = getTime()
+
+	if hour == 0 then
+		math.randomseed(getTickCount())
+
+		local x = math.random(22)
+		setWeatherBlended (x)
+		print(x)
+	end
+end
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
@@ -404,7 +428,7 @@ local enter_house = {}--0-не вошел, 1-вошел (не удалять)
 local enter_business = {}--0-не вошел, 1-вошел (не удалять)
 local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 
------------------------------------------------------------------------------------------
+-------------------пользовательские функции 2----------------------------------------------
 function fuel_down()--система топлива авто
 	for k,vehicle in pairs(getElementsByType("vehicle")) do
 		local veh = getVehiclePlateText(vehicle)
@@ -569,6 +593,82 @@ function info_bisiness( number )
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 	return "[business "..number..", type "..result[1]["type"]..", price "..result[1]["price"]..", buyprod "..result[1]["buyprod"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
 end
+
+function pickupUse( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	for k,v in pairs(business_pos) do 
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+			for i=0,max_inv do
+				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
+					sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+					break
+				end
+			end
+
+			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
+			sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Стоимость товара "..result[1]["price"].."$", green[1], green[2], green[3])
+			sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
+
+			if search_inv_player(playerid, 43, k) ~= 0 then
+				sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
+			end
+			return
+		end
+	end
+
+	for k,v in pairs(house_pos) do
+		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+			for i=0,max_inv do
+				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
+					sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+					break
+				end
+			end
+			return
+		end
+	end
+
+	for k,v in pairs(interior_job) do 
+		if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+			sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
+			return
+		end
+	end
+end
+addEventHandler( "onPickupUse", root, pickupUse )
+
+function house_bussiness_job_pos_load( playerid )
+	for h,v in pairs(house_pos) do
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house" )
+	end
+
+	for h,v in pairs(business_pos) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz" )
+	end
+
+	for h,v in pairs(interior_job) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
+	end
+end
+
+function reg_or_log_fun(playerid, text)
+	local playername = getPlayerName ( playerid )
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
+	if result[1]["COUNT()"] == 0 then
+		reg_fun(playerid, text)
+	else
+		log_fun(playerid, text)
+	end
+end
+addEvent( "event_reg_or_log_fun", true )
+addEventHandler ( "event_reg_or_log_fun", getRootElement(), reg_or_log_fun )
 ---------------------------------------------------------------------------------------------------------
 
 -------------------------------эвенты автомастерской-----------------------------------------------------
@@ -840,95 +940,6 @@ addEvent( "event_till_fun", true )
 addEventHandler ( "event_till_fun", getRootElement(), till_fun )
 -------------------------------------------------------------------------------------------------------------
 
-function reloadWeapon(playerid)
-	reloadPedWeapon(playerid)
-end
-addEvent("relWep", true)
-addEventHandler("relWep", resourceRoot, reloadWeapon)
-
-function kickPlayer_fun(playerid)
-	kickPlayer(playerid)
-end
-addEvent("event_kickPlayer", true)
-addEventHandler("event_kickPlayer", getRootElement(), kickPlayer_fun)
-
-function pickupUse( playerid )
-	local x,y,z = getElementPosition(playerid)
-
-	for k,v in pairs(business_pos) do 
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-			for i=0,max_inv do
-				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
-				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
-					sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-					break
-				end
-			end
-
-			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
-			sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Стоимость товара "..result[1]["price"].."$", green[1], green[2], green[3])
-			sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
-
-			if search_inv_player(playerid, 43, k) ~= 0 then
-				sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
-			end
-			return
-		end
-	end
-
-	for k,v in pairs(house_pos) do
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-			for i=0,max_inv do
-				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
-				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_2 = '"..k.."'" )
-					sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-					break
-				end
-			end
-			return
-		end
-	end
-
-	for k,v in pairs(interior_job) do 
-		if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
-			sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
-			return
-		end
-	end
-end
-addEventHandler( "onPickupUse", root, pickupUse )
-
-function house_bussiness_job_pos_load( playerid )
-	for h,v in pairs(house_pos) do
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house" )
-	end
-
-	for h,v in pairs(business_pos) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz" )
-	end
-
-	for h,v in pairs(interior_job) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job" )
-	end
-end
-
-function reg_or_log_fun(playerid, text)
-	local playername = getPlayerName ( playerid )
-	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
-	if result[1]["COUNT()"] == 0 then
-		reg_fun(playerid, text)
-	else
-		log_fun(playerid, text)
-	end
-end
-addEvent( "event_reg_or_log_fun", true )
-addEventHandler ( "event_reg_or_log_fun", getRootElement(), reg_or_log_fun )
------------------------------------------------------------------------------------------
-
 function displayLoadedRes ( res )--старт ресурсов
 	if car_spawn_value == 0 then
 		car_spawn_value = 1
@@ -936,6 +947,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
+		setTimer(set_weather, 60000, 0)--погода сервера
 
 		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
 		local carnumber_number = result[1]["COUNT()"]
@@ -2391,6 +2403,25 @@ function ( playerid, cmd, id )
 
 	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..id.."', '"..x.."', '"..y.."', '"..z.."')" )
 	sendPlayerMessage(playerid, "save pos "..id, lyme[1], lyme[2], lyme[3])
+end)
+
+addCommandHandler ( "stime",
+function ( playerid, cmd, id1, id2 )
+	local playername = getPlayerName ( playerid )
+	local house = tonumber(id1)
+	local min = tonumber(id2)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if house == nil or min == nil then
+		return
+	end
+
+	if house >= 0 and house <= 23 and min >= 0 and min <= 59 then
+		setTime (house, min)
+	end
 end)
 
 addCommandHandler ( "banplayer",
