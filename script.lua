@@ -157,7 +157,7 @@ local info_png = {
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "ID"},
-	[10] = {"полицейское удостоверение на имя", ""},
+	[10] = {"полицейское удостоверение", "шт"},
 	[11] = {"патроны 25 шт для", "ID"},
 	[12] = {"colt-45", "ID"},
 	[13] = {"deagle", "ID"},
@@ -1812,17 +1812,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 10 then--документы копа
 			if search_inv_player(playerid, 28, 1) ~= 0 then
-				me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1])
 			elseif search_inv_player(playerid, 29, 1) ~= 0 then
-				me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1])
 			elseif search_inv_player(playerid, 30, 1) ~= 0 then
-				me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1])
 			elseif search_inv_player(playerid, 31, 1) ~= 0 then
-				me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1])
 			elseif search_inv_player(playerid, 32, 1) ~= 0 then
-				me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1])
 			elseif search_inv_player(playerid, 33, 1) ~= 0 then
-				me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1])
 			end
 			return
 
@@ -2323,7 +2323,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
-local sub_text = {2,6,10,44,45}
+local sub_text = {2,6,44,45}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
