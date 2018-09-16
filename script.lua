@@ -157,7 +157,7 @@ local info_png = {
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "ID"},
-	[10] = {"полицейское удостоверение", "шт"},
+	[10] = {"полицейское удостоверение на имя", ""},
 	[11] = {"патроны 25 шт для", "ID"},
 	[12] = {"colt-45", "ID"},
 	[13] = {"deagle", "ID"},
@@ -599,6 +599,8 @@ function pickupUse( playerid )
 
 	for k,v in pairs(business_pos) do 
 		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+
 			for i=0,max_inv do
 				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -623,6 +625,8 @@ function pickupUse( playerid )
 
 	for k,v in pairs(house_pos) do
 		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+
 			for i=0,max_inv do
 				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -637,6 +641,7 @@ function pickupUse( playerid )
 
 	for k,v in pairs(interior_job) do 
 		if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 			sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
 			return
 		end
@@ -1811,18 +1816,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 10 then--документы копа
-			if search_inv_player(playerid, 28, 1) ~= 0 then
-				me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1])
-			elseif search_inv_player(playerid, 29, 1) ~= 0 then
-				me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1])
-			elseif search_inv_player(playerid, 30, 1) ~= 0 then
-				me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1])
-			elseif search_inv_player(playerid, 31, 1) ~= 0 then
-				me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1])
-			elseif search_inv_player(playerid, 32, 1) ~= 0 then
-				me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1])
-			elseif search_inv_player(playerid, 33, 1) ~= 0 then
-				me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1])
+			if search_inv_player(playerid, 10, playername) ~= 0 then
+				if search_inv_player(playerid, 28, 1) ~= 0 then
+					me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				elseif search_inv_player(playerid, 29, 1) ~= 0 then
+					me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				elseif search_inv_player(playerid, 30, 1) ~= 0 then
+					me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				elseif search_inv_player(playerid, 31, 1) ~= 0 then
+					me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				elseif search_inv_player(playerid, 32, 1) ~= 0 then
+					me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				elseif search_inv_player(playerid, 33, 1) ~= 0 then
+					me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 			end
 			return
 
@@ -2323,7 +2332,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
-local sub_text = {2,6,44,45}
+local sub_text = {2,6,10,44,45}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
