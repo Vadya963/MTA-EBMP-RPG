@@ -2563,7 +2563,7 @@ function ( playerid, cmd, id )
 	if interior_house[id] ~= nil then
 		setElementInterior(playerid, 0)
 		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
-		sendPlayerMessage(playerid, "interior "..interior_house[id][2], lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage(playerid, "setElementInterior "..interior_house[id][2], lyme[1], lyme[2], lyme[3])
 	else
 		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
 	end
