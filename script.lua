@@ -158,7 +158,7 @@ local info_png = {
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "ID"},
 	[10] = {"полицейское удостоверение на имя", ""},
-	[11] = {"патроны 25 шт для", "ID"},
+	[11] = {"планшет", "шт"},
 	[12] = {"colt-45", "ID"},
 	[13] = {"deagle", "ID"},
 	[14] = {"AK-47", "ID"},
@@ -193,6 +193,7 @@ local info_png = {
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
+	[46] = {"радар", "шт"},
 }
 
 local weapon = {
@@ -397,6 +398,14 @@ local interior_house = {
 local array_player_1 = {}
 local array_player_2 = {}
 
+local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
+local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
+local logged = {}--0-не вошел, 1-вошел
+local enter_house = {}--0-не вошел, 1-вошел (не удалять)
+local enter_business = {}--0-не вошел, 1-вошел (не удалять)
+local enter_job = {}--0-не вошел, 1-вошел (не удалять)
+local speed_car_device = {}--отображение скорости авто, 0-выкл, 1-вкл
+
 --инв-рь авто
 local array_car_1 = {}
 local array_car_2 = {}
@@ -420,13 +429,6 @@ local interior_job = {
 	{3, "Мерия", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5},
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6},
 }
-
-local state_inv_player = {}--состояние инв-ря игрока 0-выкл, 1-вкл
-local state_gui_window = {}--состояние гуи окна 0-выкл, 1-вкл
-local logged = {}--0-не вошел, 1-вошел
-local enter_house = {}--0-не вошел, 1-вошел (не удалять)
-local enter_business = {}--0-не вошел, 1-вошел (не удалять)
-local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 
 -------------------пользовательские функции 2----------------------------------------------
 function fuel_down()--система топлива авто
@@ -1035,6 +1037,7 @@ function()
 	enter_house[playername] = 0
 	enter_business[playername] = 0
 	enter_job[playername] = 0
+	speed_car_device[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
@@ -1678,7 +1681,7 @@ function lalt_down (playerid, key, keyState)
 	end
 end
 
-function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--изменение инв-ря на сервере
+function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--изменение(сохранение) инв-ря на сервере
 	local playername = tabpanel
 	local plate = tabpanel
 	local h = tabpanel
@@ -1840,15 +1843,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." взял в руку "..weapon[id1][1])
 			id2 = 0
 
-		elseif id1 == 11 then--боеприпасы
-			if getPedWeapon(playerid) == weapon[id2][2] then
-				giveWeapon(playerid, weapon[id2][2], 25)
-				me_chat(playerid, playername.." распаковал коробку боеприпасов")
-				id2 = 0
-			else
-				sendPlayerMessage(playerid, "[ERROR] В руках нет оружия", red[1], red[2], red[3] )
-				return
-			end
+		elseif id1 == 11 then--планшет
+			me_chat(playerid, playername.." достал "..info_png[id1][1])
+			return
 
 		elseif id1 >= 28 and id1 <= 33 then--шевроны
 			return
@@ -1968,6 +1965,20 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
 				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			end
+			return
+
+		elseif id1 == 46 then--радар
+			if speed_car_device[playername] == 0 then
+				speed_car_device[playername] = 1
+				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
+
+				me_chat(playerid, playername.." включил "..info_png[id1][1])
+			else
+				speed_car_device[playername] = 0
+				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
+
+				me_chat(playerid, playername.." выключил "..info_png[id1][1])
 			end
 			return
 		end

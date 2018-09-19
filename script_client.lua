@@ -13,9 +13,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
-local fuel = 0--топливо авто для dxdrawimage
-
-local max_subject = 45--кол-во предметов
+local max_subject = 46--кол-во предметов
 
 --выделение картинки
 local gui_2dtext = false
@@ -33,7 +31,7 @@ local info_png = {
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "ID"},
 	[10] = {"полицейское удостоверение на имя", ""},
-	[11] = {"патроны 25 шт для", "ID"},
+	[11] = {"планшет", "шт"},
 	[12] = {"colt-45", "ID"},
 	[13] = {"deagle", "ID"},
 	[14] = {"AK-47", "ID"},
@@ -68,6 +66,7 @@ local info_png = {
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
+	[46] = {"радар", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -90,12 +89,19 @@ end
 addEvent( "event_earth_load", true )
 addEventHandler ( "event_earth_load", getRootElement(), earth_load )
 
-
-function fuel_load (i)--топливо машины
+local fuel = 0--топливо авто для dxdrawimage
+function fuel_load_fun (i)
 	fuel = i
 end
 addEvent( "event_fuel_load", true )
-addEventHandler ( "event_fuel_load", getRootElement(), fuel_load )
+addEventHandler ( "event_fuel_load", getRootElement(), fuel_load_fun )
+
+local speed_car_device = 0--отображение скорости авто, 0-выкл, 1-вкл
+function speed_car_device_fun (i)
+	speed_car_device = i
+end
+addEvent( "event_speed_car_device_fun", true )
+addEventHandler ( "event_speed_car_device_fun", getRootElement(), speed_car_device_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -286,6 +292,28 @@ function createText ()
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
 		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
+	end
+
+	for k,vehicle in pairs(getElementsByType("vehicle")) do
+		local xv,yv,zv = getElementPosition(vehicle)
+		
+		if isPointInCircle3D(x,y,z, xv,yv,zv, 20) then
+			local coords = { getScreenFromWorldPosition( xv,yv,zv+1, 0, false ) }
+			local plate = getVehiclePlateText(vehicle)
+
+			if coords[1] and coords[2] then
+				if speed_car_device == 1 then
+					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
+					local speed_table = split(getSpeed(vehicle), ".")
+
+					dxDrawText ( speed_table[1].." km/h", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+					dxDrawText ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+				end
+
+				dxDrawText ( plate, coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+				dxDrawText ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+			end
+		end
 	end
 
 
