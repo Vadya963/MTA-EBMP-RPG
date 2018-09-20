@@ -219,6 +219,26 @@ local paint={
 	[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},-- tornado
 }
 
+local weapon = {
+	[9] = {"граната", 16},
+	[12] = {"colt-45", 22},
+	[13] = {"deagle", 24},
+	[14] = {"AK-47", 30},
+	[15] = {"M4", 31},
+	[16] = {"tec-9", 32},
+	[17] = {"MP5", 29},
+	[18] = {"uzi", 28},
+	[19] = {"слезоточивый газ", 17},
+	[26] = {"silenced", 23},
+	[34] = {"shotgun", 25},
+	[35] = {"парашют", 46},
+	[36] = {"дубинка", 3},
+	[37] = {"бита", 5},
+	[38] = {"нож", 4},
+	[40] = {"лом", 15},
+	[41] = {"sniper", 34},
+}
+
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 local house_pos = {}
 local business_pos = {}
@@ -306,8 +326,10 @@ function createText ()
 					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 					local speed_table = split(getSpeed(vehicle), ".")
 
-					dxDrawText ( speed_table[1].." km/h", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-					dxDrawText ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+					if coords[1] and coords[2] then
+						dxDrawText ( speed_table[1].." km/h", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
+						dxDrawText ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+					end
 				end
 
 				dxDrawText ( plate, coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
@@ -404,7 +426,7 @@ function tune_window_create (number)--создание окна тюнинга
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
 	local width = 300+50+10
 	local height = 210.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомастерская "..number_business.." бизнеса", false )
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
 	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
 	local tune_text = guiCreateLabel ( 180, 75, dimensions1, 20, "Введите цвет в RGB", false, gui_window )
@@ -550,14 +572,14 @@ function business_menu(number)--создание окна бизнеса
 	local dimensions = dxGetTextWidth ( "Укажите сумму", 1, "default-bold" )
 	local width = 220+10
 	local height = 165.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Меню "..number_business.." бизнеса", false )
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
 	local tune_text = guiCreateLabel ( (width/2)-(dimensions/2), 20, dimensions, 20, "Укажите сумму", false, gui_window )
 	local tune_text_edit = guiCreateEdit ( 0, 40, 220, 20, "", false, gui_window )
 	local tune_radio_button1 = guiCreateRadioButton ( 0, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = guiCreateRadioButton ( 0, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
 	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 220, 15, "Установить стоимость товара", false, gui_window )
 	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену закупки товара", false, gui_window )
-	local tune_search_button = guiCreateButton( 0, 165, 220, 25, "Выполнить", false, gui_window )
+	local complete_button = guiCreateButton( 0, 165, 220, 25, "Выполнить", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGetText ( tune_text_edit )
@@ -577,11 +599,101 @@ function business_menu(number)--создание окна бизнеса
 			end
 		end
 	end
-	addEventHandler ( "onClientGUIClick", tune_search_button, complete, false )
+	addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
 end
 addEvent( "event_business_menu", true )
 addEventHandler ( "event_business_menu", getRootElement(), business_menu )
+
+
+function weapon_menu(number)--создание окна аммунации
+	number_business = number
+
+	showCursor( true )
+
+	local width = 200+10
+	local height = 320.0+(25.0*1)+10
+	local text_width = 50.0
+	local text_height = 50.0
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Магазин оружия", false )
+
+	local weaponlist = guiCreateGridList(0, 20, 200, 320-30, false, gui_window)
+	guiGridListAddColumn(weaponlist, "Оружие", 1)
+
+	for k,v in pairs(weapon) do
+		guiGridListAddRow(weaponlist, v[1])
+	end
+
+	local buy_weapon = guiCreateButton( 0, 320, 200, 25, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( weaponlist, guiGridListGetSelectedItem ( weaponlist ) )
+
+		triggerServerEvent( "event_weaponbuy_fun", getRootElement(), getLocalPlayer(), text, number_business )
+	end
+	addEventHandler ( "onClientGUIClick", buy_weapon, complete, false )
+
+end
+addEvent( "event_weapon_menu", true )
+addEventHandler ( "event_weapon_menu", getRootElement(), weapon_menu )
+
+
+function tablet_fun()--создание окна бизнеса
+
+	showCursor( true )
+
+	local width = 720
+	local height = 430
+
+	local width_fon = 642
+	local height_fon = 360
+
+	local width_fon_pos = 40
+	local height_fon_pos = 29
+
+	gui_window = guiCreateStaticImage( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "comp/tablet-display.png", false )
+	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
+
+	local loadURL = guiCreateButton ( 0, 0, 40, 25, "HOME", false, fon )
+	local NavigateBack = guiCreateButton ( 40, 0, 20, 25, "<", false, fon )
+	local NavigateForward = guiCreateButton ( 60, 0, 20, 25, ">", false, fon )
+	local reloadPage = guiCreateButton ( 80, 0, 20, 25, "F5", false, fon )
+	local home = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, fon )
+	local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, fon )
+
+	local auction = guiCreateStaticImage( 10, 30, 60, 60, "comp/auction.png", false, fon )
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--список бизнесов
+
+	end
+	addEventHandler ( "onClientGUIClick", auction, outputEditBox, false )
+
+	--[[local browser = guiCreateBrowser( width_fon_pos, height_fon_pos+25, width_fon, height_fon-25, false, false, false, fon )
+	local theBrowser = guiGetBrowser( browser )
+
+	addEventHandler("onClientBrowserCreated", theBrowser, 
+	function()
+		loadBrowserURL(theBrowser, "https://www.youtube.com/")
+	end)
+
+	addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )
+		guiSetText( addressBar, getBrowserURL( theBrowser ) )
+	end )
+
+	addEventHandler( "onClientGUIClick", resourceRoot, 
+	function()
+		if source == NavigateBack then
+			navigateBrowserBack(theBrowser)
+		elseif source == NavigateForward then
+			navigateBrowserForward(theBrowser)
+		elseif source == reloadPage then
+			reloadBrowserPage(theBrowser)
+		end
+	end)]]
+
+end
+addEvent( "event_tablet_fun", true )
+addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
 
 
 function zamena_img()

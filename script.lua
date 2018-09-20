@@ -205,7 +205,7 @@ local weapon = {
 	[16] = {"tec-9", 32},
 	[17] = {"MP5", 29},
 	[18] = {"uzi", 28},
-	[19] = {"дымовая граната", 17},
+	[19] = {"слезоточивый газ", 17},
 	[26] = {"silenced", 23},
 	[34] = {"shotgun", 25},
 	[35] = {"парашют", 46},
@@ -892,6 +892,44 @@ addEvent( "event_setVehicleHeadLightColor", true )
 addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
 ------------------------------------------------------------------------------------------------------------
 
+
+---------------------------------------магазин оружия-------------------------------------------------------
+function weaponbuy_fun( playerid, text, number )
+	local playername = getPlayerName(playerid)
+	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
+	local prod = 1
+	local cash = result[1]["price"]
+
+	if prod <= result[1]["warehouse"] then
+		if cash <= array_player_2[playername][1] then
+			for k,v in pairs(weapon) do
+				if v[1] == text then
+					if inv_player_empty(playerid, k, k) then
+						sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+
+						sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+						save_player_action(playerid, "[weaponbuy_fun] [weapon - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+					else
+						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					end
+					return
+				end
+			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+	end	
+end
+addEvent( "event_weaponbuy_fun", true )
+addEventHandler ( "event_weaponbuy_fun", getRootElement(), weaponbuy_fun )
+------------------------------------------------------------------------------------------------------------
+
+
 --------------------------эвент по кассе для бизнесов-------------------------------------------------------
 function till_fun( playerid, number, money, value )
 	local playername = getPlayerName(playerid)
@@ -993,7 +1031,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1239, 10000 )
 
-			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"], result[1]["type"]}
+			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"], result[1]["type"], result[1]["world"]}
 		end
 
 		print("[business_number] "..business_number)
@@ -1547,12 +1585,17 @@ local x,y,z = getElementPosition(playerid)
 	end
 
 	if keyState == "down" then
-		for k,v in pairs(business_pos) do 
-			if state_inv_player[playername] == 0 then--инв-рь игрока
-				if state_gui_window[playername] == 0 then
-
+		if state_inv_player[playername] == 0 then--инв-рь игрока
+			if state_gui_window[playername] == 0 then
+				for k,v in pairs(business_pos) do
 					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
 						triggerClientEvent( playerid, "event_tune_create", playerid, k )
+						state_gui_window[playername] = 1
+						return
+					end
+
+					if getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
+						triggerClientEvent( playerid, "event_weapon_menu", playerid, k )
 						state_gui_window[playername] = 1
 						return
 					end
@@ -1566,12 +1609,11 @@ local x,y,z = getElementPosition(playerid)
 							end
 						end
 					end
-
-				else
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-					state_gui_window[playername] = 0
-					return
 				end
+			else
+				triggerClientEvent( playerid, "event_gui_delet", playerid )
+				state_gui_window[playername] = 0
+				return
 			end
 		end
 	end
@@ -1593,7 +1635,7 @@ function lalt_down (playerid, key, keyState)
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
-				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 					if house_door[id2] == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 						return
@@ -1632,7 +1674,7 @@ function lalt_down (playerid, key, keyState)
 				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
-				if isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 					if id == 5 or id == 6 then
 						return
 					end
@@ -1845,6 +1887,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 11 then--планшет
 			me_chat(playerid, playername.." достал "..info_png[id1][1])
+
+			triggerClientEvent( playerid, "event_inv_delet", playerid )
+			triggerClientEvent( playerid, "event_tablet_fun", playerid )
+			state_inv_player[playername] = 0
+			state_gui_window[playername] = 1
 			return
 
 		elseif id1 >= 28 and id1 <= 33 then--шевроны
@@ -2261,7 +2308,7 @@ function (playerid, cmd, id)
 			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
-				business_pos[dim] = {x,y,z, interior_business[id][2]}
+				business_pos[dim] = {x,y,z, interior_business[id][2], dim}
 
 				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
 				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1239, 10000 )
