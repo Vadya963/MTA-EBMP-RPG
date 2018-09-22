@@ -693,6 +693,11 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 		local cash = result[1]["price"]
 
 		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
 			if cash <= array_player_2[playername][1] then
 				for k,v in pairs(upgrades) do
 					text = text..v..","
@@ -745,6 +750,11 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 		local cash = result[1]["price"]
 
 		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
 			if cash <= array_player_2[playername][1] then
 				for k,v in pairs(upgrades) do
 					text = text..v..","
@@ -790,6 +800,11 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 		local cash = result[1]["price"]/2
 
 		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
 			if cash <= array_player_2[playername][1] then
 
 				sendPlayerMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange[1], orange[2], orange[3])
@@ -828,6 +843,11 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 		local cash = result[1]["price"]/2
 
 		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
 			if cash <= array_player_2[playername][1] then
 
 				sendPlayerMessage(playerid, "Вы перекрасили авто за "..cash.."$", orange[1], orange[2], orange[3])
@@ -866,6 +886,11 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 		local cash = result[1]["price"]/2
 
 		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
 			if cash <= array_player_2[playername][1] then
 
 				sendPlayerMessage(playerid, "Вы поменяли цвет фар авто за "..cash.."$", orange[1], orange[2], orange[3])
@@ -901,6 +926,11 @@ function weaponbuy_fun( playerid, text, number )
 	local cash = result[1]["price"]
 
 	if prod <= result[1]["warehouse"] then
+		if cash == 0 then
+			sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+			return
+		end
+
 		if cash <= array_player_2[playername][1] then
 			for k,v in pairs(weapon) do
 				if v[1] == text then
@@ -1689,6 +1719,9 @@ function lalt_down (playerid, key, keyState)
 						return
 					end
 
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+					
+					state_gui_window[playername] = 0
 					enter_business[playername] = 0
 					setElementDimension(playerid, 0)
 					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
