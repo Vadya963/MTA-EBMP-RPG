@@ -1704,7 +1704,10 @@ function lalt_down (playerid, key, keyState)
 					if id == 5 or id == 6 then
 						return
 					end
+					
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
+					state_gui_window[playername] = 0
 					enter_business[playername] = 1
 					setElementDimension(playerid, result[1]["world"])
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
