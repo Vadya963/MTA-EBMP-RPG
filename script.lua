@@ -1676,13 +1676,9 @@ function lalt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] then
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername] == 1 then
 					if house_door[id2] == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
-						return
-					end
-
-					if enter_house[playername] == 0 then
 						return
 					end
 
@@ -1714,13 +1710,10 @@ function lalt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] then
-					if enter_business[playername] == 0 then
-						return
-					end
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
-					
+
 					state_gui_window[playername] = 0
 					enter_business[playername] = 0
 					setElementDimension(playerid, 0)
@@ -1740,10 +1733,7 @@ function lalt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_job[id][1], interior_job[id][3], interior_job[id][4], interior_job[id][5])
 					return
 
-				elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] then
-					if enter_job[playername] == 0 then
-						return
-					end
+				elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] and enter_job[playername] == 1 then
 
 					enter_job[playername] = 0
 					setElementDimension(playerid, 0)

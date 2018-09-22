@@ -1146,11 +1146,13 @@ addEvent( "event_inv_delet", true )
 addEventHandler ( "event_inv_delet", getRootElement(), inv_delet )
 
 function tune_close ( button, state, absoluteX, absoluteY )--закрытие окна
-	destroyElement(gui_window)
+	if gui_window then
+		destroyElement(gui_window)
 
-	tune_color_2d = false
-	gui_window = nil
-	showCursor( false )
+		tune_color_2d = false
+		gui_window = nil
+		showCursor( false )
+	end
 end
 addEvent( "event_gui_delet", true )
 addEventHandler ( "event_gui_delet", getRootElement(), tune_close )
@@ -1173,7 +1175,7 @@ addEventHandler ( "event_inv_load", getRootElement(), inv_load )
 function tab_load (value, text)--загрузка надписей в табе
 	if value == "car" then
 
-		if text == "" and tab_car ~= nil then
+		if text == "" and tab_car then
 			destroyElement(tab_car)
 		end
 
@@ -1187,7 +1189,7 @@ function tab_load (value, text)--загрузка надписей в табе
 		lmb = 0
 	elseif value == "house" then
 
-		if text == "" and tab_house ~= nil then
+		if text == "" and tab_house then
 			destroyElement(tab_house)
 		end
 
