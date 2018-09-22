@@ -1514,14 +1514,14 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 			earth[j][4] = id1
 			earth[j][5] = id2
 
-			if search_inv_player(playerid, 25, id2) ~= 0 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+			if search_inv_player(playerid, 25, id2) ~= 0 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 			end
 
 			if vehicleid then
 				local plate = getVehiclePlateText ( vehicleid )
 
-				if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate then--когда выбрасываешь ключ в инв-ре исчезают картинки
+				if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 					triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 				end
 			end
@@ -1533,7 +1533,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
-			save_player_action(playerid, "[throw_earth] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+			save_player_action(playerid, "[throw_earth] "..playername.." [value - "..value..", x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
 
 			return
 		end
@@ -1957,6 +1957,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				me_chat(playerid, playername.." починил авто")
 				save_player_action(playerid, "[heal_vehicleid - POSLE] "..getElementHealth(vehicleid))
 			else
+				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 				return
 			end
 

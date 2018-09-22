@@ -109,7 +109,7 @@ for i=0,max_subject do
 	image[i] = dxCreateTexture(i..".png")
 end
 
-local info_tab = nil
+local info_tab = nil --положение картинки в табе
 local info1 = -1 --номер картинки
 local info2 = -1 --значение картинки
 local info3 = -1 --слот картинки
@@ -618,7 +618,7 @@ function weapon_menu(number)--создание окна аммунации
 	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Магазин оружия", false )
 
 	local weaponlist = guiCreateGridList(0, 20, 200, 320-30, false, gui_window)
-	guiGridListAddColumn(weaponlist, "Оружие", 1)
+	guiGridListAddColumn(weaponlist, "Оружие", 0.9)
 
 	for k,v in pairs(weapon) do
 		guiGridListAddRow(weaponlist, v[1])
@@ -638,7 +638,7 @@ addEvent( "event_weapon_menu", true )
 addEventHandler ( "event_weapon_menu", getRootElement(), weapon_menu )
 
 
-function tablet_fun()--создание окна бизнеса
+function tablet_fun()--создание планшета
 
 	showCursor( true )
 
@@ -663,12 +663,12 @@ function tablet_fun()--создание окна бизнеса
 
 	local auction = guiCreateStaticImage( 10, 30, 60, 60, "comp/auction.png", false, fon )
 
-	function outputEditBox ( button, state, absoluteX, absoluteY )--список бизнесов
+	function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
 
 	end
 	addEventHandler ( "onClientGUIClick", auction, outputEditBox, false )
 
-	--[[local browser = guiCreateBrowser( width_fon_pos, height_fon_pos+25, width_fon, height_fon-25, false, false, false, fon )
+	local browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, fon )
 	local theBrowser = guiGetBrowser( browser )
 
 	addEventHandler("onClientBrowserCreated", theBrowser, 
@@ -689,7 +689,7 @@ function tablet_fun()--создание окна бизнеса
 		elseif source == reloadPage then
 			reloadBrowserPage(theBrowser)
 		end
-	end)]]
+	end)
 
 end
 addEvent( "event_tablet_fun", true )
@@ -1054,7 +1054,7 @@ function inv_create ()--создание инв-ря
 			return
 		end
 
-		if tab_player == guiGetSelectedTab(tabPanel) then
+		if tab_player == guiGetSelectedTab(tabPanel) and tab_player == info_tab then
 			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
 		end
 
@@ -1072,16 +1072,18 @@ function inv_create ()--создание инв-ря
 			return
 		end
 
-		if tab_player == guiGetSelectedTab(tabPanel) then
+		if tab_player == guiGetSelectedTab(tabPanel) and tab_player == info_tab then
 			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
-		--[[elseif tab_car == guiGetSelectedTab(tabPanel) then--возникает проблема с предметами
+
+		elseif tab_car == guiGetSelectedTab(tabPanel) and tab_car == info_tab then
 			local vehicleid = getPlayerVehicle(getLocalPlayer())
 
 			if vehicleid then
 				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
 			end
-		elseif tab_house == guiGetSelectedTab(tabPanel) then
-			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )]]
+
+		elseif tab_house == guiGetSelectedTab(tabPanel) and tab_house == info_tab then
+			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )
 		end
 
 		gui_selection = false
@@ -1178,6 +1180,9 @@ function tab_load (value, text)--загрузка надписей в табе
 		plate = text
 		gui_selection = false
 		info_tab = nil
+		info1 = -1
+		info2 = -1
+		info3 = -1
 		tab_car = nil
 		lmb = 0
 	elseif value == "house" then
@@ -1189,6 +1194,9 @@ function tab_load (value, text)--загрузка надписей в табе
 		house = text
 		gui_selection = false
 		info_tab = nil
+		info1 = -1
+		info2 = -1
+		info3 = -1
 		tab_house = nil
 		lmb = 0
 	end
