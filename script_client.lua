@@ -689,8 +689,8 @@ function tablet_fun()--создание планшета
 	gui_window = guiCreateStaticImage( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "comp/tablet-display.png", false )
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
 
-	local auction = guiCreateStaticImage( 10, 10, 60, 45, "comp/auction.png", false, fon )
-	local internet = guiCreateStaticImage( 70, 10, 60, 60, "comp/internet.png", false, fon )
+	local auction = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
+	local internet = guiCreateStaticImage( 90, 10, 60, 60, "comp/internet.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if tomorrow_weather == value then
@@ -707,7 +707,7 @@ function tablet_fun()--создание планшета
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--интернет
 		if not browser then
-			local low_fon = guiCreateStaticImage( 0, 0, width_fon, 25, "comp/low_fon.png", false, fon )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon.png", false, fon )
 
 			local home = guiCreateButton ( 0, 0, 40, 25, "HOME", false, low_fon )
 			local NavigateBack = guiCreateButton ( 40, 0, 20, 25, "<", false, low_fon )
@@ -716,7 +716,7 @@ function tablet_fun()--создание планшета
 			local loadURL = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, low_fon )
 			local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, low_fon )
 
-			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, fon )
+			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, low_fon )
 			local theBrowser = guiGetBrowser( browser )
 
 			addEventHandler("onClientBrowserCreated", theBrowser,
@@ -749,7 +749,6 @@ function tablet_fun()--создание планшета
 
 				elseif source == home then
 					destroyElement(low_fon)
-					destroyElement(browser)
 
 					browser = nil
 				end
