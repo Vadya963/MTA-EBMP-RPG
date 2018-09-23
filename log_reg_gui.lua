@@ -4,7 +4,7 @@ local width = 220.0
 local height = 80.0+25+10
 
 showCursor( true )
-local rl_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Вход", false )
+local rl_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Регистрация - Авторизация", false )
 
 local dimensions = dxGetTextWidth ( "Введите пароль", 1, "default-bold" )
 local text = guiCreateLabel ( (width/2)-(dimensions/2), 25, dimensions, 20, "Введите пароль", false, rl_window )

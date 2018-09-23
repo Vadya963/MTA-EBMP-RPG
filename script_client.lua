@@ -102,6 +102,13 @@ function speed_car_device_fun (i)
 end
 addEvent( "event_speed_car_device_fun", true )
 addEventHandler ( "event_speed_car_device_fun", getRootElement(), speed_car_device_fun )
+
+local tomorrow_weather = 0--погода
+function tomorrow_weather_fun (i)
+	tomorrow_weather = i
+end
+addEvent( "event_tomorrow_weather_fun", true )
+addEventHandler ( "event_tomorrow_weather_fun", getRootElement(), tomorrow_weather_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -237,6 +244,32 @@ local weapon = {
 	[38] = {"нож", 4},
 	[40] = {"лом", 15},
 	[41] = {"sniper", 34},
+}
+
+local weather_list = {
+	[0] = {"SUNNY"},
+	[1] = {"SUNNY"},
+	[2] = {"SUNNY"},
+	[3] = {"CLOUDY"},
+	[4] = {"CLOUDY"},
+	[5] = {"SUNNY"},
+	[6] = {"SUNNY"},
+	[7] = {"CLOUDY"},
+	[8] = {"RAINY"},
+	[9] = {"FOGGY"},
+	[10] = {"SUNNY"},
+	[11] = {"SUNNY"},
+	[12] = {"CLOUDY"},
+	[13] = {"SUNNY"},
+	[14] = {"SUNNY"},
+	[15] = {"CLOUDY"},
+	[16] = {"RAINY"},
+	[17] = {"SUNNY"},
+	[18] = {"SUNNY"},
+	[19] = {"SANDSTORM"},
+	[20] = {"CLOUDY"},
+	[21] = {"CLOUDY"},
+	[22] = {"CLOUDY"},
 }
 
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
@@ -651,45 +684,79 @@ function tablet_fun()--создание планшета
 	local width_fon_pos = 40
 	local height_fon_pos = 29
 
+	local browser = nil
+
 	gui_window = guiCreateStaticImage( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "comp/tablet-display.png", false )
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
 
-	local loadURL = guiCreateButton ( 0, 0, 40, 25, "HOME", false, fon )
-	local NavigateBack = guiCreateButton ( 40, 0, 20, 25, "<", false, fon )
-	local NavigateForward = guiCreateButton ( 60, 0, 20, 25, ">", false, fon )
-	local reloadPage = guiCreateButton ( 80, 0, 20, 25, "F5", false, fon )
-	local home = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, fon )
-	local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, fon )
+	local auction = guiCreateStaticImage( 10, 10, 60, 45, "comp/auction.png", false, fon )
+	local internet = guiCreateStaticImage( 70, 10, 60, 60, "comp/internet.png", false, fon )
 
-	local auction = guiCreateStaticImage( 10, 30, 60, 60, "comp/auction.png", false, fon )
+	for value,weather in pairs(weather_list) do
+		if tomorrow_weather == value then
+			local set_weather = guiCreateStaticImage( width_fon-156, height_fon-128, 156, 128, "comp/"..weather[1]..".png", false, fon )
+			break
+		end
+	end
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
 
 	end
 	addEventHandler ( "onClientGUIClick", auction, outputEditBox, false )
 
-	local browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, fon )
-	local theBrowser = guiGetBrowser( browser )
 
-	addEventHandler("onClientBrowserCreated", theBrowser, 
-	function()
-		loadBrowserURL(theBrowser, "https://www.youtube.com/")
-	end)
+	function outputEditBox ( button, state, absoluteX, absoluteY )--интернет
+		if not browser then
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, 25, "comp/low_fon.png", false, fon )
 
-	addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )
-		guiSetText( addressBar, getBrowserURL( theBrowser ) )
-	end )
+			local home = guiCreateButton ( 0, 0, 40, 25, "HOME", false, low_fon )
+			local NavigateBack = guiCreateButton ( 40, 0, 20, 25, "<", false, low_fon )
+			local NavigateForward = guiCreateButton ( 60, 0, 20, 25, ">", false, low_fon )
+			local reloadPage = guiCreateButton ( 80, 0, 20, 25, "F5", false, low_fon )
+			local loadURL = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, low_fon )
+			local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, low_fon )
 
-	addEventHandler( "onClientGUIClick", resourceRoot, 
-	function()
-		if source == NavigateBack then
-			navigateBrowserBack(theBrowser)
-		elseif source == NavigateForward then
-			navigateBrowserForward(theBrowser)
-		elseif source == reloadPage then
-			reloadBrowserPage(theBrowser)
+			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, fon )
+			local theBrowser = guiGetBrowser( browser )
+
+			addEventHandler("onClientBrowserCreated", theBrowser,
+			function ()
+				loadBrowserURL(theBrowser, "https://www.youtube.com")
+			end, false)
+
+			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )
+				guiSetText( addressBar, getBrowserURL( theBrowser ) )
+			end)
+
+			addEventHandler( "onClientGUIClick", resourceRoot, 
+			function()
+				if source == NavigateBack then
+					navigateBrowserBack(theBrowser)
+
+				elseif source == NavigateForward then
+					navigateBrowserForward(theBrowser)
+
+				elseif source == reloadPage then
+					reloadBrowserPage(theBrowser)
+
+				elseif source == loadURL then
+					local text = guiGetText ( addressBar )
+					if text ~= "" then
+						loadBrowserURL(theBrowser, text)
+					else
+						sendPlayerMessage("[ERROR] URL пуст")
+					end
+
+				elseif source == home then
+					destroyElement(low_fon)
+					destroyElement(browser)
+
+					browser = nil
+				end
+			end)
 		end
-	end)
+	end
+	addEventHandler ( "onClientGUIClick", internet, outputEditBox, false )
 
 end
 addEvent( "event_tablet_fun", true )

@@ -16,6 +16,13 @@
 	<file src="comp/tablet-display.png" />
 	<file src="comp/shop.png" />
 	<file src="comp/auction.png" />
+	<file src="comp/internet.png" />
+	<file src="comp/low_fon.png" />
+	<file src="comp/CLOUDY.png" />
+	<file src="comp/SUNNY.png" />
+	<file src="comp/FOGGY.png" />
+	<file src="comp/RAINY.png" />
+	<file src="comp/SANDSTORM.png" />
 
 	<file src="car/admiral(smith-custom-iz-mafia-2).txd" />
 	<file src="car/admiral(smith-custom-iz-mafia-2).dff" />

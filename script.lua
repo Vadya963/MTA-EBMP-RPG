@@ -18,6 +18,7 @@ local max_fuel = 50--объем бака авто
 local car_spawn_value = 0--чтобы ресурсы не запускались два раза
 local max_blip = 250--радиус блипов
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
+local tomorrow_weather = 0--погода
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -110,9 +111,14 @@ function set_weather()
 	if hour == 0 then
 		math.randomseed(getTickCount())
 
-		local x = math.random(22)
-		setWeatherBlended (x)
-		print(x)
+		setWeatherBlended(tomorrow_weather)
+
+		tomorrow_weather = math.random(22)
+		print("[tomorrow_weather] "..tomorrow_weather)
+
+		for k,playerid in pairs(getElementsByType("player")) do
+			triggerClientEvent( playerid, "event_tomorrow_weather_fun", playerid, tomorrow_weather )
+		end
 	end
 end
 -----------------------------------------------------------------------------------------
@@ -1024,6 +1030,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 60000, 0)--погода сервера
 
+		setWeather(tomorrow_weather)
+
 		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
 		local carnumber_number = result[1]["COUNT()"]
 		for i=1,carnumber_number do
@@ -1086,13 +1094,13 @@ function()
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM banserial_list WHERE serial = '"..serial.."'" )
-		kickPlayer(playerid, "banserial reason: "..result[1]["reason"])
+		kickPlayer(playerid, "ban serial reason: "..result[1]["reason"])
 		return
 	end
 
 	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 	if result[1]["ban"] ~= "0" then
-		kickPlayer(playerid, "banplayer reason: "..result[1]["reason"])
+		kickPlayer(playerid, "ban player reason: "..result[1]["reason"])
 		return
 	end
 
