@@ -1120,7 +1120,7 @@ function()
 	bindKey(playerid, "e", "down", e_down )
 	bindKey(playerid, "x", "down", x_down )
 	bindKey(playerid, "2", "down", to_down )
-	bindKey(playerid, "lalt", "down", lalt_down )
+	bindKey(playerid, "lalt", "down", left_alt_down )
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, 1)
 	fadeCamera(playerid, true)
@@ -1657,7 +1657,7 @@ local x,y,z = getElementPosition(playerid)
 	end
 end
 
-function lalt_down (playerid, key, keyState)
+function left_alt_down (playerid, key, keyState)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
@@ -1767,26 +1767,24 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--измен
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
 		sqlite( "UPDATE account SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
+
 	elseif value == "car" then
+		array_car_1[plate][id3+1] = id1
+		array_car_2[plate][id3+1] = id2
 
-			array_car_1[plate][id3+1] = id1
-			array_car_2[plate][id3+1] = id2
-
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-			if result[1]["COUNT()"] == 1 then
-				sqlite( "UPDATE car_db SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
-			end
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE car_db SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
+		end
 		
 	elseif value == "house" then
+		array_house_1[h][id3+1] = id1
+		array_house_2[h][id3+1] = id2
 
-			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-
-			if search_inv_player(playerid, 25, h) ~= 0 then
-				array_house_1[h][id3+1] = id1
-				array_house_2[h][id3+1] = id2
-
-				sqlite( "UPDATE house_db SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
-			end
+		local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..h.."'" )
+		if result[1]["COUNT()"] == 1 then
+			sqlite( "UPDATE house_db SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
+		end
 	end
 end
 addEvent( "event_inv_server_load", true )
