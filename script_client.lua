@@ -307,6 +307,11 @@ local tune_color_r = 255
 local tune_color_g = 0
 local tune_color_b = 0
 
+function dxdrawtext(text, x, y, width, height, color, scale, font)
+	dxDrawText ( text, x+1, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+	dxDrawText ( text, x, y, width, height, color, scale, font )
+end
+
 function createText ()
 	--setTime( 0, 0 )
 
@@ -315,15 +320,13 @@ function createText ()
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
 
-	dxDrawText ( text, 2.0+1, 0.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-	dxDrawText ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
-	dxDrawText ( x.." "..y.." "..z, 300.0+1, 40.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-	dxDrawText ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
-	dxDrawText ( rx.." "..ry.." "..rz, 300.0+1, 55.0+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-	dxDrawText ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
+	dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+	dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
 	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
@@ -339,8 +342,8 @@ function createText ()
 		end
 
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
-		dxDrawText ( speed_vehicle, 5+1, screenHeight-16+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-		dxDrawText ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
+
+		dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold" )
 
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
@@ -360,13 +363,11 @@ function createText ()
 					local speed_table = split(getSpeed(vehicle), ".")
 
 					if coords[1] and coords[2] then
-						dxDrawText ( speed_table[1].." km/h", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-						dxDrawText ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+						dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
 					end
 				end
 
-				dxDrawText ( plate, coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
 			end
 		end
 	end
@@ -375,8 +376,7 @@ function createText ()
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
 			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], house_bussiness_radius) then
-				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Дом #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Дом #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -385,8 +385,7 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then
-				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Бизнес #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Бизнес #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -395,8 +394,7 @@ function createText ()
 	if job_pos ~= nil then
 		for k,v in pairs(job_pos) do
 			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 5) then
-				dxDrawText ( "Здание (Нажмите ALT)", 5+1, screenHeight-31+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Здание (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Здание (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -437,8 +435,7 @@ function createText ()
 
 			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				dxDrawText ( "Нажмите E", coords[1]+1, coords[2]+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold" )
-				dxDrawText ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
 			end
 		end
 	end
@@ -744,7 +741,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendPlayerMessage("[ERROR] URL пуст")
+						sendPlayerMessage("[ERROR] URL пуст", red[1], red[2], red[3])
 					end
 
 				elseif source == home then
