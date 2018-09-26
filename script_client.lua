@@ -23,7 +23,7 @@ local info_png = {
 	[0] = {"", ""},
 	[1] = {"деньги", "$"},
 	[2] = {"права на имя", ""},
-	[3] = {"сигареты Big Break Red", "шт в пачке"},
+	[3] = {"сигареты Big Break Red", "сигарет в пачке"},
 	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "лит."},
 	[6] = {"ключ от автомобиля с номером", ""},
@@ -227,23 +227,43 @@ local paint={
 }
 
 local weapon = {
-	[9] = {"граната", 16},
-	[12] = {"colt-45", 22},
-	[13] = {"deagle", 24},
-	[14] = {"AK-47", 30},
-	[15] = {"M4", 31},
-	[16] = {"tec-9", 32},
-	[17] = {"MP5", 29},
-	[18] = {"uzi", 28},
-	[19] = {"слезоточивый газ", 17},
-	[26] = {"silenced", 23},
-	[34] = {"shotgun", 25},
-	[35] = {"парашют", 46},
-	[36] = {"дубинка", 3},
-	[37] = {"бита", 5},
-	[38] = {"нож", 4},
-	[40] = {"лом", 15},
-	[41] = {"sniper", 34},
+	[9] = {info_png[9][1], 16},
+	[12] = {info_png[12][1], 22},
+	[13] = {info_png[13][1], 24},
+	[14] = {info_png[14][1], 30},
+	[15] = {info_png[15][1], 31},
+	[16] = {info_png[16][1], 32},
+	[17] = {info_png[17][1], 29},
+	[18] = {info_png[18][1], 28},
+	[19] = {info_png[19][1], 17},
+	[26] = {info_png[26][1], 23},
+	[34] = {info_png[34][1], 25},
+	[35] = {info_png[35][1], 46},
+	[36] = {info_png[36][1], 3},
+	[37] = {info_png[37][1], 5},
+	[38] = {info_png[38][1], 4},
+	[40] = {info_png[40][1], 15},
+	[41] = {info_png[41][1], 34},
+}
+
+local shop = {
+	[3] = {info_png[3][1], 20},
+	[4] = {info_png[4][1], 5},
+	[7] = {info_png[7][1], 20},
+	[8] = {info_png[8][1], 20},
+	[11] = {info_png[11][1], 1},
+	[23] = {info_png[23][1], 5},
+	[46] = {info_png[46][1], 1},
+}
+
+local interior_business = {
+	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
+	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},--магаз одежды
+	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
+	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
+	{0, "Заправочная станция", 0,0,0, 16},
+	{0, "Автомастерская", 0,0,0, 27},
+	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
 local weather_list = {
@@ -636,22 +656,26 @@ addEvent( "event_business_menu", true )
 addEventHandler ( "event_business_menu", getRootElement(), business_menu )
 
 
-function weapon_menu(number)--создание окна аммунации
+function shop_menu(number, value)--создание окна магазина
 	number_business = number
 
 	showCursor( true )
 
 	local width = 200+10
 	local height = 320.0+(25.0*1)+10
-	local text_width = 50.0
-	local text_height = 50.0
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Магазин оружия", false )
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
 
 	local weaponlist = guiCreateGridList(0, 20, 200, 320-30, false, gui_window)
-	guiGridListAddColumn(weaponlist, "Оружие", 0.9)
+	guiGridListAddColumn(weaponlist, "Товары", 0.9)
 
-	for k,v in pairs(weapon) do
-		guiGridListAddRow(weaponlist, v[1])
+	if value == 1 then
+		for k,v in pairs(weapon) do
+			guiGridListAddRow(weaponlist, v[1])
+		end
+	elseif value == 3 then
+		for k,v in pairs(shop) do
+			guiGridListAddRow(weaponlist, v[1])
+		end
 	end
 
 	local buy_weapon = guiCreateButton( 0, 320, 200, 25, "Купить", false, gui_window )
@@ -659,13 +683,13 @@ function weapon_menu(number)--создание окна аммунации
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( weaponlist, guiGridListGetSelectedItem ( weaponlist ) )
 
-		triggerServerEvent( "event_weaponbuy_fun", getRootElement(), getLocalPlayer(), text, number_business )
+		triggerServerEvent( "event_buy_subject_fun", getRootElement(), getLocalPlayer(), text, number_business, value )
 	end
 	addEventHandler ( "onClientGUIClick", buy_weapon, complete, false )
 
 end
-addEvent( "event_weapon_menu", true )
-addEventHandler ( "event_weapon_menu", getRootElement(), weapon_menu )
+addEvent( "event_shop_menu", true )
+addEventHandler ( "event_shop_menu", getRootElement(), shop_menu )
 
 
 function tablet_fun()--создание планшета

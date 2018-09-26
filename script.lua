@@ -156,7 +156,7 @@ local info_png = {
 	[0] = {"", ""},
 	[1] = {"деньги", "$"},
 	[2] = {"права на имя", ""},
-	[3] = {"сигареты Big Break Red", "шт в пачке"},
+	[3] = {"сигареты Big Break Red", "сигарет в пачке"},
 	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "лит."},
 	[6] = {"ключ от автомобиля с номером", ""},
@@ -203,23 +203,33 @@ local info_png = {
 }
 
 local weapon = {
-	[9] = {"граната", 16},
-	[12] = {"colt-45", 22},
-	[13] = {"deagle", 24},
-	[14] = {"AK-47", 30},
-	[15] = {"M4", 31},
-	[16] = {"tec-9", 32},
-	[17] = {"MP5", 29},
-	[18] = {"uzi", 28},
-	[19] = {"слезоточивый газ", 17},
-	[26] = {"silenced", 23},
-	[34] = {"shotgun", 25},
-	[35] = {"парашют", 46},
-	[36] = {"дубинка", 3},
-	[37] = {"бита", 5},
-	[38] = {"нож", 4},
-	[40] = {"лом", 15},
-	[41] = {"sniper", 34},
+	[9] = {info_png[9][1], 16},
+	[12] = {info_png[12][1], 22},
+	[13] = {info_png[13][1], 24},
+	[14] = {info_png[14][1], 30},
+	[15] = {info_png[15][1], 31},
+	[16] = {info_png[16][1], 32},
+	[17] = {info_png[17][1], 29},
+	[18] = {info_png[18][1], 28},
+	[19] = {info_png[19][1], 17},
+	[26] = {info_png[26][1], 23},
+	[34] = {info_png[34][1], 25},
+	[35] = {info_png[35][1], 46},
+	[36] = {info_png[36][1], 3},
+	[37] = {info_png[37][1], 5},
+	[38] = {info_png[38][1], 4},
+	[40] = {info_png[40][1], 15},
+	[41] = {info_png[41][1], 34},
+}
+
+local shop = {
+	[3] = {info_png[3][1], 20},
+	[4] = {info_png[4][1], 5},
+	[7] = {info_png[7][1], 20},
+	[8] = {info_png[8][1], 20},
+	[11] = {info_png[11][1], 1},
+	[23] = {info_png[23][1], 5},
+	[46] = {info_png[46][1], 1},
 }
 
 local deathReasons = {
@@ -924,8 +934,8 @@ addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicle
 ------------------------------------------------------------------------------------------------------------
 
 
----------------------------------------магазин оружия-------------------------------------------------------
-function weaponbuy_fun( playerid, text, number )
+---------------------------------------магазины-------------------------------------------------------------
+function buy_subject_fun( playerid, text, number, value )
 	local playername = getPlayerName(playerid)
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 	local prod = 1
@@ -938,22 +948,45 @@ function weaponbuy_fun( playerid, text, number )
 		end
 
 		if cash <= array_player_2[playername][1] then
-			for k,v in pairs(weapon) do
-				if v[1] == text then
-					if inv_player_empty(playerid, k, k) then
-						sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
 
-						sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+			if value == 1 then
+				for k,v in pairs(weapon) do
+					if v[1] == text then
+						if inv_player_empty(playerid, k, k) then
+							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-						save_player_action(playerid, "[weaponbuy_fun] [weapon - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
-					else
-						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+							save_player_action(playerid, "[buy_subject_fun] [weapon - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+						else
+							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						end
+						return
 					end
-					return
 				end
+
+			elseif value == 3 then
+				for k,v in pairs(shop) do
+					if v[1] == text then
+						if inv_player_empty(playerid, k, v[2]) then
+							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+
+							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+							save_player_action(playerid, "[buy_subject_fun] [24/7 - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+						else
+							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						end
+						return
+					end
+				end
+
 			end
+
 		else
 			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		end
@@ -961,8 +994,8 @@ function weaponbuy_fun( playerid, text, number )
 		sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 	end	
 end
-addEvent( "event_weaponbuy_fun", true )
-addEventHandler ( "event_weaponbuy_fun", getRootElement(), weaponbuy_fun )
+addEvent( "event_buy_subject_fun", true )
+addEventHandler ( "event_buy_subject_fun", getRootElement(), buy_subject_fun )
 ------------------------------------------------------------------------------------------------------------
 
 
@@ -1633,7 +1666,13 @@ local x,y,z = getElementPosition(playerid)
 					end
 
 					if getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
-						triggerClientEvent( playerid, "event_weapon_menu", playerid, k )
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
+						state_gui_window[playername] = 1
+						return
+					end
+
+					if getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
 						state_gui_window[playername] = 1
 						return
 					end
