@@ -1761,7 +1761,6 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel )--измен
 	local playername = tabpanel
 	local plate = tabpanel
 	local h = tabpanel
-	local x,y,z = getElementPosition(playerid)
 
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1

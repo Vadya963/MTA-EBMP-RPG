@@ -1117,7 +1117,7 @@ function inv_create ()--создание инв-ря
 			return
 		end
 
-		if tab_player == guiGetSelectedTab(tabPanel) and tab_player == info_tab then
+		if --[[tab_player == guiGetSelectedTab(tabPanel) and]] tab_player == info_tab then
 			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
 		end
 
@@ -1135,17 +1135,17 @@ function inv_create ()--создание инв-ря
 			return
 		end
 
-		if tab_player == guiGetSelectedTab(tabPanel) and tab_player == info_tab then
+		if tab_player == info_tab then
 			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
 
-		elseif tab_car == guiGetSelectedTab(tabPanel) and tab_car == info_tab then
+		elseif tab_car == info_tab then
 			local vehicleid = getPlayerVehicle(getLocalPlayer())
 
 			if vehicleid then
 				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
 			end
 
-		elseif tab_house == guiGetSelectedTab(tabPanel) and tab_house == info_tab then
+		elseif tab_house == info_tab then
 			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )
 		end
 
