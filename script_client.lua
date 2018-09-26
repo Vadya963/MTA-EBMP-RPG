@@ -665,27 +665,27 @@ function shop_menu(number, value)--создание окна магазина
 	local height = 320.0+(25.0*1)+10
 	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
 
-	local weaponlist = guiCreateGridList(0, 20, 200, 320-30, false, gui_window)
-	guiGridListAddColumn(weaponlist, "Товары", 0.9)
+	local shoplist = guiCreateGridList(0, 20, 200, 320-30, false, gui_window)
+	guiGridListAddColumn(shoplist, "Товары", 0.9)
 
 	if value == 1 then
 		for k,v in pairs(weapon) do
-			guiGridListAddRow(weaponlist, v[1])
+			guiGridListAddRow(shoplist, v[1])
 		end
 	elseif value == 3 then
 		for k,v in pairs(shop) do
-			guiGridListAddRow(weaponlist, v[1])
+			guiGridListAddRow(shoplist, v[1])
 		end
 	end
 
-	local buy_weapon = guiCreateButton( 0, 320, 200, 25, "Купить", false, gui_window )
+	local buy_subject = guiCreateButton( 0, 320, 200, 25, "Купить", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-		local text = guiGridListGetItemText ( weaponlist, guiGridListGetSelectedItem ( weaponlist ) )
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 		triggerServerEvent( "event_buy_subject_fun", getRootElement(), getLocalPlayer(), text, number_business, value )
 	end
-	addEventHandler ( "onClientGUIClick", buy_weapon, complete, false )
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
 end
 addEvent( "event_shop_menu", true )
