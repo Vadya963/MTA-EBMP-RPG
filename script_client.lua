@@ -128,10 +128,6 @@ local tab_player = nil
 local tab_car = nil
 local tab_house = nil
 
---кнопки инв-ря
-local use_button = nil
-local throw_button = nil
-
 --окно тюнинга
 local gui_window = nil
 
@@ -814,13 +810,14 @@ end
 
 function inv_create ()--создание инв-ря
 
-	local width = 400.0+100+10
+	local width = 380.0+10
 	local height = 215.0+(25.0*2)+10.0+30
 
 	local text_width = 50.0
 	local text_height = 50.0
 
 	stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
+
 	tabPanel = guiCreateTabPanel ( 0.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
 	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( getLocalPlayer() ), tabPanel )
 
@@ -1132,55 +1129,60 @@ function inv_create ()--создание инв-ря
 		end
 	end
 
-	use_button = guiCreateButton( 400.0, 44.0, 100.0, 25.0, "Использовать", false, stats_window )
-	throw_button = guiCreateButton( 400.0, 74.0, 100.0, 25.0, "Выбросить", false, stats_window )
-
 	---------------------кнопки--------------------------------------------------
-	function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
-		if info1 == 1 or info1 == 0 or info1 == -1 then
-			return
-		end
-
-		if --[[tab_player == guiGetSelectedTab(tabPanel) and]] tab_player == info_tab then
-			triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
-		end
-
-		gui_selection = false
-		info_tab = nil
-		info1 = -1
-		info2 = -1
-		info3 = -1
-		lmb = 0
-	end
-	addEventHandler ( "onClientGUIClick", use_button, use_subject, false )
-
-	function throw_earth ( button, state, absoluteX, absoluteY )--выброс предмета
-		if info1 == 1 or info1 == 0 or info1 == -1 then
-			return
-		end
-
-		if tab_player == info_tab then
-			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
-
-		elseif tab_car == info_tab then
-			local vehicleid = getPlayerVehicle(getLocalPlayer())
-
-			if vehicleid then
-				triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
+	for i=0,max_inv do
+		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
+			if info1 == 1 or info1 == 0 or info1 == -1 then
+				return
 			end
 
-		elseif tab_house == info_tab then
-			triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )
+			if tab_player == info_tab then
+				triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
+			end
+
+			gui_selection = false
+			info_tab = nil
+			info1 = -1
+			info2 = -1
+			info3 = -1
+			lmb = 0
+		end
+		addEventHandler( "onClientGUIDoubleClick", inv_slot[i][1], use_subject, false )
+	end
+
+	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
+		if info1 == 1 or info1 == 0 or info1 == -1 then
+			return
 		end
 
-		gui_selection = false
-		info_tab = nil
-		info1 = -1
-		info2 = -1
-		info3 = -1
-		lmb = 0
+		if lmb == 1 then
+			local x,y = guiGetPosition ( stats_window, false )
+
+			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
+				if tab_player == info_tab then
+					triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
+
+				elseif tab_car == info_tab then
+					local vehicleid = getPlayerVehicle(getLocalPlayer())
+
+					if vehicleid then
+						triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
+					end
+
+				elseif tab_house == info_tab then
+					triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )
+				end
+
+				gui_selection = false
+				info_tab = nil
+				info1 = -1
+				info2 = -1
+				info3 = -1
+				lmb = 0
+			end
+		end
 	end
-	addEventHandler ( "onClientGUIClick", throw_button, throw_earth, false )
+	addEventHandler ( "onClientClick", getRootElement(), throw_earth )
 
 end
 addEvent( "event_inv_create", true )
