@@ -232,6 +232,11 @@ local shop = {
 	[46] = {info_png[46][1], 1},
 }
 
+local bar = {
+	[21] = {info_png[21][1], 1},
+	[22] = {info_png[22][1], 1},
+}
+
 local deathReasons = {
 	[19] = "Rocket",
 	[37] = "Burnt",
@@ -1000,6 +1005,25 @@ function buy_subject_fun( playerid, text, number, value )
 						return
 					end
 				end
+
+			elseif value == 4 then
+				for k,v in pairs(bar) do
+					if v[1] == text then
+						if inv_player_empty(playerid, k, v[2]) then
+							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+
+							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+							save_player_action(playerid, "[buy_subject_fun] [bar - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+						else
+							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						end
+						return
+					end
+				end
+
 			end
 
 		else
@@ -1694,6 +1718,11 @@ local x,y,z = getElementPosition(playerid)
 						state_gui_window[playername] = 1
 						return
 
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
+						state_gui_window[playername] = 1
+						return
+
 					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
 						for j,i in pairs(interior_business) do
 							if v[4] == interior_business[j][2] then
@@ -2123,9 +2152,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		if id2 == 0 then
 			id1, id2 = 0, 0
-		end
-
-		if id2 == 0 then
 			triggerClientEvent( playerid, "event_change_image", playerid, "player", id3, id1)
 		end
 
