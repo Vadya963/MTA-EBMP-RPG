@@ -966,6 +966,22 @@ function buy_subject_fun( playerid, text, number, value )
 						return
 					end
 				end
+			elseif value == 2 then
+				if text == "мужские" or text == "женские" then
+					return
+				end
+
+				if inv_player_empty(playerid, 27, text) then
+					sendPlayerMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", orange[1], orange[2], orange[3])
+
+					sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+					save_player_action(playerid, "[buy_subject_fun] [skin - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
 
 			elseif value == 3 then
 				for k,v in pairs(shop) do
@@ -984,7 +1000,6 @@ function buy_subject_fun( playerid, text, number, value )
 						return
 					end
 				end
-
 			end
 
 		else
@@ -1663,21 +1678,23 @@ local x,y,z = getElementPosition(playerid)
 						triggerClientEvent( playerid, "event_tune_create", playerid, k )
 						state_gui_window[playername] = 1
 						return
-					end
 
-					if getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
 						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
 						state_gui_window[playername] = 1
 						return
-					end
 
-					if getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
+						state_gui_window[playername] = 1
+						return
+
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
 						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
 						state_gui_window[playername] = 1
 						return
-					end
 
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
+					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
 						for j,i in pairs(interior_business) do
 							if v[4] == interior_business[j][2] then
 								triggerClientEvent( playerid, "event_business_menu", playerid, k )
