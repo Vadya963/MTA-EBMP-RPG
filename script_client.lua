@@ -623,16 +623,16 @@ function business_menu(number)--создание окна бизнеса
 	showCursor( true )
 
 	local dimensions = dxGetTextWidth ( "Укажите сумму", 1, "default-bold" )
-	local width = 220+10
+	local width = 310+10
 	local height = 165.0+(25.0*1)+10
 	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
 	local tune_text = guiCreateLabel ( (width/2)-(dimensions/2), 20, dimensions, 20, "Укажите сумму", false, gui_window )
-	local tune_text_edit = guiCreateEdit ( 0, 40, 220, 20, "", false, gui_window )
+	local tune_text_edit = guiCreateEdit ( 0, 40, 310, 20, "", false, gui_window )
 	local tune_radio_button1 = guiCreateRadioButton ( 0, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = guiCreateRadioButton ( 0, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
-	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 220, 15, "Установить стоимость товара", false, gui_window )
+	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 310, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
 	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену закупки товара", false, gui_window )
-	local complete_button = guiCreateButton( 0, 165, 220, 25, "Выполнить", false, gui_window )
+	local complete_button = guiCreateButton( 0, 165, 310, 25, "Выполнить", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGetText ( tune_text_edit )
@@ -698,6 +698,11 @@ function shop_menu(number, value)--создание окна магазина
 		for k,v in pairs(bar) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
+
+	elseif value == 5 then
+		guiGridListAddColumn(shoplist, "Товары", column_width1)
+		guiGridListAddColumn(shoplist, "Цена", column_width2)
+		guiGridListAddRow(shoplist, info_png[5][1].." 20 "..info_png[5][2], "1")
 	end
 
 	local buy_subject = guiCreateButton( 0, 320, 400, 25, "Купить", false, gui_window )

@@ -636,7 +636,7 @@ function pickupUse( playerid )
 			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
 			sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
 			sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Стоимость товара "..result[1]["price"].."$", green[1], green[2], green[3])
+			sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..result[1]["price"].."$", green[1], green[2], green[3])
 			sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
 
 			if search_inv_player(playerid, 43, k) ~= 0 then
@@ -1032,6 +1032,19 @@ function buy_subject_fun( playerid, text, number, value )
 							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
 					end
+				end
+
+			elseif value == 5 then
+				if inv_player_empty(playerid, 5, 20) then
+					sendPlayerMessage(playerid, "Вы купили "..info_png[5][1].." 20 "..info_png[5][2].." за "..cash.."$", orange[1], orange[2], orange[3])
+
+					sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+					save_player_action(playerid, "[buy_subject_fun] [fuel - "..info_png[5][1].." 20 "..info_png[5][2].."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 
 			end
@@ -1732,6 +1745,11 @@ local x,y,z = getElementPosition(playerid)
 						state_gui_window[playername] = 1
 						return
 
+					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
+						state_gui_window[playername] = 1
+						return
+
 					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
 						for j,i in pairs(interior_business) do
 							if v[4] == interior_business[j][2] then
@@ -1982,6 +2000,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
+				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 				return
 			end
 
