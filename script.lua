@@ -203,38 +203,38 @@ local info_png = {
 }
 
 local weapon = {
-	[9] = {info_png[9][1], 16},
-	[12] = {info_png[12][1], 22},
-	[13] = {info_png[13][1], 24},
-	[14] = {info_png[14][1], 30},
-	[15] = {info_png[15][1], 31},
-	[16] = {info_png[16][1], 32},
-	[17] = {info_png[17][1], 29},
-	[18] = {info_png[18][1], 28},
-	[19] = {info_png[19][1], 17},
-	[26] = {info_png[26][1], 23},
-	[34] = {info_png[34][1], 25},
-	[35] = {info_png[35][1], 46},
-	[36] = {info_png[36][1], 3},
-	[37] = {info_png[37][1], 5},
-	[38] = {info_png[38][1], 4},
-	[40] = {info_png[40][1], 15},
-	[41] = {info_png[41][1], 34},
+	[9] = {info_png[9][1], 16, 360},
+	[12] = {info_png[12][1], 22, 240},
+	[13] = {info_png[13][1], 24, 1440},
+	[14] = {info_png[14][1], 30, 4200},
+	[15] = {info_png[15][1], 31, 5400},
+	[16] = {info_png[16][1], 32, 360},
+	[17] = {info_png[17][1], 29, 2400},
+	[18] = {info_png[18][1], 28, 600},
+	[19] = {info_png[19][1], 17, 360},
+	[26] = {info_png[26][1], 23, 720},
+	[34] = {info_png[34][1], 25, 720},
+	[35] = {info_png[35][1], 46, 200},
+	[36] = {info_png[36][1], 3, 150},
+	[37] = {info_png[37][1], 5, 150},
+	[38] = {info_png[38][1], 4, 150},
+	[40] = {info_png[40][1], 15, 150},
+	[41] = {info_png[41][1], 34, 6000},
 }
 
 local shop = {
-	[3] = {info_png[3][1], 20},
-	[4] = {info_png[4][1], 5},
-	[7] = {info_png[7][1], 20},
-	[8] = {info_png[8][1], 20},
-	[11] = {info_png[11][1], 1},
-	[23] = {info_png[23][1], 5},
-	[46] = {info_png[46][1], 1},
+	[3] = {info_png[3][1], 20, 5},
+	[4] = {info_png[4][1], 5, 150},
+	[7] = {info_png[7][1], 20, 10},
+	[8] = {info_png[8][1], 20, 15},
+	[11] = {info_png[11][1], 1, 100},
+	[23] = {info_png[23][1], 5, 100},
+	[46] = {info_png[46][1], 1, 100},
 }
 
 local bar = {
-	[21] = {info_png[21][1], 1},
-	[22] = {info_png[22][1], 1},
+	[21] = {info_png[21][1], 5, 45},
+	[22] = {info_png[22][1], 5, 60},
 }
 
 local deathReasons = {
@@ -957,22 +957,26 @@ function buy_subject_fun( playerid, text, number, value )
 			if value == 1 then
 				for k,v in pairs(weapon) do
 					if v[1] == text then
-						if inv_player_empty(playerid, k, k) then
-							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+						if cash*v[3] <= array_player_2[playername][1] then
+							if inv_player_empty(playerid, k, k) then
+								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
-							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
-							save_player_action(playerid, "[buy_subject_fun] [weapon - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+								save_player_action(playerid, "[buy_subject_fun] [weapon - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+							else
+								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
-						return
 					end
 				end
+
 			elseif value == 2 then
-				if text == "мужские" or text == "женские" then
+				if text == "мужская одежда" or text == "женская одежда" then
 					return
 				end
 
@@ -991,41 +995,46 @@ function buy_subject_fun( playerid, text, number, value )
 			elseif value == 3 then
 				for k,v in pairs(shop) do
 					if v[1] == text then
-						if inv_player_empty(playerid, k, v[2]) then
-							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+						if cash*v[3] <= array_player_2[playername][1] then
+							if inv_player_empty(playerid, k, v[2]) then
+								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
-							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
-							save_player_action(playerid, "[buy_subject_fun] [24/7 - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+								save_player_action(playerid, "[buy_subject_fun] [24/7 - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+							else
+								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
-						return
 					end
 				end
 
 			elseif value == 4 then
 				for k,v in pairs(bar) do
 					if v[1] == text then
-						if inv_player_empty(playerid, k, v[2]) then
-							sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+						if cash*v[3] <= array_player_2[playername][1] then
+							if inv_player_empty(playerid, k, v[2]) then
+								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
-							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
-							save_player_action(playerid, "[buy_subject_fun] [bar - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+								save_player_action(playerid, "[buy_subject_fun] [bar - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+							else
+								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
-						return
 					end
 				end
 
 			end
-
 		else
 			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		end
@@ -1590,7 +1599,7 @@ local x,y,z = getElementPosition(playerid)
 				for h,v in pairs(house_pos) do
 					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 
-					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 then
+					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 and enter_house[playername] == 1 then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
 						end
