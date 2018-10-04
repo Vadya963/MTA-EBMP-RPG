@@ -200,6 +200,7 @@ local info_png = {
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
 	[46] = {"радар", "шт"},
+	[47] = {"перцовый балончик", "ID"},
 }
 
 local weapon = {
@@ -220,6 +221,7 @@ local weapon = {
 	[38] = {info_png[38][1], 4, 150},
 	[40] = {info_png[40][1], 15, 150},
 	[41] = {info_png[41][1], 34, 6000},
+	[47] = {info_png[47][1], 41, 50},
 }
 
 local shop = {
@@ -1247,7 +1249,6 @@ function player_Spawn (playerid)--спавн игрока
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, result[1]["skin"])
 
-	sqlite( "UPDATE account SET heal = '5' WHERE name = '"..playername.."'")
 	setElementHealth( playerid, 5 )
 end
 
@@ -1268,15 +1269,27 @@ function(ammo, attacker, weapon, bodypart)
 	save_player_action(playerid, "[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart).."]")
 end)
 
+function frozen_false_fun( playerid )
+	setElementFrozen( playerid, false )
+	sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+end
+
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+	local playername_attacker = getPlayerName ( attacker )
 	local reason = weapon
 
 	for k,v in pairs(deathReasons) do 
 		if k == reason then
 			reason = v
 		end
+	end
+
+	if (reason == 16 or reason == 3) and not isElementFrozen(playerid) then--удар дубинкой оглушает игрока на 15 сек
+		setElementFrozen( playerid, true )
+		setTimer(frozen_false_fun, 15000, 1, playerid)--разморозка
+		me_chat(playerid, playername_attacker.." оглушил "..playername)
 	end
 
 	save_player_action(playerid, "[onPlayerDamage] "..playername.." [attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart)..", loss - "..tostring(loss).."]")
@@ -1287,7 +1300,7 @@ function nickChangeHandler(oldNick, newNick)
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
-	kickPlayer( playerid, "kick for ChangeNick" )
+	kickPlayer( playerid, "kick for Change Nick" )
 end
 addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
 
@@ -1719,47 +1732,51 @@ local x,y,z = getElementPosition(playerid)
 	if keyState == "down" then
 		if state_inv_player[playername] == 0 then--инв-рь игрока
 			if state_gui_window[playername] == 0 then
-				for k,v in pairs(business_pos) do
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
-						triggerClientEvent( playerid, "event_tune_create", playerid, k )
-						state_gui_window[playername] = 1
-						return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
-						state_gui_window[playername] = 1
-						return
+				if enter_business[playername] == 1 then
+					for k,v in pairs(business_pos) do
+						if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
+							triggerClientEvent( playerid, "event_tune_create", playerid, k )
+							state_gui_window[playername] = 1
+							return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
-						state_gui_window[playername] = 1
-						return
+						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
+							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
+							state_gui_window[playername] = 1
+							return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
-						state_gui_window[playername] = 1
-						return
+						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] then
+							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
+							state_gui_window[playername] = 1
+							return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
-						state_gui_window[playername] = 1
-						return
+						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
+							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
+							state_gui_window[playername] = 1
+							return
 
-					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
-						state_gui_window[playername] = 1
-						return
+						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] then
+							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
+							state_gui_window[playername] = 1
+							return
 
-					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
-						for j,i in pairs(interior_business) do
-							if v[4] == interior_business[j][2] then
-								triggerClientEvent( playerid, "event_business_menu", playerid, k )
-								state_gui_window[playername] = 1
-								return
+						elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
+							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
+							state_gui_window[playername] = 1
+							return
+
+						elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
+							for j,i in pairs(interior_business) do
+								if v[4] == interior_business[j][2] then
+									triggerClientEvent( playerid, "event_business_menu", playerid, k )
+									state_gui_window[playername] = 1
+									return
+								end
 							end
 						end
 					end
 				end
+
 			else
 				triggerClientEvent( playerid, "event_gui_delet", playerid )
 				state_gui_window[playername] = 0

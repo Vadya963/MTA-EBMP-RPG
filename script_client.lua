@@ -13,7 +13,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
-local max_subject = 46--кол-во предметов
+local max_subject = 47--кол-во предметов
 
 --выделение картинки
 local gui_2dtext = false
@@ -67,6 +67,7 @@ local info_png = {
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
 	[46] = {"радар", "шт"},
+	[47] = {"перцовый балончик", "ID"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -235,11 +236,12 @@ local weapon = {
 	[26] = {info_png[26][1], 23, 720},
 	[34] = {info_png[34][1], 25, 720},
 	[35] = {info_png[35][1], 46, 200},
-	[36] = {info_png[36][1], 3, 150},
+	--[36] = {info_png[36][1], 3, 150},
 	[37] = {info_png[37][1], 5, 150},
 	[38] = {info_png[38][1], 4, 150},
 	[40] = {info_png[40][1], 15, 150},
 	[41] = {info_png[41][1], 34, 6000},
+	[47] = {info_png[47][1], 41, 50},
 }
 
 local shop = {
@@ -434,6 +436,13 @@ function createText ()
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold", "left", "top", false, false, true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold", "left", "top", false, false, true )
+			
+			if tab_player == guiGetSelectedTab(tabPanel) then
+				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, "default-bold" )
+				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, "default-bold", "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, "default-bold", "left", "top", false, false, true )
+			end
 		end
 	end
 
@@ -1163,22 +1172,24 @@ function inv_create ()--создание инв-ря
 	---------------------кнопки--------------------------------------------------
 	for i=0,max_inv do
 		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
-			if info1 == 1 or info1 == 0 or info1 == -1 then
-				return
-			end
+			if button == "right" then
+				if info1 == 1 or info1 == 0 or info1 == -1 then
+					return
+				end
 
-			if tab_player == info_tab then
-				triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
-			end
+				if tab_player == guiGetSelectedTab(tabPanel) then
+					triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
+				end
 
-			gui_selection = false
-			info_tab = nil
-			info1 = -1
-			info2 = -1
-			info3 = -1
-			lmb = 0
+				gui_selection = false
+				info_tab = nil
+				info1 = -1
+				info2 = -1
+				info3 = -1
+				lmb = 0
+			end
 		end
-		addEventHandler( "onClientGUIDoubleClick", inv_slot[i][1], use_subject, false )
+		addEventHandler( "onClientGUIClick", inv_slot[i][1], use_subject, false )
 	end
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета

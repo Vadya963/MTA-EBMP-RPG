@@ -14,7 +14,7 @@
 
 	<file src="comp/fon.png" />
 	<file src="comp/tablet-display.png" />
-	<file src="comp/shop.png" />
+	<!--<file src="comp/shop.png" />-->
 	<file src="comp/auction.png" />
 	<file src="comp/internet.png" />
 	<file src="comp/low_fon.png" />
@@ -98,6 +98,7 @@
 	<file src="44.png" />
 	<file src="45.png" />
 	<file src="46.png" />
+	<file src="47.png" />
 	
 	<file src="upgrade/999_w_s.png" />
 	<file src="upgrade/1000_w_s.jpg" />
