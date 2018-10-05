@@ -950,7 +950,7 @@ function buy_subject_fun( playerid, text, number, value )
 
 	if prod <= result[1]["warehouse"] then
 		if cash == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+			sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара (надбавка в N раз)", red[1], red[2], red[3])
 			return
 		end
 
@@ -1060,6 +1060,49 @@ end
 addEvent( "event_buy_subject_fun", true )
 addEventHandler ( "event_buy_subject_fun", getRootElement(), buy_subject_fun )
 ------------------------------------------------------------------------------------------------------------
+
+
+function cops_weapon_fun( playerid, text )--склад копов
+	local playername = getPlayerName(playerid)
+
+	local weapon_cops = {
+		[9] = {info_png[9][1], 16, 360},
+		[12] = {info_png[12][1], 22, 240},
+		[15] = {info_png[15][1], 31, 5400},
+		[17] = {info_png[17][1], 29, 2400},
+		[19] = {info_png[19][1], 17, 360},
+		[34] = {info_png[34][1], 25, 720},
+		[36] = {info_png[36][1], 3, 150},
+		[41] = {info_png[41][1], 34, 6000},
+		[47] = {info_png[47][1], 41, 50},
+		[39] = {info_png[39][1], 39, 50},
+	}
+
+	if text == weapon_cops[39][1] then
+		if inv_player_empty(playerid, 39, 1) then
+			sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+
+			save_player_action(playerid, "[cops_weapon_fun] [weapon - "..text.."], "..playername)
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+		return
+	end
+
+	for k,v in pairs(weapon_cops) do
+		if v[1] == text then
+			if inv_player_empty(playerid, k, k) then
+				sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+
+				save_player_action(playerid, "[cops_weapon_fun] [weapon - "..text.."], "..playername)
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+		end
+	end
+end
+addEvent( "event_cops_weapon_fun", true )
+addEventHandler ( "event_cops_weapon_fun", getRootElement(), cops_weapon_fun )
 
 
 --------------------------эвент по кассе для бизнесов-------------------------------------------------------
@@ -1775,6 +1818,19 @@ local x,y,z = getElementPosition(playerid)
 							end
 						end
 					end
+
+				elseif enter_job[playername] == 1 then
+					if interior_job[2][1] == getElementInterior(playerid) and interior_job[2][10] == getElementDimension(playerid) or interior_job[3][1] == getElementInterior(playerid) and interior_job[3][10] == getElementDimension(playerid) or interior_job[4][1] == getElementInterior(playerid) and interior_job[4][10] == getElementDimension(playerid) then
+						if search_inv_player(playerid, 10, playername) == 0 then
+							sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
+							return
+						end
+
+						triggerClientEvent( playerid, "event_cops_menu", playerid )
+						state_gui_window[playername] = 1
+						return
+					end
+
 				end
 
 			else
@@ -1868,6 +1924,9 @@ function left_alt_down (playerid, key, keyState)
 			if not vehicleid then
 				if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
 
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+
+					state_gui_window[playername] = 0
 					enter_job[playername] = 1
 					setElementDimension(playerid, v[10])
 					setElementInterior(playerid, interior_job[id][1], interior_job[id][3], interior_job[id][4], interior_job[id][5])
@@ -1875,6 +1934,9 @@ function left_alt_down (playerid, key, keyState)
 
 				elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] and enter_job[playername] == 1 then
 
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+
+					state_gui_window[playername] = 0
 					enter_job[playername] = 0
 					setElementDimension(playerid, 0)
 					setElementInterior(playerid, 0, v[6],v[7],v[8])

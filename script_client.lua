@@ -224,7 +224,7 @@ local paint={
 }
 
 local weapon = {
-	[9] = {info_png[9][1], 16, 360},
+	--[9] = {info_png[9][1], 16, 360},
 	[12] = {info_png[12][1], 22, 240},
 	[13] = {info_png[13][1], 24, 1440},
 	[14] = {info_png[14][1], 30, 4200},
@@ -232,7 +232,7 @@ local weapon = {
 	[16] = {info_png[16][1], 32, 360},
 	[17] = {info_png[17][1], 29, 2400},
 	[18] = {info_png[18][1], 28, 600},
-	[19] = {info_png[19][1], 17, 360},
+	--[19] = {info_png[19][1], 17, 360},
 	[26] = {info_png[26][1], 23, 720},
 	[34] = {info_png[34][1], 25, 720},
 	[35] = {info_png[35][1], 46, 200},
@@ -726,6 +726,48 @@ function shop_menu(number, value)--создание окна магазина
 end
 addEvent( "event_shop_menu", true )
 addEventHandler ( "event_shop_menu", getRootElement(), shop_menu )
+
+
+function cops_menu()--создание склада позиции
+
+	showCursor( true )
+
+	local weapon_cops = {
+		[9] = {info_png[9][1], 16, 360},
+		[12] = {info_png[12][1], 22, 240},
+		[15] = {info_png[15][1], 31, 5400},
+		[17] = {info_png[17][1], 29, 2400},
+		[19] = {info_png[19][1], 17, 360},
+		[34] = {info_png[34][1], 25, 720},
+		[36] = {info_png[36][1], 3, 150},
+		[41] = {info_png[41][1], 34, 6000},
+		[47] = {info_png[47][1], 41, 50},
+		[39] = {info_png[39][1], 39, 50},
+	}
+
+	local width = 400+10
+	local height = 320.0+(25.0*1)+10
+	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
+
+	local shoplist = guiCreateGridList(0, 20, width-10, 320-30, false, gui_window)
+
+	guiGridListAddColumn(shoplist, "Товары", 0.9)
+	for k,v in pairs(weapon_cops) do
+		guiGridListAddRow(shoplist, v[1])
+	end
+
+	local buy_subject = guiCreateButton( 0, 320, 400, 25, "Взять", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+		triggerServerEvent( "event_cops_weapon_fun", getRootElement(), getLocalPlayer(), text )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+end
+addEvent( "event_cops_menu", true )
+addEventHandler ( "event_cops_menu", getRootElement(), cops_menu )
 
 
 function tablet_fun()--создание планшета
