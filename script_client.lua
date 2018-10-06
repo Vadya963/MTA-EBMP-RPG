@@ -14,6 +14,7 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
 local max_subject = 47--кол-во предметов
+local no_use_subject = {-1,0,1}
 
 --выделение картинки
 local gui_2dtext = false
@@ -808,10 +809,10 @@ function tablet_fun()--создание планшета
 		if not browser then
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon.png", false, fon )
 
-			local home = guiCreateButton ( 0, 0, 40, 25, "HOME", false, low_fon )
-			local NavigateBack = guiCreateButton ( 40, 0, 20, 25, "<", false, low_fon )
-			local NavigateForward = guiCreateButton ( 60, 0, 20, 25, ">", false, low_fon )
-			local reloadPage = guiCreateButton ( 80, 0, 20, 25, "F5", false, low_fon )
+			local home = guiCreateStaticImage ( 0, 0, 25, 25, "comp/homebut.png", false, low_fon )
+			local NavigateBack = guiCreateStaticImage ( 25, 0, 25, 25, "comp/backbut.png", false, low_fon )
+			local NavigateForward = guiCreateStaticImage ( 50, 0, 25, 25, "comp/forbut.png", false, low_fon )
+			local reloadPage = guiCreateStaticImage ( 75, 0, 25, 25, "comp/update.png", false, low_fon )
 			local loadURL = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, low_fon )
 			local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, low_fon )
 
@@ -942,8 +943,10 @@ function inv_create ()--создание инв-ря
 			info2 = inv_slot[i][3]
 
 			if lmb == 0 then
-				if info1 == 1 or info1 == 0 then
-					return
+				for k,v in pairs(no_use_subject) do 
+					if v == info1 then
+						return
+					end
 				end
 
 				gui_selection = true
@@ -961,8 +964,10 @@ function inv_create ()--создание инв-ря
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 				if inv_slot[info3_selection_1][2] ~= 0 then
-					if info1 == 1 or info1 == 0 then
-						return
+					for k,v in pairs(no_use_subject) do 
+						if v == info1 then
+							return
+						end
 					end
 
 					info_tab = tab_player
@@ -1044,8 +1049,10 @@ function inv_create ()--создание инв-ря
 				info2 = inv_slot_car[i][3]
 
 				if lmb == 0 then
-					if info1 == 1 or info1 == 0 then
-						return
+					for k,v in pairs(no_use_subject) do 
+						if v == info1 then
+							return
+						end
 					end
 
 					gui_selection = true
@@ -1063,8 +1070,10 @@ function inv_create ()--создание инв-ря
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					if inv_slot_car[info3_selection_1][2] ~= 0 then
-						if info1 == 1 or info1 == 0 then
-							return
+						for k,v in pairs(no_use_subject) do 
+							if v == info1 then
+								return
+							end
 						end
 						
 						info_tab = tab_car
@@ -1147,8 +1156,10 @@ function inv_create ()--создание инв-ря
 				info2 = inv_slot_house[i][3]
 
 				if lmb == 0 then
-					if info1 == 1 or info1 == 0 then
-						return
+					for k,v in pairs(no_use_subject) do 
+						if v == info1 then
+							return
+						end
 					end
 
 					gui_selection = true
@@ -1166,8 +1177,10 @@ function inv_create ()--создание инв-ря
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					if inv_slot_house[info3_selection_1][2] ~= 0 then
-						if info1 == 1 or info1 == 0 then
-							return
+						for k,v in pairs(no_use_subject) do 
+							if v == info1 then
+								return
+							end
 						end
 						
 						info_tab = tab_house
@@ -1215,8 +1228,10 @@ function inv_create ()--создание инв-ря
 	for i=0,max_inv do
 		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
 			if button == "right" then
-				if info1 == 1 or info1 == 0 or info1 == -1 then
-					return
+				for k,v in pairs(no_use_subject) do 
+					if v == info1 then
+						return
+					end
 				end
 
 				if tab_player == guiGetSelectedTab(tabPanel) then
@@ -1235,8 +1250,10 @@ function inv_create ()--создание инв-ря
 	end
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
-		if info1 == 1 or info1 == 0 or info1 == -1 then
-			return
+		for k,v in pairs(no_use_subject) do 
+			if v == info1 then
+				return
+			end
 		end
 
 		if lmb == 1 then
