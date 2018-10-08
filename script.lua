@@ -1188,7 +1188,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1239, 10000 )
 
 			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
-			house_door[h] = 0
+			house_door[h] = result[1]["door"]
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -1320,7 +1320,6 @@ end
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local playerid = source
 	local playername = getPlayerName ( playerid )
-	local playername_attacker = getPlayerName ( attacker )
 	local reason = weapon
 
 	for k,v in pairs(deathReasons) do 
@@ -1330,6 +1329,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 	end
 
 	if (reason == 16 or reason == 3) and not isElementFrozen(playerid) then--удар дубинкой оглушает игрока на 15 сек
+		local playername_attacker = getPlayerName ( attacker )
 		setElementFrozen( playerid, true )
 		setTimer(frozen_false_fun, 15000, 1, playerid)--разморозка
 		me_chat(playerid, playername_attacker.." оглушил "..playername)
@@ -1739,6 +1739,9 @@ local playername = getPlayerName ( playerid )
 	end
 
 	if keyState == "down" then
+
+
+
 		for j=1,max_earth do
 			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
 
@@ -2202,6 +2205,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						me_chat(playerid, playername.." закрыл дверь дома")
 					end
 
+					sqlite( "UPDATE house_db SET door = '"..house_door[h].."' WHERE number = '"..h.."'")
+
 					return
 				end
 
@@ -2464,7 +2469,7 @@ function (playerid)
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
 			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, 1239, 10000 )
 
-			sqlite( "INSERT INTO house_db (number, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			sqlite( "INSERT INTO house_db (number, door, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door[dim].."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
