@@ -13,7 +13,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 
-local max_subject = 47--кол-во предметов
+local max_subject = 48--кол-во предметов
 local no_use_subject = {-1,0,1}
 
 --выделение картинки
@@ -69,6 +69,7 @@ local info_png = {
 	[45] = {"риэлторская лицензия на имя", ""},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "ID"},
+	[48] = {"тушка свиньи", "$ за штуку"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -171,30 +172,16 @@ function getSpeed(vehicle)
 end
 
 local table_import_car = {
-[445] = "car/admiral(smith-custom-iz-mafia-2)",
-[429] = "car/banshee(isw-508-from-mafia-2)",
-[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
-[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
-[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
-[433] = "car/barracks(millitary-truck-from-mafia-2)",
-[405] = "car/sentinel(houstan-wasp-mafia-2)",
-[474] = "car/hermes(hudson_hornet_1952)",
-[527] = "car/cadrona(ford_thunderbird_1957)",
+	[445] = "car/admiral(smith-custom-iz-mafia-2)",
+	[429] = "car/banshee(isw-508-from-mafia-2)",
+	[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
+	[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
+	[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
+	[433] = "car/barracks(millitary-truck-from-mafia-2)",
+	[405] = "car/sentinel(houstan-wasp-mafia-2)",
+	[474] = "car/hermes(hudson_hornet_1952)",
+	[527] = "car/cadrona(ford_thunderbird_1957)",
 }
-
-function car_import_fun(model)
-	for k,v in pairs(table_import_car) do
-		if k == model then
-			local txd = engineLoadTXD ( v..".txd" )
-			engineImportTXD ( txd, k )
-			local dff = engineLoadDFF ( v..".dff" )
-			engineReplaceModel ( dff, k )
-			return
-		end
-	end
-end
-addEvent( "event_car_import_fun", true )
-addEventHandler("event_car_import_fun",getRootElement(), car_import_fun)
 
 local script_client = 0
 addEventHandler( "onClientResourceStart", getRootElement( ),
@@ -203,7 +190,11 @@ function ( startedRes )
 		script_client = 1
 
 		for k,v in pairs(table_import_car) do
-			car_import_fun(k)
+			local txd = engineLoadTXD ( v..".txd" )
+			engineImportTXD ( txd, k )
+
+			local dff = engineLoadDFF ( v..".dff" )
+			engineReplaceModel ( dff, k )
 		end
 	end
 end)

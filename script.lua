@@ -201,6 +201,7 @@ local info_png = {
 	[45] = {"риэлторская лицензия на имя", ""},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "ID"},
+	[48] = {"тушка свиньи", "$ за штуку"},
 }
 
 local weapon = {
@@ -1779,50 +1780,49 @@ local x,y,z = getElementPosition(playerid)
 		if state_inv_player[playername] == 0 then--инв-рь игрока
 			if state_gui_window[playername] == 0 then
 
-				if enter_business[playername] == 1 then
-					for k,v in pairs(business_pos) do
-						if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
-							triggerClientEvent( playerid, "event_tune_create", playerid, k )
-							state_gui_window[playername] = 1
-							return
+				for k,v in pairs(business_pos) do
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
+						triggerClientEvent( playerid, "event_tune_create", playerid, k )
+						state_gui_window[playername] = 1
+						return
 
-						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] then
-							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
-							state_gui_window[playername] = 1
-							return
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
+						state_gui_window[playername] = 1
+						return
 
-						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] then
-							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
-							state_gui_window[playername] = 1
-							return
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
+						state_gui_window[playername] = 1
+						return
 
-						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] then
-							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
-							state_gui_window[playername] = 1
-							return
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
+						state_gui_window[playername] = 1
+						return
 
-						elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] then
-							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
-							state_gui_window[playername] = 1
-							return
+					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
+						state_gui_window[playername] = 1
+						return
 
-						elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
-							triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
-							state_gui_window[playername] = 1
-							return
+					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
+						state_gui_window[playername] = 1
+						return
 
-						elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
-							for j,i in pairs(interior_business) do
-								if v[4] == interior_business[j][2] then
-									triggerClientEvent( playerid, "event_business_menu", playerid, k )
-									state_gui_window[playername] = 1
-									return
-								end
+					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
+						for j,i in pairs(interior_business) do
+							if v[4] == interior_business[j][2] then
+								triggerClientEvent( playerid, "event_business_menu", playerid, k )
+								state_gui_window[playername] = 1
+								return
 							end
 						end
 					end
+				end
 
-				elseif enter_job[playername] == 1 then
+				if enter_job[playername] == 1 then
 					if interior_job[2][1] == getElementInterior(playerid) and interior_job[2][10] == getElementDimension(playerid) or interior_job[3][1] == getElementInterior(playerid) and interior_job[3][10] == getElementDimension(playerid) or interior_job[4][1] == getElementInterior(playerid) and interior_job[4][10] == getElementDimension(playerid) then
 						if search_inv_player(playerid, 10, playername) == 0 then
 							sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
@@ -2187,7 +2187,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-		elseif id1 == 24 then--ящик
+		elseif id1 == 24 or id1 == 42 or id1 == 48 then--ящик, лекарства, тушка свиньи
 			return
 
 		elseif id1 == 25 then--ключ от дома
@@ -2567,6 +2567,11 @@ function (playerid, cmd, id)
 		return
 	end
 
+	if search_inv_player(playerid, 45, playername) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3] )
+		return
+	end
+
 	if id == nil then
 		return
 	end
@@ -2674,7 +2679,7 @@ function ( playerid, cmd, id )
 		return
 	end
 
-	if vehicleid and id >=0 and id <= 50 then
+	if vehicleid and id >= 0 and id <= 50 then
 		local plate = getVehiclePlateText(vehicleid)
 		fuel[plate] = id
 		sendPlayerMessage(playerid, "fuel car "..id, lyme[1], lyme[2], lyme[3])
@@ -2682,20 +2687,21 @@ function ( playerid, cmd, id )
 end)
 
 addCommandHandler ( "pos",
-function ( playerid, cmd, id )
+function ( playerid, cmd, ... )
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local text = ""
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
 		return
 	end
 
-	if id == nil then
-		return
+	for k,v in ipairs(arg) do
+		text = text..v.." "
 	end
 
-	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..id.."', '"..x.."', '"..y.."', '"..z.."')" )
-	sendPlayerMessage(playerid, "save pos "..id, lyme[1], lyme[2], lyme[3])
+	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..text.."', '"..x.."', '"..y.."', '"..z.."')" )
+	sendPlayerMessage(playerid, "save pos "..text, lyme[1], lyme[2], lyme[3])
 end)
 
 addCommandHandler ( "stime",
