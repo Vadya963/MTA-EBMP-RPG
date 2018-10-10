@@ -1220,6 +1220,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 
 		createBlip ( 2308.81640625, -13.25, 26.7421875, 52, 0, 0,0,0,0, 0, max_blip )--банк
+		createBlip ( 2788.23046875,-2455.99609375,13.340852737427, 51, 0, 0,0,0,0, 0, max_blip )--порт
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -2278,6 +2279,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
+	local count2 = 0
 
 	if value == "player" then
 
@@ -2300,14 +2302,21 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			for i=0,max_inv do
 				if inv_car_empty(playerid, id1, id2) then
+					count2 = count2 + 1
 				end
 			end
 
-			local count = search_inv_car(playerid, id1, id2)
+			if count2 ~= 0 then
+				local count = search_inv_car(playerid, id1, id2)
 
-			sendPlayerMessage(playerid, "Вы загрузили в авто "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+				sendPlayerMessage(playerid, "Вы загрузили в авто "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..id1..", "..id2.."]")
+				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..id1..", "..id2.."]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3] )
+			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 		end
 	end
 
@@ -2350,7 +2359,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 					money = count*result[1]["buyprod"]
 
 					if result[1]["money"] < money then
-						sendPlayerMessage(playerid, "[ERROR] Баланс бизнеса пуст", red[1], red[2], red[3] )
+						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3] )
 						return
 					end
 
@@ -2363,58 +2372,62 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-					sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт ("..result[1]["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
 
 					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(k))
 					return
 				end
 			end
 
-			for i=0,max_inv do
-				if inv_car_delet(playerid, id, sic2p) then
+			if isPointInCircle3D(x,y,z, 2788.23046875,-2455.99609375,13.340852737427, 15) then--место разгрузки ящиков 
+				for i=0,max_inv do
+					if inv_car_delet(playerid, id, sic2p) then
+					end
 				end
+
+				money = count*sic2p
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+
+				sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+
+				save_player_action(playerid, "[delet_subject_job] "..playername.." [count - "..count..", price - "..sic2p.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
+				return
 			end
 
-			money = count*sic2p
-
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
-
-			sendPlayerMessage(playerid, "Вы разгрузили из авто "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
-
-			save_player_action(playerid, "[delet_subject_job] "..playername.." [count - "..count..", price - "..sic2p.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
+			sendPlayerMessage(playerid, "[ERROR] Езжайте на место разгрузки в порт или в любой бизнес", red[1], red[2], red[3] )
 		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 	end
 end
 
 addCommandHandler ( "load",
-function (playerid, cmd, value, id, id2)
-	local id = tonumber(id)
-	local id2 = tonumber(id2)
+function (playerid)
+	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
 
 	if logged[playername] == 0 then
 		return
 	end
 
-	if id == nil or id2 == nil then
-		return
+	if isPointInCircle3D(x,y,z, -86.208984375,-299.36328125,2.7646157741547, 15) then--место_погрузки_ящиков
+		give_subject(playerid, "car", 24, math.random(1,10))
+	else
+		sendPlayerMessage(playerid, "[ERROR] Езжайте на завод продуктов", red[1], red[2], red[3] )
 	end
-
-	give_subject(playerid, value, id, id2)
 end)
 
 addCommandHandler ( "unload",
-function (playerid, cmd, id)
-	local id = tonumber(id)
+function (playerid)
+	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
 
 	if logged[playername] == 0 then
 		return
 	end
 
-	if id == nil then
-		return
-	end
-
-	delet_subject(playerid, id)
+	delet_subject(playerid, 24)
 end)
 
 addCommandHandler ( "sellhouse",--команда для риэлторов
