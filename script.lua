@@ -418,6 +418,27 @@ local interior_house = {
 	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
 }
 
+--здания для работ и фракций
+local interior_job = {
+	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1},
+	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2},
+	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3},
+	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4},
+	{3, "Мерия", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5},
+	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6},
+}
+
+local prison_cell = {
+	{interior_job[2][1], interior_job[2][10], "кпз_лс",		263.84765625,	77.6044921875,	1001.0390625},
+	{interior_job[3][1], interior_job[3][10], "кпз_сф1",	227.5947265625,	110.0537109375,	999.015625},
+	{interior_job[3][1], interior_job[3][10], "кпз_сф2",	223.373046875,	110.0986328125,	999.015625},
+	{interior_job[3][1], interior_job[3][10], "кпз_сф3",	219.337890625,	110.4619140625,	999.015625},
+	{interior_job[3][1], interior_job[3][10], "кпз_сф4",	215.59375,	109.8916015625,	999.015625},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв",		198.283203125,	162.1220703125,	1003.0299682617},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв2",	198.0390625,	174.78125,	1003.0234375},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв3",	193.6708984375,	176.7255859375,	1003.0234375},
+}
+
 --инв-рь игрока
 local array_player_1 = {}
 local array_player_2 = {}
@@ -443,16 +464,6 @@ local house_door = {}--состояние двери 0-закрыта, 1-отк�
 
 --бизнесы
 local business_pos = {}--позиции бизнесов для dxdrawtext
-
---здания для работ и фракций
-local interior_job = {
-	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1},
-	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2},
-	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3},
-	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4},
-	{3, "Мерия", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5},
-	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6},
-}
 
 -------------------пользовательские функции 2----------------------------------------------
 function fuel_down()--система топлива авто
@@ -2430,6 +2441,39 @@ function (playerid)
 	delet_subject(playerid, 24)
 end)
 
+-------------------------------команды игроков----------------------------------------------------------
+addCommandHandler ( "prison",--команда для копов (посадить игрока в тюрьму)
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		return
+	end
+
+	if search_inv_player(playerid, 10, playername) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
+		return
+	end
+
+	local player = getPlayerFromName ( id )
+	if player then
+		local randomize = math.random(1,#prison_cell)
+
+		me_chat(playerid, playername.." посадил "..id.." в камеру "..prison_cell[randomize][3])
+
+		setElementDimension(player, prison_cell[randomize][2])
+		setElementInterior(playerid, 0)
+		setElementInterior(player, prison_cell[randomize][1], prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6])
+	else
+		sendPlayerMessage(playerid, "[ERROR] Игрок не в сети", red[1], red[2], red[3] )
+	end
+end)
+
 addCommandHandler ( "sellhouse",--команда для риэлторов
 function (playerid)
 	local playername = getPlayerName ( playerid )
@@ -2570,18 +2614,14 @@ function (playerid, cmd, id)
 	end
 end)
 
-addCommandHandler ( "interiorhouse",--команда по смене интерьера дома
+addCommandHandler ( "buyinthouse",--команда по смене интерьера дома
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
+	local cash = 10000
 
 	if logged[playername] == 0 then
-		return
-	end
-
-	if search_inv_player(playerid, 45, playername) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3] )
 		return
 	end
 
@@ -2590,21 +2630,29 @@ function (playerid, cmd, id)
 	end
 
 	if id >= 1 and id <= #interior_house then
-		for h,v in pairs(house_pos) do
-			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
-				if search_inv_player(playerid, 25, h) ~= 0 then
-					sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
+		if cash <= array_player_2[playername][1] then
+			for h,v in pairs(house_pos) do
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
+					if search_inv_player(playerid, 25, h) ~= 0 then
+						sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
 
-					sendPlayerMessage(playerid, "Вы изменили интерьер на "..id, orange[1], orange[2], orange[3])
-				else
-					sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3] )
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+						sendPlayerMessage(playerid, "Вы изменили интерьер на "..id.." за "..cash.."$", orange[1], orange[2], orange[3])
+
+						save_player_action(playerid, "[buyinthouse] "..playername.." [id - "..id.."], [-"..cash.."$, "..array_player_2[playername][1].."$]")
+					else
+						sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3] )
+					end
+
+					return
 				end
-
-				return
 			end
-		end
 
-		sendPlayerMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3] )
+		else
+			sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3] )
+		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_house, red[1], red[2], red[3] )
 	end
