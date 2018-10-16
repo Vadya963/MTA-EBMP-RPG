@@ -14,6 +14,7 @@ local orange = {255,100,0}--оранжевый
 local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
+local crimson = {220,20,60}--малиновый
 
 local max_subject = 48--кол-во предметов
 local no_use_subject = {-1,0,1}
@@ -203,7 +204,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	local text = m2gui_label ( 16+5, 0, dimensions+5, dimensions_h, text, bool_r, m2gui_fon )
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
-		guiLabelSetColor ( text, 178, 16, 49 )
+		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
 	end
 	addEventHandler( "onClientMouseEnter", text, outputEditBox, false )
 
@@ -509,13 +510,13 @@ function createText ()
 			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx )
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx, "left", "top", false, false, true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( turquoise[1], turquoise[2], turquoise[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
 			
 			if tab_player == guiGetSelectedTab(tabPanel) then
 				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx )
 				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
 				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx, "left", "top", false, false, true )
-				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( turquoise[1], turquoise[2], turquoise[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
 			end
 		end
 	end
