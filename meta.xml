@@ -8,6 +8,14 @@
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
 
+	<file src="gui/m2font.ttf" />
+	<file src="gui/gui1.png" />
+	<file src="gui/gui2.png" />
+	<file src="gui/gui4.png" />
+	<file src="gui/gui5.png" />
+	<file src="gui/gui6.png" />
+	<file src="gui/gui7.png" />
+
 	<file src="speedometer/speed_v.png" />
 	<file src="speedometer/arrow_speed_v.png" />
 	<file src="speedometer/fuel_v.png" />

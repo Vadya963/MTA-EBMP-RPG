@@ -1,4 +1,6 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
+local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
+local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -171,15 +173,58 @@ function getSpeed(vehicle)
 	end
 end
 
+--собственное гуи------------------------------------------------------------------------
+function m2gui_label( x,y, width, height, text, bool_r, parent )
+	local text = guiCreateLabel ( x, y, width, height, text, bool_r, parent )
+	guiSetFont( text, m2font )
+	return text
+end
+
+function m2gui_radiobutton( x,y, width, height, text, bool_r, parent )
+	local text = guiCreateRadioButton ( x, y, width, height, text, bool_r, parent )
+	guiSetFont( text, m2font )
+	return text
+end
+
+function m2gui_window( x,y, width, height, text, bool_r )
+	local m2gui_win = guiCreateStaticImage( x, y, width, height, "gui/gui1.png", bool_r )
+	local gui_text = guiCreateStaticImage( 0, 0, width, 15, "gui/gui2.png", bool_r, m2gui_win )
+	local text = m2gui_label ( 0, 0, width, 15, text, bool_r, m2gui_win )
+	guiLabelSetHorizontalAlign ( text, "center" )
+	return m2gui_win
+end
+
+function m2gui_button( x,y, text, bool_r, parent)
+	local sym = 16+5+5
+	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
+	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
+	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
+	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
+	local text = m2gui_label ( 16+5, 0, dimensions+5, dimensions_h, text, bool_r, m2gui_fon )
+
+	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
+		guiLabelSetColor ( text, 178, 16, 49 )
+	end
+	addEventHandler( "onClientMouseEnter", text, outputEditBox, false )
+
+	function outputEditBox ( absoluteX, absoluteY, gui )--покидание на текст кнопки
+		guiLabelSetColor ( text, 255, 255, 255 )
+	end
+	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
+
+	return text
+end
+-----------------------------------------------------------------------------------------
+
 local table_import_car = {
-	[445] = "car/admiral(smith-custom-iz-mafia-2)",
-	[429] = "car/banshee(isw-508-from-mafia-2)",
-	[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
-	[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
-	[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
-	[433] = "car/barracks(millitary-truck-from-mafia-2)",
 	[405] = "car/sentinel(houstan-wasp-mafia-2)",
+	[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
+	[429] = "car/banshee(isw-508-from-mafia-2)",
+	[433] = "car/barracks(millitary-truck-from-mafia-2)",
+	[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
+	[445] = "car/admiral(smith-custom-iz-mafia-2)",
 	[474] = "car/hermes(hudson_hornet_1952)",
+	[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
 	[527] = "car/cadrona(ford_thunderbird_1957)",
 }
 
@@ -237,6 +282,7 @@ local weapon = {
 }
 
 local shop = {
+	[2] = {"права", 0, 1000},
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 5, 150},
 	[7] = {info_png[7][1], 20, 10},
@@ -261,6 +307,15 @@ local interior_business = {
 	{0, "Заправочная станция", 0,0,0, 16},
 	{0, "Автомастерская", 0,0,0, 27},
 	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
+}
+
+local delet_subject_pos = {
+	{2788.23046875,-2455.99609375,13.340852737427, 15, "Порт ЛС (Разгрузить товар - E)"},
+}
+
+local image_3d = {
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы поднять тушку свиньи", 48},
+	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль", 48},
 }
 
 local weather_list = {
@@ -289,11 +344,11 @@ local weather_list = {
 	[22] = {"CLOUDY"},
 }
 
-local house_bussiness_radius = 5--радиус размещения бизнесов и домов
+local house_bussiness_radius = 0--радиус размещения бизнесов и домов
 local house_pos = {}
 local business_pos = {}
 local job_pos = {}
-function bussines_house_fun (i, x,y,z, value)
+function bussines_house_fun (i, x,y,z, value, radius)
 	if value == "biz" then
 		business_pos[i] = {x,y,z}
 	elseif value == "house" then
@@ -301,6 +356,8 @@ function bussines_house_fun (i, x,y,z, value)
 	elseif value == "job" then
 		job_pos[i] = {x,y,z}
 	end
+
+	house_bussiness_radius = radius
 end
 addEvent( "event_bussines_house_fun", true )
 addEventHandler ( "event_bussines_house_fun", getRootElement(), bussines_house_fun )
@@ -393,7 +450,7 @@ function createText ()
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
 			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], house_bussiness_radius) then
-				dxdrawtext ( "Дом #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Дом #"..k.." (Войти - ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -402,7 +459,7 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then
-				dxdrawtext ( "Бизнес #"..k.." (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+				dxdrawtext ( "Бизнес #"..k.." (Войти - ALT, Разгрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
 			end
 		end
@@ -410,9 +467,34 @@ function createText ()
 
 	if job_pos ~= nil then
 		for k,v in pairs(job_pos) do
-			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 5) then
-				dxdrawtext ( "Здание (Нажмите ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 15) then
+				dxdrawtext ( "Здание (Войти - ALT, Загрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
 				break
+			end
+		end
+	end
+
+	for k,v in pairs(delet_subject_pos) do
+		if isPointInCircle3D(x,y,z, delet_subject_pos[k][1],delet_subject_pos[k][2],delet_subject_pos[k][3], delet_subject_pos[k][4]) then
+			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-46, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, "default-bold" )
+			break
+		end
+	end
+
+	for k,v in pairs(image_3d) do--отображение предметов работы на земле
+		local x,y,z = getElementPosition(playerid)
+		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
+
+		if area then
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
+			if coords[1] and coords[2] then
+				dxDrawImage ( coords[1]-(57/2), coords[2], 57, 57, image[ v[6] ] )
+			end
+
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
+			if coords[1] and coords[2] then
+				local dimensions = dxGetTextWidth ( v[5], 1, "default-bold" )
+				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, "default-bold" )
 			end
 		end
 	end
@@ -441,7 +523,7 @@ function createText ()
 
 	if gui_selection and info_tab == guiGetSelectedTab(tabPanel) then--выделение картинки
 		local width,height = guiGetPosition ( stats_window, false )
-		local x = 9
+		local x = 10
 		local y = 20+24
 		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 100 ), true )
 	end
@@ -476,22 +558,24 @@ local number_business = 0
 function tune_window_create (number)--создание окна тюнинга
 	number_business = number
 
-	local dimensions = dxGetTextWidth ( "Введите ИД", 1, "default-bold" )
-	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, "default-bold" )
+	local dimensions = dxGetTextWidth ( "Введите ИД", 1, m2font_dx )
+	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, m2font_dx )
 	local width = 300+50+10
-	local height = 210.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
-	local tune_text = guiCreateLabel ( 180, 25, dimensions, 20, "Введите ИД детали", false, gui_window )
+	local height = 210.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
+	local tune_text = m2gui_label ( 180, 25, dimensions+10, 20, "Введите ИД детали", false, gui_window )
+	guiSetFont( tune_text, m2font )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
-	local tune_text = guiCreateLabel ( 180, 75, dimensions1, 20, "Введите цвет в RGB", false, gui_window )
+	local tune_text = m2gui_label ( 180, 75, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
+	guiSetFont( tune_text, m2font )
 	local tune_r_edit = guiCreateEdit ( 180, 100, 50, 20, "", false, gui_window )
 	local tune_g_edit = guiCreateEdit ( 240, 100, 50, 20, "", false, gui_window )
 	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, gui_window )
-	local tune_radio_button1 = guiCreateRadioButton ( 180, 125, 50, 15, "Авто", false, gui_window )
-	local tune_radio_button2 = guiCreateRadioButton ( 240, 125, 50, 15, "Фары", false, gui_window )
-	local tune_search_button = guiCreateButton( 180, 150, 170, 25, "Найти", false, gui_window )
-	local tune_install_button = guiCreateButton( 180, 180, 170, 25, "Установить", false, gui_window )
-	local tune_delet_button = guiCreateButton( 180, 210, 170, 25, "Удалить", false, gui_window )
+	local tune_radio_button1 = m2gui_radiobutton ( 180, 125, 60, 15, "Авто", false, gui_window )
+	local tune_radio_button2 = m2gui_radiobutton ( 250, 125, 60, 15, "Фары", false, gui_window )
+	local tune_search_button = m2gui_button( 180, 150, "Найти", false, gui_window )
+	local tune_install_button = m2gui_button( 180, 180, "Установить", false, gui_window )
+	local tune_delet_button = m2gui_button( 180, 210, "Удалить", false, gui_window )
 	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
 
 	showCursor( true )
@@ -623,17 +707,18 @@ function business_menu(number)--создание окна бизнеса
 
 	showCursor( true )
 
-	local dimensions = dxGetTextWidth ( "Укажите сумму", 1, "default-bold" )
-	local width = 310+10
-	local height = 165.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
-	local tune_text = guiCreateLabel ( (width/2)-(dimensions/2), 20, dimensions, 20, "Укажите сумму", false, gui_window )
-	local tune_text_edit = guiCreateEdit ( 0, 40, 310, 20, "", false, gui_window )
-	local tune_radio_button1 = guiCreateRadioButton ( 0, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
-	local tune_radio_button2 = guiCreateRadioButton ( 0, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
-	local tune_radio_button3 = guiCreateRadioButton ( 0, 115, 310, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
-	local tune_radio_button4 = guiCreateRadioButton ( 0, 140, 220, 15, "Установить цену закупки товара", false, gui_window )
-	local complete_button = guiCreateButton( 0, 165, 310, 25, "Выполнить", false, gui_window )
+	local width = 380+10
+	local height = 165.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
+	local tune_text = m2gui_label ( 0, 20, width, 20, "Укажите сумму", false, gui_window )
+	guiLabelSetHorizontalAlign ( tune_text, "center" )
+	guiSetFont( tune_text, m2font )
+	local tune_text_edit = guiCreateEdit ( 5, 40, 310, 20, "", false, gui_window )
+	local tune_radio_button1 = m2gui_radiobutton ( 5, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
+	local tune_radio_button2 = m2gui_radiobutton ( 5, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
+	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 380, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
+	local tune_radio_button4 = m2gui_radiobutton ( 5, 140, 260, 15, "Установить цену закупки товара", false, gui_window )
+	local complete_button = m2gui_button( 5, 165, "Выполнить", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGetText ( tune_text_edit )
@@ -666,12 +751,21 @@ function shop_menu(number, value)--создание окна магазина
 	showCursor( true )
 
 	local width = 400+10
-	local height = 320.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
 
-	local shoplist = guiCreateGridList(0, 20, width-10, 320-30, false, gui_window)
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 	local column_width1 = 0.5
 	local column_width2 = 0.4
+
+	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+		triggerServerEvent( "event_buy_subject_fun", getRootElement(), getLocalPlayer(), text, number_business, value )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
 	if value == 1 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
@@ -705,22 +799,12 @@ function shop_menu(number, value)--создание окна магазина
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
 		guiGridListAddRow(shoplist, info_png[5][1].." 20 "..info_png[5][2], "1")
 	end
-
-	local buy_subject = guiCreateButton( 0, 320, 400, 25, "Купить", false, gui_window )
-
-	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-
-		triggerServerEvent( "event_buy_subject_fun", getRootElement(), getLocalPlayer(), text, number_business, value )
-	end
-	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
-
 end
 addEvent( "event_shop_menu", true )
 addEventHandler ( "event_shop_menu", getRootElement(), shop_menu )
 
 
-function cops_menu()--создание склада позиции
+function cops_menu()--создание склада полиции
 
 	showCursor( true )
 
@@ -738,17 +822,17 @@ function cops_menu()--создание склада позиции
 	}
 
 	local width = 400+10
-	local height = 320.0+(25.0*1)+10
-	gui_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
 
-	local shoplist = guiCreateGridList(0, 20, width-10, 320-30, false, gui_window)
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
 	guiGridListAddColumn(shoplist, "Товары", 0.9)
 	for k,v in pairs(weapon_cops) do
 		guiGridListAddRow(shoplist, v[1])
 	end
 
-	local buy_subject = guiCreateButton( 0, 320, 400, 25, "Взять", false, gui_window )
+	local buy_subject = m2gui_button( 5, 320, "Взять", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -882,17 +966,25 @@ function zamena_img()
 	end
 end
 
+addCommandHandler ( "alpha",
+function ( cmd, id1 )
+	guiSetAlpha ( tabPanel, id1 )
+	for i=0,23 do
+		guiSetAlpha ( inv_slot[i][1], id1 )
+	end
+end)
+
 function inv_create ()--создание инв-ря
-
-	local width = 380.0+8
-	local height = 215.0+(25.0*2)+10.0+30
-
 	local text_width = 50.0
 	local text_height = 50.0
 
-	stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
+	local width = 380.0+10
+	local height = 215.0+(25.0*2)+10.0+30
 
-	tabPanel = guiCreateTabPanel ( 0.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
+	--stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
+	stats_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
+
+	tabPanel = guiCreateTabPanel ( 10.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
 	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( getLocalPlayer() ), tabPanel )
 
 	showCursor( true )
