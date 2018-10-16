@@ -45,7 +45,6 @@ end
 
 showCursor( true )
 local rl_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Регистрация - Авторизация", false )
-local dimensions = dxGetTextWidth ( "Введите пароль", 1, "default-bold" )
 local text = m2gui_label ( 0, 25, width, 20, "Введите пароль", false, rl_window )
 guiLabelSetHorizontalAlign ( text, "center" )
 local edit = guiCreateEdit ( 10, 50, width-20, 25, "", false, rl_window )
