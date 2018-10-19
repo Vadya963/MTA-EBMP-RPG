@@ -1,6 +1,7 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
+local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -174,7 +175,7 @@ function getSpeed(vehicle)
 	end
 end
 
---собственное гуи------------------------------------------------------------------------
+------------------------------собственное гуи--------------------------------------------
 function m2gui_label( x,y, width, height, text, bool_r, parent )
 	local text = guiCreateLabel ( x, y, width, height, text, bool_r, parent )
 	guiSetFont( text, m2font )
@@ -196,12 +197,12 @@ function m2gui_window( x,y, width, height, text, bool_r )
 end
 
 function m2gui_button( x,y, text, bool_r, parent)
-	local sym = 16+5+5
+	local sym = 16+5+7
 	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
 	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
 	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
-	local text = m2gui_label ( 16+5, 0, dimensions+5, dimensions_h, text, bool_r, m2gui_fon )
+	local text = m2gui_label ( 16+5, 0, dimensions+7, dimensions_h, text, bool_r, m2gui_fon )
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
 		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
@@ -395,13 +396,13 @@ function createText ()
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
 
-	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx )
+	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
 
-	dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx )
-	dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx )
+	dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+	dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
@@ -418,7 +419,7 @@ function createText ()
 
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
 
-		dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx )
+		dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
@@ -438,11 +439,11 @@ function createText ()
 					local speed_table = split(getSpeed(vehicle), ".")
 
 					if coords[1] and coords[2] then
-						dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx )
+						dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 					end
 				end
 
-				dxdrawtext ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx )
+				dxdrawtext ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
@@ -451,7 +452,7 @@ function createText ()
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
 			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], house_bussiness_radius) then
-				dxdrawtext ( "Дом #"..k.." (Войти - ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx )
+				dxdrawtext ( "Дом #"..k.." (Войти - ALT)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 				break
 			end
 		end
@@ -460,7 +461,7 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then
-				dxdrawtext ( "Бизнес #"..k.." (Войти - ALT, Разгрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx )
+				dxdrawtext ( "Бизнес #"..k.." (Войти - ALT, Разгрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 				break
 			end
 		end
@@ -469,7 +470,7 @@ function createText ()
 	if job_pos ~= nil then
 		for k,v in pairs(job_pos) do
 			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 15) then
-				dxdrawtext ( "Здание (Войти - ALT, Загрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx )
+				dxdrawtext ( "Здание (Войти - ALT, Загрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 				break
 			end
 		end
@@ -477,7 +478,7 @@ function createText ()
 
 	for k,v in pairs(delet_subject_pos) do
 		if isPointInCircle3D(x,y,z, delet_subject_pos[k][1],delet_subject_pos[k][2],delet_subject_pos[k][3], delet_subject_pos[k][4]) then
-			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-46, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx )
+			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-46, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 			break
 		end
 	end
@@ -494,8 +495,8 @@ function createText ()
 
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx )
-				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx )
+				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx1 )
+				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
@@ -505,18 +506,18 @@ function createText ()
 		local width,height = guiGetPosition ( stats_window, false )
 		local x = 9
 		local y = 20+24
-		local offset = dxGetFontHeight(1,m2font_dx)
+		local offset = dxGetFontHeight(1,m2font_dx1)
 		if info1_png ~= 0 then
-			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx )
+			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx1 )
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx, "left", "top", false, false, true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( turquoise[1], turquoise[2], turquoise[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			
 			if tab_player == guiGetSelectedTab(tabPanel) then
-				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx )
+				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx1 )
 				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
-				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx, "left", "top", false, false, true )
-				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( turquoise[1], turquoise[2], turquoise[3], 255 ), 1, m2font_dx, "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			end
 		end
 	end
@@ -542,7 +543,7 @@ function createText ()
 
 			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				dxdrawtext ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx )
+				dxdrawtext ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
@@ -564,7 +565,7 @@ function tune_window_create (number)--создание окна тюнинга
 	local width = 300+50+10
 	local height = 210.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
-	local tune_text = m2gui_label ( 180, 25, dimensions+70, 20, "Введите ИД детали", false, gui_window )
+	local tune_text = m2gui_label ( 180, 25, dimensions+10, 20, "Введите ИД детали", false, gui_window )
 	guiSetFont( tune_text, m2font )
 	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
 	local tune_text = m2gui_label ( 180, 75, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
@@ -573,7 +574,7 @@ function tune_window_create (number)--создание окна тюнинга
 	local tune_g_edit = guiCreateEdit ( 240, 100, 50, 20, "", false, gui_window )
 	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, gui_window )
 	local tune_radio_button1 = m2gui_radiobutton ( 180, 125, 60, 15, "Авто", false, gui_window )
-	local tune_radio_button2 = m2gui_radiobutton ( 250, 125, 60, 15, "Фары", false, gui_window )
+	local tune_radio_button2 = m2gui_radiobutton ( 240, 125, 60, 15, "Фары", false, gui_window )
 	local tune_search_button = m2gui_button( 180, 150, "Найти", false, gui_window )
 	local tune_install_button = m2gui_button( 180, 180, "Установить", false, gui_window )
 	local tune_delet_button = m2gui_button( 180, 210, "Удалить", false, gui_window )
@@ -708,16 +709,16 @@ function business_menu(number)--создание окна бизнеса
 
 	showCursor( true )
 
-	local width = 380+10
+	local width = 330+10
 	local height = 165.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
 	local tune_text = m2gui_label ( 0, 20, width, 20, "Укажите сумму", false, gui_window )
 	guiLabelSetHorizontalAlign ( tune_text, "center" )
 	guiSetFont( tune_text, m2font )
-	local tune_text_edit = guiCreateEdit ( 5, 40, 380, 20, "", false, gui_window )
+	local tune_text_edit = guiCreateEdit ( 5, 40, 330, 20, "", false, gui_window )
 	local tune_radio_button1 = m2gui_radiobutton ( 5, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = m2gui_radiobutton ( 5, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
-	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 380, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
+	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 330, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
 	local tune_radio_button4 = m2gui_radiobutton ( 5, 140, 260, 15, "Установить цену закупки товара", false, gui_window )
 	local complete_button = m2gui_button( 5, 165, "Выполнить", false, gui_window )
 
