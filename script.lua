@@ -19,6 +19,7 @@ local car_spawn_value = 0--чтобы ресурсы не запускались
 local max_blip = 250--радиус блипов
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 local tomorrow_weather = 0--погода
+local spawnX, spawnY, spawnZ = 1642, -2240, 13--стартовая позиция
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -149,8 +150,6 @@ function timer_earth_clear()
 		print("[timer_earth_clear] clear")
 	end
 end
-
-local spawnX, spawnY, spawnZ = 1642, -2240, 13
 
 local info_png = {
 	[0] = {"", ""},
@@ -477,23 +476,16 @@ function fuel_down()--система топлива авто
 	for k,vehicle in pairs(getElementsByType("vehicle")) do
 		local veh = getVehiclePlateText(vehicle)
 		local engine = getVehicleEngineState ( vehicle )
+		local fuel_down_number = 0.0002
 
 		if engine then
 			if fuel[veh] <= 0 then
 				setVehicleEngineState ( vehicle, false )
 			else
 				if getSpeed(vehicle) == 0 then
-					fuel[veh] = fuel[veh] - 0.001
-				elseif getSpeed(vehicle) > 0 and getSpeed(vehicle) <= 100 then
-					fuel[veh] = fuel[veh] - 0.01
-				elseif getSpeed(vehicle) > 100 and getSpeed(vehicle) <= 150 then
-					fuel[veh] = fuel[veh] - 0.02
-				elseif getSpeed(vehicle) > 150 and getSpeed(vehicle) <= 200 then
-					fuel[veh] = fuel[veh] - 0.03
-				elseif getSpeed(vehicle) > 200 and getSpeed(vehicle) <= 250 then
-					fuel[veh] = fuel[veh] - 0.04
-				elseif getSpeed(vehicle) > 250 and getSpeed(vehicle) <= 300 then
-					fuel[veh] = fuel[veh] - 0.05
+					fuel[veh] = fuel[veh] - fuel_down_number
+				else
+					fuel[veh] = fuel[veh] - (fuel_down_number*getSpeed(vehicle))
 				end
 			end
 		end
@@ -1315,12 +1307,15 @@ end)
 function quitPlayer ( quitType )--дисконект игрока с сервера
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
 
 	if logged[playername] == 1 then
 		local heal = getElementHealth( playerid )
-		sqlite( "UPDATE account SET heal = '"..heal.."' WHERE name = '"..playername.."'")
+		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."' WHERE name = '"..playername.."'")
 
 		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
+
+		exit_car_fun(playerid)
 	else
 		
 	end
@@ -1445,12 +1440,12 @@ function log_fun(playerid, cmd)
 
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 
-			for h,v in pairs(house_pos) do
+			--[[for h,v in pairs(house_pos) do
 				if search_inv_player(playerid, 25, h) ~= 0 then
 					spawnPlayer(playerid, v[1], v[2], v[3], 0, result[1]["skin"], 0, 0)
 					break
 				end
-			end
+			end]]
 
 			setElementHealth( playerid, result[1]["heal"] )
 			setElementFrozen( playerid, false )
@@ -1590,6 +1585,31 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 	save_player_action(playerid, "[Entered_Vehicle] "..playername.." [seat - "..seat..", plate - "..plate.."]")
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
+
+function exit_car_fun( playerid )
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+
+	if vehicleid then
+		local plate = getVehiclePlateText ( vehicleid )
+
+		setVehicleEngineState(vehicleid, false)
+
+		if getVehicleOccupant ( vehicleid, 0 ) then
+			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
+
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local x,y,z = getElementPosition(vehicleid)
+				local rx,ry,rz = getElementRotation(vehicleid)
+
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			end
+		end
+
+		save_player_action(playerid, "[Vehicle_Exit] "..playername.." [seat - 0, plate - "..plate.."]")
+	end
+end
 
 function exit_car ( vehicleid, seat, jacked )--евент выхода из авто
 	local playerid = source

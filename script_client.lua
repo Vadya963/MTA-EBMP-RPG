@@ -563,7 +563,7 @@ function tune_window_create (number)--создание окна тюнинга
 	local dimensions = dxGetTextWidth ( "Введите ИД", 1, m2font_dx )
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, m2font_dx )
 	local width = 300+50+10
-	local height = 210.0+(16.0*1)+10
+	local height = 200.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
 	local tune_text = m2gui_label ( 180, 25, dimensions+10, 20, "Введите ИД детали", false, gui_window )
 	guiSetFont( tune_text, m2font )
@@ -576,8 +576,8 @@ function tune_window_create (number)--создание окна тюнинга
 	local tune_radio_button1 = m2gui_radiobutton ( 180, 125, 60, 15, "Авто", false, gui_window )
 	local tune_radio_button2 = m2gui_radiobutton ( 240, 125, 60, 15, "Фары", false, gui_window )
 	local tune_search_button = m2gui_button( 180, 150, "Найти", false, gui_window )
-	local tune_install_button = m2gui_button( 180, 180, "Установить", false, gui_window )
-	local tune_delet_button = m2gui_button( 180, 210, "Удалить", false, gui_window )
+	local tune_install_button = m2gui_button( 180, 175, "Установить", false, gui_window )
+	local tune_delet_button = m2gui_button( 180, 200, "Удалить", false, gui_window )
 	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
 
 	showCursor( true )
