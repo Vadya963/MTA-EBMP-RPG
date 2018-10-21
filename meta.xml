@@ -1,7 +1,7 @@
 <meta>
     <info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
 
-    <min_mta_version client="1.5.5" server="1.5.5" />
+    <min_mta_version client="1.5.5-9.14281" server="1.5.5-9.14281" />
 	
     <script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client"/>
@@ -112,6 +112,9 @@
 	<file src="46.png" />
 	<file src="47.png" />
 	<file src="48.png" />
+	<file src="49.png" />
+	<file src="50.png" />
+	<file src="51.png" />
 	
 	<file src="upgrade/999_w_s.png" />
 	<file src="upgrade/1000_w_s.jpg" />

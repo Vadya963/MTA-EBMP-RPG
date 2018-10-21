@@ -201,6 +201,9 @@ local info_png = {
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "ID"},
 	[48] = {"тушка свиньи", "$ за штуку"},
+	[49] = {"лопата", "ID"},
+	[50] = {"лицензия на оружие на имя", ""},
+	[51] = {"jetpack", "ID"},
 }
 
 local weapon = {
@@ -222,6 +225,7 @@ local weapon = {
 	[40] = {info_png[40][1], 15, 150},
 	[41] = {info_png[41][1], 34, 6000},
 	[47] = {info_png[47][1], 41, 50},
+	[49] = {info_png[49][1], 6, 50},
 }
 
 local shop = {
@@ -233,6 +237,7 @@ local shop = {
 	[11] = {info_png[11][1], 1, 100},
 	[23] = {info_png[23][1], 5, 100},
 	[46] = {info_png[46][1], 1, 100},
+	[50] = {"лицензия на оружие", 0, 10000},
 }
 
 local bar = {
@@ -968,6 +973,11 @@ function buy_subject_fun( playerid, text, number, value )
 		if cash <= array_player_2[playername][1] then
 
 			if value == 1 then
+				if search_inv_player(playerid, 50, playername) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в магазине 24/7", red[1], red[2], red[3])
+					return
+				end
+
 				for k,v in pairs(weapon) do
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
@@ -1008,7 +1018,7 @@ function buy_subject_fun( playerid, text, number, value )
 			elseif value == 3 then
 				for k,v in pairs(shop) do
 					if v[1] == text then
-						if text ~= "права" then
+						if text ~= "права" and text ~= "лицензия на оружие" then
 							if cash*v[3] <= array_player_2[playername][1] then
 								if inv_player_empty(playerid, k, v[2]) then
 									sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
@@ -1765,7 +1775,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 				sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
-				save_player_action(playerid, "[throw_earth_job] "..playername.." [+"..id2.."$, "..array_player_2[playername][1].."$]] ["..id1..", "..id2.."]")
+				save_player_action(playerid, "[throw_earth_job] "..playername.." [+"..id2.."$, "..array_player_2[playername][1].."$]] ["..info_png[id1][1]..", "..id2.."]")
 
 				return
 			end
@@ -1801,7 +1811,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
-			save_player_action(playerid, "[throw_earth] "..playername.." [value - "..value..", x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+			save_player_action(playerid, "[throw_earth] "..playername.." [value - "..value..", x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..info_png[ earth[j][4] ][1]..", "..earth[j][5].."]")
 
 			return
 		end
@@ -1838,7 +1848,7 @@ local playername = getPlayerName ( playerid )
 						
 					sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-					save_player_action(playerid, "[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..earth[j][4]..", "..earth[j][5].."]")
+					save_player_action(playerid, "[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..info_png[ earth[j][4] ][1]..", "..earth[j][5].."]")
 
 					earth[j][1] = 0
 					earth[j][2] = 0
@@ -2102,8 +2112,15 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 			return
 
-		elseif id1 == 2 or id1 == 44 or id1 == 45 then--права, АЖ, РЛ,
+		elseif id1 == 2 or id1 == 44 or id1 == 45 or id1 == 50 then--права, АЖ, РЛ, лиц на оружие
 			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			return
+
+		elseif id1 == 1 then--показать бумажник
+			me_chat(playerid, playername.." показал свой бумажник в котором находится "..id2.."$")
+			return
+
+		elseif id1 == 24 or id1 == 42 or id1 == 48 then--ящик, лекарства, тушка свиньи
 			return
 
 		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
@@ -2274,9 +2291,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-		elseif id1 == 24 or id1 == 42 or id1 == 48 then--ящик, лекарства, тушка свиньи
-			return
-
 		elseif id1 == 25 then--ключ от дома
 			local h = id2
 			local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..h.."'" )
@@ -2344,10 +2358,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				me_chat(playerid, playername.." выключил "..info_png[id1][1])
 			end
 			return
+
+		elseif id1 == 51 then--джетпак
+			if isPedWearingJetpack ( playerid ) then
+				setPedWearingJetpack ( playerid, false )
+
+				me_chat(playerid, playername.." снял "..info_png[id1][1])
+			else
+				setPedWearingJetpack ( playerid, true )
+
+				me_chat(playerid, playername.." надел "..info_png[id1][1])
+			end
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
-		save_player_action(playerid, "[use_inv] "..playername.." [value - "..value.."] ["..id1..", "..id2.."("..id_2..")]")
+		save_player_action(playerid, "[use_inv] "..playername.." [value - "..value.."] ["..info_png[id1][1]..", "..id2.."("..id_2..")]")
 
 		if id2 == 0 then
 			id1, id2 = 0, 0
@@ -2373,7 +2398,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] ["..id1..", "..id2.."]")
+			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] ["..info_png[id1][1]..", "..id2.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -2397,7 +2422,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 				sendPlayerMessage(playerid, "Вы загрузили в авто "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..id1..", "..id2.."]")
+				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3] )
 			end
@@ -2734,7 +2759,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
-local sub_text = {2,6,10,44,45}
+local sub_text = {2,6,10,44,45,50}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2

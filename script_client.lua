@@ -17,7 +17,7 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 
-local max_subject = 48--кол-во предметов
+local max_subject = 51--кол-во предметов
 local no_use_subject = {-1,0,1}
 
 --выделение картинки
@@ -74,6 +74,9 @@ local info_png = {
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "ID"},
 	[48] = {"тушка свиньи", "$ за штуку"},
+	[49] = {"лопата", "ID"},
+	[50] = {"лицензия на оружие на имя", ""},
+	[51] = {"jetpack", "ID"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -281,6 +284,7 @@ local weapon = {
 	[40] = {info_png[40][1], 15, 150},
 	[41] = {info_png[41][1], 34, 6000},
 	[47] = {info_png[47][1], 41, 50},
+	[49] = {info_png[49][1], 6, 50},
 }
 
 local shop = {
@@ -292,6 +296,7 @@ local shop = {
 	[11] = {info_png[11][1], 1, 100},
 	[23] = {info_png[23][1], 5, 100},
 	[46] = {info_png[46][1], 1, 100},
+	[50] = {"лицензия на оружие", 0, 10000},
 }
 
 local bar = {
@@ -1313,7 +1318,8 @@ function inv_create ()--создание инв-ря
 	for i=0,max_inv do
 		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
 			if button == "right" then
-				for k,v in pairs(no_use_subject) do 
+				local no_use_subject_1 = {-1,0}
+				for k,v in pairs(no_use_subject_1) do 
 					if v == info1 then
 						return
 					end
@@ -1335,7 +1341,7 @@ function inv_create ()--создание инв-ря
 	end
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
-		for k,v in pairs(no_use_subject) do 
+		for k,v in pairs(no_use_subject) do
 			if v == info1 then
 				return
 			end
