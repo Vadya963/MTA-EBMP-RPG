@@ -1260,6 +1260,17 @@ function()
 	local serial = getPlayerSerial(playerid)
 	local ip = getPlayerIP ( playerid )
 
+	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+	state_inv_player[playername] = 0
+	state_gui_window[playername] = 0
+	logged[playername] = 0
+	enter_house[playername] = 0
+	enter_business[playername] = 0
+	enter_job[playername] = 0
+	speed_car_device[playername] = 0
+
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM banserial_list WHERE serial = '"..serial.."'" )
@@ -1275,17 +1286,6 @@ function()
 			return
 		end
 	end
-
-	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
-	state_inv_player[playername] = 0
-	state_gui_window[playername] = 0
-	logged[playername] = 0
-	enter_house[playername] = 0
-	enter_business[playername] = 0
-	enter_job[playername] = 0
-	speed_car_device[playername] = 0
 
 	----бинд клавиш----
 	bindKey(playerid, "tab", "down", tab_down )
