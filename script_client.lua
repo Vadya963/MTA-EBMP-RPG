@@ -288,7 +288,6 @@ local weapon = {
 }
 
 local shop = {
-	[2] = {"права", 0, 1000},
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 5, 150},
 	[7] = {info_png[7][1], 20, 10},
@@ -296,7 +295,6 @@ local shop = {
 	[11] = {info_png[11][1], 1, 100},
 	[23] = {info_png[23][1], 5, 100},
 	[46] = {info_png[46][1], 1, 100},
-	[50] = {"лицензия на оружие", 0, 10000},
 }
 
 local bar = {
@@ -851,6 +849,44 @@ function cops_menu()--создание склада полиции
 end
 addEvent( "event_cops_menu", true )
 addEventHandler ( "event_cops_menu", getRootElement(), cops_menu )
+
+
+function mayoralty_menu()--мэрия
+
+	showCursor( true )
+
+	local column_width1 = 0.5
+	local column_width2 = 0.4
+
+	local mayoralty_shop = {
+		[2] = {"права", 0, 1000},
+		[50] = {"лицензия на оружие", 0, 10000},
+	}
+
+	local width = 400+10
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Мэрия", false )
+
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+	guiGridListAddColumn(shoplist, "Услуги", column_width1)
+	guiGridListAddColumn(shoplist, "Цена", column_width2)
+	for k,v in pairs(mayoralty_shop) do
+		guiGridListAddRow(shoplist, v[1], v[3])
+	end
+
+	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+		triggerServerEvent( "event_mayoralty_menu_fun", getRootElement(), getLocalPlayer(), text )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+end
+addEvent( "event_mayoralty_menu", true )
+addEventHandler ( "event_mayoralty_menu", getRootElement(), mayoralty_menu )
 
 
 function tablet_fun()--создание планшета
