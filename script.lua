@@ -145,15 +145,16 @@ end
 19: left foot
 20: right foot]]
 function object_attach( playerid, model, bone, x,y,z, rx,ry,rz )--прикрепление объектов к игроку
-	local x, y, z = getElementPosition (playerid)
-	local objPick = createObject (tonumber(model), x, y, z)
+	local x1, y1, z1 = getElementPosition (playerid)
+	local objPick = createObject (model, x1, y1, z1)
 
-	attachElementToBone (objPick, playerid, tonumber(bone), tonumber(x),tonumber(y),tonumber(z), tonumber(rx),tonumber(ry),tonumber(rz))
+	attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
 
 	setTimer(function ( playerid )
 		setPedAnimation(playerid, nil)
 		detachElementFromBone(objPick)
-	end, 10000, 1, playerid)
+		destroyElement(objPick)
+	end, 2000, 1, playerid)
 end
 -----------------------------------------------------------------------------------------
 
@@ -2350,13 +2351,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
-			local objPick = createObject (1484, x, y, z)
-			attachElementToBone (objPick, playerid, 11, 0.1,-0.02,0.13, 0,130,0)
-			setTimer(function ( playerid )
-				setPedAnimation(playerid, nil)
-				detachElementFromBone(objPick)
-				destroyElement(objPick)
-			end, 2000, 1, playerid)
+			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false)
 
 			me_chat(playerid, playername.." выпил пиво")
