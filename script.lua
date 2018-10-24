@@ -122,6 +122,39 @@ function set_weather()
 		end
 	end
 end
+
+--[[Bone IDs:
+1: head
+2: neck
+3: spine
+4: pelvis
+5: left clavicle
+6: right clavicle
+7: left shoulder
+8: right shoulder
+9: left elbow
+10: right elbow
+11: left hand
+12: right hand
+13: left hip
+14: right hip
+15: left knee
+16: right knee
+17: left ankle
+18: right ankle
+19: left foot
+20: right foot]]
+function object_attach( playerid, model, bone, x,y,z, rx,ry,rz )--прикрепление объектов к игроку
+	local x, y, z = getElementPosition (playerid)
+	local objPick = createObject (tonumber(model), x, y, z)
+
+	attachElementToBone (objPick, playerid, tonumber(bone), tonumber(x),tonumber(y),tonumber(z), tonumber(rx),tonumber(ry),tonumber(rz))
+
+	setTimer(function ( playerid )
+		setPedAnimation(playerid, nil)
+		detachElementFromBone(objPick)
+	end, 10000, 1, playerid)
+end
 -----------------------------------------------------------------------------------------
 
 local earth = {}--слоты земли
@@ -381,11 +414,11 @@ local interior = {
 
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
-	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},--магаз одежды
+	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
 	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
 	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
 	{0, "Заправочная станция", 0,0,0, 16},
-	{0, "Автомастерская", 0,0,0, 27},
+	{3, "Автомастерская", 614.3889,-124.0991,997.9950, 27},
 	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
@@ -1319,7 +1352,7 @@ function()
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
 
-	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
+	for _, stat in pairs({ 22, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
 end)
@@ -1887,8 +1920,8 @@ local x,y,z = getElementPosition(playerid)
 		if state_inv_player[playername] == 0 then--инв-рь игрока
 			if state_gui_window[playername] == 0 then
 
-				for k,v in pairs(business_pos) do
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[6][2] then
+				for k,v in pairs(business_pos) do--бизнесы
+					if getElementDimension(playerid) == v[5] and v[4] == interior_business[6][2] and enter_business[playername] == 1 then
 						triggerClientEvent( playerid, "event_tune_create", playerid, k )
 						state_gui_window[playername] = 1
 						return
@@ -1929,7 +1962,8 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
-				if enter_job[playername] == 1 then
+
+				if enter_job[playername] == 1 then--здания
 					if interior_job[2][1] == getElementInterior(playerid) and interior_job[2][10] == getElementDimension(playerid) or interior_job[3][1] == getElementInterior(playerid) and interior_job[3][10] == getElementDimension(playerid) or interior_job[4][1] == getElementInterior(playerid) and interior_job[4][10] == getElementDimension(playerid) then
 						if search_inv_player(playerid, 10, playername) == 0 then
 							sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
@@ -2018,7 +2052,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 then
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 6 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -2026,6 +2060,46 @@ function left_alt_down (playerid, key, keyState)
 					enter_business[playername] = 0
 					setElementDimension(playerid, 0)
 					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+					return
+				end
+			else
+				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
+				local id = result[1]["interior"]
+
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and id == 6 then
+
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+
+					state_gui_window[playername] = 0
+					enter_business[playername] = 1
+
+					setElementRotation(vehicleid, 0, 0, 90)
+
+					setElementDimension(vehicleid, result[1]["world"])
+					setElementInterior(vehicleid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
+
+					setElementDimension(playerid, result[1]["world"])
+					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
+
+					setElementFrozen(vehicleid, true)
+					setElementFrozen(playerid, true)
+					return
+
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id == 6 then
+					
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+
+					state_gui_window[playername] = 0
+					enter_business[playername] = 0
+
+					setElementDimension(vehicleid, 0)
+					setElementInterior(vehicleid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+
+					setElementDimension(playerid, 0)
+					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+
+					setElementFrozen(vehicleid, false)
+					setElementFrozen(playerid, false)
 					return
 				end
 			end
@@ -2275,6 +2349,15 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
+
+			local objPick = createObject (1484, x, y, z)
+			attachElementToBone (objPick, playerid, 11, 0.1,-0.02,0.13, 0,130,0)
+			setTimer(function ( playerid )
+				setPedAnimation(playerid, nil)
+				detachElementFromBone(objPick)
+				destroyElement(objPick)
+			end, 2000, 1, playerid)
+			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false)
 
 			me_chat(playerid, playername.." выпил пиво")
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
@@ -3000,10 +3083,10 @@ function ( playerid, cmd, id )
 		return
 	end
 
-	if interior_house[id] ~= nil then
+	if interior[id] ~= nil then
 		setElementInterior(playerid, 0)
-		setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
-		sendPlayerMessage(playerid, "setElementInterior "..interior_house[id][2], lyme[1], lyme[2], lyme[3])
+		setElementInterior(playerid, interior[id][1], interior[id][3], interior[id][4], interior[id][5])
+		sendPlayerMessage(playerid, "setElementInterior "..interior[id][2], lyme[1], lyme[2], lyme[3])
 	else
 		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
 	end
@@ -3071,7 +3154,8 @@ end)
 function input_Console ( text )
 
 	if text == "z" then
-		print(text)
+		local x = 1
+		print(x)
 
 	elseif text == "x" then
 		local allResources = getResources()
@@ -3083,3 +3167,21 @@ function input_Console ( text )
 	end
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
+
+local objPick = 0
+function o_pos( thePlayer )
+	local x, y, z = getElementPosition (thePlayer)
+	objPick = createObject (1484, x, y, z)
+
+	attachElementToBone (objPick, thePlayer, 11, 0, 0, 0, 0, 0, 0)
+end
+
+addCommandHandler ("orot",
+function (playerid, cmd, id1, id2, id3)
+	setElementBoneRotationOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
+end)
+
+addCommandHandler ("opos",
+function (playerid, cmd, id1, id2, id3)
+	setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
+end)
