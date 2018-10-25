@@ -403,14 +403,16 @@ function createText ()
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
+	local heal_player = split(getElementHealth(playerid), ".")
 
 	dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 	dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+	dxdrawtext ( "heal_player "..heal_player[1], 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
 		local speed_table = split(getSpeed(vehicle), ".")
-		local heal_table = split(getElementHealth(vehicle), ".")
+		local heal_vehicle = split(getElementHealth(vehicle), ".")
 		local fuel_table = split(fuel, ".")
 		local speed_car = 0
 
@@ -420,7 +422,7 @@ function createText ()
 			speed_car = getSpeed(vehicle)*1.125+43
 		end
 
-		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal "..heal_table[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
+		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
 
 		dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 

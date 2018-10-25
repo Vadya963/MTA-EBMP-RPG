@@ -20,6 +20,7 @@ local max_blip = 250--радиус блипов
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 local tomorrow_weather = 0--погода
 local spawnX, spawnY, spawnZ = 1642, -2240, 13--стартовая позиция
+local max_heal = 200--макс здоровье игрока
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -144,7 +145,7 @@ end
 18: right ankle
 19: left foot
 20: right foot]]
-function object_attach( playerid, model, bone, x,y,z, rx,ry,rz )--прикрепление объектов к игроку
+function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прикрепление объектов к игроку
 	local x1, y1, z1 = getElementPosition (playerid)
 	local objPick = createObject (model, x1, y1, z1)
 
@@ -154,7 +155,7 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz )--прикреп
 		setPedAnimation(playerid, nil)
 		detachElementFromBone(objPick)
 		destroyElement(objPick)
-	end, 2000, 1, playerid)
+	end, time, 1, playerid)
 end
 -----------------------------------------------------------------------------------------
 
@@ -1314,6 +1315,8 @@ function()
 	local serial = getPlayerSerial(playerid)
 	local ip = getPlayerIP ( playerid )
 
+	--o_pos(playerid)
+
 	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
@@ -1353,7 +1356,7 @@ function()
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
 
-	for _, stat in pairs({ 22, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
+	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
 end)
@@ -1446,7 +1449,7 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '100', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, skin, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '26', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -2211,7 +2214,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
-			if getElementHealth(playerid) == 100 then
+			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
 			end
@@ -2220,24 +2223,31 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 3 then
-				local hp = 100*0.05
+				local hp = max_heal*0.05
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			elseif id1 == 7 then
-				local hp = 100*0.10
+				local hp = max_heal*0.10
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			elseif id1 == 8 then
-				local hp = 100*0.15
+				local hp = max_heal*0.15
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			end
+
+			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
+			if vehicleid then
+				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false)
+			else
+				setPedAnimation(playerid, "smoking", "m_smk_drag", -1, false)
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 4 then--аптечка
-			if getElementHealth(playerid) == 100 then
+			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
 			end
@@ -2245,8 +2255,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			id2 = id2 - 1
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
-			setElementHealth(playerid, 100)
-			sendPlayerMessage(playerid, "+100 хп", yellow[1], yellow[2], yellow[3])
+			setElementHealth(playerid, max_heal)
+			sendPlayerMessage(playerid, "+"..max_heal.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал аптечку")
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
@@ -2315,7 +2325,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 20 then--нарко
-			if getElementHealth(playerid) == 100 then
+			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
 			end
@@ -2324,7 +2334,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
-			local hp = 100*0.50
+			local hp = max_heal*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
@@ -2332,7 +2342,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 21 or id1 == 22 then--пиво
-			if getElementHealth(playerid) == 100 then
+			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
 			end
@@ -2342,16 +2352,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 21 then
-				local hp = 100*0.20
+				local hp = max_heal*0.20
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			elseif id1 == 22 then
-				local hp = 100*0.25
+				local hp = max_heal*0.25
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
-			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0)
+			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false)
 
 			me_chat(playerid, playername.." выпил пиво")
@@ -3166,9 +3176,9 @@ addEventHandler ( "onConsole", getRootElement(), input_Console )
 local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (1484, x, y, z)
+	objPick = createObject (1485, x, y, z)
 
-	attachElementToBone (objPick, thePlayer, 11, 0, 0, 0, 0, 0, 0)
+	attachElementToBone (objPick, thePlayer, 12, 0, 0, 0, 0, 0, 0)
 end
 
 addCommandHandler ("orot",
