@@ -17,7 +17,7 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 
-local max_subject = 51--кол-во предметов
+local max_subject = 52--кол-во предметов
 local no_use_subject = {-1,0,1}
 
 --выделение картинки
@@ -77,6 +77,7 @@ local info_png = {
 	[49] = {"лопата", "ID"},
 	[50] = {"лицензия на оружие на имя", ""},
 	[51] = {"jetpack", "ID"},
+	[52] = {"кислородный балон на 5 минут", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -119,6 +120,12 @@ function tomorrow_weather_fun (i)
 end
 addEvent( "event_tomorrow_weather_fun", true )
 addEventHandler ( "event_tomorrow_weather_fun", getRootElement(), tomorrow_weather_fun )
+
+function setPedOxygenLevel_fun ()--кислородный балон
+	setPedOxygenLevel ( localPlayer, 4000 )
+end
+addEvent( "event_setPedOxygenLevel_fun", true )
+addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -395,7 +402,7 @@ function createText ()
 	--setTime( 0, 0 )
 
 	local time = getRealTime()
-	local playerid = getLocalPlayer()
+	local playerid = localPlayer
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
 
@@ -597,7 +604,7 @@ function tune_window_create (number)--создание окна тюнинга
 				tune_color_2d = false
 				guiStaticImageLoadImage ( tune_img, "upgrade/"..text.."_w_s.jpg" )
 			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
-				local vehicleid = getPlayerVehicle(getLocalPlayer())
+				local vehicleid = getPlayerVehicle(localPlayer)
 
 				if vehicleid then
 					local model = getElementModel ( vehicleid )
@@ -623,7 +630,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 	function tune_upgrade ( button, state, absoluteX, absoluteY )--установка тюнинга
 		local text = guiGetText ( tune_text_edit )
-		local vehicleid = getPlayerVehicle(getLocalPlayer())
+		local vehicleid = getPlayerVehicle(localPlayer)
 		local r1,g1,b1 = guiGetText ( tune_r_edit ), guiGetText ( tune_g_edit ), guiGetText ( tune_b_edit )
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
 
@@ -633,7 +640,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
+						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", localPlayer, number_business )
 						break
 					end
 				end
@@ -641,7 +648,7 @@ function tune_window_create (number)--создание окна тюнинга
 				local model = getElementModel ( vehicleid )
 
 				if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
-					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
+					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save", localPlayer, number_business )
 				end
 			end
 		end
@@ -649,10 +656,10 @@ function tune_window_create (number)--создание окна тюнинга
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
 			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save", getLocalPlayer(), number_business )
+					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save", localPlayer, number_business )
 
 				elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save", getLocalPlayer(), number_business )
+					triggerServerEvent( "event_setVehicleHeadLightColor", getRootElement(), vehicleid, r, g, b, "save", localPlayer, number_business )
 				end
 			end
 		end
@@ -661,7 +668,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 	function tune_delet ( button, state, absoluteX, absoluteY )--удаление тюнинга
 		local text = guiGetText ( tune_text_edit )
-		local vehicleid = getPlayerVehicle(getLocalPlayer())
+		local vehicleid = getPlayerVehicle(localPlayer)
 
 		if text ~= "" and vehicleid then
 			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
@@ -669,7 +676,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", getLocalPlayer(), number_business )
+						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", localPlayer, number_business )
 						break
 					end
 				end
@@ -732,16 +739,16 @@ function business_menu(number)--создание окна бизнеса
 
 		if tonumber(text) ~= nil and tonumber(text) >= 1 then
 			if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "withdraw" )
+				triggerServerEvent( "event_till_fun", getRootElement(), localPlayer, number_business, tonumber(text), "withdraw" )
 
 			elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "deposit" )
+				triggerServerEvent( "event_till_fun", getRootElement(), localPlayer, number_business, tonumber(text), "deposit" )
 
 			elseif guiRadioButtonGetSelected( tune_radio_button3 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "price" )
+				triggerServerEvent( "event_till_fun", getRootElement(), localPlayer, number_business, tonumber(text), "price" )
 
 			elseif guiRadioButtonGetSelected( tune_radio_button4 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), getLocalPlayer(), number_business, tonumber(text), "buyprod" )
+				triggerServerEvent( "event_till_fun", getRootElement(), localPlayer, number_business, tonumber(text), "buyprod" )
 			end
 		end
 	end
@@ -770,7 +777,7 @@ function shop_menu(number, value)--создание окна магазина
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_buy_subject_fun", getRootElement(), getLocalPlayer(), text, number_business, value )
+		triggerServerEvent( "event_buy_subject_fun", getRootElement(), localPlayer, text, number_business, value )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -844,7 +851,7 @@ function cops_menu()--создание склада полиции
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_cops_weapon_fun", getRootElement(), getLocalPlayer(), text )
+		triggerServerEvent( "event_cops_weapon_fun", getRootElement(), localPlayer, text )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -882,7 +889,7 @@ function mayoralty_menu()--мэрия
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_mayoralty_menu_fun", getRootElement(), getLocalPlayer(), text )
+		triggerServerEvent( "event_mayoralty_menu_fun", getRootElement(), localPlayer, text )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -988,7 +995,7 @@ function zamena_img()
 		inv_slot[info3_selection][2] = info1_selection_1
 		inv_slot[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(getLocalPlayer()) )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 		
 		change_image ( "player", info3_selection, info1_selection_1 )
 
@@ -997,7 +1004,7 @@ function zamena_img()
 		inv_slot_car[info3_selection][2] = info1_selection_1
 		inv_slot_car[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection, info1_selection_1, info2_selection_1, plate )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection, info1_selection_1, info2_selection_1, plate )
 		
 		change_image ( "car", info3_selection, info1_selection_1 )
 
@@ -1005,7 +1012,7 @@ function zamena_img()
 		inv_slot_house[info3_selection][2] = info1_selection_1
 		inv_slot_house[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection, info1_selection_1, info2_selection_1, house )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection, info1_selection_1, info2_selection_1, house )
 		
 		change_image ( "house", info3_selection, info1_selection_1 )
 	end
@@ -1030,7 +1037,7 @@ function inv_create ()--создание инв-ря
 	stats_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 
 	tabPanel = guiCreateTabPanel ( 10.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
-	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( getLocalPlayer() ), tabPanel )
+	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( localPlayer ), tabPanel )
 
 	showCursor( true )
 
@@ -1110,7 +1117,7 @@ function inv_create ()--создание инв-ря
 				inv_slot[info3_selection_1][2] = info1_selection
 				inv_slot[info3_selection_1][3] = info2_selection
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(getLocalPlayer()) )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(localPlayer) )
 
 				change_image ( "player", info3_selection_1, info1_selection )
 
@@ -1216,7 +1223,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_car[info3_selection_1][2] = info1_selection
 					inv_slot_car[info3_selection_1][3] = info2_selection
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "car", info3_selection_1, info1_selection, info2_selection, plate )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1_selection, info2_selection, plate )
 
 					change_image ( "car", info3_selection_1, info1_selection )
 
@@ -1323,7 +1330,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_house[info3_selection_1][2] = info1_selection
 					inv_slot_house[info3_selection_1][3] = info2_selection
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), getLocalPlayer(), "house", info3_selection_1, info1_selection, info2_selection, house )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1_selection, info2_selection, house )
 
 					change_image ( "house", info3_selection_1, info1_selection )
 
@@ -1364,7 +1371,7 @@ function inv_create ()--создание инв-ря
 				end
 
 				if tab_player == guiGetSelectedTab(tabPanel) then
-					triggerServerEvent( "event_use_inv", getRootElement(), getLocalPlayer(), "player", info3, info1, info2 )
+					triggerServerEvent( "event_use_inv", getRootElement(), localPlayer, "player", info3, info1, info2 )
 				end
 
 				gui_selection = false
@@ -1390,17 +1397,17 @@ function inv_create ()--создание инв-ря
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
 				if tab_player == info_tab then
-					triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "player", info3, info1, info2, getPlayerName ( getLocalPlayer() ) )
+					triggerServerEvent( "event_throw_earth_server", getRootElement(), localPlayer, "player", info3, info1, info2, getPlayerName ( localPlayer ) )
 
 				elseif tab_car == info_tab then
-					local vehicleid = getPlayerVehicle(getLocalPlayer())
+					local vehicleid = getPlayerVehicle(localPlayer)
 
 					if vehicleid then
-						triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "car", info3, info1, info2, plate )
+						triggerServerEvent( "event_throw_earth_server", getRootElement(), localPlayer, "car", info3, info1, info2, plate )
 					end
 
 				elseif tab_house == info_tab then
-					triggerServerEvent( "event_throw_earth_server", getRootElement(), getLocalPlayer(), "house", info3, info1, info2, house )
+					triggerServerEvent( "event_throw_earth_server", getRootElement(), localPlayer, "house", info3, info1, info2, house )
 				end
 
 				gui_selection = false

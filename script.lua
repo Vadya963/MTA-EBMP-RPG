@@ -239,6 +239,7 @@ local info_png = {
 	[49] = {"лопата", "ID"},
 	[50] = {"лицензия на оружие на имя", ""},
 	[51] = {"jetpack", "ID"},
+	[52] = {"кислородный балон на 5 минут", "шт"},
 }
 
 local weapon = {
@@ -1355,6 +1356,7 @@ function()
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
+	setPlayerHudComponentVisible ( playerid, "money", false )
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -1870,6 +1872,7 @@ addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_serv
 function e_down (playerid, key, keyState)--подбор предметов с земли
 local x,y,z = getElementPosition(playerid)
 local playername = getPlayerName ( playerid )
+math.randomseed(getTickCount())
 	
 	if logged[playername] == 0 then
 		return
@@ -2469,6 +2472,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." надел "..info_png[id1][1])
 			end
+			return
+
+		elseif id1 == 52 then--кислородный балон
+			id2 = id2 - 1
+
+			setTimer(function( playerid )
+				triggerClientEvent( playerid, "event_setPedOxygenLevel_fun", playerid )
+				sendPlayerMessage(playerid, "Кислород пополнился", yellow[1], yellow[2], yellow[3] )
+			end, 38000, 8, playerid)
+
+			me_chat(playerid, playername.." надел "..info_png[id1][1])
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
