@@ -169,7 +169,7 @@ end
 function timer_earth_clear()
 	local time = getRealTime()
 
-	if time["minute"] == 30 then
+	if time["minute"] == 0 or time["minute"] == 30 then
 		for j=1,max_earth do
 			earth[j][1] = 0
 			earth[j][2] = 0
