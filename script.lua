@@ -459,14 +459,14 @@ local interior_house = {
 
 --здания для работ и фракций
 local interior_job = {
-	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1},
-	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2},
-	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3},
-	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4},
-	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5},
-	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6},
-	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7},
-	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8},
+	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1, ", Разгрузить товар - E", 15},
+	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, "", 5},
+	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, "", 5},
+	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, "", 5},
+	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, "", 5},
+	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Разгрузить товар - E", 15},
+	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, "", 5},
+	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, "", 5},
 }
 
 --предметы за которые можно получить деньги
@@ -768,7 +768,7 @@ function house_bussiness_job_pos_load( playerid )
 	end
 
 	for h,v in pairs(interior_job) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job", house_bussiness_radius )
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job", house_bussiness_radius, v[11], v[12] )
 	end
 end
 
@@ -1821,7 +1821,7 @@ local x,y,z = getElementPosition(playerid)
 
 	if keyState == "down" then
 		if state_gui_window[playername] == 0 then--гуи окно
-			if state_inv_player[playername] == 0 then--инв-рь игрока
+			if state_inv_player[playername] == 0 and arrest[playername] == 0 then--инв-рь игрока
 				for i=0,max_inv do
 					triggerClientEvent( playerid, "event_inv_load", playerid, "player", i, array_player_1[playername][i+1], array_player_2[playername][i+1] )
 				end
@@ -2713,6 +2713,14 @@ function (playerid, cmd, id)
 			local x1,y1,z1 = getElementPosition(player)
 
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+				triggerClientEvent( player, "event_inv_delet", playerid )
+				state_inv_player[id] = 0
+
+				triggerClientEvent( player, "event_gui_delet", playerid )
+				state_gui_window[id] = 0
+
+				takeAllWeapons ( player )
+
 				me_chat(playerid, playername.." посадил "..id.." в камеру")
 
 				arrest[id] = 1
@@ -3071,7 +3079,15 @@ function (playerid, cmd, id, time, ...)
 
 		if id == player_name then
 			local randomize = math.random(1,#prison_cell)
-			outputChatBox("Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." минут по причине "..reason, getRootElement(), lyme[1], lyme[2], lyme[3])
+			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." минут по причине "..reason, lyme[1], lyme[2], lyme[3])
+
+			triggerClientEvent( player, "event_inv_delet", playerid )
+			state_inv_player[id] = 0
+
+			triggerClientEvent( player, "event_gui_delet", playerid )
+			state_gui_window[id] = 0
+
+			takeAllWeapons ( player )
 
 			arrest[id] = 1
 			crimes[id] = time
@@ -3115,7 +3131,7 @@ function ( playerid, cmd, id, ... )
 
 		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
 
-		outputChatBox("Администратор "..playername.." забанил "..id.." по причине "..reason, getRootElement(), lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по причине "..reason, lyme[1], lyme[2], lyme[3])
 
 		local player = getPlayerFromName ( id )
 		if player then
@@ -3152,7 +3168,7 @@ function ( playerid, cmd, id )
 
 		sqlite( "UPDATE account SET ban = '0', reason = '0' WHERE name = '"..id.."'")
 
-		outputChatBox("Администратор "..playername.." разбанил "..id, getRootElement(), lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." разбанил "..id, lyme[1], lyme[2], lyme[3])
 
 		save_admin_action(playerid, "[admin_unban] "..playername.." unban "..id)
 	else
@@ -3190,7 +3206,7 @@ function ( playerid, cmd, id, ... )
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		local result = sqlite( "INSERT INTO banserial_list (name, serial, reason) VALUES ('"..id.."', '"..result[1]["reg_serial"].."', '"..reason.."')" )
 
-		outputChatBox("Администратор "..playername.." забанил "..id.." по серийнику по причине "..reason, getRootElement(), lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику по причине "..reason, lyme[1], lyme[2], lyme[3])
 
 		local player = getPlayerFromName ( id )
 		if player then

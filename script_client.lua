@@ -369,13 +369,13 @@ local house_bussiness_radius = 0--радиус размещения бизнес
 local house_pos = {}
 local business_pos = {}
 local job_pos = {}
-function bussines_house_fun (i, x,y,z, value, radius)
+function bussines_house_fun (i, x,y,z, value, radius, text, radius1)
 	if value == "biz" then
 		business_pos[i] = {x,y,z}
 	elseif value == "house" then
 		house_pos[i] = {x,y,z}
 	elseif value == "job" then
-		job_pos[i] = {x,y,z}
+		job_pos[i] = {x,y,z, text, radius1}
 	end
 
 	house_bussiness_radius = radius
@@ -498,8 +498,8 @@ function createText ()
 
 	if job_pos ~= nil then
 		for k,v in pairs(job_pos) do
-			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], 15) then
-				dxdrawtext ( "Здание (Войти - ALT, Загрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
+			if isPointInCircle3D(x,y,z, job_pos[k][1],job_pos[k][2],job_pos[k][3], job_pos[k][5]) then
+				dxdrawtext ( "Здание (Войти - ALT"..job_pos[k][4]..")", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 				break
 			end
 		end
@@ -1443,47 +1443,48 @@ addEvent( "event_inv_create", true )
 addEventHandler ( "event_inv_create", getRootElement(), inv_create )
 
 function inv_delet ()--удаление инв-ря
+	if stats_window then
+		showCursor( false )
 
-	showCursor( false )
+		for i=0,max_inv do
+			inv_slot[i] = {0,0,0}
+			inv_slot_car[i] = {0,0,0}
+			inv_slot_house[i] = {0,0,0}
+		end
 
-	for i=0,max_inv do
-		inv_slot[i] = {0,0,0}
-		inv_slot_car[i] = {0,0,0}
-		inv_slot_house[i] = {0,0,0}
+		plate = ""
+		house = ""
+
+		gui_2dtext = false
+		gui_pos_x = 0
+		gui_pos_y = 0
+		info1_png = -1
+		info2_png = -1
+
+		gui_selection = false
+		gui_selection_pos_x = 0
+		gui_selection_pos_y = 0
+		info3_selection = -1
+		info1_selection = -1
+		info2_selection = -1
+
+		info3_selection_1 = -1
+		info1_selection_1 = -1
+		info2_selection_1 = -1
+
+		info1 = -1
+		info2 = -1
+		info3 = -1
+
+		info_tab = nil
+		tab_car = nil
+		tab_house = nil
+		lmb = 0
+
+		destroyElement(stats_window)
+
+		stats_window = nil
 	end
-
-	plate = ""
-	house = ""
-
-	gui_2dtext = false
-	gui_pos_x = 0
-	gui_pos_y = 0
-	info1_png = -1
-	info2_png = -1
-
-	gui_selection = false
-	gui_selection_pos_x = 0
-	gui_selection_pos_y = 0
-	info3_selection = -1
-	info1_selection = -1
-	info2_selection = -1
-
-	info3_selection_1 = -1
-	info1_selection_1 = -1
-	info2_selection_1 = -1
-
-	info1 = -1
-	info2 = -1
-	info3 = -1
-
-	info_tab = nil
-	tab_car = nil
-	tab_house = nil
-	lmb = 0
-
-	destroyElement(stats_window)
-
-	stats_window = nil
 end
 addEvent( "event_inv_delet", true )
 addEventHandler ( "event_inv_delet", getRootElement(), inv_delet )
