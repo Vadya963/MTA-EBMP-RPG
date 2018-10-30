@@ -126,6 +126,15 @@ function setPedOxygenLevel_fun ()--кислородный балон
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
+
+local debuginfo = "true"
+local debuginfo_table = {}
+local max_dbi = 9
+function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9)--дебагинфа
+	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9}
+end
+addEvent( "event_debuginfo_fun", true )
+addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -296,7 +305,7 @@ local weapon = {
 
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
-	[4] = {info_png[4][1], 5, 150},
+	[4] = {info_png[4][1], 5, 100},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
@@ -412,9 +421,15 @@ function createText ()
 	local rx,ry,rz = getElementRotation(playerid)
 	local heal_player = split(getElementHealth(playerid), ".")
 
-	dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-	dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-	dxdrawtext ( "heal_player "..heal_player[1], 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+	if debuginfo == "true" then
+		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( "heal_player "..heal_player[1], 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+
+		for i=1,max_dbi do
+			dxdrawtext ( debuginfo_table[i], 300.0, 70.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		end
+	end
 
 	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
@@ -431,7 +446,9 @@ function createText ()
 
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
 
-		dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		if debuginfo == "true" then
+			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		end
 
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
@@ -1551,4 +1568,15 @@ function(absoluteX, absoluteY, gui)
 	gui_pos_y = 0
 	info1_png = -1
 	info2_png = -1
+end)
+
+addCommandHandler ( "debuginfo",
+function ( cmd, id )
+	if id == nil then
+		sendPlayerMessage("debuginfo true or false")
+		return
+	end
+
+	debuginfo = id
+	sendPlayerMessage("debuginfo "..id)
 end)
