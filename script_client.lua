@@ -922,15 +922,18 @@ function tablet_fun()--создание планшета
 	local width = 720
 	local height = 430
 
-	local width_fon = 642
-	local height_fon = 360
+	local pos_x = (screenWidth/2)-(width/2)
+	local pos_Y = (screenHeight/2)-(height/2)
 
-	local width_fon_pos = 40
-	local height_fon_pos = 29
+	local width_fon = width/1.121--642
+	local height_fon = height/1.194--360
+
+	local width_fon_pos = width_fon/16.05--40
+	local height_fon_pos = height_fon/12.41--29
 
 	local browser = nil
 
-	gui_window = guiCreateStaticImage( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "comp/tablet-display.png", false )
+	gui_window = guiCreateStaticImage( pos_x, pos_Y, width, height, "comp/tablet-display.png", false )
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
 
 	local auction = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )

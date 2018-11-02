@@ -551,7 +551,7 @@ function timer_earth()--передача слотов земли на клиен
 		local playername = getPlayerName ( playerid )
 		local vehicleid = getPlayerVehicle(playerid)
 
-		if logged[playername] ~= 0 then
+		if logged[playername] == 1 then
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
 
 			if vehicleid then
@@ -1323,7 +1323,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 60000, 0)--погода сервера
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
-		setTimer(prison_timer, 1000, 0)--античит
+		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
 
 		setWeather(tomorrow_weather)
 
