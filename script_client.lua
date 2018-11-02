@@ -922,8 +922,8 @@ function tablet_fun()--создание планшета
 	local width = 720
 	local height = 430
 
-	local pos_x = (screenWidth/2)-(width/2)
-	local pos_Y = (screenHeight/2)-(height/2)
+	local pos_x = screenWidth-width
+	local pos_Y = screenHeight-height
 
 	local width_fon = width/1.121--642
 	local height_fon = height/1.194--360
@@ -975,7 +975,7 @@ function tablet_fun()--создание планшета
 				guiSetText( addressBar, getBrowserURL( theBrowser ) )
 			end)
 
-			addEventHandler( "onClientGUIClick", resourceRoot, 
+			addEventHandler( "onClientGUIClick", resourceRoot,
 			function()
 				if source == NavigateBack then
 					navigateBrowserBack(theBrowser)
@@ -1037,14 +1037,6 @@ function zamena_img()
 		change_image ( "house", info3_selection, info1_selection_1 )
 	end
 end
-
-addCommandHandler ( "alpha",
-function ( cmd, id1 )
-	guiSetAlpha ( tabPanel, id1 )
-	for i=0,23 do
-		guiSetAlpha ( inv_slot[i][1], id1 )
-	end
-end)
 
 function inv_create ()--создание инв-ря
 	local text_width = 50.0
@@ -1577,10 +1569,25 @@ end)
 addCommandHandler ( "debuginfo",
 function ( cmd, id )
 	if id == nil then
-		sendPlayerMessage("debuginfo true or false")
-		return
+		sendPlayerMessage("[ERROR] /debuginfo [true or false]", red[1], red[2], red[3])
+	elseif id == "true" then
+		debuginfo = id
+		sendPlayerMessage("debuginfo "..id)
+	elseif id == "false" then
+		debuginfo = id
+		sendPlayerMessage("debuginfo "..id)
 	end
+end)
 
-	debuginfo = id
-	sendPlayerMessage("debuginfo "..id)
+addCommandHandler ( "showcursor",
+function ( cmd, id )
+	if not id then
+		sendPlayerMessage("[ERROR] /showcursor [true or false]", red[1], red[2], red[3])
+	elseif id == "true" then
+		showCursor( true )
+		sendPlayerMessage("showcursor true")
+	elseif id == "false" then
+		showCursor( false )
+		sendPlayerMessage("showcursor false")
+	end
 end)
