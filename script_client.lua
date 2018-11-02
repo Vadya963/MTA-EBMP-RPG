@@ -427,7 +427,7 @@ function createText ()
 		dxdrawtext ( "heal_player "..heal_player[1], 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		for i=1,max_dbi do
-			dxdrawtext ( debuginfo_table[i], 300.0, 70.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( debuginfo_table[i], 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 	end
 

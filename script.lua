@@ -562,6 +562,42 @@ function timer_earth()--передача слотов земли на клиен
 	end
 end
 
+function prison_timer()--античит если не в тюрьме
+	for i,playerid in pairs(getElementsByType("player")) do
+		local count = 0
+		local playername = getPlayerName(playerid)
+		local x,y,z = getElementPosition(playerid)
+
+		for k,v in pairs(prison_cell) do
+			if not isPointInCircle3D(x,y,z, v[4],v[5],v[6], 5) then
+				count = count+1
+			end
+		end
+
+		if count == #prison_cell then
+			if arrest[playername] == 1 then
+				local randomize = math.random(1,#prison_cell)
+
+				triggerClientEvent( playerid, "event_inv_delet", playerid )
+				state_inv_player[playername] = 0
+
+				triggerClientEvent( playerid, "event_gui_delet", playerid )
+				state_gui_window[playername] = 0
+
+				enter_house[playername] = 0
+				enter_business[playername] = 0
+				enter_job[playername] = 0
+
+				takeAllWeapons ( playerid )
+
+				setElementDimension(playerid, prison_cell[randomize][2])
+				setElementInterior(playerid, 0)
+				setElementInterior(playerid, prison_cell[randomize][1], prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6])
+			end
+		end
+	end
+end
+
 function prison()--таймер заключения
 	for i,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
@@ -1287,6 +1323,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 60000, 0)--погода сервера
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
+		setTimer(prison_timer, 1000, 0)--античит
 
 		setWeather(tomorrow_weather)
 
@@ -1351,6 +1388,8 @@ function()
 	local ip = getPlayerIP ( playerid )
 
 	--o_pos(playerid)
+
+	house_bussiness_job_pos_load( playerid )
 
 	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -1513,8 +1552,6 @@ function reg_fun(playerid, cmd)
 
 		triggerClientEvent( playerid, "event_delet_okno", playerid )
 
-		house_bussiness_job_pos_load( playerid )
-
 		sqlite_save_player_action( "CREATE TABLE "..playername.." (player_action TEXT)" )
 
 		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]")
@@ -1563,8 +1600,6 @@ function log_fun(playerid, cmd)
 			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
 			triggerClientEvent( playerid, "event_delet_okno", playerid )
-
-			house_bussiness_job_pos_load( playerid )
 
 			save_player_action(playerid, "[log_fun] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 		else
@@ -2709,25 +2744,12 @@ function (playerid, cmd, id)
 		local player_name = getPlayerName ( v )
 
 		if id == player_name then
-			local randomize = math.random(1,#prison_cell)
 			local x1,y1,z1 = getElementPosition(player)
 
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				triggerClientEvent( player, "event_inv_delet", playerid )
-				state_inv_player[id] = 0
-
-				triggerClientEvent( player, "event_gui_delet", playerid )
-				state_gui_window[id] = 0
-
-				takeAllWeapons ( player )
-
 				me_chat(playerid, playername.." посадил "..id.." в камеру")
 
 				arrest[id] = 1
-
-				setElementDimension(player, prison_cell[randomize][2])
-				setElementInterior(playerid, 0)
-				setElementInterior(player, prison_cell[randomize][1], prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6])
 			else
 				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3] )
 			end
@@ -3078,23 +3100,10 @@ function (playerid, cmd, id, time, ...)
 		local player_name = getPlayerName ( v )
 
 		if id == player_name then
-			local randomize = math.random(1,#prison_cell)
-			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." минут по причине "..reason, lyme[1], lyme[2], lyme[3])
-
-			triggerClientEvent( player, "event_inv_delet", playerid )
-			state_inv_player[id] = 0
-
-			triggerClientEvent( player, "event_gui_delet", playerid )
-			state_gui_window[id] = 0
-
-			takeAllWeapons ( player )
+			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." минут. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 			arrest[id] = 1
 			crimes[id] = time
-
-			setElementDimension(player, prison_cell[randomize][2])
-			setElementInterior(playerid, 0)
-			setElementInterior(player, prison_cell[randomize][1], prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6])
 
 			save_admin_action(playerid, "[admin_prisonplayer] "..playername.." prisonplayer "..id.." time "..time.." reason "..reason)
 			return
@@ -3131,7 +3140,7 @@ function ( playerid, cmd, id, ... )
 
 		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
 
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по причине "..reason, lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 		local player = getPlayerFromName ( id )
 		if player then
@@ -3206,7 +3215,7 @@ function ( playerid, cmd, id, ... )
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		local result = sqlite( "INSERT INTO banserial_list (name, serial, reason) VALUES ('"..id.."', '"..result[1]["reg_serial"].."', '"..reason.."')" )
 
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику по причине "..reason, lyme[1], lyme[2], lyme[3])
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 		local player = getPlayerFromName ( id )
 		if player then
