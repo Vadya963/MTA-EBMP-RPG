@@ -135,6 +135,12 @@ function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9)--дебагинфа
 end
 addEvent( "event_debuginfo_fun", true )
 addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
+
+function body_hit_sound ()--звук поподания в тело
+	playSound("parachute/body_hit_sound.mp3")
+end
+addEvent( "event_body_hit_sound", true )
+addEventHandler ( "event_body_hit_sound", getRootElement(), body_hit_sound )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -171,8 +177,10 @@ for i=0,max_inv do
 	inv_slot_house[i] = {0,0,0}
 end
 
-function sendPlayerMessage(text, r, g, b)
-	outputChatBox(text, r, g, b)
+function sendPlayerMessage(playerid, text, r, g, b)
+	local time = getRealTime()
+
+	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, r, g, b)
 end
 
 function getPlayerVehicle( playerid )

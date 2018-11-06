@@ -39,7 +39,7 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 function sendPlayerMessage(playerid, text, r, g, b)
 	local time = getRealTime()
 
-	outputChatBox("["..time["hour"]..":"..time["minute"]..":"..time["second"].."] "..text, playerid, r, g, b)
+	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, playerid, r, g, b)
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
@@ -1500,6 +1500,10 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 	local playername = getPlayerName ( playerid )
 	local reason = weapon
 
+	if attacker then
+		triggerClientEvent( attacker, "event_body_hit_sound", playerid )
+	end
+
 	for k,v in pairs(deathReasons) do 
 		if k == reason then
 			reason = v
@@ -1864,7 +1868,7 @@ local x,y,z = getElementPosition(playerid)
 				if vehicleid then
 					local plate = getVehiclePlateText ( vehicleid )
 
-					if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) then
+					if search_inv_player(playerid, 6, plate) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and plate ~= "admincar" then
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 						end
@@ -1957,9 +1961,9 @@ addEvent( "event_throw_earth_server", true )
 addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_server )
 
 function e_down (playerid, key, keyState)--подбор предметов с земли
-local x,y,z = getElementPosition(playerid)
-local playername = getPlayerName ( playerid )
-math.randomseed(getTickCount())
+	local x,y,z = getElementPosition(playerid)
+	local playername = getPlayerName ( playerid )
+	math.randomseed(getTickCount())
 	
 	if logged[playername] == 0 then
 		return
@@ -1968,7 +1972,7 @@ math.randomseed(getTickCount())
 	if keyState == "down" then
 
 		if isPointInCircle3D(x,y,z, -86.208984375,-299.36328125,2.7646157741547, 15) then--место_погрузки_ящиков
-			give_subject(playerid, "car", 24, math.random(1,50))
+			give_subject(playerid, "car", 24, math.random(1,10))
 
 		elseif isPointInCircle3D(x,y,z, 955.9677734375,2143.6513671875,1011.0258789063, 5) then--взять тушку свиньи
 			give_subject(playerid, "player", 48, math.random(1,10))

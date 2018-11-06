@@ -8,6 +8,8 @@
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
 
+	<file src="parachute/body_hit_sound.mp3" />
+
 	<file src="gui/m2font.ttf" />
 	<file src="gui/gui1.png" />
 	<file src="gui/gui2.png" />
