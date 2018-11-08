@@ -83,19 +83,14 @@ local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
 local earth = {}--слоты земли
-local max_earth = 100
-
-for i=1,max_earth do
-	earth[i] = {0,0,0,0,0}
-end
 
 -----------эвенты------------------------------------------------------------------------
-function earth_load (i, x, y, z, id1, id2)--изменения слотов земли
-	earth[i][1] = x
-	earth[i][2] = y
-	earth[i][3] = z
-	earth[i][4] = id1
-	earth[i][5] = id2
+function earth_load (value, i, x, y, z, id1, id2)--изменения слотов земли
+	if value ~= "nil" then
+		earth[i] = {x,y,z,id1,id2}
+	else
+		earth = {}
+	end
 end
 addEvent( "event_earth_load", true )
 addEventHandler ( "event_earth_load", getRootElement(), earth_load )
@@ -129,9 +124,9 @@ addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenL
 
 local debuginfo = "true"
 local debuginfo_table = {}
-local max_dbi = 9
-function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9)--дебагинфа
-	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9}
+local max_dbi = 10
+function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10)--дебагинфа
+	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9, i10}
 end
 addEvent( "event_debuginfo_fun", true )
 addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
@@ -568,17 +563,17 @@ function createText ()
 	end
 
 
-	for i=1,max_earth do--отображение предметов на земле
+	for i,v in pairs(earth) do--отображение предметов на земле
 		local x,y,z = getElementPosition(playerid)
-		local area = isPointInCircle3D( x, y, z, earth[i][1], earth[i][2], earth[i][3], 20 )
+		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
-		if area and earth[i][4] ~= 0 then
-			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1, 0, false ) }
+		if area then
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
 			if coords[1] and coords[2] then
-				dxDrawImage ( coords[1], coords[2], 57, 57, image[ earth[i][4] ] )
+				dxDrawImage ( coords[1], coords[2], 57, 57, image[ v[4] ] )
 			end
 
-			local coords = { getScreenFromWorldPosition( earth[i][1], earth[i][2], earth[i][3]-1+0.2, 0, false ) }
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
 				dxdrawtext ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
@@ -976,7 +971,7 @@ function tablet_fun()--создание планшета
 
 			addEventHandler("onClientBrowserCreated", theBrowser,
 			function ()
-				loadBrowserURL(theBrowser, "https://www.youtube.com")
+				loadBrowserURL(theBrowser, "https://m.youtube.com")
 			end, false)
 
 			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )

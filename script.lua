@@ -12,6 +12,9 @@ function sqlite_save_player_action(text)
 	return result
 end
 
+local earth = {}--слоты земли
+local max_earth = 0
+
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
@@ -159,30 +162,19 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 end
 -----------------------------------------------------------------------------------------
 
-local earth = {}--слоты земли
-local max_earth = 100
-
-for i=1,max_earth do
-	earth[i] = {0,0,0,0,0}
-end
-
 function timer_earth_clear()
 	local time = getRealTime()
 
 	if time["minute"] == 0 or time["minute"] == 30 then
-		for j=1,max_earth do
-			earth[j][1] = 0
-			earth[j][2] = 0
-			earth[j][3] = 0
-			earth[j][4] = 0
-			earth[j][5] = 0
-		end
+		print("[timer_earth_clear] max_earth "..max_earth)
+
+		earth = {}
+		max_earth = 0
 
 		for k,playerid in pairs(getElementsByType("player")) do
 			sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
+			triggerClientEvent( playerid, "event_earth_load", playerid, "nil", 0, 0, 0, 0, 0, 0 )
 		end
-
-		print("[timer_earth_clear] clear")
 	end
 end
 
@@ -518,7 +510,7 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "max_earth "..max_earth )
 	end
 end
 
@@ -544,8 +536,9 @@ end
 
 function timer_earth()--передача слотов земли на клиент
 	for k,playerid in pairs(getElementsByType("player")) do
-		for i=1,max_earth do
-			triggerClientEvent( playerid, "event_earth_load", playerid, i, earth[i][1], earth[i][2], earth[i][3], earth[i][4], earth[i][5] )
+
+		for i,v in pairs(earth) do
+			triggerClientEvent( playerid, "event_earth_load", playerid, "", i, v[1], v[2], v[3], v[4], v[5] )
 		end
  
 		local playername = getPlayerName ( playerid )
@@ -568,14 +561,14 @@ function prison_timer()--античит если не в тюрьме
 		local playername = getPlayerName(playerid)
 		local x,y,z = getElementPosition(playerid)
 
-		for k,v in pairs(prison_cell) do
-			if not isPointInCircle3D(x,y,z, v[4],v[5],v[6], 5) then
-				count = count+1
+		if arrest[playername] == 1 then
+			for k,v in pairs(prison_cell) do
+				if not isPointInCircle3D(x,y,z, v[4],v[5],v[6], 5) then
+					count = count+1
+				end
 			end
-		end
 
-		if count == #prison_cell then
-			if arrest[playername] == 1 then
+			if count == #prison_cell then
 				local randomize = math.random(1,#prison_cell)
 
 				triggerClientEvent( playerid, "event_inv_delet", playerid )
@@ -1318,7 +1311,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		car_spawn_value = 1
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
-		setTimer(timer_earth, 1000, 0)--передача слотов земли на клиент
+		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 60000, 0)--погода сервера
@@ -1591,7 +1584,7 @@ function log_fun(playerid, cmd)
 				end
 			end]]
 
-			if arrest[playername] ~= 0 then
+			if arrest[playername] == 1 then
 				local randomize = math.random(1,#prison_cell)
 				spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
 			else
@@ -1922,40 +1915,30 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 		end
 	end
 
+	max_earth = max_earth+1
+	local j = max_earth
+	earth[j] = {x,y,z,id1,id2}
 
-	for j=1,max_earth do
-		if earth[j][4] == 0 then
+	if search_inv_player(playerid, 25, id2) ~= 0 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+	end
 
-			earth[j][1] = x
-			earth[j][2] = y
-			earth[j][3] = z
-			earth[j][4] = id1
-			earth[j][5] = id2
+	if vehicleid then
+		local plate = getVehiclePlateText ( vehicleid )
 
-			if search_inv_player(playerid, 25, id2) ~= 0 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
-				triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
-			end
-
-			if vehicleid then
-				local plate = getVehiclePlateText ( vehicleid )
-
-				if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
-					triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
-				end
-			end
-
-			inv_server_load(playerid, value, id3, 0, 0, tabpanel)
-
-			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, 0, 0 )
-			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
-
-			sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
-
-			save_player_action(playerid, "[throw_earth] "..playername.." [value - "..value..", x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..info_png[ earth[j][4] ][1]..", "..earth[j][5].."]")
-
-			return
+		if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 		end
 	end
+
+	inv_server_load(playerid, value, id3, 0, 0, tabpanel)
+
+	triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, 0, 0 )
+	triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
+
+	sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
+
+	save_player_action(playerid, "[throw_earth] "..playername.." [value - "..value..", x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..info_png[ earth[j][4] ][1]..", "..earth[j][5].."]")
 end
 addEvent( "event_throw_earth_server", true )
 addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_server )
@@ -1981,21 +1964,21 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 		end
 
 
-		for j=1,max_earth do
-			local area = isPointInCircle3D( x, y, z, earth[j][1], earth[j][2], earth[j][3], 20 )
+		for i,v in pairs(earth) do
+			local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
-			if area and earth[j][4] ~= 0 then
-				if inv_player_empty(playerid, earth[j][4], earth[j][5]) then
+			if area then
+				if inv_player_empty(playerid, v[4], v[5]) then
 						
-					sendPlayerMessage(playerid, "Вы подняли "..info_png[earth[j][4]][1].." "..earth[j][5].." "..info_png[earth[j][4]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+					sendPlayerMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-					save_player_action(playerid, "[e_down] "..playername.." [x - "..earth[j][1]..", y - "..earth[j][2]..", z - "..earth[j][3].."] ["..info_png[ earth[j][4] ][1]..", "..earth[j][5].."]")
+					save_player_action(playerid, "[e_down] "..playername.." [x - "..v[1]..", y - "..v[2]..", z - "..v[3].."] ["..info_png[ v[4] ][1]..", "..v[5].."]")
 
-					earth[j][1] = 0
-					earth[j][2] = 0
-					earth[j][3] = 0
-					earth[j][4] = 0
-					earth[j][5] = 0
+					earth[i] = nil
+
+					for i,playerid in pairs(getElementsByType("player")) do
+						triggerClientEvent( playerid, "event_earth_load", playerid, "nil", 0, 0, 0, 0, 0, 0 )
+					end
 				else
 					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
