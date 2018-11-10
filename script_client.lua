@@ -136,6 +136,17 @@ function body_hit_sound ()--звук поподания в тело
 end
 addEvent( "event_body_hit_sound", true )
 addEventHandler ( "event_body_hit_sound", getRootElement(), body_hit_sound )
+
+local auc = {}
+function auction_fun (value, i, name_sell, id1, id2, money)--аукцион
+	if value == "clear" then
+		auc = {}
+	else
+		auc[i] = {name_sell, id1, id2, money}
+	end
+end
+addEvent( "event_auction_fun", true )
+addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -172,7 +183,7 @@ for i=0,max_inv do
 	inv_slot_house[i] = {0,0,0}
 end
 
-function sendPlayerMessage(playerid, text, r, g, b)
+function sendPlayerMessage(text, r, g, b)
 	local time = getRealTime()
 
 	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, r, g, b)
@@ -219,12 +230,12 @@ function m2gui_window( x,y, width, height, text, bool_r )
 end
 
 function m2gui_button( x,y, text, bool_r, parent)
-	local sym = 16+5+7
+	local sym = 16+5+15
 	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
 	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
 	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
-	local text = m2gui_label ( 16+5, 0, dimensions+7, dimensions_h, text, bool_r, m2gui_fon )
+	local text = m2gui_label ( 16+5, 0, dimensions+15, dimensions_h, text, bool_r, m2gui_fon )
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
 		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
@@ -343,29 +354,29 @@ local image_3d = {
 }
 
 local weather_list = {
-	[0] = {"SUNNY"},
-	[1] = {"SUNNY"},
-	[2] = {"SUNNY"},
-	[3] = {"CLOUDY"},
-	[4] = {"CLOUDY"},
-	[5] = {"SUNNY"},
-	[6] = {"SUNNY"},
-	[7] = {"CLOUDY"},
-	[8] = {"RAINY"},
-	[9] = {"FOGGY"},
-	[10] = {"SUNNY"},
-	[11] = {"SUNNY"},
-	[12] = {"CLOUDY"},
-	[13] = {"SUNNY"},
-	[14] = {"SUNNY"},
-	[15] = {"CLOUDY"},
-	[16] = {"RAINY"},
-	[17] = {"SUNNY"},
-	[18] = {"SUNNY"},
-	[19] = {"SANDSTORM"},
-	[20] = {"CLOUDY"},
-	[21] = {"CLOUDY"},
-	[22] = {"CLOUDY"},
+	[0] = {"SUNNY", 190,113},
+	[1] = {"SUNNY", 190,113},
+	[2] = {"SUNNY", 190,113},
+	[3] = {"CLOUDY", 218,122},
+	[4] = {"CLOUDY", 218,122},
+	[5] = {"SUNNY", 190,113},
+	[6] = {"SUNNY", 190,113},
+	[7] = {"CLOUDY", 218,122},
+	[8] = {"RAINY", 206,183},
+	[9] = {"FOGGY", 211,114},
+	[10] = {"SUNNY", 190,113},
+	[11] = {"SUNNY", 190,113},
+	[12] = {"CLOUDY", 218,122},
+	[13] = {"SUNNY", 190,113},
+	[14] = {"SUNNY", 190,113},
+	[15] = {"CLOUDY", 218,122},
+	[16] = {"RAINY", 206,183},
+	[17] = {"SUNNY", 190,113},
+	[18] = {"SUNNY", 190,113},
+	[19] = {"SANDSTORM", 206,174},
+	[20] = {"CLOUDY", 218,122},
+	[21] = {"CLOUDY", 218,122},
+	[22] = {"CLOUDY", 218,122},
 }
 
 local house_bussiness_radius = 0--радиус размещения бизнесов и домов
@@ -544,6 +555,13 @@ function createText ()
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			
+			if debuginfo == "true" then
+				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, m2font_dx1 )
+				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
+				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+30, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+30, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			end
 			
 			if tab_player == guiGetSelectedTab(tabPanel) then
 				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx1 )
@@ -939,25 +957,104 @@ function tablet_fun()--создание планшета
 	gui_window = guiCreateStaticImage( pos_x, pos_Y, width, height, "comp/tablet-display.png", false )
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
 
-	local auction = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
+	local auction_menu = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
 	local internet = guiCreateStaticImage( 90, 10, 60, 60, "comp/internet.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if tomorrow_weather == value then
-			local set_weather = guiCreateStaticImage( width_fon-156, height_fon-128, 156, 128, "comp/"..weather[1]..".png", false, fon )
+			local set_weather = guiCreateStaticImage( width_fon-weather[2], height_fon-weather[3], weather[2], weather[3], "comp/"..weather[1]..".png", false, fon )
 			break
 		end
 	end
 
-	function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
+	function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов меню
+		local auc_menu = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local buy_sub = m2gui_button( 0, 0, "Купить предметы", false, auc_menu )
+		local sell_sub = m2gui_button( 0, 20, "Продать предметы", false, auc_menu )
+		local work_table = m2gui_button( 0, 20*2, "Рабочий стол", false, auc_menu )
 
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться на раб стол
+			destroyElement(auc_menu)
+		end
+		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
+
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
+			sendPlayerMessage("Аукцион загрузится через 5 секунд")
+
+			triggerServerEvent( "event_auction", getRootElement(), localPlayer )
+
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local buy_subject = m2gui_button( 100, height_fon-16, "Купить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--купить предмет
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "buy", text, 0, 0, 0 )
+			end
+			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
+
+			guiGridListAddColumn(shoplist, "№", 0.1)
+			guiGridListAddColumn(shoplist, "Продавец", 0.20)
+			guiGridListAddColumn(shoplist, "Товар", 0.50)
+			guiGridListAddColumn(shoplist, "Стоимость", 0.15)
+
+			setTimer(function (shoplist)
+				if guiGetVisible (shoplist) then
+					if auc then
+						for k,v in pairs(auc) do
+							guiGridListAddRow(shoplist, k, v[1], info_png[v[2]][1].." "..v[3].." "..info_png[v[2]][2], v[4])
+						end
+					end
+				end
+			end, 5000, 1, shoplist)
+		end
+		addEventHandler ( "onClientGUIClick", buy_sub, outputEditBox, false )
+
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+
+			local text_id1 = m2gui_label ( 0, 0, 200, 25, "Введите ИД предмета", false, low_fon )
+			local edit_id1 = guiCreateEdit ( 0, 30*1, 200, 25, "", false, low_fon )
+			local text_id2 = m2gui_label ( 0, 30*2, 200, 25, "Введите количество предмета", false, low_fon )
+			local edit_id2 = guiCreateEdit ( 0, 30*3, 200, 25, "", false, low_fon )
+			local text_money = m2gui_label ( 0, 30*4, 200, 25, "Введите стоимость предмета", false, low_fon )
+			local edit_money = guiCreateEdit ( 0, 30*5, 200, 25, "", false, low_fon )
+
+			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local sell_subject = m2gui_button( 100, height_fon-16, "Продать", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
+				local id1, id2, money = tonumber(guiGetText ( edit_id1 )), tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money ))
+
+				if id1 >= 2 and id1 <= #info_png and id2 and money then
+					triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "sell", 0, id1, id2, money )
+				end
+			end
+			addEventHandler ( "onClientGUIClick", sell_subject, outputEditBox, false )
+		end
+		addEventHandler ( "onClientGUIClick", sell_sub, outputEditBox, false )
 	end
-	addEventHandler ( "onClientGUIClick", auction, outputEditBox, false )
+	addEventHandler ( "onClientGUIClick", auction_menu, outputEditBox, false )
 
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--интернет
 		if not browser then
-			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon.png", false, fon )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 
 			local home = guiCreateStaticImage ( 0, 0, 25, 25, "comp/homebut.png", false, low_fon )
 			local NavigateBack = guiCreateStaticImage ( 25, 0, 25, 25, "comp/backbut.png", false, low_fon )
@@ -971,7 +1068,7 @@ function tablet_fun()--создание планшета
 
 			addEventHandler("onClientBrowserCreated", theBrowser,
 			function ()
-				loadBrowserURL(theBrowser, "https://m.youtube.com")
+				loadBrowserURL(theBrowser, "https://www.youtube.com")
 			end, false)
 
 			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )

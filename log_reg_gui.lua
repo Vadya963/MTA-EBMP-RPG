@@ -1,53 +1,7 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
-local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
-local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )
-local crimson = {220,20,60}--малиновый
 
 local width = 220.0
 local height = 80.0+16+10
-
-------------------------------собственное гуи--------------------------------------------
-function m2gui_label( x,y, width, height, text, bool_r, parent )
-	local text = guiCreateLabel ( x, y, width, height, text, bool_r, parent )
-	guiSetFont( text, m2font )
-	return text
-end
-
-function m2gui_radiobutton( x,y, width, height, text, bool_r, parent )
-	local text = guiCreateRadioButton ( x, y, width, height, text, bool_r, parent )
-	guiSetFont( text, m2font )
-	return text
-end
-
-function m2gui_window( x,y, width, height, text, bool_r )
-	local m2gui_win = guiCreateStaticImage( x, y, width, height, "gui/gui1.png", bool_r )
-	local gui_text = guiCreateStaticImage( 0, 0, width, 15, "gui/gui2.png", bool_r, m2gui_win )
-	local text = m2gui_label ( 0, 0, width, 15, text, bool_r, m2gui_win )
-	guiLabelSetHorizontalAlign ( text, "center" )
-	return m2gui_win
-end
-
-function m2gui_button( x,y, text, bool_r, parent)
-	local sym = 16+5+7
-	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
-	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
-	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
-	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
-	local text = m2gui_label ( 16+5, 0, dimensions+7, dimensions_h, text, bool_r, m2gui_fon )
-
-	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
-		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
-	end
-	addEventHandler( "onClientMouseEnter", text, outputEditBox, false )
-
-	function outputEditBox ( absoluteX, absoluteY, gui )--покидание на текст кнопки
-		guiLabelSetColor ( text, 255, 255, 255 )
-	end
-	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
-
-	return text
-end
------------------------------------------------------------------------------------------
 
 showCursor( true )
 local rl_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Регистрация - Авторизация", false )
