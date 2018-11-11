@@ -988,6 +988,7 @@ function tablet_fun()--создание планшета
 
 			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local buy_subject = m2gui_button( 100, height_fon-16, "Купить", false, low_fon )
+			local return_subject = m2gui_button( 200, height_fon-16, "Вернуть", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 				destroyElement(low_fon)
@@ -1000,6 +1001,13 @@ function tablet_fun()--создание планшета
 				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "buy", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--купить предмет
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "return", text, 0, 0, 0 )
+			end
+			addEventHandler ( "onClientGUIClick", return_subject, outputEditBox, false )
 
 			guiGridListAddColumn(shoplist, "№", 0.1)
 			guiGridListAddColumn(shoplist, "Продавец", 0.20)

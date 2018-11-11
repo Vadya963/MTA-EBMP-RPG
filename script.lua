@@ -908,6 +908,30 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 		else
 			sendPlayerMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
 		end
+
+	elseif value == "return" then
+		local result = sqlite( "SELECT COUNT() FROM auction WHERE i = '"..i.."'" )
+
+		if result[1]["COUNT()"] == 1 then
+			local result = sqlite( "SELECT * FROM auction WHERE i = '"..i.."'" )
+
+			if playername == result[1]["name_sell"] then
+
+				if inv_player_empty(playerid, result[1]["id1"], result[1]["id2"]) then
+					sendPlayerMessage(playerid, "Вы забрали "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2], orange[1], orange[2], orange[3])
+
+					save_player_action(playerid, "[auction_return] "..playername.." [i - "..i..", name - "..result[1]["name_sell"]..", "..info_png[result[1]["id1"]][1]..", "..result[1]["id2"].."]")
+
+					sqlite( "DELETE FROM auction WHERE i = '"..i.."'" )
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] Имена не совпадают", red[1], red[2], red[3])
+			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
+		end
 	end
 end
 addEvent( "event_auction_buy_sell", true )
