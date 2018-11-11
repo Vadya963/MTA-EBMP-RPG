@@ -17,7 +17,6 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 
-local max_subject = 52--кол-во предметов
 local no_use_subject = {-1,0,1}
 
 --выделение картинки
@@ -52,7 +51,7 @@ local info_png = {
 	[24] = {"ящик", "$ за штуку"},
 	[25] = {"ключ от дома с номером", ""},
 	[26] = {"silenced", "ID"},
-	[27] = {"", "одежда"},
+	[27] = {"одежда", ""},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
 	[30] = {"шеврон Сержанта", "шт"},
@@ -150,7 +149,7 @@ addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
-for i=0,max_subject do
+for i=0,#info_png do
 	image[i] = dxCreateTexture(i..".png")
 end
 
@@ -1023,12 +1022,18 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 
-			local text_id1 = m2gui_label ( 0, 0, 200, 25, "Введите ИД предмета", false, low_fon )
-			local edit_id1 = guiCreateEdit ( 0, 30*1, 200, 25, "", false, low_fon )
-			local text_id2 = m2gui_label ( 0, 30*2, 200, 25, "Введите количество предмета", false, low_fon )
-			local edit_id2 = guiCreateEdit ( 0, 30*3, 200, 25, "", false, low_fon )
-			local text_money = m2gui_label ( 0, 30*4, 200, 25, "Введите стоимость предмета", false, low_fon )
-			local edit_money = guiCreateEdit ( 0, 30*5, 200, 25, "", false, low_fon )
+			local text_id1 = m2gui_label ( 0, 0, 200, 15, "Выберите предмет", false, low_fon )
+			local edit_id1 = guiCreateComboBox ( 0, 20, 200, 300, "", false, low_fon )
+
+			for i=2,#info_png do
+				guiComboBoxAddItem( edit_id1, info_png[i][1] )
+			end
+
+			local text_id2 = m2gui_label ( 0, 50, 200, 15, "Введите количество предмета", false, low_fon )
+			local text_id3 = m2gui_label ( 0, 65, 200, 15, "или его ID", false, low_fon )
+			local edit_id2 = guiCreateEdit ( 0, 85, 200, 25, "", false, low_fon )
+			local text_money = m2gui_label ( 0, 115, 200, 15, "Введите стоимость предмета", false, low_fon )
+			local edit_money = guiCreateEdit ( 0, 135, 200, 25, "", false, low_fon )
 
 			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local sell_subject = m2gui_button( 100, height_fon-16, "Продать", false, low_fon )
@@ -1039,7 +1044,14 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
-				local id1, id2, money = tonumber(guiGetText ( edit_id1 )), tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money ))
+				local id1, id2, money = 0, tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money ))
+
+				for k,v in pairs(info_png) do
+					if v[1] == guiComboBoxGetItemText(edit_id1, guiComboBoxGetSelected(edit_id1)) then
+						id1 = k
+						break
+					end
+				end
 
 				if id1 >= 2 and id1 <= #info_png and id2 and money then
 					triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "sell", 0, id1, id2, money )
