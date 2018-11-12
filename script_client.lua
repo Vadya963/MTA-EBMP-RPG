@@ -66,7 +66,7 @@ local info_png = {
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
-	[42] = {"лекарство", "$ за штуку"},
+	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
@@ -77,6 +77,10 @@ local info_png = {
 	[50] = {"лицензия на оружие на имя", ""},
 	[51] = {"jetpack", "ID"},
 	[52] = {"кислородный балон на 5 минут", "шт"},
+	[53] = {"бургер", "шт"},
+	[54] = {"хот-дог", "шт"},
+	[55] = {"мыло", "шт"},
+	[56] = {"пижама", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -146,6 +150,21 @@ function auction_fun (value, i, name_sell, id1, id2, money)--аукцион
 end
 addEvent( "event_auction_fun", true )
 addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
+
+local alcohol = 0--макс 5
+local satiety = 0--макс 100
+local hygiene = 0--макс 100
+local sleep = 0--макс 100
+local drugs = 0--макс 100
+function nyjdi_fun (i1, i2, i3, i4, i5)--нужды	
+	alcohol = i1
+	satiety = i2
+	hygiene = i3
+	sleep = i4
+	drugs = i5
+end
+addEvent( "event_nyjdi_fun", true )
+addEventHandler ( "event_nyjdi_fun", getRootElement(), nyjdi_fun )
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -251,7 +270,6 @@ end
 -----------------------------------------------------------------------------------------
 
 local table_import_car = {
-	[405] = "car/sentinel(houstan-wasp-mafia-2)",
 	[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
 	[429] = "car/banshee(isw-508-from-mafia-2)",
 	[433] = "car/barracks(millitary-truck-from-mafia-2)",
@@ -318,12 +336,18 @@ local weapon = {
 
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
-	[4] = {info_png[4][1], 5, 100},
+	[4] = {info_png[4][1], 1, 100},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
-	[23] = {info_png[23][1], 5, 100},
+	[23] = {info_png[23][1], 1, 100},
+	[42] = {info_png[42][1], 1, 500},
 	[46] = {info_png[46][1], 1, 100},
+	[52] = {info_png[52][1], 1, 1000},
+	[53] = {info_png[53][1], 1, 100},
+	[54] = {info_png[54][1], 1, 50},
+	[55] = {info_png[55][1], 1, 100},
+	[56] = {info_png[56][1], 1, 100},
 }
 
 local bar = {
@@ -331,7 +355,7 @@ local bar = {
 	[22] = {info_png[22][1], 1, 60},
 }
 
-local skin = {"мужская одежда", 0, 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 264, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
+local skin = {"мужская одежда", 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 264, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
 
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
@@ -427,8 +451,32 @@ function createText ()
 	local playerid = localPlayer
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
-
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+
+	dxDrawImage ( screenWidth-30, 105-7.5, 30, 30, "hud/health.png" )
+	dxDrawRectangle( screenWidth-145-30, 105, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105, (145/200)*getElementHealth(playerid), 15, tocolor ( 255, 0, 0, 255 ) )
+
+	--нужды
+	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*1, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*1, (145/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
+
+	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*2, 30, 30, "hud/drugs.png" )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*2, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*2, (145/100)*drugs, 15, tocolor ( 90, 151, 107, 255 ) )
+
+	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*3, 30, 30, "hud/satiety.png" )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*3, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*3, (145/100)*satiety, 15, tocolor ( 90, 151, 107, 255 ) )
+
+	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*4, 30, 30, "hud/hygiene.png" )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*4, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*4, (145/100)*hygiene, 15, tocolor ( 90, 151, 107, 255 ) )
+
+	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*5, 145, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*5, (145/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
@@ -437,11 +485,22 @@ function createText ()
 	if debuginfo == "true" then
 		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( "heal_player "..heal_player[1], 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+
+		if isCursorShowing() then
+			local screenx, screeny, worldx, worldy, worldz = getCursorPosition()
+			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		end
 
 		for i=1,max_dbi do
 			dxdrawtext ( debuginfo_table[i], 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
+
+		dxdrawtext ( heal_player[1], screenWidth-145-30-30, 105, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( (alcohol/100), screenWidth-145-30-30, 105+(20+7.5)*1, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( drugs, screenWidth-145-30-30, 105+(20+7.5)*2, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( satiety, screenWidth-145-30-30, 105+(20+7.5)*3, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( hygiene, screenWidth-145-30-30, 105+(20+7.5)*4, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( sleep, screenWidth-145-30-30, 105+(20+7.5)*5, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 	end
 
 	local vehicle = getPlayerVehicle ( playerid )
@@ -468,7 +527,7 @@ function createText ()
 		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
 	end
 
-	for k,vehicle in pairs(getElementsByType("vehicle")) do
+	for k,vehicle in pairs(getElementsByType("vehicle")) do--отображение скорости авто над машиной
 		local xv,yv,zv = getElementPosition(vehicle)
 		
 		if isPointInCircle3D(x,y,z, xv,yv,zv, 20) then

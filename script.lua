@@ -155,7 +155,6 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 	attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
 
 	setTimer(function ( playerid )
-		setPedAnimation(playerid, nil)
 		detachElementFromBone(objPick)
 		destroyElement(objPick)
 	end, time, 1, playerid)
@@ -221,7 +220,7 @@ local info_png = {
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "ID"},
 	[41] = {"sniper", "ID"},
-	[42] = {"лекарство", "$ за штуку"},
+	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон на имя", ""},
 	[45] = {"риэлторская лицензия на имя", ""},
@@ -232,6 +231,10 @@ local info_png = {
 	[50] = {"лицензия на оружие на имя", ""},
 	[51] = {"jetpack", "ID"},
 	[52] = {"кислородный балон на 5 минут", "шт"},
+	[53] = {"бургер", "шт"},
+	[54] = {"хот-дог", "шт"},
+	[55] = {"мыло", "шт"},
+	[56] = {"пижама", "шт"},
 }
 
 local weapon = {
@@ -258,17 +261,23 @@ local weapon = {
 
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
-	[4] = {info_png[4][1], 5, 100},
+	[4] = {info_png[4][1], 1, 100},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
-	[23] = {info_png[23][1], 5, 100},
+	[23] = {info_png[23][1], 1, 100},
+	[42] = {info_png[42][1], 1, 500},
 	[46] = {info_png[46][1], 1, 100},
+	[52] = {info_png[52][1], 1, 1000},
+	[53] = {info_png[53][1], 1, 100},
+	[54] = {info_png[54][1], 1, 50},
+	[55] = {info_png[55][1], 1, 100},
+	[56] = {info_png[56][1], 1, 100},
 }
 
 local bar = {
-	[21] = {info_png[21][1], 5, 45},
-	[22] = {info_png[22][1], 5, 60},
+	[21] = {info_png[21][1], 1, 45},
+	[22] = {info_png[22][1], 1, 60},
 }
 
 local deathReasons = {
@@ -491,6 +500,17 @@ local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 local speed_car_device = {}--отображение скорости авто, 0-выкл, 1-вкл
 local arrest = {}--арест игрока, 0-нет, 1-да
 local crimes = {}--преступления
+--нужды
+local alcohol = {}
+local satiety = {}
+local hygiene = {}
+local sleep = {}
+local drugs = {}
+local max_alcohol = 500
+local max_satiety = 100
+local max_hygiene = 100
+local max_sleep = 100
+local max_drugs = 100
 
 --инв-рь авто
 local array_car_1 = {}
@@ -511,6 +531,70 @@ function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "max_earth "..max_earth )
+			
+		if logged[playername] == 1 then
+			--нужды
+			triggerClientEvent( playerid, "event_nyjdi_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
+		end
+	end
+end
+
+function nyjdi1 ()
+	for k,playerid in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(playerid)
+
+		if logged[playername] == 1 then
+			--нужды
+			if hygiene[playername] == 0 and getElementModel(playerid) ~= 230 then
+				setElementModel(playerid, 230)
+			end
+		end
+	end
+end
+
+function nyjdi()--нужды
+	for k,playerid in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(playerid)
+
+		if logged[playername] == 1 then
+			if alcohol[playername] == 500 then
+				setElementHealth( playerid, getElementHealth(playerid)-100 )
+				sendPlayerMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
+				me_chat(playerid, playername.." стошнило")
+				setPedAnimation(playerid, "food", "eat_vomit_p", -1, false, true, true, false)
+			end
+
+			if alcohol[playername] ~= 0 then
+				alcohol[playername] = alcohol[playername]-10
+			end
+
+
+			if satiety[playername] == 0 then
+				setElementHealth( playerid, getElementHealth(playerid)-1 )
+			else
+				satiety[playername] = satiety[playername]-1
+			end
+
+
+			if hygiene[playername] == 0 then
+
+			else
+				hygiene[playername] = hygiene[playername]-1
+			end
+
+
+			if sleep[playername] == 0 then
+				setElementHealth( playerid, getElementHealth(playerid)-1 )
+			else
+				sleep[playername] = sleep[playername]-1
+			end
+
+
+			if drugs[playername] == 100 then
+				setElementHealth( playerid, getElementHealth(playerid)-100 )
+				sendPlayerMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
+			end
+		end
 	end
 end
 
@@ -532,6 +616,14 @@ function fuel_down()--система топлива авто
 			end
 		end
 	end
+
+	for k,playerid in pairs(getElementsByType("player")) do
+		local vehicleid = getPlayerVehicle(playerid)
+		if vehicleid then
+			local veh = getVehiclePlateText(vehicleid)
+			triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
+		end
+	end
 end
 
 function timer_earth()--передача слотов земли на клиент
@@ -542,15 +634,9 @@ function timer_earth()--передача слотов земли на клиен
 		end
  
 		local playername = getPlayerName ( playerid )
-		local vehicleid = getPlayerVehicle(playerid)
 
 		if logged[playername] == 1 then
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
-
-			if vehicleid then
-				local veh = getVehiclePlateText(vehicleid)
-				triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
-			end
 		end
 	end
 end
@@ -1435,6 +1521,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		car_spawn_value = 1
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
+		setTimer(nyjdi, 10000, 0)--нужды
+		setTimer(nyjdi1, 2000, 0)--нужды
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
@@ -1518,6 +1606,12 @@ function()
 	speed_car_device[playername] = 0
 	arrest[playername] = 0
 	crimes[playername] = -1
+	--нужды
+	alcohol[playername] = 0
+	satiety[playername] = 0
+	hygiene[playername] = 0
+	sleep[playername] = 0
+	drugs[playername] = 0
 
 	local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE serial = '"..serial.."'" )
 	if result[1]["COUNT()"] == 1 then
@@ -1547,6 +1641,7 @@ function()
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
 	setPlayerHudComponentVisible ( playerid, "money", false )
+	setPlayerHudComponentVisible ( playerid, "health", false )
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -1560,7 +1655,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 
 	if logged[playername] == 1 then
 		local heal = getElementHealth( playerid )
-		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."', arrest = '"..arrest[playername].."', crimes = '"..crimes[playername].."' WHERE name = '"..playername.."'")
+		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."', arrest = '"..arrest[playername].."', crimes = '"..crimes[playername].."', alcohol = '"..alcohol[playername].."', satiety = '"..satiety[playername].."', hygiene = '"..hygiene[playername].."', sleep = '"..sleep[playername].."', drugs = '"..drugs[playername].."' WHERE name = '"..playername.."'")
 
 		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
 
@@ -1579,7 +1674,7 @@ function player_Spawn (playerid)--спавн игрока
 
 		spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, result[1]["skin"])
 
-		setElementHealth( playerid, 5 )
+		setElementHealth( playerid, 100 )
 	end
 end
 
@@ -1599,7 +1694,7 @@ function(ammo, attacker, weapon, bodypart)
 	if attacker then
 		playername_a = getPlayerName ( attacker )
 		crimes[playername_a] = crimes[playername_a]+1
-		sendPlayerMessage(attacker, "+1 преступление, всего преступлений "..crimes[playername_a], yellow[1], yellow[2], yellow[3])
+		sendPlayerMessage(attacker, "+1 преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 	end
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
@@ -1633,8 +1728,6 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		setTimer(frozen_false_fun, 15000, 1, playerid)--разморозка
 		me_chat(playerid, playername_attacker.." оглушил "..playername)
 	end
-
-	save_player_action(playerid, "[onPlayerDamage] "..playername.." [attacker - "..tostring(attacker)..", reason - "..tostring(reason)..", bodypart - "..tostring(bodypart)..", loss - "..tostring(loss).."]")
 end
 addEventHandler ( "onPlayerDamage", getRootElement (), playerDamage_text )
 
@@ -1655,7 +1748,7 @@ function reg_fun(playerid, cmd)
 	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
 	if result[1]["COUNT()"] == 0 then
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '26', '0', '-1', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '-1', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -1664,6 +1757,11 @@ function reg_fun(playerid, cmd)
 		end
 
 		logged[playername] = 1
+		alcohol[playername] = result[1]["alcohol"]
+		satiety[playername] = result[1]["satiety"]
+		hygiene[playername] = result[1]["hygiene"]
+		sleep[playername] = result[1]["sleep"]
+		drugs[playername] = result[1]["drugs"]
 
 		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 		setElementHealth( playerid, result[1]["heal"] )
@@ -1702,6 +1800,11 @@ function log_fun(playerid, cmd)
 			logged[playername] = 1
 			arrest[playername] = result[1]["arrest"]
 			crimes[playername] = result[1]["crimes"]
+			alcohol[playername] = result[1]["alcohol"]
+			satiety[playername] = result[1]["satiety"]
+			hygiene[playername] = result[1]["hygiene"]
+			sleep[playername] = result[1]["sleep"]
+			drugs[playername] = result[1]["drugs"]
 
 			--[[for h,v in pairs(house_pos) do
 				if search_inv_player(playerid, 25, h) ~= 0 then
@@ -2402,12 +2505,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." показал свой бумажник в котором находится "..id2.."$")
 			return
 
-		elseif id1 == 24 or id1 == 42 or id1 == 48 then--ящик, лекарства, тушка свиньи
+		elseif id1 == 24 or id1 == 48 then--ящик, тушка свиньи
 			return
 
+-----------------------------------------------------нужды-------------------------------------------------------------
 		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
+			local satiety_minys = 5
+
 			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			elseif satiety[playername]-satiety_minys < 0 then
+				sendPlayerMessage(playerid, "[ERROR] Вы голодны", red[1], red[2], red[3] )
 				return
 			end
 
@@ -2418,21 +2527,26 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local hp = max_heal*0.05
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
 			elseif id1 == 7 then
 				local hp = max_heal*0.10
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
 			elseif id1 == 8 then
 				local hp = max_heal*0.15
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
+			satiety[playername] = satiety[playername]-satiety_minys
+			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+
 			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
 			if vehicleid then
-				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false)
+				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false, true, true, false)
 			else
-				setPedAnimation(playerid, "smoking", "m_smk_drag", -1, false)
+				setPedAnimation(playerid, "smoking", "m_smk_drag", -1, false, true, true, false)
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
@@ -2452,6 +2566,175 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." использовал аптечку")
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
+
+		elseif id1 == 20 then--нарко
+			local satiety_minys = 10
+			local drugs_plus = 1
+
+			if getElementHealth(playerid) == max_heal then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			elseif satiety[playername]-satiety_minys < 0 then
+				sendPlayerMessage(playerid, "[ERROR] Вы голодны", red[1], red[2], red[3] )
+				return
+			elseif drugs[playername]+drugs_plus > max_drugs then
+				sendPlayerMessage(playerid, "[ERROR] У вас сильная наркозависимость", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
+
+			local hp = max_heal*0.50
+			setElementHealth(playerid, getElementHealth(playerid)+hp)
+			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
+			satiety[playername] = satiety[playername]-satiety_minys
+			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+
+			drugs[playername] = drugs[playername]+drugs_plus
+			sendPlayerMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
+
+			me_chat(playerid, playername.." употребил наркотики")
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
+
+		elseif id1 == 21 or id1 == 22 then--пиво
+			local alcohol_plus = 50
+			local hygiene_minys = 5
+
+			if getElementHealth(playerid) == max_heal then
+				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
+				return
+			elseif alcohol[playername]+alcohol_plus > max_alcohol then
+				sendPlayerMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3] )
+				return
+			end
+
+			id2 = id2 - 1
+
+			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
+
+			if id1 == 21 then
+				local satiety_plus = 10
+				local hp = max_heal*0.20
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
+				if satiety[playername]+satiety_plus <= max_satiety then
+					satiety[playername] = satiety[playername]+satiety_plus
+					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				end
+
+			elseif id1 == 22 then
+				local satiety_plus = 5
+				local hp = max_heal*0.25
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
+				if satiety[playername]+satiety_plus <= max_satiety then
+					satiety[playername] = satiety[playername]+satiety_plus
+					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				end
+			end
+
+			if hygiene[playername]-hygiene_minys >= 0 then
+				hygiene[playername] = hygiene[playername]-hygiene_minys
+				sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+			end
+
+			alcohol[playername] = alcohol[playername]+alcohol_plus
+			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
+
+			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, true, true, false)
+
+			me_chat(playerid, playername.." выпил пиво")
+			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
+
+		elseif id1 == 53 or id1 == 54 then--бургер, хот-дог
+			id2 = id2 - 1
+
+			if id1 == 53 then
+				local satiety_plus = 50
+
+				if satiety[playername]+satiety_plus > max_satiety then
+					sendPlayerMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3] )
+					return
+				end
+
+				satiety[playername] = satiety[playername]+satiety_plus
+				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				me_chat(playerid, playername.." съел "..info_png[id1][1])
+
+			elseif id1 == 54 then
+				local satiety_plus = 25
+
+				if satiety[playername]+satiety_plus > max_satiety then
+					sendPlayerMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3] )
+					return
+				end
+
+				satiety[playername] = satiety[playername]+satiety_plus
+				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				me_chat(playerid, playername.." съел "..info_png[id1][1])
+			end
+
+			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+			setPedAnimation(playerid, "food", "eat_burger", -1, false, true, true, false)
+
+		elseif id1 == 55 or id1 == 56 then--мыло, пижама
+			id2 = id2 - 1
+
+			if id1 == 55 then
+				local sleep_hygiene_plus = 100
+
+				if hygiene[playername]+sleep_hygiene_plus > max_hygiene then
+					sendPlayerMessage(playerid, "[ERROR] Вы чисты", red[1], red[2], red[3] )
+					return
+				elseif enter_house[playername] == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3] )
+					return
+				end
+
+				hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
+				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+				me_chat(playerid, playername.." помылся")
+
+				local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+				setElementModel(playerid, result[1]["skin"])
+
+			elseif id1 == 56 then
+				local sleep_hygiene_plus = 100
+
+				if sleep[playername]+sleep_hygiene_plus > max_sleep then
+					sendPlayerMessage(playerid, "[ERROR] Вы бодры", red[1], red[2], red[3] )
+					return
+				elseif enter_house[playername] == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3] )
+					return
+				end
+
+				sleep[playername] = sleep[playername]+sleep_hygiene_plus
+				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
+				me_chat(playerid, playername.." лег спать")
+			end
+
+		elseif id1 == 42 then--лекарство от наркозависимости
+			id2 = id2 - 1
+
+			local drugs_minys = 10
+
+			if drugs[playername]-drugs_minys < 0 then
+				sendPlayerMessage(playerid, "[ERROR] У вас нет наркозависимости", red[1], red[2], red[3] )
+				return
+			end
+
+			drugs[playername] = drugs[playername]-drugs_minys
+			sendPlayerMessage(playerid, "-"..drugs_minys.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
+			me_chat(playerid, playername.." выпил "..info_png[id1][1])
+
+-----------------------------------------------------------------------------------------------------------------------
 
 		elseif id1 == 5 then--канистра
 			if vehicleid then
@@ -2515,49 +2798,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 >= 28 and id1 <= 33 then--шевроны
 			return
-
-		elseif id1 == 20 then--нарко
-			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
-				return
-			end
-
-			id2 = id2 - 1
-
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
-
-			local hp = max_heal*0.50
-			setElementHealth(playerid, getElementHealth(playerid)+hp)
-			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
-
-			me_chat(playerid, playername.." употребил наркотики")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
-
-		elseif id1 == 21 or id1 == 22 then--пиво
-			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
-				return
-			end
-
-			id2 = id2 - 1
-
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
-
-			if id1 == 21 then
-				local hp = max_heal*0.20
-				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
-			elseif id1 == 22 then
-				local hp = max_heal*0.25
-				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
-			end
-
-			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
-			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false)
-
-			me_chat(playerid, playername.." выпил пиво")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then

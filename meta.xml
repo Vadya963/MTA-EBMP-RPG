@@ -10,6 +10,14 @@
 
 	<file src="parachute/body_hit_sound.mp3" />
 
+	<!--худ-->
+	<file src="hud/alcohol.png" />
+	<file src="hud/health.png" />
+	<file src="hud/hygiene.png" />
+	<file src="hud/satiety.png" />
+	<file src="hud/sleep.png" />
+	<file src="hud/drugs.png" />
+
 	<file src="gui/m2font.ttf" />
 	<file src="gui/gui1.png" />
 	<file src="gui/gui2.png" />
@@ -56,9 +64,6 @@
 
 	<file src="car/barracks(millitary-truck-from-mafia-2).txd" />
 	<file src="car/barracks(millitary-truck-from-mafia-2).dff" />
-
-	<file src="car/sentinel(houstan-wasp-mafia-2).txd" />
-	<file src="car/sentinel(houstan-wasp-mafia-2).dff" />
 
 	<file src="car/hermes(hudson_hornet_1952).txd" />
 	<file src="car/hermes(hudson_hornet_1952).dff" />
@@ -119,6 +124,10 @@
 	<file src="50.png" />
 	<file src="51.png" />
 	<file src="52.png" />
+	<file src="53.png" />
+	<file src="54.png" />
+	<file src="55.png" />
+	<file src="56.png" />
 	
 	<file src="upgrade/999_w_s.png" />
 	<file src="upgrade/1000_w_s.jpg" />
