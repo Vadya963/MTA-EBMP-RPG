@@ -561,9 +561,19 @@ function nyjdi()--нужды
 
 		if logged[playername] == 1 then
 			if alcohol[playername] == 500 then
+				local hygiene_minys = 25
+
 				setElementHealth( playerid, getElementHealth(playerid)-100 )
+
 				sendPlayerMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
+
+				if hygiene[playername]-hygiene_minys >= 0 then
+					hygiene[playername] = hygiene[playername]-hygiene_minys
+					sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+				end
+
 				me_chat(playerid, playername.." стошнило")
+
 				setPedAnimation(playerid, "food", "eat_vomit_p", -1, false, true, true, false)
 			end
 
@@ -2589,11 +2599,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
-			satiety[playername] = satiety[playername]-satiety_minys
-			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
-
 			drugs[playername] = drugs[playername]+drugs_plus
 			sendPlayerMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
+
+			satiety[playername] = satiety[playername]-satiety_minys
+			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." употребил наркотики")
 			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
@@ -2613,6 +2623,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			id2 = id2 - 1
 
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
+
+			alcohol[playername] = alcohol[playername]+alcohol_plus
+			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
 			if id1 == 21 then
 				local satiety_plus = 10
@@ -2641,9 +2654,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				hygiene[playername] = hygiene[playername]-hygiene_minys
 				sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 			end
-
-			alcohol[playername] = alcohol[playername]+alcohol_plus
-			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
 			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, true, true, false)
