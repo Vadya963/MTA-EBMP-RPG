@@ -262,6 +262,7 @@ local weapon = {
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 1, 100},
+	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
@@ -271,7 +272,7 @@ local shop = {
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
-	[55] = {info_png[55][1], 1, 100},
+	[55] = {info_png[55][1], 1, 50},
 	[56] = {info_png[56][1], 1, 100},
 }
 
@@ -421,9 +422,7 @@ local interior_business = {
 	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
 	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
 	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
-	{0, "Заправочная станция", 0,0,0, 16},
 	{3, "Автомастерская", 614.3889,-124.0991,997.9950, 27},
-	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
 local interior_house = {
@@ -544,9 +543,13 @@ function nyjdi1 ()
 		local playername = getPlayerName(playerid)
 
 		if logged[playername] == 1 then
+			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+
 			--нужды
 			if hygiene[playername] == 0 and getElementModel(playerid) ~= 230 then
 				setElementModel(playerid, 230)
+			elseif hygiene[playername] > 0 and getElementModel(playerid) ~= result[1]["skin"] then
+				setElementModel(playerid, result[1]["skin"])
 			end
 		end
 	end
@@ -1522,7 +1525,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(nyjdi, 10000, 0)--нужды
-		setTimer(nyjdi1, 2000, 0)--нужды
+		setTimer(nyjdi1, 1000, 0)--нужды
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
@@ -2220,7 +2223,7 @@ local x,y,z = getElementPosition(playerid)
 			if state_gui_window[playername] == 0 then
 
 				for k,v in pairs(business_pos) do--бизнесы
-					if getElementDimension(playerid) == v[5] and v[4] == interior_business[6][2] and enter_business[playername] == 1 then
+					if getElementDimension(playerid) == v[5] and v[4] == interior_business[5][2] and enter_business[playername] == 1 then
 						triggerClientEvent( playerid, "event_tune_create", playerid, k )
 						state_gui_window[playername] = 1
 						return
@@ -2242,11 +2245,6 @@ local x,y,z = getElementPosition(playerid)
 
 					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] and enter_business[playername] == 1 then
 						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
-						state_gui_window[playername] = 1
-						return
-
-					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 5 )
 						state_gui_window[playername] = 1
 						return
 
@@ -2339,7 +2337,7 @@ function left_alt_down (playerid, key, keyState)
 				local id = result[1]["interior"]
 
 				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-					if id == 5 or id == 6 then
+					if id == 5 then
 						return
 					end
 					
@@ -2351,7 +2349,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 6 then
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 5 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -2365,7 +2363,7 @@ function left_alt_down (playerid, key, keyState)
 				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and id == 6 then
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and id == 5 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -2384,7 +2382,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementFrozen(playerid, true)
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id == 6 then
+				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id == 5 then
 					
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -2542,7 +2540,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			satiety[playername] = satiety[playername]-satiety_minys
 			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
 
-			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
+			--object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
+
 			if vehicleid then
 				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false, true, true, false)
 			else
@@ -2646,7 +2645,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			alcohol[playername] = alcohol[playername]+alcohol_plus
 			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
-			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, true, true, false)
 
 			me_chat(playerid, playername.." выпил пиво")
@@ -2700,9 +2699,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
 				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." помылся")
-
-				local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-				setElementModel(playerid, result[1]["skin"])
 
 			elseif id1 == 56 then
 				local sleep_hygiene_plus = 100

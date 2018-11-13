@@ -337,6 +337,7 @@ local weapon = {
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 1, 100},
+	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
@@ -346,7 +347,7 @@ local shop = {
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
-	[55] = {info_png[55][1], 1, 100},
+	[55] = {info_png[55][1], 1, 50},
 	[56] = {info_png[56][1], 1, 100},
 }
 
@@ -455,7 +456,7 @@ function createText ()
 
 	dxDrawImage ( screenWidth-30, 105-7.5, 30, 30, "hud/health.png" )
 	dxDrawRectangle( screenWidth-145-30, 105, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105, (145/200)*getElementHealth(playerid), 15, tocolor ( 255, 0, 0, 255 ) )
+	dxDrawRectangle( screenWidth-145-30, 105, (145/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
 
 	--нужды
 	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
@@ -903,11 +904,6 @@ function shop_menu(number, value)--создание окна магазина
 		for k,v in pairs(bar) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
-
-	elseif value == 5 then
-		guiGridListAddColumn(shoplist, "Товары", column_width1)
-		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		guiGridListAddRow(shoplist, info_png[5][1].." 20 "..info_png[5][2], "1")
 	end
 end
 addEvent( "event_shop_menu", true )
