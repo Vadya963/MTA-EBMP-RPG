@@ -2624,9 +2624,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
-			alcohol[playername] = alcohol[playername]+alcohol_plus
-			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
-
 			if id1 == 21 then
 				local satiety_plus = 10
 				local hp = max_heal*0.20
@@ -2649,6 +2646,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				end
 			end
+
+			alcohol[playername] = alcohol[playername]+alcohol_plus
+			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
 			if hygiene[playername]-hygiene_minys >= 0 then
 				hygiene[playername] = hygiene[playername]-hygiene_minys
