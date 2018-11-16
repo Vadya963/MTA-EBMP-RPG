@@ -24,6 +24,9 @@ local house_bussiness_radius = 5--радиус размещения бизнес
 local tomorrow_weather = 0--погода
 local spawnX, spawnY, spawnZ = 1642, -2240, 13--стартовая позиция
 local max_heal = 200--макс здоровье игрока
+local house_icon = 1273
+local business_icon = 1274
+local job_icon = 1318
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -46,10 +49,16 @@ function sendPlayerMessage(playerid, text, r, g, b)
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	local hash = createColSphere ( x, y, z, radius )
+	--[[local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
 	destroyElement(hash)
-	return area
+	return area]]
+
+	if x+radius >= x1 and x-radius <= x1 and y+radius >= y1 and y-radius <= y1 and z+radius >= z1 and z-radius <= z1 then
+		return true
+	else
+		return false
+	end
 end
 
 function getPlayerVehicle( playerid )
@@ -533,12 +542,12 @@ function debuginfo ()
 			
 		if logged[playername] == 1 then
 			--нужды
-			triggerClientEvent( playerid, "event_nyjdi_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
+			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
 		end
 	end
 end
 
-function nyjdi1 ()
+function need_1 ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 
@@ -555,7 +564,7 @@ function nyjdi1 ()
 	end
 end
 
-function nyjdi()--нужды
+function need()--нужды
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 
@@ -1037,16 +1046,14 @@ addEvent( "event_auction_buy_sell", true )
 addEventHandler ( "event_auction_buy_sell", getRootElement(), auction_buy_sell )
 ---------------------------------------------------------------------------------------------------------
 
+
 -------------------------------эвенты автомастерской-----------------------------------------------------
 function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
-
-	addVehicleUpgrade ( vehicleid, value )
 
 	if value1 == "save" then
 		local playername = getPlayerName(playerid)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 		local plate = getVehiclePlateText ( vehicleid )
-		local upgrades = getVehicleUpgrades(vehicleid)
 		local text = ""
 		local prod = 1
 		local cash = result[1]["price"]
@@ -1058,7 +1065,10 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 			end
 
 			if cash <= array_player_2[playername][1] then
-				for k,v in pairs(upgrades) do
+
+				addVehicleUpgrade ( vehicleid, value )
+
+				for k,v in pairs(getVehicleUpgrades(vehicleid)) do
 					text = text..v..","
 				end
 
@@ -1086,24 +1096,11 @@ addEvent( "event_addVehicleUpgrade", true )
 addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
 
 function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
-	local upgrades = getVehicleUpgrades(vehicleid)
-	local text = ""
-	for k,v in pairs(upgrades) do
-		text = text..v..","
-	end
-
-	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] На авто нет апгрейдов", red[1], red[2], red[3])
-		return
-	end
-
-	removeVehicleUpgrade ( vehicleid, value )
 
 	if value1 == "save" then
 		local playername = getPlayerName(playerid)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 		local plate = getVehiclePlateText ( vehicleid )
-		local upgrades = getVehicleUpgrades(vehicleid)
 		local text = ""
 		local prod = 1
 		local cash = result[1]["price"]
@@ -1115,7 +1112,10 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 			end
 
 			if cash <= array_player_2[playername][1] then
-				for k,v in pairs(upgrades) do
+
+				removeVehicleUpgrade ( vehicleid, value )
+
+				for k,v in pairs(getVehicleUpgrades(vehicleid)) do
 					text = text..v..","
 				end
 
@@ -1148,8 +1148,6 @@ addEventHandler ( "event_removeVehicleUpgrade", getRootElement(), removeVehicleU
 
 function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 
-	setVehiclePaintjob ( vehicleid, value )
-
 	if value1 == "save" then
 		local playername = getPlayerName(playerid)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
@@ -1165,6 +1163,8 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 			end
 
 			if cash <= array_player_2[playername][1] then
+
+				setVehiclePaintjob ( vehicleid, value )
 
 				sendPlayerMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange[1], orange[2], orange[3])
 
@@ -1191,8 +1191,6 @@ addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintj
 
 function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
-	setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
-
 	if value1 == "save" then
 		local playername = getPlayerName(playerid)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
@@ -1208,6 +1206,8 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 			end
 
 			if cash <= array_player_2[playername][1] then
+
+				setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
 
 				sendPlayerMessage(playerid, "Вы перекрасили авто за "..cash.."$", orange[1], orange[2], orange[3])
 
@@ -1234,8 +1234,6 @@ addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun
 
 function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
-	setVehicleHeadLightColor ( vehicleid, r, g, b )
-
 	if value1 == "save" then
 		local playername = getPlayerName(playerid)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
@@ -1251,6 +1249,8 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 			end
 
 			if cash <= array_player_2[playername][1] then
+
+				setVehicleHeadLightColor ( vehicleid, r, g, b )
 
 				sendPlayerMessage(playerid, "Вы поменяли цвет фар авто за "..cash.."$", orange[1], orange[2], orange[3])
 
@@ -1534,8 +1534,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		car_spawn_value = 1
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
-		setTimer(nyjdi, 10000, 0)--нужды
-		setTimer(nyjdi1, 1000, 0)--нужды
+		setTimer(need, 60000, 0)--уменьшение потребностей
+		setTimer(need_1, 1000, 0)--нужды
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
@@ -1559,7 +1559,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		for h=1,house_number do
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], 32, 0, 0,0,0,0, 0, max_blip )
-			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1273, 10000 )
+			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, house_icon, 10000 )
 
 			house_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"]}
 			house_door[h] = result[1]["door"]
@@ -1580,7 +1580,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		for h=1,business_number do
 			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..h.."'" )
 			createBlip ( result[1]["x"], result[1]["y"], result[1]["z"], interior_business[result[1]["interior"]][6], 0, 0,0,0,0, 0, max_blip )
-			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, 1274, 10000 )
+			createPickup ( result[1]["x"], result[1]["y"], result[1]["z"], 3, business_icon, 10000 )
 
 			business_pos[h] = {result[1]["x"], result[1]["y"], result[1]["z"], result[1]["type"], result[1]["world"]}
 		end
@@ -1589,7 +1589,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		for k,v in pairs(interior_job) do 
 			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, max_blip )
-			createPickup ( v[6], v[7], v[8], 3, 1318, 10000 )
+			createPickup ( v[6], v[7], v[8], 3, job_icon, 10000 )
 		end
 
 		createBlip ( 2308.81640625, -13.25, 26.7421875, 52, 0, 0,0,0,0, 0, max_blip )--банк
@@ -1879,16 +1879,16 @@ function car_spawn(number)
 
 		local spl = split(result[1]["tune"], ",")
 		for k,v in pairs(spl) do
-			addVehicleUpgrade_fun(vehicleid, v, "", "", "")
+			addVehicleUpgrade ( vehicleid, v )
 		end
 
 		local spl = split(result[1]["car_rgb"], ",")
-		setVehicleColor_fun(vehicleid, spl[1], spl[2], spl[3], "", "", "")
+		setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
 
 		local spl = split(result[1]["headlight_rgb"], ",")
-		setVehicleHeadLightColor_fun(vehicleid, spl[1], spl[2], spl[3], "", "", "")
+		setVehicleHeadLightColor ( vehicleid, spl[1], spl[2], spl[3] )
 
-		setVehiclePaintjob_fun(vehicleid, result[1]["paintjob"], "", "", "")
+		setVehiclePaintjob ( vehicleid, result[1]["paintjob"] )
 
 		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -2529,7 +2529,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 3 then
 				local hp = max_heal*0.05
@@ -2559,7 +2558,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			me_chat(playerid, playername.." выкурил сигарету")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == max_heal then
@@ -2568,13 +2566,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			setElementHealth(playerid, max_heal)
 			sendPlayerMessage(playerid, "+"..max_heal.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал аптечку")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 20 then--нарко
 			local satiety_minys = 10
@@ -2593,8 +2589,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
-
 			local hp = max_heal*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
 			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
@@ -2606,7 +2600,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." употребил наркотики")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 21 or id1 == 22 then--пиво
 			local alcohol_plus = 50
@@ -2621,8 +2614,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			id2 = id2 - 1
-
-			save_player_action(playerid, "[heal_playerid - DO] "..getElementHealth(playerid))
 
 			if id1 == 21 then
 				local satiety_plus = 10
@@ -2659,7 +2650,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, true, true, false)
 
 			me_chat(playerid, playername.." выпил пиво")
-			save_player_action(playerid, "[heal_playerid - POSLE] "..getElementHealth(playerid))
 
 		elseif id1 == 53 or id1 == 54 then--бургер, хот-дог
 			id2 = id2 - 1
@@ -2723,7 +2713,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				sleep[playername] = sleep[playername]+sleep_hygiene_plus
 				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
-				me_chat(playerid, playername.." лег спать")
+				me_chat(playerid, playername.." вздремнул")
 			end
 
 		elseif id1 == 42 then--лекарство от наркозависимости
@@ -2748,13 +2738,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				if not getVehicleEngineState(vehicleid) then
 					if fuel[plate]+id2 <= max_fuel then
-						save_player_action(playerid, "[fuel - DO] "..fuel[plate])
 
 						fuel[plate] = fuel[plate]+id2
 						me_chat(playerid, playername.." заправил машину из канистры")
 						id2 = 0
 
-						save_player_action(playerid, "[fuel - POSLE] "..fuel[plate])
 					else
 						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
@@ -2818,12 +2806,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				id2 = id2 - 1
-				save_player_action(playerid, "[heal_vehicleid - DO] "..getElementHealth(vehicleid))
 
 				fixVehicle ( vehicleid )
 
 				me_chat(playerid, playername.." починил авто")
-				save_player_action(playerid, "[heal_vehicleid - POSLE] "..getElementHealth(vehicleid))
 			else
 				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 				return
@@ -3157,7 +3143,7 @@ function (playerid)
 			house_door[dim] = 0
 
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
-			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, 1239, 10000 )
+			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, house_icon, 10000 )
 
 			sqlite( "INSERT INTO house_db (number, door, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door[dim].."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
@@ -3228,7 +3214,7 @@ function (playerid, cmd, id)
 				business_pos[dim] = {x,y,z, interior_business[id][2], dim}
 
 				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
-				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, 1239, 10000 )
+				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, business_icon, 10000 )
 
 				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
@@ -3375,7 +3361,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /fuel [указать топливо]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /fuel [указать топливо от 0 до 50]", red[1], red[2], red[3])
 		return
 	end
 

@@ -151,20 +151,26 @@ end
 addEvent( "event_auction_fun", true )
 addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
 
-local alcohol = 0--макс 5
+local alcohol = 0--макс 500
 local satiety = 0--макс 100
 local hygiene = 0--макс 100
 local sleep = 0--макс 100
 local drugs = 0--макс 100
-function nyjdi_fun (i1, i2, i3, i4, i5)--нужды	
+function need_fun (i1, i2, i3, i4, i5)--нужды	
 	alcohol = i1
 	satiety = i2
 	hygiene = i3
 	sleep = i4
 	drugs = i5
 end
-addEvent( "event_nyjdi_fun", true )
-addEventHandler ( "event_nyjdi_fun", getRootElement(), nyjdi_fun )
+addEvent( "event_need_fun", true )
+addEventHandler ( "event_need_fun", getRootElement(), need_fun )
+-----------------------------------------------------------------------------------------
+
+---------------------таймеры-------------------------------------------------------------
+setTimer(function ()
+	setCameraShakeLevel ( (alcohol/2) )
+end, 1000, 0)
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -213,10 +219,16 @@ function getPlayerVehicle( playerid )
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	local hash = createColSphere ( x, y, z, radius )
+	--[[local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
 	destroyElement(hash)
-	return area
+	return area]]
+
+	if x+radius >= x1 and x-radius <= x1 and y+radius >= y1 and y-radius <= y1 and z+radius >= z1 and z-radius <= z1 then
+		return true
+	else
+		return false
+	end
 end
 
 function getSpeed(vehicle)
@@ -240,10 +252,9 @@ function m2gui_radiobutton( x,y, width, height, text, bool_r, parent )
 end
 
 function m2gui_window( x,y, width, height, text, bool_r )
-	local m2gui_win = guiCreateStaticImage( x, y, width, height, "gui/gui1.png", bool_r )
-	local gui_text = guiCreateStaticImage( 0, 0, width, 15, "gui/gui2.png", bool_r, m2gui_win )
-	local text = m2gui_label ( 0, 0, width, 15, text, bool_r, m2gui_win )
-	guiLabelSetHorizontalAlign ( text, "center" )
+	local m2gui_win = guiCreateWindow( x, y, width, height, text, bool_r )
+	guiWindowSetMovable ( m2gui_win, false )
+	guiWindowSetSizable ( m2gui_win, false )
 	return m2gui_win
 end
 
@@ -741,6 +752,7 @@ function tune_window_create (number)--создание окна тюнинга
 						break
 					end
 				end
+				
 			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
 				local model = getElementModel ( vehicleid )
 
@@ -818,13 +830,13 @@ function business_menu(number)--создание окна бизнеса
 
 	showCursor( true )
 
-	local width = 330+10
+	local width = 340+10
 	local height = 165.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
 	local tune_text = m2gui_label ( 0, 20, width, 20, "Укажите сумму", false, gui_window )
 	guiLabelSetHorizontalAlign ( tune_text, "center" )
 	guiSetFont( tune_text, m2font )
-	local tune_text_edit = guiCreateEdit ( 5, 40, 330, 20, "", false, gui_window )
+	local tune_text_edit = guiCreateEdit ( 5, 40, (width-10), 20, "", false, gui_window )
 	local tune_radio_button1 = m2gui_radiobutton ( 5, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = m2gui_radiobutton ( 5, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
 	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 330, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
@@ -1135,8 +1147,8 @@ function tablet_fun()--создание планшета
 			local NavigateBack = guiCreateStaticImage ( 25, 0, 25, 25, "comp/backbut.png", false, low_fon )
 			local NavigateForward = guiCreateStaticImage ( 50, 0, 25, 25, "comp/forbut.png", false, low_fon )
 			local reloadPage = guiCreateStaticImage ( 75, 0, 25, 25, "comp/update.png", false, low_fon )
-			local loadURL = guiCreateButton ( 100, 0, 40, 25, "LOAD", false, low_fon )
-			local addressBar = guiCreateEdit ( 140, 0, width_fon-140, 25, "", false, low_fon )
+			local loadURL = guiCreateStaticImage ( 100, 0, 25, 25, "comp/connect.png", false, low_fon )
+			local addressBar = guiCreateEdit ( 125, 0, width_fon-125, 25, "", false, low_fon )
 
 			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, low_fon )
 			local theBrowser = guiGetBrowser( browser )
