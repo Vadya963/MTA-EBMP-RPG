@@ -24,9 +24,9 @@ local house_bussiness_radius = 5--радиус размещения бизнес
 local tomorrow_weather = 0--погода
 local spawnX, spawnY, spawnZ = 1642, -2240, 13--стартовая позиция
 local max_heal = 200--макс здоровье игрока
-local house_icon = 1273
-local business_icon = 1274
-local job_icon = 1318
+local house_icon = 1273--пикап дома
+local business_icon = 1274--пикап бизнеса
+local job_icon = 1318--пикап работ
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -703,21 +703,23 @@ function prison()--таймер заключения
 	for i,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 
-		if crimes[playername] == 0 then
-			arrest[playername] = 0
-			crimes[playername] = -1
+		if arrest[playername] == 1 then
+			if crimes[playername] == 0 then
+				arrest[playername] = 0
+				crimes[playername] = -1
 
-			local randomize = math.random(2,4)
+				local randomize = math.random(2,4)
 
-			setElementDimension(playerid, 0)
-			setElementInterior(playerid, 0, interior_job[randomize][6], interior_job[randomize][7], interior_job[randomize][8])
+				setElementDimension(playerid, 0)
+				setElementInterior(playerid, 0, interior_job[randomize][6], interior_job[randomize][7], interior_job[randomize][8])
 
-			sendPlayerMessage(playerid, "Вы свободны, больше не нарушайте", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Вы свободны, больше не нарушайте", yellow[1], yellow[2], yellow[3])
 
-		elseif arrest[playername] == 1 then
-			crimes[playername] = crimes[playername]-1
+			elseif crimes[playername] > 0 then
+				crimes[playername] = crimes[playername]-1
 
-			sendPlayerMessage(playerid, "Вам сидеть ещё "..crimes[playername].." минут", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Вам сидеть ещё "..crimes[playername].." минут", yellow[1], yellow[2], yellow[3])
+			end
 		end
 	end
 end
@@ -1706,8 +1708,11 @@ function(ammo, attacker, weapon, bodypart)
 
 	if attacker then
 		playername_a = getPlayerName ( attacker )
-		crimes[playername_a] = crimes[playername_a]+1
-		sendPlayerMessage(attacker, "+1 преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+
+		if search_inv_player(attacker, 10, playername_a) == 0 then
+			crimes[playername_a] = crimes[playername_a]+1
+			sendPlayerMessage(attacker, "+1 преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+		end
 	end
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
@@ -1716,8 +1721,10 @@ function(ammo, attacker, weapon, bodypart)
 end)
 
 function frozen_false_fun( playerid )
-	setElementFrozen( playerid, false )
-	sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+	if isElementFrozen(playerid) then
+		setElementFrozen( playerid, false )
+		sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+	end
 end
 
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
@@ -1993,8 +2000,6 @@ function exit_car_fun( playerid )
 				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
 			end
 		end
-
-		save_player_action(playerid, "[Vehicle_Exit] "..playername.." [seat - 0, plate - "..plate.."]")
 	end
 end
 
@@ -2016,8 +2021,6 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 			sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
 		end
 	end
-
-	save_player_action(playerid, "[Vehicle_Exit] "..playername.." [seat - "..seat..", plate - "..plate.."]")
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 
@@ -2523,9 +2526,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
-			elseif satiety[playername]-satiety_minys < 0 then
-				sendPlayerMessage(playerid, "[ERROR] Вы голодны", red[1], red[2], red[3] )
-				return
 			end
 
 			id2 = id2 - 1
@@ -2546,8 +2546,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
-			satiety[playername] = satiety[playername]-satiety_minys
-			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			if satiety[playername]-satiety_minys >= 0 then
+				satiety[playername] = satiety[playername]-satiety_minys
+				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			end
 
 			--object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
 
