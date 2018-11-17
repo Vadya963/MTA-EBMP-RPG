@@ -16,6 +16,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
+local max_speed = 80--масимальная скорость в городе
 
 local no_use_subject = {-1,0,1}
 
@@ -165,6 +166,34 @@ function need_fun (i1, i2, i3, i4, i5)--нужды
 end
 addEvent( "event_need_fun", true )
 addEventHandler ( "event_need_fun", getRootElement(), need_fun )
+
+local name_player = 0
+local logplayer = {}
+function logsave_fun (value, name, i, id)--таблица логов
+	if value == "save" then
+		name_player = name
+		logplayer[i] = id
+
+	elseif value == "load" then
+		save_logplayer()
+	end
+end
+addEvent( "event_logsave_fun", true )
+addEventHandler ( "event_logsave_fun", getRootElement(), logsave_fun )
+
+function save_logplayer()
+	local newFile = fileCreate(name_player..".txt")
+	if (newFile) then
+		for k,v in pairs(logplayer) do
+			fileWrite(newFile, v.."\n")
+		end
+
+		sendPlayerMessage("лог "..name_player.." загружен и сохранен в папке с модом")
+		fileClose(newFile)
+
+		logplayer = {}
+	end
+end
 -----------------------------------------------------------------------------------------
 
 ---------------------таймеры-------------------------------------------------------------
@@ -219,16 +248,10 @@ function getPlayerVehicle( playerid )
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	--[[local hash = createColSphere ( x, y, z, radius )
+	local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
 	destroyElement(hash)
-	return area]]
-
-	if x+radius >= x1 and x-radius <= x1 and y+radius >= y1 and y-radius <= y1 and z+radius >= z1 and z-radius <= z1 then
-		return true
-	else
-		return false
-	end
+	return area
 end
 
 function getSpeed(vehicle)
@@ -552,7 +575,11 @@ function createText ()
 					local speed_table = split(getSpeed(vehicle), ".")
 
 					if coords[1] and coords[2] then
-						dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+						if tonumber(speed_table[1]) >= max_speed then
+							dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+						elseif tonumber(speed_table[1]) < max_speed then
+							dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+						end
 					end
 				end
 
@@ -749,9 +776,11 @@ function tune_window_create (number)--создание окна тюнинга
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
 						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", localPlayer, number_business )
-						break
+						return
 					end
 				end
+
+				sendPlayerMessage("[ERROR] Эту деталь нельзя установить", red[1], red[2], red[3])
 				
 			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
 				local model = getElementModel ( vehicleid )
@@ -786,9 +815,11 @@ function tune_window_create (number)--создание окна тюнинга
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
 						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", localPlayer, number_business )
-						break
+						return
 					end
 				end
+
+				sendPlayerMessage("[ERROR] Данная деталь не установленна", red[1], red[2], red[3])
 			end
 		end
 	end

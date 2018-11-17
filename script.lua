@@ -49,16 +49,10 @@ function sendPlayerMessage(playerid, text, r, g, b)
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	--[[local hash = createColSphere ( x, y, z, radius )
+	local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
 	destroyElement(hash)
-	return area]]
-
-	if x+radius >= x1 and x-radius <= x1 and y+radius >= y1 and y-radius <= y1 and z+radius >= z1 and z-radius <= z1 then
-		return true
-	else
-		return false
-	end
+	return area
 end
 
 function getPlayerVehicle( playerid )
@@ -436,6 +430,7 @@ local interior_business = {
 
 local interior_house = {
 	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
+	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
 	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
 	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
 	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
@@ -445,11 +440,9 @@ local interior_house = {
 	{4, "Burglary House 8",	261.1168,	1286.519,	1080.258},
 	{5, "Burglary House 9",	22.79996,	1404.642,	1084.43},
 	{5, "Burglary House 10",	228.9003,	1114.477,	1080.992},
-	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},--дорогой дом
 	{9, "Burglary House 12",	85.32596,	1323.585,	1083.859},
 	{9, "Burglary House 13",	260.3189,	1239.663,	1084.258},
 	{10, "Burglary House 14",	21.241,		1342.153,	1084.375},
-	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},--дорогой дом
 	{6, "Burglary House 16",	-69.049,	1354.056,	1080.211},
 	{15, "Burglary House 18",	327.808,	1479.74,	1084.438},
 	{15, "Burglary House 19",	375.572,	1417.439,	1081.328},
@@ -462,8 +455,9 @@ local interior_house = {
 	{8, "Colonel Fuhrberger's House",	2807.8990,	-1172.9210,	1025.5700},--дом с пушкой
 	{2, "Ryder's House",	2464.2110,	-1697.9520,	1013.5080},
 	{3, "Johnson House",	2496.0500,	-1693.9260,	1014.7420},
-	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.5097},--огромный особняк
-	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
+	{6, "Burglary House 15",	234.319,	1066.455,	1084.208},--дорогой дом
+	{5, "Burglary House 11",	140.5631,	1369.051,	1083.864},--дорогой дом
+	{5, "Madd Dogg's Mansion",	1298.9116,	-795.9028,	1084.00},--огромный особняк
 }
 
 --здания для работ и фракций
@@ -1975,8 +1969,6 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 	if seat == 0 then
 		sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
 	end
-
-	save_player_action(playerid, "[Entered_Vehicle] "..playername.." [seat - "..seat..", plate - "..plate.."]")
 end
 addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
 
@@ -2581,9 +2573,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3] )
 				return
-			elseif satiety[playername]-satiety_minys < 0 then
-				sendPlayerMessage(playerid, "[ERROR] Вы голодны", red[1], red[2], red[3] )
-				return
 			elseif drugs[playername]+drugs_plus > max_drugs then
 				sendPlayerMessage(playerid, "[ERROR] У вас сильная наркозависимость", red[1], red[2], red[3] )
 				return
@@ -2598,8 +2587,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			drugs[playername] = drugs[playername]+drugs_plus
 			sendPlayerMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
 
-			satiety[playername] = satiety[playername]-satiety_minys
-			sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			if satiety[playername]-satiety_minys >= 0 then
+				satiety[playername] = satiety[playername]-satiety_minys
+				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			end
 
 			me_chat(playerid, playername.." употребил наркотики")
 
@@ -3051,6 +3042,35 @@ function delet_subject(playerid, id)--удаление предметов из �
 end
 
 -------------------------------команды игроков----------------------------------------------------------
+addCommandHandler("evacuationcar",--эвакуция авто
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local id = tonumber(id)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /evacuationcar [номер авто]", red[1], red[2], red[3])
+		return
+	end
+
+	for k,vehicleid in pairs(getElementsByType("vehicle")) do
+		local plate = getVehiclePlateText(vehicleid)
+
+		if search_inv_player(playerid, 6, id) ~= 0 and id == tonumber(plate) then
+			setElementPosition(vehicleid, x+5,y,z+1)
+
+			sendPlayerMessage(playerid, "Вы эвакуировали авто", yellow[1], yellow[2], yellow[3])
+			return
+		end
+	end
+
+	sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от этой машины", red[1], red[2], red[3])
+end)
+
 addCommandHandler ( "prison",--команда для копов (посадить игрока в тюрьму)
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
@@ -3241,7 +3261,7 @@ function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
-	local cash = 10000
+	local cash = 1000
 
 	if logged[playername] == 0 then
 		return
@@ -3253,17 +3273,17 @@ function (playerid, cmd, id)
 	end
 
 	if id >= 1 and id <= #interior_house then
-		if cash <= array_player_2[playername][1] then
+		if (cash*id) <= array_player_2[playername][1] then
 			for h,v in pairs(house_pos) do
 				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
 					if search_inv_player(playerid, 25, h) ~= 0 then
 						sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*id), playername )
 
-						sendPlayerMessage(playerid, "Вы изменили интерьер на "..id.." за "..cash.."$", orange[1], orange[2], orange[3])
+						sendPlayerMessage(playerid, "Вы изменили интерьер на "..id.." за "..(cash*id).."$", orange[1], orange[2], orange[3])
 
-						save_player_action(playerid, "[buyinthouse] "..playername.." [id - "..id.."], [-"..cash.."$, "..array_player_2[playername][1].."$]")
+						save_player_action(playerid, "[buyinthouse] "..playername.." [id - "..id.."], [-"..(cash*id).."$, "..array_player_2[playername][1].."$]")
 					else
 						sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3] )
 					end
@@ -3274,7 +3294,7 @@ function (playerid, cmd, id)
 
 			sendPlayerMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3] )
 		else
-			sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..(cash*id).."$", red[1], red[2], red[3] )
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_house, red[1], red[2], red[3] )
@@ -3409,6 +3429,31 @@ function ( playerid, cmd, id1, id2 )
 
 	if house >= 0 and house <= 23 and min >= 0 and min <= 59 then
 		setTime (house, min)
+	end
+end)
+
+addCommandHandler ( "logplayer",--чекнуть логи игрока
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		sendPlayerMessage(playerid, "[ERROR] /logplayer [ник соблюдая регистр]", red[1], red[2], red[3])
+		return
+	end
+
+	local result = sqlite_save_player_action( "SELECT * FROM "..id.."" )
+	if result then
+		for k,v in pairs(result) do
+			triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", id, k, v["player_action"])
+		end
+
+		triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -3638,7 +3683,7 @@ function ( playerid, cmd, id )
 
 			--sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
-			save_admin_action(playerid, "[admin_car] "..playername.." plate ["..plate.."]")
+			save_admin_action(playerid, "[admin_car] "..playername.." model "..id.." plate ["..plate.."]")
 		--[[else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end]]
