@@ -270,6 +270,12 @@ local shop = {
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
 	[23] = {info_png[23][1], 1, 100},
+	[28] = {info_png[28][1], 1, 100},
+	[29] = {info_png[29][1], 1, 100},
+	[30] = {info_png[30][1], 1, 100},
+	[31] = {info_png[31][1], 1, 100},
+	[32] = {info_png[32][1], 1, 100},
+	[33] = {info_png[33][1], 1, 100},
 	[42] = {info_png[42][1], 1, 500},
 	[46] = {info_png[46][1], 1, 100},
 	[52] = {info_png[52][1], 1, 1000},
@@ -1856,6 +1862,7 @@ addEventHandler("event_log", getRootElement(), log_fun)
 function fixVehicle_fun( vehicleid )
 	fixVehicle(vehicleid)
 	fixVehicle(vehicleid)
+	setElementHealth(vehicleid, 250)
 end
 
 function explode_car()
@@ -1863,8 +1870,6 @@ function explode_car()
 	local plate = getVehiclePlateText ( vehicleid )
 
 	setTimer(fixVehicle_fun, 5000, 1, vehicleid)
-	
-	print("[explode_car] ["..plate.."]")
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
@@ -3047,6 +3052,7 @@ function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
+	local cash = 1000
 
 	if logged[playername] == 0 then
 		return
@@ -3057,18 +3063,25 @@ function (playerid, cmd, id)
 		return
 	end
 
-	for k,vehicleid in pairs(getElementsByType("vehicle")) do
-		local plate = getVehiclePlateText(vehicleid)
+	if cash <= array_player_2[playername][1] then
 
-		if search_inv_player(playerid, 6, id) ~= 0 and id == tonumber(plate) then
-			setElementPosition(vehicleid, x+5,y,z+1)
+		for k,vehicleid in pairs(getElementsByType("vehicle")) do
+			local plate = getVehiclePlateText(vehicleid)
 
-			sendPlayerMessage(playerid, "Вы эвакуировали авто", yellow[1], yellow[2], yellow[3])
-			return
+			if search_inv_player(playerid, 6, id) ~= 0 and id == tonumber(plate) then
+				setElementPosition(vehicleid, x+5,y,z+1)
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+				sendPlayerMessage(playerid, "Вы эвакуировали авто за "..cash.."$", orange[1], orange[2], orange[3])
+				return
+			end
 		end
-	end
 
-	sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от этой машины", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от этой машины", red[1], red[2], red[3])
+	else
+		sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3] )
+	end
 end)
 
 addCommandHandler ( "prison",--команда для копов (посадить игрока в тюрьму)
@@ -3085,13 +3098,13 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if crimes[id] == -1 then
-		sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3] )
+	if search_inv_player(playerid, 10, playername) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
 		return
 	end
 
-	if search_inv_player(playerid, 10, playername) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
+	if crimes[id] == -1 then
+		sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3] )
 		return
 	end
 
@@ -3112,6 +3125,33 @@ function (playerid, cmd, id)
 
 			return
 		end
+	end
+end)
+
+addCommandHandler("policeydos",--выдать удостоверение
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /policeydos [ник соблюдая регистр]", red[1], red[2], red[3])
+		return
+	end
+
+	if search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3] )
+		return
+	end
+
+	if inv_player_empty(playerid, 10, id) then
+		sendPlayerMessage(playerid, "Вы получили "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
+
+		save_player_action(playerid, "[police_sub] "..playername.." [10, "..id.."]")
+	else
+		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
@@ -3455,6 +3495,22 @@ function (playerid, cmd, id)
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
+end)
+
+addCommandHandler ( "logadmin",--чекнуть логи админов
+function (playerid)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	local result = sqlite( "SELECT * FROM save_admin_action" )
+	for k,v in pairs(result) do
+		triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", "logadmin", k, v["admin_action"])
+	end
+
+	triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
 end)
 
 addCommandHandler ( "prisonplayer",--(посадить игрока в тюрьму)
