@@ -37,6 +37,7 @@ local white = {255,255,255}--белый
 local green = {0,255,0}--зеленый
 local turquoise = {0,255,255}--бирюзовый
 local orange = {255,100,0}--оранжевый
+local orange_do = {255,150,0}--оранжевый do
 local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
@@ -75,6 +76,18 @@ function me_chat(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			sendPlayerMessage(player, text, pink[1], pink[2], pink[3])
+		end
+	end
+end
+
+function do_chat(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			sendPlayerMessage(player, text, orange_do[1], orange_do[2], orange_do[3])
 		end
 	end
 end
@@ -233,11 +246,12 @@ local info_png = {
 	[49] = {"лопата", "ID"},
 	[50] = {"лицензия на оружие на имя", ""},
 	[51] = {"jetpack", "ID"},
-	[52] = {"кислородный балон на 5 минут", "шт"},
+	[52] = {"кислородный балон на 5 мин", "шт"},
 	[53] = {"бургер", "шт"},
 	[54] = {"хот-дог", "шт"},
 	[55] = {"мыло", "шт"},
 	[56] = {"пижама", "шт"},
+	[57] = {"алкотестер", "шт"},
 }
 
 local weapon = {
@@ -283,6 +297,7 @@ local shop = {
 	[54] = {info_png[54][1], 1, 50},
 	[55] = {info_png[55][1], 1, 50},
 	[56] = {info_png[56][1], 1, 100},
+	[57] = {info_png[57][1], 1, 100},
 }
 
 local bar = {
@@ -718,7 +733,7 @@ function prison()--таймер заключения
 			elseif crimes[playername] > 0 then
 				crimes[playername] = crimes[playername]-1
 
-				sendPlayerMessage(playerid, "Вам сидеть ещё "..crimes[playername].." минут", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Вам сидеть ещё "..(crimes[playername]+1).." мин", yellow[1], yellow[2], yellow[3])
 			end
 		end
 	end
@@ -1710,8 +1725,9 @@ function(ammo, attacker, weapon, bodypart)
 		playername_a = getPlayerName ( attacker )
 
 		if search_inv_player(attacker, 10, playername_a) == 0 then
-			crimes[playername_a] = crimes[playername_a]+1
-			sendPlayerMessage(attacker, "+1 преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+			local crimes_plus = 1
+			crimes[playername_a] = crimes[playername_a]+crimes_plus
+			sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 		end
 	end
 	
@@ -2698,6 +2714,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." помылся")
 
+				setPedAnimation(playerid, "int_house", "wash_up", -1, false, true, true, false)
+
 			elseif id1 == 56 then
 				local sleep_hygiene_plus = 100
 
@@ -2902,6 +2920,19 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end, 38000, 8, playerid)
 
 			me_chat(playerid, playername.." надел "..info_png[id1][1])
+
+		elseif id1 == 57 then--алкостестер
+			local alcohol_test = alcohol[playername]/100
+			
+			me_chat(playerid, playername.." подул в "..info_png[id1][1])
+			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле")
+
+			if alcohol_test >= 1 then
+				local crimes_plus = 5
+				crimes[playername] = crimes[playername]+crimes_plus
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+			end
+			return
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -3088,6 +3119,7 @@ addCommandHandler ( "prison",--команда для копов (посадит�
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local cash = 1000
 
 	if logged[playername] == 0 then
 		return
@@ -3116,9 +3148,13 @@ function (playerid, cmd, id)
 			local x1,y1,z1 = getElementPosition(player)
 
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				me_chat(playerid, playername.." посадил "..id.." в камеру")
+				me_chat(playerid, playername.." посадил "..id.." в камеру на "..(crimes[id]+1).." мин")
 
 				arrest[id] = 1
+
+				sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id]+1)).."$", green[1], green[2], green[3] )
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id]+1)), playername )
 			else
 				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3] )
 			end
@@ -3537,7 +3573,7 @@ function (playerid, cmd, id, time, ...)
 		local player_name = getPlayerName ( v )
 
 		if id == player_name then
-			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." минут. Причина: "..reason, lyme[1], lyme[2], lyme[3])
+			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 			arrest[id] = 1
 			crimes[id] = time
