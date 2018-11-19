@@ -609,7 +609,7 @@ function createText ()
 	if business_pos ~= nil then
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then
-				dxdrawtext ( "Бизнес #"..k.." (Войти - ALT, Разгрузить товар - E)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
+				dxdrawtext ( "Бизнес #"..k.." (Войти - ALT, Разгрузить товар - E, Меню - X)", 5, screenHeight-31, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 				break
 			end
 		end
@@ -1271,7 +1271,6 @@ function inv_create ()--создание инв-ря
 	local width = 380.0+10
 	local height = 215.0+(25.0*2)+10.0+30
 
-	--stats_window = guiCreateWindow( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 	stats_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 
 	tabPanel = guiCreateTabPanel ( 10.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )

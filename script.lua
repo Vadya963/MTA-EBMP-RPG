@@ -27,6 +27,8 @@ local max_heal = 200--макс здоровье игрока
 local house_icon = 1273--пикап дома
 local business_icon = 1274--пикап бизнеса
 local job_icon = 1318--пикап работ
+math.randomseed(getTickCount())
+local random_nalog = math.random(0,23)
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -88,6 +90,18 @@ function do_chat(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			sendPlayerMessage(player, text, orange_do[1], orange_do[2], orange_do[3])
+		end
+	end
+end
+
+function ic_chat(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			sendPlayerMessage(player, text, white[1], white[2], white[3])
 		end
 	end
 end
@@ -441,12 +455,214 @@ local interior = {
 	{18, "Zip",	161.4620,	-91.3940,	1001.8050},--101 магаз одежды
 }
 
+local cash_car = {
+	[400] = {"LANDSTAL", 25000},
+	[401] = {"BRAVURA", 9000},
+	[402] = {"BUFFALO", 35000},
+	[403] = {"LINERUN", 35000},
+	[404] = {"PEREN", 10000},
+	[405] = {"SENTINEL", 35000},
+	--[406] = {"DUMPER", 50000},--самосвал
+	--[407] = {"FIRETRUK", 15000},
+	--[408] = {"TRASH", 50000},--мусоровоз
+	[409] = {"STRETCH", 40000},--лимузин
+	[410] = {"MANANA", 9000},
+	[411] = {"INFERNUS", 95000},
+	[412] = {"VOODOO", 30000},
+	[413] = {"PONY", 20000},--грузовик с колонками
+	[414] = {"MULE", 22000},--груовик развозчика
+	[415] = {"CHEETAH", 105000},
+	--[416] = {"AMBULAN", 10000},--скорая
+	[418] = {"MOONBEAM", 16000},
+	[419] = {"ESPERANT", 19000},
+	--[420] = {"TAXI", 20000},
+	[421] = {"WASHING", 18000},
+	[422] = {"BOBCAT", 26000},
+	--[423] = {"MRWHOOP", 29000},--грузовик мороженого
+	[424] = {"BFINJECT", 15000},
+	[426] = {"PREMIER", 25000},
+	--[428] = {"SECURICA", 40000},--инкасаторский грузовик
+	[429] = {"BANSHEE", 45000},
+	--[431] = {"BUS", 15000},
+	--[432] = {"RHINO", 110000},--танк
+	--[433] = {"BARRACKS", 10000},--военный грузовик
+	[434] = {"HOTKNIFE", 35000},
+	--[435] = {"Trailer 1", 35000},--продуктовый
+	[436] = {"PREVION", 9000},
+	--[437] = {"COACH", 20000},--автобус
+	--[438] = {"CABBIE", 10000},--такси
+	[439] = {"STALLION", 19000},
+	[440] = {"RUMPO", 26000},--грузовик развозчика в сампрп
+	--[442] = {"ROMERO", 10000},--гробовозка
+	--[443] = {"PACKER", 20000},--фура с траплином
+	[444] = {"MONSTER", 40000},
+	[445] = {"ADMIRAL", 35000},
+	[451] = {"TURISMO", 95000},
+	--[455] = {"FLATBED", 10000},--пустой грузовик
+	--[456] = {"YANKEE", 22000},--грузовик
+	--[457] = {"CADDY", 9000},--гольфкар
+	[458] = {"SOLAIR", 18000},
+	[459] = {"TOPFUN", 20000},--грузовик с игру-ми машинами
+	[466] = {"GLENDALE", 20000},
+	[467] = {"OCEANIC", 20000},
+	--[470] = {"PATRIOT", 40000},--военный хамер
+	[471] = {"QUADBIKE", 9000},--квадроцикл
+	[474] = {"HERMES", 19000},
+	[475] = {"SABRE", 19000},
+	[477] = {"ZR350", 45000},
+	[478] = {"WALTON", 26000},
+	[479] = {"REGINA", 18000},
+	[480] = {"COMET", 35000},
+	[482] = {"BURRITO", 26000},
+	[483] = {"CAMPER", 26000},
+	--[485] = {"BAGGAGE", 9000},--погрузчик багажа
+	--[486] = {"DOZER", 50000},--бульдозер
+	[489] = {"RANCHER", 40000},
+	[491] = {"VIRGO", 9000},
+	[492] = {"GREENWOO", 19000},
+	[494] = {"HOTRING", 145000},--гоночная
+	[495] = {"SANDKING", 40000},
+	[496] = {"BLISTAC", 35000},
+	[498] = {"BOXVILLE", 22000},
+	[499] = {"BENSON", 22000},
+	[500] = {"MESA", 25000},
+	[502] = {"Hotring Racer 2", 145000},--гоночная
+	[503] = {"Hotring Racer 3", 145000},--гоночная
+	[504] = {"BLOODRA", 45000},--дерби тачка
+	[506] = {"SUPERGT", 105000},
+	[507] = {"ELEGANT", 35000},
+	[508] = {"JOURNEY", 22000},
+	--[514] = {"Tanker", 30000},--тягач
+	--[515] = {"RDTRAIN", 35000},--тягач
+	[516] = {"NEBULA", 35000},
+	[517] = {"MAJESTIC", 35000},
+	[518] = {"BUCCANEE", 19000},
+	--[524] = {"CEMENT", 50000},
+	[526] = {"FORTUNE", 19000},
+	[527] = {"CADRONA", 9000},
+	--[528] = {"FBITRUCK", 40000},
+	[529] = {"WILLARD", 19000},
+	--[530] = {"FORKLIFT", 9000},--вилочный погр-ик
+	--[531] = {"TRACTOR", 9000},
+	--[532] = {"COMBINE", 10000},
+	[533] = {"FELTZER", 35000},
+	[534] = {"REMINGTN", 30000},
+	[535] = {"SLAMVAN", 19000},
+	[536] = {"BLADE", 19000},
+	[539] = {"VORTEX", 26000},--возд-ая подушка
+	[540] = {"VINCENT", 19000},
+	[541] = {"BULLET", 105000},
+	[542] = {"CLOVER", 19000},
+	[543] = {"SADLER", 26000},
+	--[544] = {"Fire Truck", 15000},--с лестницей
+	[545] = {"HUSTLER", 20000},
+	[546] = {"INTRUDER", 19000},
+	[547] = {"PRIMO", 19000},
+	[549] = {"TAMPA", 19000},
+	[550] = {"SUNRISE", 19000},
+	[551] = {"MERIT", 35000},
+	--[552] = {"UTILITY", 20000},--санитарный фургон
+	[554] = {"YOSEMITE", 40000},
+	[555] = {"WINDSOR", 35000},
+	[556] = {"Monster 2", 40000},
+	[557] = {"Monster 3", 40000},
+	[558] = {"URANUS", 35000},
+	[559] = {"JESTER", 35000},
+	[560] = {"SULTAN", 35000},
+	[561] = {"STRATUM", 35000},
+	[562] = {"ELEGY", 35000},
+	[565] = {"FLASH", 35000},
+	[566] = {"TAHOMA", 35000},
+	[567] = {"SAVANNA", 19000},
+	[568] = {"BANDITO", 15000},
+	--[571] = {"KART", 15000},
+	--[572] = {"MOWER", 15000},--газонокосилка
+	[573] = {"DUNE", 40000},
+	--[574] = {"SWEEPER", 15000},--очистка улиц
+	[575] = {"BROADWAY", 19000},
+	[576] = {"TORNADO", 19000},
+	--[578] = {"DFT30", 5000},--3 колесная тачка
+	[579] = {"HUNTLEY", 40000},
+	[580] = {"STAFFORD", 35000},
+	--[582] = {"NEWSVAN", 20000},--фургон новостей
+	--[583] = {"TUG", 15000},--буксир
+	--[584] = {"PETROTR", 35000},--трейлер бензина
+	[585] = {"EMPEROR", 35000},
+	[587] = {"EUROS", 35000},
+	--[588] = {"HOTDOG", 22000},
+	[589] = {"CLUB", 35000},
+	[600] = {"PICADOR", 26000},
+	[602] = {"ALPHA", 35000},
+	[603] = {"PHOENIX", 35000},
+	[604] = {"Damaged Glendale", 1000},
+	[605] = {"Damaged Sadler", 1000},
+
+	--тачки копов
+	[596] = {"Police LS", 25000},
+	[597] = {"Police SF", 25000},
+	[598] = {"Police LV", 25000},
+	[599] = {"Police Ranger", 25000},
+	[427] = {"ENFORCER", 40000},--пол-ий грузовик
+	[601] = {"S.W.A.T.", 40000},
+	[490] = {"FBIRANCH", 40000},
+	[525] = {"TOWTRUCK", 20000},--эвакуатор для копов
+	[523] = {"HPV1000", 10000},--мотик полиции
+
+	--bikes
+	[586] = {"WAYFARER", 10000},
+	[468] = {"Sanchez", 15000},
+	[448] = {"Pizza Boy", 1000},
+	[461] = {"PCJ-600", 20000},
+	[521] = {"FCR900", 20000},
+	[522] = {"NRG500", 90000},
+	[462] = {"Faggio", 1000},
+	[463] = {"FREEWAY", 10000},
+	[581] = {"BF400", 20000},
+}
+
+local cash_boats = {
+	[472] = {"COASTGRD", 10000},--лодка берег-ой охраны
+	[473] = {"DINGHY", 5000},--моторная лодка
+	[493] = {"Jetmax", 60000},--лодка
+	[595] = {"LAUNCH", 30000},--военная лодка
+	[484] = {"MARQUIS", 99000},--яхта с парусом
+	[430] = {"PREDATOR", 40000},--поли-ая лодка
+	[452] = {"SPEEDER", 30000},--лодка
+	[453] = {"REEFER", 25000},--рыболовное судно
+	[454] = {"TROPIC", 73000},--яхта
+	[446] = {"SQUALO", 60000},--лодка
+}
+
+local cash_airplanes_helicopters = {
+	[592] = {"ANDROM", 45000},--андромада
+	[593] = {"DODO", 45000},
+	[577] = {"AT400", 45000},
+	[511] = {"BEAGLE", 45000},--самолет
+	[512] = {"CROPDUST", 45000},--кукурузник
+	[513] = {"STUNT", 45000},--спорт самолет
+	[519] = {"SHAMAL", 45000},
+	[520] = {"HYDRA", 45000},
+	[553] = {"NEVADA", 45000},--самолет
+	[476] = {"RUSTLER", 45000},--самолет с пушками
+	[460] = {"Skimmer", 30000},--самолет садится на воду
+
+	[548] = {"CARGOBOB", 25000},
+	[425] = {"HUNTER", 99000},--верт военный с ракетами
+	[417] = {"LEVIATHN", 25000},--верт военный
+	[487] = {"MAVERICK", 45000},--верт
+	[488] = {"News Chopper", 45000},--верт новостей
+	[497] = {"Police Maverick", 45000},
+	[563] = {"RAINDANC", 99000},--верт спасателей
+	[469] = {"SPARROW", 25000},--верт без пушки
+	[447] = {"SEASPAR", 28000},--верт с пуляметом
+}
+
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
 	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
 	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
 	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
-	{3, "Автомастерская", 614.3889,-124.0991,997.9950, 27},
+	{0, "Автомастерская", 0,0,0, 27},
 }
 
 local interior_house = {
@@ -484,13 +700,13 @@ local interior_house = {
 --здания для работ и фракций
 local interior_job = {
 	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1, ", Разгрузить товар - E", 15},
-	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, "", 5},
-	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, "", 5},
-	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, "", 5},
-	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, "", 5},
+	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, ", Меню - X", 5},
+	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, ", Меню - X", 5},
+	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
+	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, ", Меню - X", 5},
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Разгрузить товар - E", 15},
-	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, "", 5},
-	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, "", 5},
+	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
+	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
 }
 
 --предметы за которые можно получить деньги
@@ -738,6 +954,22 @@ function prison()--таймер заключения
 		end
 	end
 end
+
+function pay_nalog()
+	--самая четкая функция
+end
+
+function onChat(message, messageType)
+	local playerid = source
+	local playername = getPlayerName(playerid)
+
+	if logged[playername] == 1 then
+		ic_chat(playerid, playername..": "..message)
+	end
+
+	cancelEvent()
+end
+addEventHandler("onPlayerChat", getRootElement(), onChat)
 
 ---------------------------------------игрок------------------------------------------------------------
 function search_inv_player( playerid, value1, value2 )--цикл по поиску предмета в инв-ре игрока
@@ -1562,6 +1794,8 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setWeather(tomorrow_weather)
 
+		print("[random_nalog] "..random_nalog.." hour")
+
 		local result = sqlite( "SELECT COUNT() FROM car_db" )--спавн машин
 		local carnumber_number = result[1]["COUNT()"]
 		for i=1,carnumber_number do
@@ -1670,6 +1904,7 @@ function()
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
+	setPlayerNametagColor ( playerid, white[1], white[2], white[3] )
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
 
@@ -1889,6 +2124,20 @@ function explode_car()
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
+function reattachTrailer(vehicleid)--отцепка прицепа
+	local trailer = source
+	local plate = getVehiclePlateText ( trailer )
+
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local x,y,z = getElementPosition(trailer)
+		local rx,ry,rz = getElementRotation(trailer)
+
+		sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+	end
+end
+addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
+
 function car_spawn(number)
 
 		local plate = number
@@ -1923,6 +2172,7 @@ end
 
 addCommandHandler ( "buycar",--покупка авто
 function ( playerid, cmd, id )
+	local police_car = {596,597,598,599,427,601,490,525,523}
 	local playername = getPlayerName ( playerid )
 
 	if logged[playername] == 0 then
@@ -1941,7 +2191,24 @@ function ( playerid, cmd, id )
 
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..number.."'" )
 		if result[1]["COUNT()"] == 1 then
-			sendPlayerMessage(playerid, "[ERROR] Этот номер числится в базе автомобилей, пожалуйста повторите попытку снова", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Этот номер числится в базе автомобилей, пожалуйста повторите попытку снова", red[1], red[2], red[3])
+			return
+		end
+
+		if cash_car[id] == nil then
+			sendPlayerMessage(playerid, "[ERROR] Этот автомобиль недоступен", red[1], red[2], red[3])
+			return
+		end
+
+		for k,v in pairs(police_car) do
+			if v == id and (search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0) then
+				sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+				return
+			end
+		end
+
+		if cash_car[id][2] > array_player_2[playername][1] then
+			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств, необходимо "..cash_car[id][2].."$", red[1], red[2], red[3])
 			return
 		end
 
@@ -1966,9 +2233,12 @@ function ( playerid, cmd, id )
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			fuel[plate] = max_fuel
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], orange[1], orange[2], orange[3])
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_car[id][2], playername )
 
-			local result = sqlite( "INSERT INTO car_db (carnumber, carmodel, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			sendPlayerMessage(playerid, "Вы купили автомобиль за "..cash_car[id][2].."$", orange[1], orange[2], orange[3])
+			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." ", orange[1], orange[2], orange[3])
+
+			local result = sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '0', '"..x.."', '"..y.."', '"..z.."', '0', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 			save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..plate.."]")
 		else
@@ -2003,7 +2273,6 @@ function exit_car_fun( playerid )
 		setVehicleEngineState(vehicleid, false)
 
 		if getVehicleOccupant ( vehicleid, 0 ) then
-			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -2249,7 +2518,7 @@ local x,y,z = getElementPosition(playerid)
 			if state_gui_window[playername] == 0 then
 
 				for k,v in pairs(business_pos) do--бизнесы
-					if getElementDimension(playerid) == v[5] and v[4] == interior_business[5][2] and enter_business[playername] == 1 then
+					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
 						triggerClientEvent( playerid, "event_tune_create", playerid, k )
 						state_gui_window[playername] = 1
 						return
@@ -2385,7 +2654,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
 					return
 				end
-			else
+			--[[else--убрал из-за бага, игрок при тп падает с мотика
 				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
 				local id = result[1]["interior"]
 
@@ -2424,7 +2693,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementFrozen(vehicleid, false)
 					setElementFrozen(playerid, false)
 					return
-				end
+				end]]
 			end
 		end
 
@@ -3083,7 +3352,7 @@ function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
-	local cash = 1000
+	local cash = 100
 
 	if logged[playername] == 0 then
 		return
@@ -3164,7 +3433,7 @@ function (playerid, cmd, id)
 	end
 end)
 
-addCommandHandler("policeydos",--выдать удостоверение
+addCommandHandler("policecertificate",--выдать удостоверение
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 
@@ -3173,7 +3442,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /policeydos [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /policecertificate [ник соблюдая регистр]", red[1], red[2], red[3])
 		return
 	end
 
@@ -3243,7 +3512,7 @@ function (playerid)
 			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
 			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, house_icon, 10000 )
 
-			sqlite( "INSERT INTO house_db (number, door, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door[dim].."', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door[dim].."', '0', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
@@ -3314,7 +3583,7 @@ function (playerid, cmd, id)
 				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
 				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, business_icon, 10000 )
 
-				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
+				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '0', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
@@ -3788,7 +4057,9 @@ end)
 function input_Console ( text )
 
 	if text == "z" then
-
+		for k,v in pairs(cash_car) do
+			print(k,v[2])
+		end
 
 	elseif text == "x" then
 		local allResources = getResources()
