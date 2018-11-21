@@ -81,7 +81,7 @@ local info_png = {
 	[53] = {"бургер", "шт"},
 	[54] = {"хот-дог", "шт"},
 	[55] = {"мыло", "шт"},
-	[56] = {"пижама", "шт"},
+	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
 }
 local info1_png = -1 --номер картинки
@@ -304,33 +304,6 @@ function m2gui_button( x,y, text, bool_r, parent)
 end
 -----------------------------------------------------------------------------------------
 
-local table_import_car = {
-	[409] = "car/stretch(lassiter-series-75-hollywood-iz-mafia-2)",
-	[429] = "car/banshee(isw-508-from-mafia-2)",
-	[433] = "car/barracks(millitary-truck-from-mafia-2)",
-	[434] = "car/hotknife(smith-34-hot-rod-mafia-2)",
-	[445] = "car/admiral(smith-custom-iz-mafia-2)",
-	[474] = "car/hermes(hudson_hornet_1952)",
-	[475] = "car/sabre(smith-thunderbolt-from-mafia-2)",
-	[527] = "car/cadrona(ford_thunderbird_1957)",
-}
-
-local script_client = 0
-addEventHandler( "onClientResourceStart", getRootElement( ),
-function ( startedRes )
-	if script_client == 0 then
-		script_client = 1
-
-		for k,v in pairs(table_import_car) do
-			local txd = engineLoadTXD ( v..".txd" )
-			engineImportTXD ( txd, k )
-
-			local dff = engineLoadDFF ( v..".dff" )
-			engineReplaceModel ( dff, k )
-		end
-	end
-end)
-
 local paint={
 	[483]={"VehiclePaintjob_Camper_0"},-- camper
 	[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},-- remington
@@ -383,13 +356,13 @@ local shop = {
 	[31] = {info_png[31][1], 1, 100},
 	[32] = {info_png[32][1], 1, 100},
 	[33] = {info_png[33][1], 1, 100},
-	[42] = {info_png[42][1], 1, 500},
+	[42] = {info_png[42][1], 1, 10000},
 	[46] = {info_png[46][1], 1, 100},
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
 	[55] = {info_png[55][1], 1, 50},
-	[56] = {info_png[56][1], 1, 100},
+	[56] = {info_png[56][1], 100, 100},
 	[57] = {info_png[57][1], 1, 100},
 }
 
