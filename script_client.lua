@@ -371,7 +371,7 @@ local weapon = {
 
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
-	[4] = {info_png[4][1], 1, 100},
+	[4] = {info_png[4][1], 1, 250},
 	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
@@ -415,8 +415,8 @@ local delet_subject_pos = {
 }
 
 local image_3d = {
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи", 48},
-	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль", 48},
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи"},
+	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
 }
 
 local weather_list = {
@@ -626,7 +626,7 @@ function createText ()
 
 	for k,v in pairs(delet_subject_pos) do
 		if isPointInCircle3D(x,y,z, delet_subject_pos[k][1],delet_subject_pos[k][2],delet_subject_pos[k][3], delet_subject_pos[k][4]) then
-			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-46, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-30, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
 			break
 		end
 	end
@@ -636,11 +636,6 @@ function createText ()
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
 
 		if area then
-			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
-			if coords[1] and coords[2] then
-				dxDrawImage ( coords[1]-(57/2), coords[2], 57, 57, image[ v[6] ] )
-			end
-
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
 				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx1 )
@@ -1241,7 +1236,7 @@ function zamena_img()
 		inv_slot[info3_selection][2] = info1_selection_1
 		inv_slot[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 		
 		change_image ( "player", info3_selection, info1_selection_1 )
 
@@ -1250,7 +1245,7 @@ function zamena_img()
 		inv_slot_car[info3_selection][2] = info1_selection_1
 		inv_slot_car[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection, info1_selection_1, info2_selection_1, plate )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection, info1_selection_1, info2_selection_1, plate )
 		
 		change_image ( "car", info3_selection, info1_selection_1 )
 
@@ -1258,7 +1253,7 @@ function zamena_img()
 		inv_slot_house[info3_selection][2] = info1_selection_1
 		inv_slot_house[info3_selection][3] = info2_selection_1
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection, info1_selection_1, info2_selection_1, house )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection, info1_selection_1, info2_selection_1, house )
 		
 		change_image ( "house", info3_selection, info1_selection_1 )
 	end
@@ -1354,7 +1349,7 @@ function inv_create ()--создание инв-ря
 				inv_slot[info3_selection_1][2] = info1_selection
 				inv_slot[info3_selection_1][3] = info2_selection
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(localPlayer) )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(localPlayer) )
 
 				change_image ( "player", info3_selection_1, info1_selection )
 
@@ -1460,7 +1455,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_car[info3_selection_1][2] = info1_selection
 					inv_slot_car[info3_selection_1][3] = info2_selection
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1_selection, info2_selection, plate )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_1, info1_selection, info2_selection, plate )
 
 					change_image ( "car", info3_selection_1, info1_selection )
 
@@ -1567,7 +1562,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_house[info3_selection_1][2] = info1_selection
 					inv_slot_house[info3_selection_1][3] = info2_selection
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1_selection, info2_selection, house )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_1, info1_selection, info2_selection, house )
 
 					change_image ( "house", info3_selection_1, info1_selection )
 
