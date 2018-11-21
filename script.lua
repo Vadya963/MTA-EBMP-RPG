@@ -2014,6 +2014,9 @@ function(ammo, attacker, weapon, bodypart)
 				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 			end
 
+			sendPlayerMessage(attacker, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
+
 		elseif getElementType ( attacker ) == "vehicle" then
 			for i,playerid in pairs(getElementsByType("player")) do
 				local vehicleid = getPlayerVehicle(playerid)
@@ -2026,6 +2029,9 @@ function(ammo, attacker, weapon, bodypart)
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
 						sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 					end
+
+					sendPlayerMessage(attacker, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
+					sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
 
 					break
 				end
@@ -3545,6 +3551,8 @@ function (playerid, cmd, id, cash)
 			return
 		end
 	end
+
+	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
 addCommandHandler ( "prison",--команда для копов (посадить игрока в тюрьму)
@@ -3599,6 +3607,8 @@ function (playerid, cmd, id)
 			return
 		end
 	end
+
+	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
 addCommandHandler("policecertificate",--выдать удостоверение
@@ -4024,6 +4034,8 @@ function (playerid, cmd, id, time, ...)
 			return
 		end
 	end
+
+	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
 addCommandHandler ( "banplayer",
