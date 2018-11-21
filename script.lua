@@ -269,6 +269,7 @@ local info_png = {
 	[55] = {"мыло", "шт"},
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
+	[58] = {"наркотестер", "шт"},
 }
 
 local weapon = {
@@ -315,6 +316,7 @@ local shop = {
 	[55] = {info_png[55][1], 1, 50},
 	[56] = {info_png[56][1], 100, 100},
 	[57] = {info_png[57][1], 1, 100},
+	[58] = {info_png[58][1], 1, 100},
 }
 
 local bar = {
@@ -1840,6 +1842,19 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setWeather(tomorrow_weather)
 
+
+		local result = sqlite( "SELECT * FROM zakon_mayoralty" )
+		zakon_alcohol = result[1]["zakon_alcohol"]
+		zakon_alcohol_crimes = result[1]["zakon_alcohol_crimes"]
+		zakon_drugs = result[1]["zakon_drugs"]
+		zakon_drugs_crimes = result[1]["zakon_drugs_crimes"]
+		zakon_kill_crimes = result[1]["zakon_kill_crimes"]
+
+		print("[zakon] zakon_alcohol "..zakon_alcohol..", zakon_alcohol_crimes "..zakon_alcohol_crimes)
+		print("[zakon] zakon_drugs "..zakon_drugs..", zakon_drugs_crimes "..zakon_drugs_crimes)
+		print("[zakon] zakon_kill_crimes "..zakon_kill_crimes)
+
+
 		local result = sqlite( "SELECT * FROM car_db" )
 		local carnumber_number = 0
 		for k,v in pairs(result) do
@@ -2009,7 +2024,7 @@ function(ammo, attacker, weapon, bodypart)
 			playername_a = getPlayerName ( attacker )
 
 			if search_inv_player(attacker, 10, playername_a) == 0 then
-				local crimes_plus = 1
+				local crimes_plus = zakon_kill_crimes
 				crimes[playername_a] = crimes[playername_a]+crimes_plus
 				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 			end
@@ -2025,7 +2040,7 @@ function(ammo, attacker, weapon, bodypart)
 					playername_a = getPlayerName ( player_id )
 
 					if search_inv_player(player_id, 10, playername_a) == 0 then
-						local crimes_plus = 1
+						local crimes_plus = zakon_kill_crimes
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
 						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 					end
@@ -3326,8 +3341,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." подул в "..info_png[id1][1])
 			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле")
 
-			if alcohol_test >= 1 then
-				local crimes_plus = 5
+			if alcohol_test >= zakon_alcohol then
+				local crimes_plus = zakon_alcohol_crimes
+				crimes[playername] = crimes[playername]+crimes_plus
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+			end
+			return
+
+		elseif id1 == 58 then--наркостестер
+			local drugs_test = drugs[playername]
+			
+			me_chat(playerid, playername.." подул в "..info_png[id1][1])
+			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости")
+
+			if drugs_test >= zakon_drugs then
+				local crimes_plus = zakon_drugs_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
 				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
