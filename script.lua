@@ -2018,19 +2018,19 @@ function(ammo, attacker, weapon, bodypart)
 			sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
 
 		elseif getElementType ( attacker ) == "vehicle" then
-			for i,playerid in pairs(getElementsByType("player")) do
-				local vehicleid = getPlayerVehicle(playerid)
+			for i,player_id in pairs(getElementsByType("player")) do
+				local vehicleid = getPlayerVehicle(player_id)
 
 				if attacker == vehicleid then
-					playername_a = getPlayerName ( playerid )
+					playername_a = getPlayerName ( player_id )
 
-					if search_inv_player(playerid, 10, playername_a) == 0 then
+					if search_inv_player(player_id, 10, playername_a) == 0 then
 						local crimes_plus = 1
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
 					end
 
-					sendPlayerMessage(attacker, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
+					sendPlayerMessage(player_id, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
 					sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
 
 					break
@@ -2057,10 +2057,22 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 	local reason = weapon
 
 	if attacker then
-		triggerClientEvent( attacker, "event_body_hit_sound", playerid )
+		if getElementType ( attacker ) == "player" then
+			triggerClientEvent( attacker, "event_body_hit_sound", playerid )
+
+		elseif getElementType ( attacker ) == "vehicle" then
+			for i,playerid in pairs(getElementsByType("player")) do
+				local vehicleid = getPlayerVehicle(playerid)
+
+				if attacker == vehicleid then
+					triggerClientEvent( playerid, "event_body_hit_sound", playerid )
+					break
+				end
+			end
+		end
 	end
 
-	for k,v in pairs(deathReasons) do 
+	for k,v in pairs(deathReasons) do
 		if k == reason then
 			reason = v
 		end
@@ -2844,7 +2856,7 @@ function left_alt_down (playerid, key, keyState)
 	end
 end
 
-function inv_server_load (value, id3, id1, id2, tabpanel )--изменение(сохранение) инв-ря на сервере
+function inv_server_load (value, id3, id1, id2, tabpanel)--изменение(сохранение) инв-ря на сервере
 	local playername = tabpanel
 	local plate = tabpanel
 	local h = tabpanel
