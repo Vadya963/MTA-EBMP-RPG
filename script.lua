@@ -1256,6 +1256,7 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 	math.randomseed(getTickCount())
 	local playername = getPlayerName ( playerid )
 	local randomize = math.random(0,9999)
+	local count = 0
 
 	if value == "sell" then
 		if inv_player_delet(playerid, id1, id2) then
@@ -1294,9 +1295,12 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 						local playername_sell = getPlayerName(playerid)
 						if playername_sell == result[1]["name_sell"] then
 							inv_server_load( "player", 0, 1, array_player_2[playername_sell][1]+result[1]["money"], playername_sell )
+							count = count+1
 							break
 						end
+					end
 
+					if count == 0 then
 						sqlite( "UPDATE account SET slot_0_2 = slot_0_2 + '"..result[1]["money"].."' WHERE name = '"..result[1]["name_sell"].."'")
 					end
 
@@ -1754,14 +1758,18 @@ function mayoralty_menu_fun( playerid, text )--мэрия
 
 	for k,v in pairs(mayoralty_shop) do
 		if v[1] == text then
-			if inv_player_empty(playerid, k, playername) then
-				sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+			if v[3] <= array_player_2[playername][1] then
+				if inv_player_empty(playerid, k, playername) then
+					sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
 
-				inv_server_load( "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+					inv_server_load( "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
 
-				save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_shop - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+					save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_shop - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		end
 	end
@@ -2097,7 +2105,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		local playername_attacker = getPlayerName ( attacker )
 		setElementFrozen( playerid, true )
 		setTimer(frozen_false_fun, 15000, 1, playerid)--разморозка
-		me_chat(playerid, playername_attacker.." оглушил "..playername)
+		me_chat(playerid, playername_attacker.." оглушил(а) "..playername)
 	end
 end
 addEventHandler ( "onPlayerDamage", getRootElement (), playerDamage_text )
@@ -2450,10 +2458,10 @@ local vehicleid = getPlayerVehicle(playerid)
 			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and search_inv_player(playerid, 2, playername) ~= 0 then
 				if getVehicleEngineState(vehicleid) then
 					setVehicleEngineState(vehicleid, false)
-					me_chat(playerid, playername.." заглушил двигатель")
+					me_chat(playerid, playername.." заглушил(а) двигатель")
 				else
 					setVehicleEngineState(vehicleid, true)
-					me_chat(playerid, playername.." завел двигатель")
+					me_chat(playerid, playername.." завел(а) двигатель")
 
 					local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 					if result[1]["COUNT()"] == 1 then
@@ -2922,25 +2930,25 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and tonumber(plate) == id2 then
 						if isVehicleLocked ( vehicle ) then
 							setVehicleLocked ( vehicle, false )
-							me_chat(playerid, playername.." открыл двери т/с")
+							me_chat(playerid, playername.." открыл(а) двери т/с")
 						else
 							setVehicleLocked ( vehicle, true )
-							me_chat(playerid, playername.." закрыл двери т/с")
+							me_chat(playerid, playername.." закрыл(а) двери т/с")
 						end
 						return
 					end
 				end
 
-				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 			return
 
 		elseif id1 == 2 or id1 == 44 or id1 == 45 or id1 == 50 then--права, АЖ, РЛ, лиц на оружие
-			me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 
 		elseif id1 == 1 then--показать бумажник
-			me_chat(playerid, playername.." показал свой бумажник в котором находится "..id2.."$")
+			me_chat(playerid, playername.." показал(а) свой бумажник в котором находится "..id2.."$")
 			return
 
 		elseif id1 == 24 or id1 == 48 then--ящик, тушка свиньи
@@ -2986,7 +2994,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setPedAnimation(playerid, "smoking", "m_smk_drag", -1, false, true, true, false)
 			end
 
-			me_chat(playerid, playername.." выкурил сигарету")
+			me_chat(playerid, playername.." выкурил(а) сигарету")
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == max_heal then
@@ -2999,7 +3007,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			setElementHealth(playerid, max_heal)
 			sendPlayerMessage(playerid, "+"..max_heal.." хп", yellow[1], yellow[2], yellow[3])
 
-			me_chat(playerid, playername.." использовал аптечку")
+			me_chat(playerid, playername.." использовал(а) аптечку")
 
 		elseif id1 == 20 then--нарко
 			local satiety_minys = 10
@@ -3027,7 +3035,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
 			end
 
-			me_chat(playerid, playername.." употребил наркотики")
+			me_chat(playerid, playername.." употребил(а) наркотики")
 
 		elseif id1 == 21 or id1 == 22 then--пиво
 			local alcohol_plus = 50
@@ -3077,7 +3085,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, true, true, false)
 
-			me_chat(playerid, playername.." выпил пиво")
+			me_chat(playerid, playername.." выпил(а) пиво")
 
 		elseif id1 == 53 or id1 == 54 then--бургер, хот-дог
 			id2 = id2 - 1
@@ -3092,7 +3100,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				satiety[playername] = satiety[playername]+satiety_plus
 				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
-				me_chat(playerid, playername.." съел "..info_png[id1][1])
+				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 
 			elseif id1 == 54 then
 				local satiety_plus = 25
@@ -3104,7 +3112,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				satiety[playername] = satiety[playername]+satiety_plus
 				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
-				me_chat(playerid, playername.." съел "..info_png[id1][1])
+				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 			end
 
 			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
@@ -3126,7 +3134,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
 				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
-				me_chat(playerid, playername.." помылся")
+				me_chat(playerid, playername.." помылся(ась)")
 
 				setPedAnimation(playerid, "int_house", "wash_up", -1, false, true, true, false)
 
@@ -3143,7 +3151,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				sleep[playername] = sleep[playername]+sleep_hygiene_plus
 				sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
-				me_chat(playerid, playername.." вздремнул")
+				me_chat(playerid, playername.." вздремнул(а)")
 			end
 
 		elseif id1 == 42 then--лекарство от наркозависимости
@@ -3158,7 +3166,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			drugs[playername] = drugs[playername]-drugs_minys
 			sendPlayerMessage(playerid, "-"..drugs_minys.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
-			me_chat(playerid, playername.." выпил "..info_png[id1][1])
+			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -3170,7 +3178,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					if fuel[plate]+id2 <= max_fuel then
 
 						fuel[plate] = fuel[plate]+id2
-						me_chat(playerid, playername.." заправил машину из канистры")
+						me_chat(playerid, playername.." заправил(а) машину из канистры")
 						id2 = 0
 
 					else
@@ -3189,17 +3197,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 10 then--документы копа
 			if search_inv_player(playerid, 10, playername) ~= 0 then
 				if search_inv_player(playerid, 28, 1) ~= 0 then
-					me_chat(playerid, "Офицер "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Офицер "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 29, 1) ~= 0 then
-					me_chat(playerid, "Детектив "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Детектив "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 30, 1) ~= 0 then
-					me_chat(playerid, "Сержант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Сержант "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 31, 1) ~= 0 then
-					me_chat(playerid, "Лейтенант "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Лейтенант "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 32, 1) ~= 0 then
-					me_chat(playerid, "Капитан "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Капитан "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 33, 1) ~= 0 then
-					me_chat(playerid, "Шеф полиции "..playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					me_chat(playerid, "Шеф полиции "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
@@ -3208,11 +3216,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif weapon[id1] ~= nil then--оружие
 			giveWeapon(playerid, weapon[id1][2], 25)
-			me_chat(playerid, playername.." взял в руку "..weapon[id1][1])
+			me_chat(playerid, playername.." взял(а) в руку "..weapon[id1][1])
 			id2 = 0
 
 		elseif id1 == 11 then--планшет
-			me_chat(playerid, playername.." достал "..info_png[id1][1])
+			me_chat(playerid, playername.." достал(а) "..info_png[id1][1])
 
 			triggerClientEvent( playerid, "event_inv_delet", playerid )
 			triggerClientEvent( playerid, "event_tablet_fun", playerid )
@@ -3239,7 +3247,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				fixVehicle ( vehicleid )
 
-				me_chat(playerid, playername.." починил т/с")
+				me_chat(playerid, playername.." починил(а) т/с")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
 				return
@@ -3254,10 +3262,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
 					if house_door[h] == 0 then
 						house_door[h] = 1
-						me_chat(playerid, playername.." открыл дверь дома")
+						me_chat(playerid, playername.." открыл(а) дверь дома")
 					else
 						house_door[h] = 0
-						me_chat(playerid, playername.." закрыл дверь дома")
+						me_chat(playerid, playername.." закрыл(а) дверь дома")
 					end
 
 					sqlite( "UPDATE house_db SET door = '"..house_door[h].."' WHERE number = '"..h.."'")
@@ -3265,7 +3273,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 
-				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 			return
 
@@ -3278,7 +3286,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = skin
 
-			me_chat(playerid, playername.." переоделся")
+			me_chat(playerid, playername.." переоделся(ась)")
 
 		elseif id1 == 39 then--броник
 			if getPedArmor(playerid) ~= 0 then
@@ -3290,12 +3298,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			id2 = id2 - 1
 
-			me_chat(playerid, playername.." надел бронежилет")
+			me_chat(playerid, playername.." надел(а) бронежилет")
 
 		elseif id1 == 43 then--документы на бизнес
 			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
-				me_chat(playerid, playername.." показал "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			end
 			return
 
@@ -3304,12 +3312,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				speed_car_device[playername] = 1
 				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
 
-				me_chat(playerid, playername.." включил "..info_png[id1][1])
+				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
 			else
 				speed_car_device[playername] = 0
 				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
 
-				me_chat(playerid, playername.." выключил "..info_png[id1][1])
+				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
 			end
 			return
 
@@ -3317,11 +3325,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if isPedWearingJetpack ( playerid ) then
 				setPedWearingJetpack ( playerid, false )
 
-				me_chat(playerid, playername.." снял "..info_png[id1][1])
+				me_chat(playerid, playername.." снял(а) "..info_png[id1][1])
 			else
 				setPedWearingJetpack ( playerid, true )
 
-				me_chat(playerid, playername.." надел "..info_png[id1][1])
+				me_chat(playerid, playername.." надел(а) "..info_png[id1][1])
 			end
 			return
 
@@ -3333,12 +3341,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "Кислород пополнился", yellow[1], yellow[2], yellow[3] )
 			end, 38000, 8, playerid)
 
-			me_chat(playerid, playername.." надел "..info_png[id1][1])
+			me_chat(playerid, playername.." надел(а) "..info_png[id1][1])
 
 		elseif id1 == 57 then--алкостестер
 			local alcohol_test = alcohol[playername]/100
 			
-			me_chat(playerid, playername.." подул в "..info_png[id1][1])
+			me_chat(playerid, playername.." подул(а) в "..info_png[id1][1])
 			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле")
 
 			if alcohol_test >= zakon_alcohol then
@@ -3346,12 +3354,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				crimes[playername] = crimes[playername]+crimes_plus
 				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
-			return
 
 		elseif id1 == 58 then--наркостестер
 			local drugs_test = drugs[playername]
 			
-			me_chat(playerid, playername.." подул в "..info_png[id1][1])
+			me_chat(playerid, playername.." подул(а) в "..info_png[id1][1])
 			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости")
 
 			if drugs_test >= zakon_drugs then
@@ -3359,7 +3366,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				crimes[playername] = crimes[playername]+crimes_plus
 				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
-			return
+
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -3583,7 +3590,7 @@ function (playerid, cmd, id, cash)
 
 				inv_server_load( "player", 0, 1, array_player_2[id][1]+cash, id )
 
-				me_chat(playerid, playername.." передал "..id.." "..cash.."$")
+				me_chat(playerid, playername.." передал(а) "..id.." "..cash.."$")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3] )
 			end
@@ -3633,7 +3640,7 @@ function (playerid, cmd, id)
 			end
 
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				me_chat(playerid, playername.." посадил "..id.." в камеру на "..(crimes[id]+1).." мин")
+				me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]+1).." мин")
 
 				arrest[id] = 1
 
@@ -4295,7 +4302,7 @@ function input_Console ( text )
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
 
-local objPick = 0
+--[[local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
 	objPick = createObject (1485, x, y, z)
@@ -4311,4 +4318,4 @@ end)
 addCommandHandler ("opos",
 function (playerid, cmd, id1, id2, id3)
 	setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
-end)
+end)]]
