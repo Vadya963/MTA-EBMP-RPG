@@ -4162,16 +4162,21 @@ function (playerid, cmd, id)
 		return
 	end
 
-	local result = sqlite_save_player_action( "SELECT * FROM "..id.."" )
-	if result then
-		for k,v in pairs(result) do
-			triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", id, k, v["player_action"])
-		end
+	local result = sqlite( "SELECT * FROM account" )
+	for k,v in pairs(result) do
+		if v["name"] == id then
+			local result = sqlite_save_player_action( "SELECT * FROM "..id.."" )
+			for k,v in pairs(result) do
+				triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", id, k, v["player_action"])
+			end
 
-		triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
-	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
+
+			return
+		end
 	end
+
+	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
 addCommandHandler ( "logadmin",--чекнуть логи админов
