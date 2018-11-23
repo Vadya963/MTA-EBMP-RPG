@@ -3,7 +3,6 @@ local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
-createColRectangle( 2054.1,2367.5, 62, 70 )
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
