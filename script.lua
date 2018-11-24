@@ -4475,6 +4475,39 @@ function ( playerid, cmd, i1, i2, i3, i4, i5, i6, i7, i8 )
 	sendPlayerMessage(playerid, "[zakon_alcohol = "..i1.."] [zakon_alcohol_crimes = "..i2.."] [zakon_drugs = "..i3.."] [zakon_drugs_crimes = "..i4.."] [zakon_kill_crimes = "..i5.."] [zakon_nalog_car = "..i6.."] [zakon_nalog_house = "..i7.."] [zakon_nalog_business = "..i8.."]", lyme[1], lyme[2], lyme[3])
 end)
 
+addCommandHandler ( "attach",
+function ( playerid )
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if vehicleid then
+		local x,y,z = getElementPosition(vehicleid)
+		if getElementModel(vehicleid) == 548 then
+			for k,vehicle in pairs(getElementsByType("vehicle")) do
+				local x1,y1,z1 = getElementPosition(vehicle)
+				if isPointInCircle3D(x1,y1,z1, x,y,z, 10) then
+
+					if not isElementAttached ( vehicle ) then
+						local car_attach = attachElements ( vehicle, vehicleid, 0, 0, -4 )
+						if car_attach then
+							sendPlayerMessage(playerid, "т/с прикреплен")
+						end
+					else
+						detachElements  ( vehicle, vehicleid )
+						sendPlayerMessage(playerid, "т/с откреплен")
+					end
+
+					return
+				end
+			end
+		end
+	end
+end)
+
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
