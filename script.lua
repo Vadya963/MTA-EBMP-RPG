@@ -222,7 +222,7 @@ local info_png = {
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "боеприпасов"},
-	[10] = {"полицейское удостоверение на имя", ""},
+	[10] = {"полицейский жетон на имя", ""},
 	[11] = {"планшет", "шт"},
 	[12] = {"colt-45", "боеприпасов"},
 	[13] = {"deagle", "боеприпасов"},
@@ -271,6 +271,9 @@ local info_png = {
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
 	[58] = {"наркотестер", "шт"},
+	[59] = {"жетон для оплаты дома на", "дней"},
+	[60] = {"жетон для оплаты бизнеса на", "дней"},
+	[61] = {"жетон для оплаты т/с на", "дней"},
 }
 
 local weapon = {
@@ -476,7 +479,7 @@ local cash_car = {
 	[411] = {"INFERNUS", 95000},
 	[412] = {"VOODOO", 30000},
 	[413] = {"PONY", 20000},--грузовик с колонками
-	[414] = {"MULE", 22000},--груовик развозчика
+	[414] = {"MULE", 22000},--грузовик развозчика
 	[415] = {"CHEETAH", 105000},
 	--[416] = {"AMBULAN", 10000},--скорая
 	[418] = {"MOONBEAM", 16000},
@@ -788,6 +791,7 @@ function debuginfo ()
 		if logged[playername] == 1 then
 			--нужды
 			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
+			triggerClientEvent( playerid, "event_nalog_fun", playerid, zakon_nalog_car, zakon_nalog_house, zakon_nalog_business )
 		end
 	end
 end
@@ -1163,61 +1167,66 @@ function info_bisiness( number )
 end
 
 function pickupUse( playerid )
+	local pickup = source
 	local x,y,z = getElementPosition(playerid)
 
-	for k,v in pairs(business_pos) do 
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+	if getElementModel(pickup) == business_icon then
+		for k,v in pairs(business_pos) do 
+			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-			for i=0,max_inv do
-				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
-				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
-					sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-					break
+				for i=0,max_inv do
+					local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
+					if result[1]["COUNT()"] == 1 then
+						local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
+						sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+						break
+					end
 				end
-			end
 
-			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
-			sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..result[1]["price"].."$", green[1], green[2], green[3])
-			sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
+				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
+				sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..result[1]["price"].."$", green[1], green[2], green[3])
+				sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
 
-			if search_inv_player(playerid, 43, k) ~= 0 then
-				sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
-				sendPlayerMessage(playerid, "Налог бизнеса оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
-			end
-			return
-		end
-	end
-
-	for k,v in pairs(house_pos) do
-		if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
-
-			for i=0,max_inv do
-				local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
-				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
-					sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-					break
+				if search_inv_player(playerid, 43, k) ~= 0 then
+					sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Налог бизнеса оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
+				return
 			end
-
-			if search_inv_player(playerid, 25, k) ~= 0 then
-				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..k.."'" )
-				sendPlayerMessage(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
-			end
-			return
 		end
-	end
 
-	for k,v in pairs(interior_job) do 
-		if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
-			sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
-			return
+	elseif getElementModel(pickup) == house_icon then
+		for k,v in pairs(house_pos) do
+			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+
+				for i=0,max_inv do
+					local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
+					if result[1]["COUNT()"] == 1 then
+						local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
+						sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
+						break
+					end
+				end
+
+				if search_inv_player(playerid, 25, k) ~= 0 then
+					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..k.."'" )
+					sendPlayerMessage(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+				end
+				return
+			end
+		end
+
+	elseif getElementModel(pickup) == job_icon then
+		for k,v in pairs(interior_job) do 
+			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
+				return
+			end
 		end
 	end
 end
@@ -1759,10 +1768,17 @@ addEventHandler ( "event_cops_weapon_fun", getRootElement(), cops_weapon_fun )
 
 function mayoralty_menu_fun( playerid, text )--мэрия
 	local playername = getPlayerName(playerid)
+	local day_nalog = 7
 
 	local mayoralty_shop = {
 		[2] = {"права", 0, 1000},
 		[50] = {"лицензия на оружие", 0, 10000},
+	}
+
+	local mayoralty_nalog = {
+		[59] = {"жетон для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
+		[60] = {"жетон для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
+		[61] = {"жетон для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
 	}
 
 	for k,v in pairs(mayoralty_shop) do
@@ -1780,6 +1796,28 @@ function mayoralty_menu_fun( playerid, text )--мэрия
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
+
+			return
+		end
+	end
+
+	for k,v in pairs(mayoralty_nalog) do
+		if v[1] == text then
+			if v[3] <= array_player_2[playername][1] then
+				if inv_player_empty(playerid, k, v[2]) then
+					sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+
+					inv_server_load( "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+
+					save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_nalog - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+			end
+
+			return
 		end
 	end
 end
@@ -3315,7 +3353,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
 				return
 			end
 
@@ -3374,7 +3412,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." починил(а) т/с")
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
 				return
 			end
 
@@ -3492,6 +3530,55 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
 
+		elseif id1 == 59 then--налог дома
+			if enter_house[playername] == 1 then
+				sqlite( "UPDATE house_db SET nalog = nalog + '"..id2.."' WHERE number = '"..getElementDimension(playerid).."'")
+
+				me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+				id2 = 0
+			else
+				sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3] )
+				return
+			end
+
+		elseif id1 == 60 then--налог бизнеса
+			local count = 0
+			for k,v in pairs(business_pos) do
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+					sqlite( "UPDATE business_db SET nalog = nalog + '"..id2.."' WHERE number = '"..k.."'")
+					
+					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+					id2 = 0
+					count = 1
+					break
+				end
+			end
+
+			if count == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около бизнеса", red[1], red[2], red[3] )
+				return
+			end
+		
+		elseif id1 == 61 then--налог авто
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				if result[1]["COUNT()"] == 1 then
+					sqlite( "UPDATE car_db SET nalog = nalog + '"..id2.."' WHERE carnumber = '"..plate.."'")
+
+					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+					id2 = 0
+				else
+					sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3] )
+					return
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
+				return
+			end
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -3539,6 +3626,11 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				return
 			end
 
+			if getElementModel(vehicleid) ~= 414 then
+				sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( 414 ), red[1], red[2], red[3] )
+				return
+			end
+
 			for i=0,max_inv do
 				if inv_car_empty(playerid, id1, id2) then
 					count2 = count2 + 1
@@ -3556,7 +3648,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3] )
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
+			sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
 		end
 	end
 
@@ -3637,7 +3729,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 		end
 	else
-		--sendPlayerMessage(playerid, "[ERROR] Вы не в машине", red[1], red[2], red[3] )
+		--sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
 	end
 end
 
@@ -4034,6 +4126,11 @@ function (playerid, cmd, id1, id2 )
 		return
 	end
 
+	if val1 > #info_png or val1 < 2 then
+		sendPlayerMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
+		return
+	end
+
 	if inv_player_empty(playerid, val1, val2) then
 		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 
@@ -4055,6 +4152,11 @@ function (playerid, cmd, id1, id2 )
 
 	if val1 == nil or val2 == nil then
 		sendPlayerMessage(playerid, "[ERROR] /subt [ид предмета] [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	if val1 > #info_png or val1 < 2 then
+		sendPlayerMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
 		return
 	end
 

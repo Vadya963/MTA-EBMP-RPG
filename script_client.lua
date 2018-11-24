@@ -36,7 +36,7 @@ local info_png = {
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
 	[9] = {"граната", "боеприпасов"},
-	[10] = {"полицейское удостоверение на имя", ""},
+	[10] = {"полицейский жетон на имя", ""},
 	[11] = {"планшет", "шт"},
 	[12] = {"colt-45", "боеприпасов"},
 	[13] = {"deagle", "боеприпасов"},
@@ -85,6 +85,9 @@ local info_png = {
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
 	[58] = {"наркотестер", "шт"},
+	[59] = {"жетон для оплаты дома на", "дней"},
+	[60] = {"жетон для оплаты бизнеса на", "дней"},
+	[61] = {"жетон для оплаты т/с на", "дней"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -169,6 +172,17 @@ function need_fun (i1, i2, i3, i4, i5)--нужды
 end
 addEvent( "event_need_fun", true )
 addEventHandler ( "event_need_fun", getRootElement(), need_fun )
+
+local zakon_nalog_car = 0
+local zakon_nalog_house = 0
+local zakon_nalog_business = 0
+function nalog_fun (i1, i2, i3)--налоги
+	zakon_nalog_car = i1
+	zakon_nalog_house = i2
+	zakon_nalog_business = i3
+end
+addEvent( "event_nalog_fun", true )
+addEventHandler ( "event_nalog_fun", getRootElement(), nalog_fun )
 
 local name_player = 0
 local logplayer = {}
@@ -978,12 +992,16 @@ function mayoralty_menu()--мэрия
 
 	showCursor( true )
 
-	local column_width1 = 0.5
-	local column_width2 = 0.4
+	local column_width1 = 0.7
+	local column_width2 = 0.2
+	local day_nalog = 7
 
 	local mayoralty_shop = {
 		[2] = {"права", 0, 1000},
 		[50] = {"лицензия на оружие", 0, 10000},
+		[59] = {"жетон для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
+		[60] = {"жетон для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
+		[61] = {"жетон для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
 	}
 
 	local width = 400+10
