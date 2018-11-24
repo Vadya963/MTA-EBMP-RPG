@@ -1218,7 +1218,6 @@ function tablet_fun()--создание планшета
 		end
 	end
 	addEventHandler ( "onClientGUIClick", internet, outputEditBox, false )
-
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

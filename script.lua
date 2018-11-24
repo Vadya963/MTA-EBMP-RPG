@@ -4456,6 +4456,25 @@ function ( playerid, cmd, id, ... )
 	end
 end)
 
+addCommandHandler ( "setzakon",
+function ( playerid, cmd, i1, i2, i3, i4, i5, i6, i7, i8 )
+	local playername = getPlayerName ( playerid )
+	local i1, i2, i3, i4, i5, i6, i7, i8 = tonumber(i1),tonumber(i2),tonumber(i3),tonumber(i4),tonumber(i5),tonumber(i6),tonumber(i7),tonumber(i8)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if not i1 or not i2 or not i3 or not i4 or not i5 or not i6 or not i7 or not i8 then
+		sendPlayerMessage(playerid, "[ERROR] /setzakon [zakon_alcohol] [zakon_alcohol_crimes] [zakon_drugs] [zakon_drugs_crimes] [zakon_kill_crimes] [zakon_nalog_car] [zakon_nalog_house] [zakon_nalog_business]", red[1], red[2], red[3])
+		return
+	end
+
+	sqlite( "UPDATE zakon_mayoralty SET zakon_alcohol = '"..i1.."', zakon_alcohol_crimes = '"..i2.."', zakon_drugs = '"..i3.."', zakon_drugs_crimes = '"..i4.."', zakon_kill_crimes = '"..i5.."', zakon_nalog_car = '"..i6.."', zakon_nalog_house = '"..i7.."', zakon_nalog_business = '"..i8.."'")
+
+	sendPlayerMessage(playerid, "[zakon_alcohol = "..i1.."] [zakon_alcohol_crimes = "..i2.."] [zakon_drugs = "..i3.."] [zakon_drugs_crimes = "..i4.."] [zakon_kill_crimes = "..i5.."] [zakon_nalog_car = "..i6.."] [zakon_nalog_house = "..i7.."] [zakon_nalog_business = "..i8.."]", lyme[1], lyme[2], lyme[3])
+end)
+
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
