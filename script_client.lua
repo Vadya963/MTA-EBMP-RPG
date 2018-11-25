@@ -400,13 +400,10 @@ local interior_business = {
 	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
-local delet_subject_pos = {
-	{2788.23046875,-2455.99609375,13.340852737427, 15, "Порт ЛС (Разгрузить товар - E)"},
-}
-
-local image_3d = {
+local down_player_subject = {--3d text
 	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи"},
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
+	{2788.23046875,-2455.99609375,13.340852737427, 15, "Порт ЛС (Разгрузить товар - E)"},
 }
 
 local weather_list = {
@@ -614,14 +611,7 @@ function createText ()
 		end
 	end
 
-	for k,v in pairs(delet_subject_pos) do
-		if isPointInCircle3D(x,y,z, delet_subject_pos[k][1],delet_subject_pos[k][2],delet_subject_pos[k][3], delet_subject_pos[k][4]) then
-			dxdrawtext ( delet_subject_pos[k][5], 5, screenHeight-30, 0.0, 0.0, tocolor ( green[1], green[2], green[3], 255 ), 1, m2font_dx1 )
-			break
-		end
-	end
-
-	for k,v in pairs(image_3d) do--отображение предметов работы на земле
+	for k,v in pairs(down_player_subject) do--отображение предметов работы на земле
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
 
 		if area then
