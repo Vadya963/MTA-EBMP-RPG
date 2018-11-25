@@ -622,7 +622,6 @@ function createText ()
 	end
 
 	for k,v in pairs(image_3d) do--отображение предметов работы на земле
-		local x,y,z = getElementPosition(playerid)
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
 
 		if area then
@@ -672,7 +671,6 @@ function createText ()
 
 
 	for i,v in pairs(earth) do--отображение предметов на земле
-		local x,y,z = getElementPosition(playerid)
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
 		if area then
