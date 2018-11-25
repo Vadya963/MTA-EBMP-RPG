@@ -270,6 +270,7 @@ local info_png = {
 	[59] = {"жетон для оплаты дома на", "дней"},
 	[60] = {"жетон для оплаты бизнеса на", "дней"},
 	[61] = {"жетон для оплаты т/с на", "дней"},
+	[62] = {"ящик с продуктами", "$ за штуку"},
 }
 
 local weapon = {
@@ -729,6 +730,13 @@ local up_car_subject = {--{x,y,z, радиус, ид тс, ид пнг, зп}
 
 local up_player_subject = {--{x,y,z, радиус, ид пнг, зп}
 	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 25},--мясокомбинат
+	
+	{2559.1171875,-1287.2275390625,1044.125, 2, 24, 1},--завод продуктов
+	{2551.1318359375,-1287.2294921875,1044.125, 2, 24, 1},--завод продуктов
+	{2543.0859375,-1287.2216796875,1044.125, 2, 24, 1},--завод продуктов
+	{2543.166015625,-1300.0927734375,1044.125, 2, 24, 1},--завод продуктов
+	{2551.09375,-1300.09375,1044.125, 2, 24, 1},--завод продуктов
+	{2559.0185546875,-1300.0927734375,1044.125, 2, 24, 1},--завод продуктов
 }
 
 --места сброса предметов
@@ -738,6 +746,20 @@ local down_car_subject = {--{x,y,z, радиус, ид пнг}
 
 local down_player_subject = {--{x,y,z, радиус, ид пнг} также нужно прописать ид пнг в throw_earth_server
 	{942.4775390625,2117.900390625,1011.0302734375, 5, 48},--мясокомбинат
+	{2564.779296875,-1293.0673828125,1044.125, 2, 62},--завод продуктов
+}
+
+local anim_player_subject = {--{x,y,z, радиус, ид пнг1, ид пнг2, зп, анимация}
+	{2558.6474609375,-1291.0029296875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2556.080078125,-1290.9970703125,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2553.841796875,-1291.0048828125,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2544.4326171875,-1291.00390625,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2541.9169921875,-1290.9951171875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2541.9091796875,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2544.427734375,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2553.7578125,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2556.2578125,-1295.8544921875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2558.5478515625,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
 }
 
 --камеры полиции
@@ -2715,10 +2737,11 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
+	math.randomseed(getTickCount())
 
 	if value == "player" then
 		for k,v in pairs(down_player_subject) do
-			if (isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5]) then--получение прибыли за предметы
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] then--получение прибыли за предметы
 				inv_server_load( value, id3, 0, 0, tabpanel )
 				inv_server_load( value, 0, 1, array_player_2[playername][1]+id2, tabpanel )
 
@@ -2728,6 +2751,31 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 				sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
 				save_player_action(playerid, "[throw_earth_job] "..playername.." [+"..id2.."$, "..array_player_2[playername][1].."$]] ["..info_png[id1][1]..", "..id2.."]")
+
+				return
+			end
+		end
+
+		for k,v in pairs(anim_player_subject) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] then--обработка предметов
+				local randomize = math.random(1,v[7])
+
+				inv_server_load( value, id3, 0, 0, tabpanel )
+
+				triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, 0, 0 )
+				triggerClientEvent( playerid, "event_change_image", playerid, value, id3, 0 )
+
+
+				inv_server_load( value, id3, v[6], randomize, tabpanel )
+
+				triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, v[6], randomize )
+				triggerClientEvent( playerid, "event_change_image", playerid, value, id3, v[6] )
+
+				sendPlayerMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+
+				setPedAnimation(playerid, v[8], v[9], -1, false, false, false, false)
+
+				save_player_action(playerid, "[throw_earth_anim] "..playername.." ["..info_png[v[6]][1]..", "..randomize.."]")
 
 				return
 			end
@@ -2804,7 +2852,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
 			if area then
-				if (v[4] == 48) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
+				if (v[4] == 48 or v[4] == 24 or v[4] == 62) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
 					sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 					return
 				end

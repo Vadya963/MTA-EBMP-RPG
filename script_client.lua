@@ -88,6 +88,7 @@ local info_png = {
 	[59] = {"жетон для оплаты дома на", "дней"},
 	[60] = {"жетон для оплаты бизнеса на", "дней"},
 	[61] = {"жетон для оплаты т/с на", "дней"},
+	[62] = {"ящик с продуктами", "$ за штуку"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -403,7 +404,28 @@ local interior_business = {
 local down_player_subject = {--3d text
 	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи"},
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
+
 	{2788.23046875,-2455.99609375,13.340852737427, 15, "Порт ЛС (Разгрузить товар - E)"},
+	
+	{2559.1171875,-1287.2275390625,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+	{2551.1318359375,-1287.2294921875,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+	{2543.0859375,-1287.2216796875,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+	{2543.166015625,-1300.0927734375,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+	{2551.09375,-1300.09375,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+	{2559.0185546875,-1300.0927734375,1044.125, 2, "Нажмите E, чтобы взять ящик"},
+
+	{2558.6474609375,-1291.0029296875,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2556.080078125,-1290.9970703125,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2553.841796875,-1291.0048828125,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2544.4326171875,-1291.00390625,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2541.9169921875,-1290.9951171875,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2541.9091796875,-1295.8505859375,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2544.427734375,-1295.8505859375,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2553.7578125,-1295.8505859375,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2556.2578125,-1295.8544921875,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+	{2558.5478515625,-1295.8505859375,1044.125, 1, "Выбросите ящик, чтобы получить ящик с продуктами"},
+
+	{2564.779296875,-1293.0673828125,1044.125, 2, "Выбросите ящик с продуктами, чтобы получить прибыль"},
 }
 
 local weather_list = {
@@ -568,17 +590,19 @@ function createText ()
 				if speed_car_device == 1 then
 					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 					local speed_table = split(getSpeed(vehicle), ".")
+					local dimensions = dxGetTextWidth ( speed_table[1].." km/h", 1, m2font_dx1 )
 
 					if coords[1] and coords[2] then
 						if tonumber(speed_table[1]) >= max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
 						elseif tonumber(speed_table[1]) < max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 						end
 					end
 				end
 
-				dxdrawtext ( plate, coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( plate, 1, m2font_dx1 )
+				dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
@@ -666,12 +690,13 @@ function createText ()
 		if area then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
 			if coords[1] and coords[2] then
-				dxDrawImage ( coords[1], coords[2], 57, 57, image[ v[4] ] )
+				dxDrawImage ( coords[1]-(57/2), coords[2], 57, 57, image[ v[4] ] )
 			end
 
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				dxdrawtext ( "Нажмите E", coords[1], coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( "Нажмите E", 1, m2font_dx1 )
+				dxdrawtext ( "Нажмите E", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
