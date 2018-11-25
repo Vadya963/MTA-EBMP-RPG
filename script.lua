@@ -2462,7 +2462,7 @@ function ( playerid, cmd, id )
 
 			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_car[id][2].."$", orange[1], orange[2], orange[3])
 
-			x,y,z,rot = 2134.5244140625,-1133.404296875,25.779407501221,52
+			x,y,z,rot = 2120.8515625,-1136.013671875,25.287223815918,0
 
 		elseif isPointInCircle3D(t_s_salon[2][1],t_s_salon[2][2],t_s_salon[2][3], x1,y1,z1, 5) then
 			if cash_helicopters[id] == nil then
@@ -3295,7 +3295,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					local x1,y1,z1 = getElementPosition(vehicle)
 					local plate = getVehiclePlateText ( vehicle )
 
-					if isPointInCircle3D(x,y,z, x1,y1,z1, 5) and tonumber(plate) == id2 then
+					if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and tonumber(plate) == id2 then
 						if isVehicleLocked ( vehicle ) then
 							setVehicleLocked ( vehicle, false )
 							me_chat(playerid, playername.." открыл(а) двери т/с")

@@ -18,6 +18,7 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 local max_speed = 80--масимальная скорость в городе
+local time_game = 0--сколько минут играешь
 
 local no_use_subject = {-1,0,1}
 
@@ -218,6 +219,10 @@ end
 setTimer(function ()
 	setCameraShakeLevel ( (alcohol/2) )
 end, 1000, 0)
+
+setTimer(function ()
+	time_game = time_game+1
+end, 60000, 0)
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -502,7 +507,7 @@ function createText ()
 	local time = getRealTime()
 	local playerid = localPlayer
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-	local text = "Ping: "..getPlayerPing(playerid).." | ".."Players online: "..#getElementsByType("player").." | "..client_time
+	local text = "Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	dxDrawImage ( screenWidth-30, 105-7.5, 30, 30, "hud/health.png" )
