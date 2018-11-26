@@ -546,7 +546,6 @@ local cash_car = {
 	--[524] = {"CEMENT", 50000},
 	[526] = {"FORTUNE", 19000},
 	[527] = {"CADRONA", 9000},
-	--[528] = {"FBITRUCK", 40000},
 	[529] = {"WILLARD", 19000},
 	--[530] = {"FORKLIFT", 9000},--вилочный погр-ик
 	--[531] = {"TRACTOR", 9000},
@@ -613,6 +612,7 @@ local cash_car = {
 	[490] = {"FBIRANCH", 40000},
 	[525] = {"TOWTRUCK", 20000},--эвакуатор для копов
 	[523] = {"HPV1000", 10000},--мотик полиции
+	[528] = {"FBITRUCK", 40000},
 
 	--bikes
 	[586] = {"WAYFARER", 10000},
@@ -2204,7 +2204,8 @@ function nickChangeHandler(oldNick, newNick)
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 
-	kickPlayer( playerid, "kick for Change Nick" )
+	--kickPlayer( playerid, "kick for Change Nick" )
+	cancelEvent()
 end
 addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
 
@@ -2426,7 +2427,7 @@ function ( playerid, cmd, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /buycar [ид т/с]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -3802,6 +3803,36 @@ addEvent( "event_use_inv", true )
 addEventHandler ( "event_use_inv", getRootElement(), use_inv )
 
 -------------------------------команды игроков----------------------------------------------------------
+addCommandHandler ( "sms",--смс игроку
+function (playerid, cmd, id, ...)
+	local playername = getPlayerName ( playerid )
+	local text = ""
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	for k,player in pairs(getElementsByType("player")) do
+		if id == getPlayerName(player) then
+			sendPlayerMessage(playerid, "[SMS TO] "..id..": "..text, yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(getPlayerFromName(id), "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
+
+			return
+		end
+	end
+
+	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+end)
+
 addCommandHandler("evacuationcar",--эвакуция авто
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
@@ -3814,7 +3845,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /evacuationcar [номер т/с]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -3872,7 +3903,7 @@ function (playerid, cmd, id, cash)
 	end
 
 	if not cash then
-		sendPlayerMessage(playerid, "[ERROR] /pay [ник соблюдая регистр] [сумма]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [сумма]", red[1], red[2], red[3])
 		return
 	end
 
@@ -3920,7 +3951,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /prison [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
 		return
 	end
 
@@ -3974,7 +4005,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /policecertificate [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4073,7 +4104,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /sellbusiness [номер бизнеса от 1 до "..#interior_business.."]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4145,7 +4176,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /buyinthouse [номер интерьера от 1 до "..#interior_house.."]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..#interior_house.."]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4190,7 +4221,7 @@ function (playerid, cmd, id1, id2 )
 	end
 
 	if not val1 or not val2  then
-		sendPlayerMessage(playerid, "[ERROR] /sub [ид предмета] [количество]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4219,7 +4250,7 @@ function (playerid, cmd, id1, id2 )
 	end
 
 	if val1 == nil or val2 == nil then
-		sendPlayerMessage(playerid, "[ERROR] /subt [ид предмета] [текст]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [текст]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4251,7 +4282,7 @@ function ( playerid, cmd, x, y, z )
 	end
 
 	if x == nil or y == nil or z == nil then
-		sendPlayerMessage(playerid, "[ERROR] /go [и 3 координаты]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [и 3 координаты]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4270,7 +4301,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /fuel [указать топливо от 0 до 50]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [указать топливо от 0 до 50]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4310,7 +4341,7 @@ function ( playerid, cmd, id1, id2 )
 	end
 
 	if house == nil or min == nil then
-		sendPlayerMessage(playerid, "[ERROR] /stime [час] [минуты]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [час] [минуты]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4328,7 +4359,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /logplayer [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4380,7 +4411,7 @@ function (playerid, cmd, id, time, ...)
 	end
 
 	if id == nil or reason == "" or not time then
-		sendPlayerMessage(playerid, "[ERROR] /prisonplayer [ник соблюдая регистр] [время] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [время] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4421,7 +4452,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /banplayer [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4458,7 +4489,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /unbanplayer [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4495,7 +4526,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /banserial [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4534,7 +4565,7 @@ function ( playerid, cmd, i1, i2, i3, i4, i5, i6, i7, i8 )
 	end
 
 	if not i1 or not i2 or not i3 or not i4 or not i5 or not i6 or not i7 or not i8 then
-		sendPlayerMessage(playerid, "[ERROR] /setzakon [zakon_alcohol] [zakon_alcohol_crimes] [zakon_drugs] [zakon_drugs_crimes] [zakon_kill_crimes] [zakon_nalog_car] [zakon_nalog_house] [zakon_nalog_business]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [zakon_alcohol] [zakon_alcohol_crimes] [zakon_drugs] [zakon_drugs_crimes] [zakon_kill_crimes] [zakon_nalog_car] [zakon_nalog_house] [zakon_nalog_business]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4553,7 +4584,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /int [номер интерьера]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4576,7 +4607,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /dim [номер виртуального мира]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер виртуального мира]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4628,7 +4659,7 @@ function ( playerid, cmd, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /v [ид т/с]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
 		return
 	end
 
