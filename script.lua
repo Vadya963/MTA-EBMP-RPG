@@ -106,6 +106,16 @@ function ic_chat(playerid, text)
 	end
 end
 
+function police_chat(playerid, text)
+	for k,player in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(player)
+
+		if search_inv_player(player, 10, playername) ~= 0 then
+			sendPlayerMessage(player, text, blue[1], blue[2], blue[3])
+		end
+	end
+end
+
 function save_player_action( playerid, text )
 	local playername = getPlayerName(playerid)
 	local time = getRealTime()
@@ -184,10 +194,10 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 
 	attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
 
-	setTimer(function ( playerid )
+	setTimer(function ()
 		detachElementFromBone(objPick)
 		destroyElement(objPick)
-	end, time, 1, playerid)
+	end, time, 1)
 end
 -----------------------------------------------------------------------------------------
 
@@ -248,7 +258,7 @@ local info_png = {
 	[37] = {"бита", "шт"},
 	[38] = {"нож", "шт"},
 	[39] = {"бронежилет", "шт"},
-	[40] = {"лом", "шт"},
+	[40] = {"лом", "%"},
 	[41] = {"sniper", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
@@ -263,7 +273,7 @@ local info_png = {
 	[52] = {"кислородный балон на 5 мин", "шт"},
 	[53] = {"бургер", "шт"},
 	[54] = {"хот-дог", "шт"},
-	[55] = {"мыло", "шт"},
+	[55] = {"мыло", "%"},
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
 	[58] = {"наркотестер", "шт"},
@@ -271,6 +281,7 @@ local info_png = {
 	[60] = {"жетон для оплаты бизнеса на", "дней"},
 	[61] = {"жетон для оплаты т/с на", "дней"},
 	[62] = {"ящик с продуктами", "$ за штуку"},
+	[63] = {"GPS навигатор", "шт"},
 }
 
 local weapon = {
@@ -289,7 +300,7 @@ local weapon = {
 	[36] = {info_png[36][1], 3, 150, 1},
 	[37] = {info_png[37][1], 5, 150, 1},
 	[38] = {info_png[38][1], 4, 150, 1},
-	[40] = {info_png[40][1], 15, 150, 1},
+	--[40] = {info_png[40][1], 15, 150, 1},
 	[41] = {info_png[41][1], 34, 6000, 25},
 	[47] = {info_png[47][1], 41, 50, 25},
 	[49] = {info_png[49][1], 6, 50, 1},
@@ -309,15 +320,17 @@ local shop = {
 	[31] = {info_png[31][1], 1, 100},
 	[32] = {info_png[32][1], 1, 100},
 	[33] = {info_png[33][1], 1, 100},
+	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
 	[46] = {info_png[46][1], 1, 100},
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
-	[55] = {info_png[55][1], 1, 50},
+	[55] = {info_png[55][1], 100, 50},
 	[56] = {info_png[56][1], 100, 100},
 	[57] = {info_png[57][1], 1, 100},
 	[58] = {info_png[58][1], 1, 100},
+	[63] = {info_png[63][1], 1, 100},
 }
 
 local bar = {
@@ -787,6 +800,8 @@ local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 local speed_car_device = {}--отображение скорости авто, 0-выкл, 1-вкл
 local arrest = {}--арест игрока, 0-нет, 1-да
 local crimes = {}--преступления
+local robbery_player = {}--ограбление, 0-нет, 1-да
+local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -817,7 +832,7 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "max_earth "..max_earth )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "robbery_player[playername] "..robbery_player[playername], "gps_device[playername] "..gps_device[playername], "max_earth "..max_earth )
 			
 		if logged[playername] == 1 then
 			--нужды
@@ -1106,6 +1121,32 @@ function inv_player_delet(playerid, id1, id2)--удаления предмета
 	end
 
 	return false
+end
+
+function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
+	math.randomseed(getTickCount())
+
+	if isElement ( playerid ) then
+		local x,y,z = getElementPosition(playerid)
+		local playername = getPlayerName ( playerid )
+		local crimes_plus = zakon
+		local cash = math.random(1,money)
+
+		if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
+			crimes[playername] = crimes[playername]+crimes_plus
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+
+			sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
+
+			inv_server_load( "player", 0, 1, array_player_2[playername][1]+cash, playername )
+
+			save_player_action(playerid, "[robbery] "..playername.." ["..text.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
+		else
+			sendPlayerMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3] )
+		end
+
+		robbery_player[playername] = 0
+	end
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -1936,17 +1977,11 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_drugs = result[1]["zakon_drugs"]
 		zakon_drugs_crimes = result[1]["zakon_drugs_crimes"]
 		zakon_kill_crimes = result[1]["zakon_kill_crimes"]
+		zakon_robbery_house_crimes = result[1]["zakon_robbery_house_crimes"]
 
 		zakon_nalog_car = result[1]["zakon_nalog_car"]
 		zakon_nalog_house = result[1]["zakon_nalog_house"]
 		zakon_nalog_business = result[1]["zakon_nalog_business"]
-
-		print("[zakon] zakon_alcohol "..zakon_alcohol..", zakon_alcohol_crimes "..zakon_alcohol_crimes)
-		print("[zakon] zakon_drugs "..zakon_drugs..", zakon_drugs_crimes "..zakon_drugs_crimes)
-		print("[zakon] zakon_kill_crimes "..zakon_kill_crimes)
-		print("[zakon] zakon_nalog_car "..zakon_nalog_car)
-		print("[zakon] zakon_nalog_house "..zakon_nalog_house)
-		print("[zakon] zakon_nalog_business "..zakon_nalog_business)
 
 
 		local result = sqlite( "SELECT * FROM car_db" )
@@ -2031,6 +2066,8 @@ function()
 	speed_car_device[playername] = 0
 	arrest[playername] = 0
 	crimes[playername] = -1
+	robbery_player[playername] = 0
+	gps_device[playername] = 0
 	--нужды
 	alcohol[playername] = 0
 	satiety[playername] = 0
@@ -2093,14 +2130,16 @@ end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
 
 function player_Spawn (playerid)--спавн игрока
-	local playername = getPlayerName ( playerid )
+	if playerid then
+		local playername = getPlayerName ( playerid )
 
-	if logged[playername] == 1 then
-		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+		if logged[playername] == 1 then
+			local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
-		spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, result[1]["skin"])
+			spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, result[1]["skin"])
 
-		setElementHealth( playerid, 100 )
+			setElementHealth( playerid, 100 )
+		end
 	end
 end
 
@@ -2158,9 +2197,11 @@ function(ammo, attacker, weapon, bodypart)
 end)
 
 function frozen_false_fun( playerid )
-	if isElementFrozen(playerid) then
-		setElementFrozen( playerid, false )
-		sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+	if playerid then
+		if isElementFrozen(playerid) then
+			setElementFrozen( playerid, false )
+			sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+		end
 	end
 end
 
@@ -2412,7 +2453,7 @@ end
 
 addCommandHandler ( "buycar",--покупка авто
 function ( playerid, cmd, id )
-	local police_car = {596,597,598,599,427,601,490,525,523}
+	local police_car = {596,597,598,599,427,601,490,525,523,528}
 	local police_boats = {430}
 	local police_helicopters = {497}
 
@@ -2433,6 +2474,7 @@ function ( playerid, cmd, id )
 
 	if id >= 400 and id <= 611 then
 		local number = randomize_number()
+		local val1, val2 = 6, number
 
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..number.."'" )
 		if result[1]["COUNT()"] == 1 then
@@ -2456,6 +2498,13 @@ function ( playerid, cmd, id )
 
 			if cash_car[id][2] > array_player_2[playername][1] then
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств, необходимо "..cash_car[id][2].."$", red[1], red[2], red[3])
+				return
+			end
+
+			if inv_player_empty(playerid, val1, val2) then
+
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
 			end
 
@@ -2483,6 +2532,13 @@ function ( playerid, cmd, id )
 				return
 			end
 
+			if inv_player_empty(playerid, val1, val2) then
+
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				return
+			end
+
 			inv_server_load( "player", 0, 1, array_player_2[playername][1]-cash_helicopters[id][2], playername )
 
 			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_helicopters[id][2].."$", orange[1], orange[2], orange[3])
@@ -2507,6 +2563,13 @@ function ( playerid, cmd, id )
 				return
 			end
 
+			if inv_player_empty(playerid, val1, val2) then
+
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				return
+			end
+
 			inv_server_load( "player", 0, 1, array_player_2[playername][1]-cash_boats[id][2], playername )
 
 			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_boats[id][2].."$", orange[1], orange[2], orange[3])
@@ -2518,37 +2581,31 @@ function ( playerid, cmd, id )
 		end
 
 
-		local val1, val2 = 6, number
+		local vehicleid = createVehicle(id, x, y, z, 0, 0, rot, val2)
+		local plate = getVehiclePlateText ( vehicleid )
 
-		if inv_player_empty(playerid, 6, val2) then
-			local vehicleid = createVehicle(id, x, y, z, 0, 0, rot, val2)
-			local plate = getVehiclePlateText ( vehicleid )
+		local color = {getVehicleColor ( vehicleid, true )}
+		local car_rgb_text = color[1]..","..color[2]..","..color[3]
+		setVehicleColor( vehicleid, color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3] )
 
-			local color = {getVehicleColor ( vehicleid, true )}
-			local car_rgb_text = color[1]..","..color[2]..","..color[3]
-			setVehicleColor( vehicleid, color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3] )
+		local color = {getVehicleHeadLightColor ( vehicleid )}
+		local headlight_rgb_text = color[1]..","..color[2]..","..color[3]
 
-			local color = {getVehicleHeadLightColor ( vehicleid )}
-			local headlight_rgb_text = color[1]..","..color[2]..","..color[3]
+		local paintjob_text = getVehiclePaintjob ( vehicleid )
 
-			local paintjob_text = getVehiclePaintjob ( vehicleid )
+		local nalog_start = 5
 
-			local nalog_start = 5
+		setVehicleLocked ( vehicleid, true )
 
-			setVehicleLocked ( vehicleid, true )
+		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		fuel[plate] = max_fuel
 
-			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			fuel[plate] = max_fuel
+		sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
+		sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, frozen, evacuate, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
-			sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, frozen, evacuate, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
-
-			save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..plate.."]")
-		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-		end
+		save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..plate.."]")
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end
@@ -3285,6 +3342,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	local vehicleid = getPlayerVehicle(playerid)
 	local x,y,z = getElementPosition(playerid)
 	local id1, id2 = id_1, id_2
+	math.randomseed(getTickCount())
 
 	if value == "player" then
 
@@ -3669,6 +3727,32 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." надел(а) бронежилет")
 
+		elseif id1 == 40 then--лом
+			local count = 0
+
+			for k,v in pairs(house_pos) do
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
+					id2 = id2 - 1
+
+					count = count+1
+
+					robbery_player[playername] = 1
+
+					sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+
+					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." дома, GPS координаты [X - "..v[1]..", Y - "..v[2]..", Z - "..v[3].."], подозреваемый "..playername)
+
+					setTimer(robbery, (5*60000), 1, playerid, zakon_robbery_house_crimes, 5000, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
+
+					break
+				end
+			end
+
+			if count == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома; Вы уже начали ограбление", red[1], red[2], red[3] )
+				return
+			end
+
 		elseif id1 == 43 then--документы на бизнес
 			local result = sqlite( "SELECT COUNT() FROM business_db WHERE number = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -3705,10 +3789,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 52 then--кислородный балон
 			id2 = id2 - 1
 
-			setTimer(function( playerid )
-				triggerClientEvent( playerid, "event_setPedOxygenLevel_fun", playerid )
-				sendPlayerMessage(playerid, "Кислород пополнился", yellow[1], yellow[2], yellow[3] )
-			end, 38000, 8, playerid)
+			triggerClientEvent( playerid, "event_setPedOxygenLevel_fun", playerid )
 
 			me_chat(playerid, playername.." надел(а) "..info_png[id1][1])
 
@@ -3785,6 +3866,20 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3] )
 				return
 			end
+
+		elseif id1 == 63 then--gps навигатор
+			if gps_device[playername] == 0 then
+				gps_device[playername] = 1
+				triggerClientEvent( playerid, "event_gps_device_fun", playerid, gps_device[playername])
+
+				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
+			else
+				gps_device[playername] = 0
+				triggerClientEvent( playerid, "event_gps_device_fun", playerid, gps_device[playername])
+
+				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
+			end
+			return
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -4553,25 +4648,6 @@ function ( playerid, cmd, id, ... )
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
-end)
-
-addCommandHandler ( "setzakon",
-function ( playerid, cmd, i1, i2, i3, i4, i5, i6, i7, i8 )
-	local playername = getPlayerName ( playerid )
-	local i1, i2, i3, i4, i5, i6, i7, i8 = tonumber(i1),tonumber(i2),tonumber(i3),tonumber(i4),tonumber(i5),tonumber(i6),tonumber(i7),tonumber(i8)
-
-	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
-		return
-	end
-
-	if not i1 or not i2 or not i3 or not i4 or not i5 or not i6 or not i7 or not i8 then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [zakon_alcohol] [zakon_alcohol_crimes] [zakon_drugs] [zakon_drugs_crimes] [zakon_kill_crimes] [zakon_nalog_car] [zakon_nalog_house] [zakon_nalog_business]", red[1], red[2], red[3])
-		return
-	end
-
-	sqlite( "UPDATE zakon_mayoralty SET zakon_alcohol = '"..i1.."', zakon_alcohol_crimes = '"..i2.."', zakon_drugs = '"..i3.."', zakon_drugs_crimes = '"..i4.."', zakon_kill_crimes = '"..i5.."', zakon_nalog_car = '"..i6.."', zakon_nalog_house = '"..i7.."', zakon_nalog_business = '"..i8.."'")
-
-	sendPlayerMessage(playerid, "[zakon_alcohol = "..i1.."] [zakon_alcohol_crimes = "..i2.."] [zakon_drugs = "..i3.."] [zakon_drugs_crimes = "..i4.."] [zakon_kill_crimes = "..i5.."] [zakon_nalog_car = "..i6.."] [zakon_nalog_house = "..i7.."] [zakon_nalog_business = "..i8.."]", lyme[1], lyme[2], lyme[3])
 end)
 
 addCommandHandler ( "int",

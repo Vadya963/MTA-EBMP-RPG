@@ -67,7 +67,7 @@ local info_png = {
 	[37] = {"бита", "шт"},
 	[38] = {"нож", "шт"},
 	[39] = {"бронежилет", "шт"},
-	[40] = {"лом", "шт"},
+	[40] = {"лом", "%"},
 	[41] = {"sniper", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
@@ -82,7 +82,7 @@ local info_png = {
 	[52] = {"кислородный балон на 5 мин", "шт"},
 	[53] = {"бургер", "шт"},
 	[54] = {"хот-дог", "шт"},
-	[55] = {"мыло", "шт"},
+	[55] = {"мыло", "%"},
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
 	[58] = {"наркотестер", "шт"},
@@ -90,6 +90,7 @@ local info_png = {
 	[60] = {"жетон для оплаты бизнеса на", "дней"},
 	[61] = {"жетон для оплаты т/с на", "дней"},
 	[62] = {"ящик с продуктами", "$ за штуку"},
+	[63] = {"GPS навигатор", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -121,6 +122,13 @@ end
 addEvent( "event_speed_car_device_fun", true )
 addEventHandler ( "event_speed_car_device_fun", getRootElement(), speed_car_device_fun )
 
+local gps_device = 0--отображение координат игрока, 0-выкл, 1-вкл
+function gps_device_fun (i)
+	gps_device = i
+end
+addEvent( "event_gps_device_fun", true )
+addEventHandler ( "event_gps_device_fun", getRootElement(), gps_device_fun )
+
 local tomorrow_weather = 0--погода
 function tomorrow_weather_fun (i)
 	tomorrow_weather = i
@@ -129,16 +137,19 @@ addEvent( "event_tomorrow_weather_fun", true )
 addEventHandler ( "event_tomorrow_weather_fun", getRootElement(), tomorrow_weather_fun )
 
 function setPedOxygenLevel_fun ()--кислородный балон
-	setPedOxygenLevel ( localPlayer, 4000 )
+	setTimer(function()
+		setPedOxygenLevel ( localPlayer, 4000 )
+		sendPlayerMessage("Кислород пополнился", yellow[1], yellow[2], yellow[3] )
+	end, 38000, 8)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
 
 local debuginfo = "true"
 local debuginfo_table = {}
-local max_dbi = 10
-function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10)--дебагинфа
-	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9, i10}
+local max_dbi = 12
+function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12)--дебагинфа
+	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12}
 end
 addEvent( "event_debuginfo_fun", true )
 addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
@@ -358,7 +369,7 @@ local weapon = {
 	--[36] = {info_png[36][1], 3, 150, 1},
 	[37] = {info_png[37][1], 5, 150, 1},
 	[38] = {info_png[38][1], 4, 150, 1},
-	[40] = {info_png[40][1], 15, 150, 1},
+	--[40] = {info_png[40][1], 15, 150, 1},
 	[41] = {info_png[41][1], 34, 6000, 25},
 	[47] = {info_png[47][1], 41, 50, 25},
 	[49] = {info_png[49][1], 6, 50, 1},
@@ -378,15 +389,17 @@ local shop = {
 	[31] = {info_png[31][1], 1, 100},
 	[32] = {info_png[32][1], 1, 100},
 	[33] = {info_png[33][1], 1, 100},
+	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
 	[46] = {info_png[46][1], 1, 100},
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
-	[55] = {info_png[55][1], 1, 50},
+	[55] = {info_png[55][1], 100, 50},
 	[56] = {info_png[56][1], 100, 100},
 	[57] = {info_png[57][1], 1, 100},
 	[58] = {info_png[58][1], 1, 100},
+	[63] = {info_png[63][1], 1, 100},
 }
 
 local bar = {
@@ -507,7 +520,7 @@ function createText ()
 	local time = getRealTime()
 	local playerid = localPlayer
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-	local text = "Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
+	local text = "Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	dxDrawImage ( screenWidth-30, 105-7.5, 30, 30, "hud/health.png" )
@@ -560,6 +573,7 @@ function createText ()
 		dxdrawtext ( sleep, screenWidth-145-30-30, 105+(20+7.5)*5, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 	end
 
+
 	local vehicle = getPlayerVehicle ( playerid )
 	if vehicle then--отображение скорости авто
 		local speed_table = split(getSpeed(vehicle), ".")
@@ -573,7 +587,7 @@ function createText ()
 			speed_car = getSpeed(vehicle)*1.125+43
 		end
 
-		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel.." | gear "..getVehicleCurrentGear(vehicle)
+		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
 
 		if debuginfo == "true" then
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -583,6 +597,7 @@ function createText ()
 		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
 		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
 	end
+
 
 	for k,vehicle in pairs(getElementsByType("vehicle")) do--отображение скорости авто над машиной
 		local xv,yv,zv = getElementPosition(vehicle)
@@ -612,6 +627,17 @@ function createText ()
 		end
 	end
 
+	if gps_device == 1 then
+		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
+		local x_table = split(x, ".")
+		local y_table = split(y, ".")
+		local z_table = split(z, ".")
+		local dimensions = dxGetTextWidth ( "[X - "..x_table[1]..", Y - "..y_table[1]..", Z - "..z_table[1].."]", 1, m2font_dx1 )
+
+		if coords[1] and coords[2] then
+			dxdrawtext ( "[X - "..x_table[1]..", Y - "..y_table[1]..", Z - "..z_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+		end
+	end
 
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
@@ -1127,7 +1153,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "Товар", 0.50)
 			guiGridListAddColumn(shoplist, "Стоимость", 0.15)
 
-			setTimer(function (shoplist)
+			setTimer(function ()
 				if guiGetVisible (shoplist) then
 					if auc then
 						for k,v in pairs(auc) do
@@ -1135,7 +1161,7 @@ function tablet_fun()--создание планшета
 						end
 					end
 				end
-			end, 5000, 1, shoplist)
+			end, 5000, 1)
 		end
 		addEventHandler ( "onClientGUIClick", buy_sub, outputEditBox, false )
 
@@ -1795,19 +1821,6 @@ function(absoluteX, absoluteY, gui)
 	gui_pos_y = 0
 	info1_png = -1
 	info2_png = -1
-end)
-
-addCommandHandler ( "debuginfo",
-function ( cmd, id )
-	if id == nil then
-		sendPlayerMessage("[ERROR] /debuginfo [true or false]", red[1], red[2], red[3])
-	elseif id == "true" then
-		debuginfo = id
-		sendPlayerMessage("debuginfo "..id)
-	elseif id == "false" then
-		debuginfo = id
-		sendPlayerMessage("debuginfo "..id)
-	end
 end)
 
 addCommandHandler ( "showcursor",
