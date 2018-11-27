@@ -728,6 +728,10 @@ local interior_job = {
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Разгрузить товар - E", 15},
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
+	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
+	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
+	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
+	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 }
 
 local t_s_salon = {
@@ -1728,23 +1732,21 @@ function buy_subject_fun( playerid, text, number, value )
 			elseif value == 3 then
 				for k,v in pairs(shop) do
 					if v[1] == text then
-						--if text ~= "права" and text ~= "лицензия на оружие" then
-							if cash*v[3] <= array_player_2[playername][1] then
-								if inv_player_empty(playerid, k, v[2]) then
-									sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
+						if cash*v[3] <= array_player_2[playername][1] then
+							if inv_player_empty(playerid, k, v[2]) then
+								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
-									sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
+								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-									inv_server_load( "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+								inv_server_load( "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
-									save_player_action(playerid, "[buy_subject_fun] [24/7 - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
-								else
-									sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-								end
+								save_player_action(playerid, "[buy_subject_fun] [24/7 - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 							else
-								sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							end
-						--end
+						else
+							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+						end
 					end
 				end
 
@@ -1767,19 +1769,6 @@ function buy_subject_fun( playerid, text, number, value )
 							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
 					end
-				end
-
-			elseif value == 5 then
-				if inv_player_empty(playerid, 5, 20) then
-					sendPlayerMessage(playerid, "Вы купили "..info_png[5][1].." 20 "..info_png[5][2].." за "..cash.."$", orange[1], orange[2], orange[3])
-
-					sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-					inv_server_load( "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-					save_player_action(playerid, "[buy_subject_fun] [fuel - "..info_png[5][1].." 20 "..info_png[5][2].."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
-				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 
 			end
@@ -2742,7 +2731,7 @@ end
 function randomize_number()--генератор номеров для авто
 	math.randomseed(getTickCount())
 
-	local randomize = math.random(1,999999)
+	local randomize = math.random(1,99999999)
 	return randomize
 end
 -----------------------------------------------------------------------------------------
@@ -3286,6 +3275,13 @@ function left_alt_down (playerid, key, keyState)
 		for id,v in pairs(interior_job) do--вход в здания
 			if not vehicleid then
 				if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+					if id == 9 or id == 10 or id == 11 or id == 12 then
+						if inv_player_empty(playerid, 6, 0) then
+						else
+							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							return
+						end
+					end
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -3296,6 +3292,9 @@ function left_alt_down (playerid, key, keyState)
 					return
 
 				elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] and enter_job[playername] == 1 then
+					if id == 9 or id == 10 or id == 11 or id == 12 then
+						inv_player_delet(playerid, 6, 0)
+					end
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -3746,9 +3745,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 
-					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." дома, GPS координаты [X - "..v[1]..", Y - "..v[2]..", Z - "..v[3].."], подозреваемый "..playername)
+					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." дома, GPS координаты [X  "..v[1]..", Y  "..v[2].."], подозреваемый "..playername)
 
-					setTimer(robbery, (5*60000), 1, playerid, zakon_robbery_house_crimes, 5000, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
+					setTimer(robbery, (1*10000), 1, playerid, zakon_robbery_house_crimes, 5000, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
 
 					break
 				end
@@ -4746,7 +4745,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id >= 400 and id <= 611 then
-		local number = 00000000
+		local number = 0
 
 		local val1, val2 = 6, number
 
@@ -4755,11 +4754,14 @@ function ( playerid, cmd, id )
 			local vehicleid = createVehicle(id, x+5, y, z+2, 0, 0, 0, val2)
 			local plate = getVehiclePlateText ( vehicleid )
 
+			setElementInterior(vehicleid, getElementInterior(playerid))
+			setElementDimension(vehicleid, getElementDimension(playerid))
+
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			fuel[plate] = max_fuel
 
-			setVehicleDamageProof(vehicleid, true)
+			--setVehicleDamageProof(vehicleid, true)
 
 			--sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 

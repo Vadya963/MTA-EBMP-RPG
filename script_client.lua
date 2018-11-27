@@ -631,11 +631,10 @@ function createText ()
 		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
 		local x_table = split(x, ".")
 		local y_table = split(y, ".")
-		local z_table = split(z, ".")
-		local dimensions = dxGetTextWidth ( "[X - "..x_table[1]..", Y - "..y_table[1]..", Z - "..z_table[1].."]", 1, m2font_dx1 )
+		local dimensions = dxGetTextWidth ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", 1, m2font_dx1 )
 
 		if coords[1] and coords[2] then
-			dxdrawtext ( "[X - "..x_table[1]..", Y - "..y_table[1]..", Z - "..z_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 		end
 	end
 	
