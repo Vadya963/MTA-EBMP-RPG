@@ -638,6 +638,7 @@ function createText ()
 			dxdrawtext ( "[X - "..x_table[1]..", Y - "..y_table[1]..", Z - "..z_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 		end
 	end
+	
 
 	if house_pos ~= nil then
 		for k,v in pairs(house_pos) do
