@@ -2119,7 +2119,7 @@ end
 addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
 
 function player_Spawn (playerid)--спавн игрока
-	if playerid then
+	if isElement ( playerid ) then
 		local playername = getPlayerName ( playerid )
 
 		if logged[playername] == 1 then
@@ -2186,7 +2186,7 @@ function(ammo, attacker, weapon, bodypart)
 end)
 
 function frozen_false_fun( playerid )
-	if playerid then
+	if isElement ( playerid ) then
 		if isElementFrozen(playerid) then
 			setElementFrozen( playerid, false )
 			sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
