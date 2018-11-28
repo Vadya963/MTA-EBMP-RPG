@@ -732,6 +732,8 @@ local interior_job = {
 	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
+	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
+	{1, "Казино Калигула",	2235.2524,1708.5146,1010.6129, 2196.9619140625,1677.1708984375,12.3671875, 44, 14, "", 5},
 }
 
 local t_s_salon = {
@@ -806,6 +808,7 @@ local arrest = {}--арест игрока, 0-нет, 1-да
 local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
+local timer_robbery = {}--таймер ограбления
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -836,7 +839,7 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "robbery_player[playername] "..robbery_player[playername], "gps_device[playername] "..gps_device[playername], "max_earth "..max_earth )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "robbery_player[playername] "..robbery_player[playername], "gps_device[playername] "..gps_device[playername], "timer_robbery[playername] "..tostring(timer_robbery[playername]), "max_earth "..max_earth )
 			
 		if logged[playername] == 1 then
 			--нужды
@@ -1150,6 +1153,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 		end
 
 		robbery_player[playername] = 0
+		timer_robbery[playername] = 0
 	end
 end
 --------------------------------------------------------------------------------------------------------
@@ -1966,7 +1970,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_drugs = result[1]["zakon_drugs"]
 		zakon_drugs_crimes = result[1]["zakon_drugs_crimes"]
 		zakon_kill_crimes = result[1]["zakon_kill_crimes"]
-		zakon_robbery_house_crimes = result[1]["zakon_robbery_house_crimes"]
+		zakon_robbery_crimes = result[1]["zakon_robbery_crimes"]
 
 		zakon_nalog_car = result[1]["zakon_nalog_car"]
 		zakon_nalog_house = result[1]["zakon_nalog_house"]
@@ -2057,6 +2061,7 @@ function()
 	crimes[playername] = -1
 	robbery_player[playername] = 0
 	gps_device[playername] = 0
+	timer_robbery[playername] = 0
 	--нужды
 	alcohol[playername] = 0
 	satiety[playername] = 0
@@ -2086,6 +2091,7 @@ function()
 	bindKey(playerid, "x", "down", x_down )
 	bindKey(playerid, "2", "down", to_down )
 	bindKey(playerid, "lalt", "down", left_alt_down )
+	bindKey(playerid, "h", "down", h_down )
 
 	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, 1)
 	fadeCamera(playerid, true)
@@ -2112,6 +2118,12 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
 
 		exit_car_fun(playerid)
+
+		if robbery_player[playername] == 1 then
+			killTimer ( timer_robbery[playername] )
+			robbery_player[playername] = 0
+			timer_robbery[playername] = 0
+		end
 	else
 		
 	end
@@ -2178,6 +2190,12 @@ function(ammo, attacker, weapon, bodypart)
 				end
 			end
 		end
+	end
+
+	if robbery_player[playername] == 1 then
+		killTimer ( timer_robbery[playername] )
+		robbery_player[playername] = 0
+		timer_robbery[playername] = 0
 	end
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
@@ -2723,6 +2741,21 @@ local vehicleid = getPlayerVehicle(playerid)
 				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от т/с", red[1], red[2], red[3])
 				sendPlayerMessage(playerid, "[ERROR] 2) сидеть на водительском месте", red[1], red[2], red[3])
 				sendPlayerMessage(playerid, "[ERROR] 3) иметь права на свое имя", red[1], red[2], red[3])
+			end
+		end
+	end
+end
+
+function h_down (playerid, key, keyState)--вкл выкл сирены
+local playername = getPlayerName ( playerid )
+local vehicleid = getPlayerVehicle(playerid)
+
+	if keyState == "down" then
+		if vehicleid then
+			if not getVehicleSirensOn ( vehicleid ) then
+				setVehicleSirensOn ( vehicleid, true )
+			else
+				setVehicleSirensOn ( vehicleid, false )
 			end
 		end
 	end
@@ -3747,14 +3780,46 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." дома, GPS координаты [X  "..v[1]..", Y  "..v[2].."], подозреваемый "..playername)
 
-					setTimer(robbery, (1*10000), 1, playerid, zakon_robbery_house_crimes, 5000, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
+					timer_robbery[playername] = setTimer(robbery, (1*10000), 1, playerid, zakon_robbery_crimes, 5000, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
 
 					break
 				end
 			end
 
+			for k,v in pairs(business_pos) do
+				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
+					id2 = id2 - 1
+
+					count = count+1
+
+					robbery_player[playername] = 1
+
+					sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+
+					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." бизнеса, GPS координаты [X  "..v[1]..", Y  "..v[2].."], подозреваемый "..playername)
+
+					timer_robbery[playername] = setTimer(robbery, (1*10000), 1, playerid, zakon_robbery_crimes, 10000, v[1],v[2],v[3], house_bussiness_radius, "business - "..k)
+
+					break
+				end
+			end
+
+			if isPointInCircle3D(2144.18359375,1635.2705078125,993.57611083984, x,y,z, 5) and robbery_player[playername] == 0 then
+				id2 = id2 - 1
+
+				count = count+1
+
+				robbery_player[playername] = 1
+
+				sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+
+				police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
+
+				timer_robbery[playername] = setTimer(robbery, (1*10000), 1, playerid, zakon_robbery_crimes, 20000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
+			end
+
 			if count == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома; Вы уже начали ограбление", red[1], red[2], red[3] )
+				sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома, бизнеса или казино калигула; Вы уже начали ограбление", red[1], red[2], red[3] )
 				return
 			end
 
