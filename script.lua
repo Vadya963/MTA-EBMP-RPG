@@ -2940,6 +2940,12 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			end
 		end
 
+		for k,v in pairs(business_pos) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+				delet_subject(playerid, 24)
+			end
+		end
+
 		for k,v in pairs(down_car_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				delet_subject(playerid, v[5])
