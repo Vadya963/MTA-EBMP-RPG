@@ -2350,7 +2350,7 @@ function log_fun(playerid, cmd)
 				end
 			end]]
 
-			if arrest[playername] == 1 then
+			if arrest[playername] == 1 then--не удалять
 				local randomize = math.random(1,#prison_cell)
 				spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
 			else
@@ -3997,6 +3997,25 @@ addEvent( "event_use_inv", true )
 addEventHandler ( "event_use_inv", getRootElement(), use_inv )
 
 -------------------------------команды игроков----------------------------------------------------------
+addCommandHandler("changepass",--смена пароля
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [пароль]", red[1], red[2], red[3])
+		return
+	end
+
+	sendPlayerMessage(playerid, "Вы сменили пароль", turquoise[1], turquoise[2], turquoise[3])
+
+	sqlite( "UPDATE account SET password = '"..md5(id).."' WHERE name = '"..playername.."'")
+end)
+
 addCommandHandler ( "sms",--смс игроку
 function (playerid, cmd, id, ...)
 	local playername = getPlayerName ( playerid )
