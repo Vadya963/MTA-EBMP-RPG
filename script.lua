@@ -737,7 +737,7 @@ local interior_job = {
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
 	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
-	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
+	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},--10
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
@@ -3839,7 +3839,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				if count == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома, бизнеса или казино калигула; Вы уже начали ограбление", red[1], red[2], red[3] )
+					sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома, бизнеса или в хранилище казино калигула; Вы уже начали ограбление", red[1], red[2], red[3] )
 					return
 				end
 			else
@@ -4027,6 +4027,166 @@ function (playerid, cmd, id, ...)
 	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
+
+local Red = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
+local Black = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
+local to1 = {1,4,7,10,13,16,19,22,25,28,31,34}
+local to2 = {2,5,8,11,14,17,20,23,26,29,32,35}
+local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
+
+function roulette(playerid, randomize)
+	for k,v in pairs(Red) do
+		if randomize == v then
+			sendPlayerMessage(playerid, "====[ Рулетка ]====", yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Выпало "..randomize.." красное", yellow[1], yellow[2], yellow[3])
+			return
+		end
+	end
+
+	for k,v in pairs(Black) do
+		if randomize == v then
+			sendPlayerMessage(playerid, "====[ Рулетка ]====", yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "Выпало "..randomize.." черное", yellow[1], yellow[2], yellow[3])
+			return
+		end
+	end
+
+	if randomize == 0 then
+		sendPlayerMessage(playerid, "====[ Рулетка ]====", yellow[1], yellow[2], yellow[3])
+		sendPlayerMessage(playerid, "Выпало ZERO", yellow[1], yellow[2], yellow[3])
+		return
+	end
+end
+
+function win_roulette( playerid, cash, ratio )
+	local playername = getPlayerName ( playerid )
+	local money = cash*ratio
+
+	sendPlayerMessage(playerid, "Вы заработали "..money.."$ X"..ratio, green[1], green[2], green[3])
+
+	inv_server_load( "player", 0, 1, array_player_2[playername][1]+money, playername )
+
+	save_player_action(playerid, "[win_roulette] "..playername.." [+"..money.."$, "..array_player_2[playername][1].."$]")
+end
+
+addCommandHandler ( "roulette",--играть в рулетку
+function (playerid, cmd, id, cash)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local id = tostring(id)
+	local cash = tonumber(cash)
+	math.randomseed(getTickCount())
+	local randomize = math.random(0,36)
+	local roulette_game = {"красное","черное","четное","нечетное","1-18","19-36","1-12","2-12","3-12","3-1","3-2","3-3"}
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id or not cash then
+		local text = ""
+		for k,v in pairs(roulette_game) do
+			text = text..v..", "
+		end
+
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [режим игры ("..text..")] [сумма]", red[1], red[2], red[3])
+		return
+	end
+
+	if cash < 1 then
+		return
+	end
+
+	if cash > array_player_2[playername][1] then
+		sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+		return
+	end
+
+	if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
+		for k,v in pairs(roulette_game) do
+			if v == id then
+				roulette(playerid, randomize)
+
+				inv_server_load( "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+				if id == "красное" then
+					for k,v in pairs(Red) do
+						if randomize == v then
+							win_roulette(playerid, cash, 2)
+							return
+						end
+					end
+
+				elseif id == "черное" then
+					for k,v in pairs(Black) do
+						if randomize == v then
+							win_roulette(playerid, cash, 2)
+							return
+						end
+					end
+
+				elseif id == "четное" and randomize%2 == 0 then
+					win_roulette(playerid, cash, 2)
+					return
+
+				elseif id == "нечетное" and randomize%2 == 1 then
+					win_roulette(playerid, cash, 2)
+					return
+
+				elseif id == "1-18" and randomize >= 1 and randomize <= 18 then
+					win_roulette(playerid, cash, 2)
+					return
+
+				elseif id == "19-36" and randomize >= 19 and randomize <= 36 then
+					win_roulette(playerid, cash, 2)
+					return
+
+				elseif id == "1-12" and randomize >= 1 and randomize <= 12 then
+					win_roulette(playerid, cash, 3)
+					return
+
+				elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
+					win_roulette(playerid, cash, 3)
+					return
+
+				elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
+					win_roulette(playerid, cash, 3)
+					return
+
+				elseif id == "3-1" then
+					for k,v in pairs(to1) do
+						if randomize == v then
+							win_roulette(playerid, cash, 3)
+							return
+						end
+					end
+
+				elseif id == "3-2" then
+					for k,v in pairs(to2) do
+						if randomize == v then
+							win_roulette(playerid, cash, 3)
+							return
+						end
+					end
+
+				elseif id == "3-3" then
+					for k,v in pairs(to3) do
+						if randomize == v then
+							win_roulette(playerid, cash, 3)
+							return
+						end
+					end
+				end
+
+				save_player_action(playerid, "[los_roulette] "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$]")
+				return
+			end
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] Вы не в казино", red[1], red[2], red[3])
+	end
+end)
+
 addCommandHandler ( "pr",--пол-ая волна
 function (playerid, cmd, ...)
 	local playername = getPlayerName ( playerid )
@@ -4121,7 +4281,7 @@ function (playerid, cmd, id)
 
 		sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3] )
+		sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3])
 	end
 end)
 
@@ -4137,6 +4297,10 @@ function (playerid, cmd, id, cash)
 
 	if not cash then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [сумма]", red[1], red[2], red[3])
+		return
+	end
+
+	if cash < 1 then
 		return
 	end
 
@@ -4689,7 +4853,7 @@ function (playerid, cmd, id, time, ...)
 		return
 	end
 
-	if id == nil or reason == "" or not time then
+	if not id or reason == "" or not time then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [время] [причина]", red[1], red[2], red[3])
 		return
 	end
