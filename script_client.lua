@@ -1154,7 +1154,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "Стоимость", 0.15)
 
 			setTimer(function ()
-				if guiGetVisible (shoplist) then
+				if isElement (shoplist) then
 					if auc then
 						for k,v in pairs(auc) do
 							guiGridListAddRow(shoplist, k, v[1], info_png[v[2]][1].." "..v[3].." "..info_png[v[2]][2], v[4])

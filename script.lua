@@ -4773,6 +4773,28 @@ function ( playerid, cmd, ... )
 	sendPlayerMessage(playerid, "save pos "..text, lyme[1], lyme[2], lyme[3])
 end)
 
+addCommandHandler ( "global",
+function ( playerid, cmd, ... )
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local text = ""
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	if text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	sendPlayerMessage(getRootElement(), "[ADMIN] "..playername..": "..text, lyme[1], lyme[2], lyme[3])
+end)
+
 addCommandHandler ( "stime",
 function ( playerid, cmd, id1, id2 )
 	local playername = getPlayerName ( playerid )
