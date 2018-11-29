@@ -2323,6 +2323,11 @@ function log_fun(playerid, cmd)
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
+		if result[1]["reg_serial"] ~= serial then
+			kickPlayer(playerid, "Вы не владелец аккаунта")
+			return
+		end
+
 		if md5(cmd) == result[1]["password"] then
 			for i=0,max_inv do
 				array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
