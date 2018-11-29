@@ -329,7 +329,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	addEventHandler( "onClientMouseEnter", text, outputEditBox, false )
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--покидание на текст кнопки
-		guiLabelSetColor ( text, 255, 255, 255 )
+		guiLabelSetColor ( text, white[1], white[2], white[3] )
 	end
 	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
 

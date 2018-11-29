@@ -7,7 +7,10 @@
 	<script src="script_client.lua" type="client"/>
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
-	<map src="map_gta.map" />
+
+	<map src="map/map_gta.map" />
+	<script src="map/mapEditorScriptingExtension_s.lua" type="server"></script>
+	<script src="map/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
 
 	<file src="parachute/body_hit_sound.mp3" />
 
