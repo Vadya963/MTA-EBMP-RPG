@@ -91,6 +91,7 @@ local info_png = {
 	[61] = {"жетон для оплаты т/с на", "дней"},
 	[62] = {"ящик с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
+	[64] = {"лицензия таксиста на имя", ""},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -147,9 +148,8 @@ addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenL
 
 local debuginfo = "true"
 local debuginfo_table = {}
-local max_dbi = 12
-function debuginfo_fun (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12)--дебагинфа
-	debuginfo_table = {i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12}
+function debuginfo_fun (k, v)--дебагинфа
+	debuginfo_table[k] = v
 end
 addEvent( "event_debuginfo_fun", true )
 addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
@@ -555,8 +555,8 @@ function createText ()
 			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
-		for i=1,max_dbi do
-			dxdrawtext ( debuginfo_table[i], 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		for i,v in pairs(debuginfo_table) do
+			dxdrawtext ( v, 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
 		dxdrawtext ( heal_player[1], screenWidth-145-30-30, 105, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -1040,6 +1040,7 @@ function mayoralty_menu()--мэрия
 		[59] = {"жетон для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
 		[60] = {"жетон для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
 		[61] = {"жетон для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
+		[64] = {"лицензия таксиста", 0, 5000},
 	}
 
 	local width = 400+10

@@ -290,6 +290,7 @@ local info_png = {
 	[61] = {"жетон для оплаты т/с на", "дней"},
 	[62] = {"ящик с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
+	[64] = {"лицензия таксиста на имя", ""},
 }
 
 local weapon = {
@@ -496,7 +497,7 @@ local cash_car = {
 	--[416] = {"AMBULAN", 10000},--скорая
 	[418] = {"MOONBEAM", 16000},
 	[419] = {"ESPERANT", 19000},
-	--[420] = {"TAXI", 20000},
+	[420] = {"TAXI", 20000},
 	[421] = {"WASHING", 18000},
 	[422] = {"BOBCAT", 26000},
 	--[423] = {"MRWHOOP", 29000},--грузовик мороженого
@@ -795,6 +796,12 @@ local prison_cell = {
 	{interior_job[4][1], interior_job[4][10], "кпз_лв3",	193.6708984375,	176.7255859375,	1003.0234375},
 }
 
+--места для таксистов
+local taxi_pos = {
+	{2308.81640625,-13.25,26.7421875},--банк
+	{2788.23046875,-2455.99609375,13.340852737427},--порт
+}
+
 --инв-рь игрока
 local array_player_1 = {}
 local array_player_2 = {}
@@ -811,6 +818,11 @@ local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
 local timer_robbery = {}--таймер ограбления
+local taxi_job = {}--таксист, 0-нет, 1-да
+local taxi_job_call = {}--есть ли вызов, 0-нет, 1-да, 2-сдаем вызов
+local taxi_job_ped = {}--создан ли нпс, 0-нет
+local taxi_job_blip = {}--создан ли маркер, 0-нет
+local taxi_job_pos = {}--позиция места назначения
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -841,14 +853,135 @@ local business_pos = {}--позиции бизнесов для dxdrawtext
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, "state_inv_player[playername] "..state_inv_player[playername], "state_gui_window[playername] "..state_gui_window[playername], "logged[playername] "..logged[playername], "enter_house[playername] "..enter_house[playername], "enter_business[playername] "..enter_business[playername], "enter_job[playername] "..enter_job[playername], "speed_car_device[playername] "..speed_car_device[playername], "arrest[playername] "..arrest[playername], "crimes[playername] "..crimes[playername], "robbery_player[playername] "..robbery_player[playername], "gps_device[playername] "..gps_device[playername], "timer_robbery[playername] "..tostring(timer_robbery[playername]), "max_earth "..max_earth )
-			
+
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 0, "max_earth "..max_earth )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 1, "state_inv_player[playername] "..state_inv_player[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 2, "state_gui_window[playername] "..state_gui_window[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 3, "logged[playername] "..logged[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 4, "enter_house[playername] "..enter_house[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 5, "enter_business[playername] "..enter_business[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 6, "enter_job[playername] "..enter_job[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 7, "speed_car_device[playername] "..speed_car_device[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 8, "arrest[playername] "..arrest[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 9, "crimes[playername] "..crimes[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 10, "robbery_player[playername] "..robbery_player[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 11, "gps_device[playername] "..gps_device[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 12, "timer_robbery[playername] "..tostring(timer_robbery[playername]) )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 13, "taxi_job[playername] "..taxi_job[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 14, "taxi_job_call[playername] "..taxi_job_call[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 15, "taxi_job_ped[playername] "..tostring(taxi_job_ped[playername]) )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 16, "taxi_job_blip[playername] "..tostring(taxi_job_blip[playername]) )
+		
+		if taxi_job_pos[playername] ~= 0 then
+			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "taxi_job_pos[playername] "..taxi_job_pos[playername][1]..", "..taxi_job_pos[playername][2]..", "..taxi_job_pos[playername][3] )
+		else
+			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "taxi_job_pos[playername] "..taxi_job_pos[playername] )
+		end
+
 		if logged[playername] == 1 then
 			--нужды
 			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
 			triggerClientEvent( playerid, "event_nalog_fun", playerid, zakon_nalog_car, zakon_nalog_house, zakon_nalog_business )
 		end
 	end
+end
+
+function taxi_job_timer ()
+	for k,playerid in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(playerid)
+		local vehicleid = getPlayerVehicle(playerid)
+		local x,y,z = getElementPosition(playerid)
+		math.randomseed(getTickCount())
+
+		if logged[playername] == 1 then
+			if taxi_job[playername] == 1 then--вышел на работу
+				if vehicleid then
+					if getElementModel(vehicleid) == 420 then
+						if getSpeed(vehicleid) < 1 then
+
+							if taxi_job_call[playername] == 0 then--нету вызова
+								local randomize = math.random(1,#taxi_pos)
+
+								sendPlayerMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
+
+								taxi_job_call[playername] = 1
+								taxi_job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+								taxi_job_blip[playername] = createBlip ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+
+							elseif taxi_job_call[playername] == 1 then--есть вызов
+								if isPointInCircle3D(x,y,z, taxi_job_pos[playername][1],taxi_job_pos[playername][2],taxi_job_pos[playername][3], 40) then
+									local randomize = math.random(1,#taxi_pos)
+									local randomize_skin = 1
+
+									for k,v in pairs(getValidPedModels()) do
+										local random = math.random(2,312)
+										if v == random then
+											randomize_skin = random
+											break
+										end
+									end
+
+									sendPlayerMessage(playerid, "Отвезите клиента", yellow[1], yellow[2], yellow[3])
+
+									taxi_job_call[playername] = 2
+									taxi_job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+									taxi_job_ped[playername] = createPed ( randomize_skin, taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0.0, true )
+
+									setElementPosition(taxi_job_blip[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
+								
+									if not getVehicleOccupant ( vehicleid, 1 ) then
+										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 1 )
+									elseif not getVehicleOccupant ( vehicleid, 2 ) then
+										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 2 )
+									elseif not getVehicleOccupant ( vehicleid, 3 ) then
+										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 3 )
+									end
+								end
+
+							elseif taxi_job_call[playername] == 2 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, taxi_job_pos[playername][1],taxi_job_pos[playername][2],taxi_job_pos[playername][3], 40) then
+									local randomize = math.random(1,zp_player_taxi)
+
+									inv_server_load( "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+									save_player_action(playerid, "[taxi_job_timer] "..playername.." [+"..randomize.."$, "..array_player_2[playername][1].."$]")
+
+									destroyElement(taxi_job_ped[playername])
+									destroyElement(taxi_job_blip[playername])
+
+									taxi_job_ped[playername] = 0
+									taxi_job_blip[playername] = 0
+									taxi_job_pos[playername] = 0
+									taxi_job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+			elseif taxi_job[playername] == 0 then--нету вызова
+				taxi_job_0( playername )
+			end
+		end
+	end
+end
+
+function taxi_job_0( playername )
+	if taxi_job_ped[playername] ~= 0 then
+		destroyElement(taxi_job_ped[playername])
+	end
+
+	if taxi_job_blip[playername] ~= 0 then
+		destroyElement(taxi_job_blip[playername])
+	end
+
+	taxi_job[playername] = 0
+	taxi_job_ped[playername] = 0
+	taxi_job_blip[playername] = 0
+	taxi_job_pos[playername] = 0
+	taxi_job_call[playername] = 0
 end
 
 function need_1 ()
@@ -1840,6 +1973,7 @@ function mayoralty_menu_fun( playerid, text )--мэрия
 	local mayoralty_shop = {
 		[2] = {"права", 0, 1000},
 		[50] = {"лицензия на оружие", 0, 10000},
+		[64] = {"лицензия таксиста", 0, 5000},
 	}
 
 	local mayoralty_nalog = {
@@ -1952,9 +2086,9 @@ function displayLoadedRes ( res )--старт ресурсов
 		car_spawn_value = 1
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
-		setTimer(freez_car, 1000, 0)--дебагинфа
+		setTimer(freez_car, 1000, 0)--заморозка авто
 		setTimer(need, 60000, 0)--уменьшение потребностей
-		setTimer(need_1, 1000, 0)--нужды
+		setTimer(need_1, 1000, 0)--смена скина на бомжа
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
@@ -1962,6 +2096,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
 		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
 		setTimer(pay_nalog, (60*60000), 0)--списание налогов
+		setTimer(taxi_job_timer, 1000, 0)--работа таксиста
 
 		setWeather(tomorrow_weather)
 
@@ -1980,6 +2115,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		up_car_subject[1][7] = result[1]["zp_car_24"]
 		up_player_subject[1][6] = result[1]["zp_player_48"]
+		zp_player_taxi = result[1]["zp_player_taxi"]
 
 		for k,v in pairs(anim_player_subject) do
 			anim_player_subject[k][7] = result[1]["zp_player_62"]
@@ -2043,6 +2179,29 @@ function displayLoadedRes ( res )--старт ресурсов
 		for k,v in pairs(t_s_salon) do
 			createBlip ( v[1], v[2], v[3], v[4], 0, 0,0,0,0, 0, max_blip )--салоны продажи
 		end
+
+
+		--загрузка позиций для работы таксист
+		local count = #taxi_pos
+		for k,v in pairs(house_pos) do
+			count = count+1
+			taxi_pos[count] = {v[1],v[2],v[3]}
+		end
+
+		for k,v in pairs(business_pos) do
+			count = count+1
+			taxi_pos[count] = {v[1],v[2],v[3]}
+		end
+
+		for k,v in pairs(interior_job) do
+			count = count+1
+			taxi_pos[count] = {v[6],v[7],v[8]}
+		end
+
+		for k,v in pairs(t_s_salon) do
+			count = count+1
+			taxi_pos[count] = {v[1],v[2],v[3]}
+		end
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -2071,6 +2230,11 @@ function()
 	robbery_player[playername] = 0
 	gps_device[playername] = 0
 	timer_robbery[playername] = 0
+	taxi_job[playername] = 0
+	taxi_job_call[playername] = 0
+	taxi_job_ped[playername] = 0
+	taxi_job_blip[playername] = 0
+	taxi_job_pos[playername] = 0
 	--нужды
 	alcohol[playername] = 0
 	satiety[playername] = 0
@@ -2127,6 +2291,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
 
 		exit_car_fun(playerid)
+		taxi_job_0( playername )
 
 		if robbery_player[playername] == 1 then
 			killTimer ( timer_robbery[playername] )
@@ -2641,23 +2806,26 @@ end)
 --------------------------------------вход и выход в авто--------------------------------
 function enter_car ( vehicleid, seat, jacked )--евент входа в авто
 	local playerid = source
-	local playername = getPlayerName ( playerid )
-	local plate = getVehiclePlateText ( vehicleid )
+	if getElementType ( playerid ) == "player" then
 
-	if isVehicleLocked ( vehicleid ) then
-		removePedFromVehicle ( playerid )
-	end
+		local playername = getPlayerName ( playerid )
+		local plate = getVehiclePlateText ( vehicleid )
 
-	setVehicleEngineState(vehicleid, false)
+		if isVehicleLocked ( vehicleid ) then
+			removePedFromVehicle ( playerid )
+		end
 
-	if seat == 0 then
-		sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
+		setVehicleEngineState(vehicleid, false)
 
-		if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-			if result[1]["COUNT()"] == 1 then
-				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
-				sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+		if seat == 0 then
+			sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
+
+			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+				end
 			end
 		end
 	end
@@ -2688,20 +2856,23 @@ end
 
 function exit_car ( vehicleid, seat, jacked )--евент выхода из авто
 	local playerid = source
-	local playername = getPlayerName ( playerid )
-	local plate = getVehiclePlateText ( vehicleid )
+	if getElementType ( playerid ) == "player" then
 
-	setVehicleEngineState(vehicleid, false)
+		local playername = getPlayerName ( playerid )
+		local plate = getVehiclePlateText ( vehicleid )
 
-	if seat == 0 then
-		triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
+		setVehicleEngineState(vehicleid, false)
 
-		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-		if result[1]["COUNT()"] == 1 then
-			local x,y,z = getElementPosition(vehicleid)
-			local rx,ry,rz = getElementRotation(vehicleid)
+		if seat == 0 then
+			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
-			sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local x,y,z = getElementPosition(vehicleid)
+				local rx,ry,rz = getElementRotation(vehicleid)
+
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			end
 		end
 	end
 end
@@ -3680,7 +3851,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 10 then--документы копа
-			if search_inv_player(playerid, 10, playername) ~= 0 then
+			if search_inv_player(playerid, id1, playername) ~= 0 then
 				if search_inv_player(playerid, 28, 1) ~= 0 then
 					me_chat(playerid, "Офицер "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 29, 1) ~= 0 then
@@ -3984,6 +4155,20 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				triggerClientEvent( playerid, "event_gps_device_fun", playerid, gps_device[playername])
 
 				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
+			end
+			return
+
+		elseif id1 == 64 then--лиц. таксиста
+			if search_inv_player(playerid, id1, playername) ~= 0 then
+				if taxi_job[playername] == 0 then
+					taxi_job[playername] = 1
+
+					me_chat(playerid, playername.." вышел(ла) на работу")
+				else
+					taxi_job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			end
 			return
 		end
@@ -4781,7 +4966,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
-local sub_text = {2,10,44,45,50}
+local sub_text = {2,10,44,45,50,64}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
@@ -5243,7 +5428,7 @@ end)
 function input_Console ( text )
 
 	if text == "z" then
-		pay_nalog()
+		--pay_nalog()
 
 	elseif text == "x" then
 		local allResources = getResources()
