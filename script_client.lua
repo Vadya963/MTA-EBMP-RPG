@@ -1037,10 +1037,10 @@ function mayoralty_menu()--мэрия
 	local mayoralty_shop = {
 		[2] = {"права", 0, 1000},
 		[50] = {"лицензия на оружие", 0, 10000},
+		[64] = {"лицензия таксиста", 0, 5000},
 		[59] = {"жетон для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
 		[60] = {"жетон для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
 		[61] = {"жетон для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
-		[64] = {"лицензия таксиста", 0, 5000},
 	}
 
 	local width = 400+10
