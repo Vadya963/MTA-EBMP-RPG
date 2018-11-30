@@ -322,12 +322,6 @@ local shop = {
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
 	[23] = {info_png[23][1], 1, 100},
-	[28] = {info_png[28][1], 1, 100},
-	[29] = {info_png[29][1], 1, 100},
-	[30] = {info_png[30][1], 1, 100},
-	[31] = {info_png[31][1], 1, 100},
-	[32] = {info_png[32][1], 1, 100},
-	[33] = {info_png[33][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
 	[46] = {info_png[46][1], 1, 100},
@@ -575,7 +569,6 @@ local cash_car = {
 	[534] = {"REMINGTN", 30000},
 	[535] = {"SLAMVAN", 19000},
 	[536] = {"BLADE", 19000},
-	[539] = {"VORTEX", 26000},--возд-ая подушка
 	[540] = {"VINCENT", 19000},
 	[541] = {"BULLET", 105000},
 	[542] = {"CLOVER", 19000},
@@ -658,6 +651,7 @@ local cash_boats = {
 	[453] = {"REEFER", 25000},--рыболовное судно
 	[454] = {"TROPIC", 73000},--яхта
 	[446] = {"SQUALO", 60000},--лодка
+	[539] = {"VORTEX", 26000},--возд-ая подушка
 }
 
 local cash_helicopters = {
@@ -752,11 +746,11 @@ local t_s_salon = {
 
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус, ид тс, ид пнг, зп}
-	{-86.208984375,-299.36328125,2.7646157741547, 15, 414, 24, 50},--завод продуктов
+	{-86.208984375,-299.36328125,2.7646157741547, 15, 414, 24, 1},--завод продуктов
 }
 
 local up_player_subject = {--{x,y,z, радиус, ид пнг, зп}
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 25},--мясокомбинат
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 1},--мясокомбинат
 	
 	{2559.1171875,-1287.2275390625,1044.125, 2, 24, 1},--завод продуктов
 	{2551.1318359375,-1287.2294921875,1044.125, 2, 24, 1},--завод продуктов
@@ -777,16 +771,16 @@ local down_player_subject = {--{x,y,z, радиус, ид пнг} также н�
 }
 
 local anim_player_subject = {--{x,y,z, радиус, ид пнг1, ид пнг2, зп, анимация}
-	{2558.6474609375,-1291.0029296875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2556.080078125,-1290.9970703125,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2553.841796875,-1291.0048828125,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2544.4326171875,-1291.00390625,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2541.9169921875,-1290.9951171875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2541.9091796875,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2544.427734375,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2553.7578125,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2556.2578125,-1295.8544921875,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
-	{2558.5478515625,-1295.8505859375,1044.125, 1, 24, 62, 30, "int_house", "wash_up"},--завод продуктов
+	{2558.6474609375,-1291.0029296875,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2556.080078125,-1290.9970703125,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2553.841796875,-1291.0048828125,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2544.4326171875,-1291.00390625,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2541.9169921875,-1290.9951171875,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2541.9091796875,-1295.8505859375,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2544.427734375,-1295.8505859375,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2553.7578125,-1295.8505859375,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2556.2578125,-1295.8544921875,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
+	{2558.5478515625,-1295.8505859375,1044.125, 1, 24, 62, 1, "int_house", "wash_up"},--завод продуктов
 }
 
 --камеры полиции
@@ -1984,6 +1978,13 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_nalog_house = result[1]["zakon_nalog_house"]
 		zakon_nalog_business = result[1]["zakon_nalog_business"]
 
+		up_car_subject[1][7] = result[1]["zp_car_24"]
+		up_player_subject[1][6] = result[1]["zp_player_48"]
+
+		for k,v in pairs(anim_player_subject) do
+			anim_player_subject[k][7] = result[1]["zp_player_62"]
+		end
+
 
 		local result = sqlite( "SELECT * FROM car_db" )
 		local carnumber_number = 0
@@ -2849,7 +2850,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 				sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
-				save_player_action(playerid, "[throw_earth_job] "..playername.." [+"..id2.."$, "..array_player_2[playername][1].."$]] ["..info_png[id1][1]..", "..id2.."]")
+				save_player_action(playerid, "[throw_earth_job] "..playername.." [+"..id2.."$, "..array_player_2[playername][1].."$] ["..info_png[id1][1]..", "..id2.."]")
 
 				return
 			end
@@ -2925,7 +2926,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= v[5] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[5] ), red[1], red[2], red[3] )
+						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[5] ).."("..v[5]..")", red[1], red[2], red[3] )
 						return
 					end
 				end
@@ -4449,13 +4450,83 @@ function (playerid, cmd, id)
 	if inv_player_empty(playerid, 10, id) then
 		sendPlayerMessage(playerid, "Вы получили "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
 
-		save_player_action(playerid, "[police_sub] "..playername.." [10, "..id.."]")
+		save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[10][1]..", "..id.."]")
 	else
 		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
-addCommandHandler("takepolicetoken",--забрать пол-ий жетон
+addCommandHandler("givepolicerank",--выдать шеврон
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [от 1 до 5]", red[1], red[2], red[3])
+		return
+	end
+
+	if search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3] )
+		return
+	end
+
+	if id >= 1 and id <= 5 then
+		if id == 1 then
+			if inv_player_empty(playerid, 28, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..info_png[28][1].." 1 "..info_png[28][2], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[28][1]..", 1]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+
+		elseif id == 2 then
+			if inv_player_empty(playerid, 29, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..info_png[29][1].." 1 "..info_png[29][2], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[29][1]..", 1]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+
+		elseif id == 3 then
+			if inv_player_empty(playerid, 30, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..info_png[30][1].." 1 "..info_png[30][2], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[30][1]..", 1]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+
+		elseif id == 4 then
+			if inv_player_empty(playerid, 31, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..info_png[31][1].." 1 "..info_png[31][2], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[31][1]..", 1]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+
+		elseif id == 5 then
+			if inv_player_empty(playerid, 32, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..info_png[32][1].." 1 "..info_png[32][2], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[32][1]..", 1]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] от 1 до 5", red[1], red[2], red[3])
+	end
+end)
+
+--[[addCommandHandler("takepolicetoken",--забрать пол-ий жетон
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 
@@ -4482,19 +4553,17 @@ function (playerid, cmd, id)
 				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
 				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
 
-				save_player_action(playerid, "[police_take_sub] "..playername.." [10, "..id.."]")
+				save_player_action(playerid, "[police_take_sub] "..playername.." ["..info_png[10][1]..", "..id.."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
 			end
-
-			return
 		else
 			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
-end)
+end)]]
 
 addCommandHandler ( "sellhouse",--команда для риэлторов
 function (playerid)
@@ -4926,7 +4995,6 @@ function (playerid, cmd, id, time, ...)
 			crimes[id] = time-1
 
 			save_admin_action(playerid, "[admin_prisonplayer] "..playername.." prisonplayer "..id.." time "..time.." reason "..reason)
-			return
 		else
 			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
