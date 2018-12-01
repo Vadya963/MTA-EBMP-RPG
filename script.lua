@@ -4216,31 +4216,34 @@ function (playerid, cmd, id, ...)
 	if logged[playername] == 0 then
 		return
 	end
-
-	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [текст]", red[1], red[2], red[3])
-		return
-	end
-
+	
 	for k,v in ipairs(arg) do
 		text = text..v.." "
 	end
 
-	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+	if not id or text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [текст]", red[1], red[2], red[3])
 		return
 	end
 
-	for k,player in pairs(getElementsByType("player")) do
-		if id == getPlayerName(player) then
+	local player = getPlayerFromName ( id )
+	if player then
+		local player_name = getPlayerName ( player )
+
+		if id == player_name then
+			if logged[id] == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+				return
+			end
+
 			sendPlayerMessage(playerid, "[SMS TO] "..id..": "..text, yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(getPlayerFromName(id), "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
-
-			return
+			sendPlayerMessage(player, "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
+		else
+			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
-
-	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
 

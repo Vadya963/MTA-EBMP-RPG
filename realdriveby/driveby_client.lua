@@ -24,7 +24,7 @@ addEventHandler( "onClientPlayerVehicleEnter", localPlayer, setupDriveby )
 --Tell the server the clientside script was downloaded and started
 addEventHandler("onClientResourceStart",getResourceRootElement(getThisResource()),
 	function()
-		bindKey ( "mouse2", "down", "Toggle Driveby", "" )
+		bindKey ( "mouse3", "down", "Toggle Driveby", "" )
 		bindKey ( "e", "down", "Next driveby weapon", "1" )
 		bindKey ( "q", "down", "Previous driveby weapon", "-1" )
 		toggleControl ( "vehicle_next_weapon",false )
