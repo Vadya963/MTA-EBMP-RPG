@@ -212,16 +212,43 @@ addEvent( "event_logsave_fun", true )
 addEventHandler ( "event_logsave_fun", getRootElement(), logsave_fun )
 
 function save_logplayer()
-	local newFile = fileCreate(name_player..".txt")
+	local newFile = fileCreate("log-"..name_player..".txt")
 	if (newFile) then
-		for k,v in pairs(logplayer) do
-			fileWrite(newFile, v.."\n")
+		for i=1,#logplayer do
+			fileWrite(newFile, logplayer[i].."\n")
 		end
 
-		sendPlayerMessage("лог "..name_player.." загружен и сохранен в папке с модом")
+		sendPlayerMessage("лог "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
 		fileClose(newFile)
 
 		logplayer = {}
+	end
+end
+
+local invplayer = {}
+function invsave_fun (value, name, i, id1, id2)--таблица inv
+	if value == "save" then
+		name_player = name
+		invplayer[i] = {id1,id2}
+
+	elseif value == "load" then
+		save_invplayer()
+	end
+end
+addEvent( "event_invsave_fun", true )
+addEventHandler ( "event_invsave_fun", getRootElement(), invsave_fun )
+
+function save_invplayer()
+	local newFile = fileCreate("inv-"..name_player..".txt")
+	if (newFile) then
+		for i=0,#invplayer do
+			fileWrite(newFile, "slot ["..i.."] value ["..info_png[invplayer[i][1]][1]..", "..invplayer[i][2].."]\n")
+		end
+
+		sendPlayerMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
+		fileClose(newFile)
+
+		invplayer = {}
 	end
 end
 -----------------------------------------------------------------------------------------

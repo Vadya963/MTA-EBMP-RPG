@@ -5129,6 +5129,84 @@ function (playerid, cmd, id)
 	sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 end)
 
+addCommandHandler ( "invplayer",--чекнуть инв-рь игрока
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
+		for i=0,max_inv do
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, i, result[1]["slot_"..i.."_1"], result[1]["slot_"..i.."_2"])
+		end
+
+		triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+	end
+end)
+
+addCommandHandler ( "invcar",--чекнуть инв-рь тс
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..id.."'" )
+		for i=0,max_inv do
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, i, result[1]["slot_"..i.."_1"], result[1]["slot_"..i.."_2"])
+		end
+
+		triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого т/с нет", red[1], red[2], red[3])
+	end
+end)
+
+addCommandHandler ( "invhouse",--чекнуть инв-рь дома
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if id == nil then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		return
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..id.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id.."'" )
+		for i=0,max_inv do
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, i, result[1]["slot_"..i.."_1"], result[1]["slot_"..i.."_2"])
+		end
+
+		triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
+	else
+		sendPlayerMessage(playerid, "[ERROR] Такого дома нет", red[1], red[2], red[3])
+	end
+end)
+
 addCommandHandler ( "logadmin",--чекнуть логи админов
 function (playerid)
 	local playername = getPlayerName ( playerid )
