@@ -322,6 +322,17 @@ function getSpeed(vehicle)
 	end
 end
 
+function getVehicleNameFromPlate( number )
+	local number = tostring(number)
+
+	for i,vehicleid in pairs(getElementsByType("vehicle")) do
+		local plate = getVehiclePlateText(vehicleid)
+		if number == plate then
+			return getVehicleNameFromModel(getElementModel(vehicleid))
+		end
+	end
+end
+
 ------------------------------собственное гуи--------------------------------------------
 function m2gui_label( x,y, width, height, text, bool_r, parent )
 	local text = guiCreateLabel ( x, y, width, height, text, bool_r, parent )
@@ -706,10 +717,16 @@ function createText ()
 		local y = 20+24
 		local offset = dxGetFontHeight(1,m2font_dx1)
 		if info1_png ~= 0 then
-			local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx1 )
 			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-			dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			if info1_png == 6 and info2_png ~= 0 then
+				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], 1, m2font_dx1 )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			else
+				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx1 )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+			end
 			
 			if debuginfo == "true" then
 				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, m2font_dx1 )
@@ -1437,7 +1454,7 @@ function inv_create ()--создание инв-ря
 	end
 
 	if plate ~= "" then
-		tab_car = guiCreateTab( "Авто "..plate, tabPanel )
+		tab_car = guiCreateTab( "Т/С "..plate, tabPanel )
 		inv_slot_car[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_car[0][2]..".png", false, tab_car )
 		inv_slot_car[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_car[1][2]..".png", false, tab_car )
 		inv_slot_car[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_car[2][2]..".png", false, tab_car )
