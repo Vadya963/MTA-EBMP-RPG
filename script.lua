@@ -3852,7 +3852,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 10 then--документы копа
-			if search_inv_player(playerid, id1, playername) ~= 0 then
+			if id2 == playername then
 				if search_inv_player(playerid, 28, 1) ~= 0 then
 					me_chat(playerid, "Офицер "..playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				elseif search_inv_player(playerid, 29, 1) ~= 0 then
@@ -4160,7 +4160,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 64 then--лиц. таксиста
-			if search_inv_player(playerid, id1, playername) ~= 0 then
+			if id2 == playername then
 				if job[playername] == 0 then
 					job[playername] = 1
 
