@@ -818,11 +818,11 @@ local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
 local timer_robbery = {}--таймер ограбления
-local taxi_job = {}--таксист, 0-нет, 1-да
-local taxi_job_call = {}--есть ли вызов, 0-нет, 1-да, 2-сдаем вызов
-local taxi_job_ped = {}--создан ли нпс, 0-нет
-local taxi_job_blip = {}--создан ли маркер, 0-нет
-local taxi_job_pos = {}--позиция места назначения
+local job = {}--работа, 0-нет, 1-да
+local job_call = {}--(таксист - есть ли вызов, 0-нет, 1-да, 2-сдаем вызов)
+local job_ped = {}--создан ли нпс, 0-нет
+local job_blip = {}--создан ли маркер, 0-нет
+local job_pos = {}--позиция места назначения
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -867,15 +867,15 @@ function debuginfo ()
 		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 10, "robbery_player[playername] "..robbery_player[playername] )
 		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 11, "gps_device[playername] "..gps_device[playername] )
 		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 12, "timer_robbery[playername] "..tostring(timer_robbery[playername]) )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 13, "taxi_job[playername] "..taxi_job[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 14, "taxi_job_call[playername] "..taxi_job_call[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 15, "taxi_job_ped[playername] "..tostring(taxi_job_ped[playername]) )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 16, "taxi_job_blip[playername] "..tostring(taxi_job_blip[playername]) )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 13, "job[playername] "..job[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 14, "job_call[playername] "..job_call[playername] )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 15, "job_ped[playername] "..tostring(job_ped[playername]) )
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 16, "job_blip[playername] "..tostring(job_blip[playername]) )
 		
-		if taxi_job_pos[playername] ~= 0 then
-			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "taxi_job_pos[playername] "..taxi_job_pos[playername][1]..", "..taxi_job_pos[playername][2]..", "..taxi_job_pos[playername][3] )
+		if job_pos[playername] ~= 0 then
+			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "job_pos[playername] "..job_pos[playername][1]..", "..job_pos[playername][2]..", "..job_pos[playername][3] )
 		else
-			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "taxi_job_pos[playername] "..taxi_job_pos[playername] )
+			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "job_pos[playername] "..job_pos[playername] )
 		end
 
 		if logged[playername] == 1 then
@@ -894,22 +894,22 @@ function taxi_job_timer ()
 		math.randomseed(getTickCount())
 
 		if logged[playername] == 1 then
-			if taxi_job[playername] == 1 then--вышел на работу
+			if job[playername] == 1 then--вышел на работу
 				if vehicleid then
 					if getElementModel(vehicleid) == 420 then
 						if getSpeed(vehicleid) < 1 then
 
-							if taxi_job_call[playername] == 0 then--нету вызова
+							if job_call[playername] == 0 then--нету вызова
 								local randomize = math.random(1,#taxi_pos)
 
 								sendPlayerMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
 
-								taxi_job_call[playername] = 1
-								taxi_job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
-								taxi_job_blip[playername] = createBlip ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_call[playername] = 1
+								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+								job_blip[playername] = createBlip ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 
-							elseif taxi_job_call[playername] == 1 then--есть вызов
-								if isPointInCircle3D(x,y,z, taxi_job_pos[playername][1],taxi_job_pos[playername][2],taxi_job_pos[playername][3], 40) then
+							elseif job_call[playername] == 1 then--есть вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = math.random(1,#taxi_pos)
 									local randomize_skin = 1
 
@@ -923,23 +923,23 @@ function taxi_job_timer ()
 
 									sendPlayerMessage(playerid, "Отвезите клиента", yellow[1], yellow[2], yellow[3])
 
-									taxi_job_call[playername] = 2
-									taxi_job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
-									taxi_job_ped[playername] = createPed ( randomize_skin, taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0.0, true )
+									job_call[playername] = 2
+									job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+									job_ped[playername] = createPed ( randomize_skin, taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0.0, true )
 
-									setElementPosition(taxi_job_blip[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
+									setElementPosition(job_blip[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
 								
 									if not getVehicleOccupant ( vehicleid, 1 ) then
-										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 1 )
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 1 )
 									elseif not getVehicleOccupant ( vehicleid, 2 ) then
-										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 2 )
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 2 )
 									elseif not getVehicleOccupant ( vehicleid, 3 ) then
-										warpPedIntoVehicle ( taxi_job_ped[playername], vehicleid, 3 )
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 3 )
 									end
 								end
 
-							elseif taxi_job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, taxi_job_pos[playername][1],taxi_job_pos[playername][2],taxi_job_pos[playername][3], 40) then
+							elseif job_call[playername] == 2 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = math.random(1,zp_player_taxi)
 
 									inv_server_load( "player", 0, 1, array_player_2[playername][1]+randomize, playername )
@@ -948,20 +948,21 @@ function taxi_job_timer ()
 
 									save_player_action(playerid, "[taxi_job_timer] "..playername.." [+"..randomize.."$, "..array_player_2[playername][1].."$]")
 
-									destroyElement(taxi_job_ped[playername])
-									destroyElement(taxi_job_blip[playername])
+									destroyElement(job_ped[playername])
+									destroyElement(job_blip[playername])
 
-									taxi_job_ped[playername] = 0
-									taxi_job_blip[playername] = 0
-									taxi_job_pos[playername] = 0
-									taxi_job_call[playername] = 0
+									job_ped[playername] = 0
+									job_blip[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
 								end
 							end
 
 						end
 					end
 				end
-			elseif taxi_job[playername] == 0 then--нету вызова
+
+			elseif job[playername] == 0 then--нету вызова
 				taxi_job_0( playername )
 			end
 		end
@@ -969,19 +970,19 @@ function taxi_job_timer ()
 end
 
 function taxi_job_0( playername )
-	if taxi_job_ped[playername] ~= 0 then
-		destroyElement(taxi_job_ped[playername])
+	if job_ped[playername] ~= 0 then
+		destroyElement(job_ped[playername])
 	end
 
-	if taxi_job_blip[playername] ~= 0 then
-		destroyElement(taxi_job_blip[playername])
+	if job_blip[playername] ~= 0 then
+		destroyElement(job_blip[playername])
 	end
 
-	taxi_job[playername] = 0
-	taxi_job_ped[playername] = 0
-	taxi_job_blip[playername] = 0
-	taxi_job_pos[playername] = 0
-	taxi_job_call[playername] = 0
+	job[playername] = 0
+	job_ped[playername] = 0
+	job_blip[playername] = 0
+	job_pos[playername] = 0
+	job_call[playername] = 0
 end
 
 function need_1 ()
@@ -2230,11 +2231,11 @@ function()
 	robbery_player[playername] = 0
 	gps_device[playername] = 0
 	timer_robbery[playername] = 0
-	taxi_job[playername] = 0
-	taxi_job_call[playername] = 0
-	taxi_job_ped[playername] = 0
-	taxi_job_blip[playername] = 0
-	taxi_job_pos[playername] = 0
+	job[playername] = 0
+	job_call[playername] = 0
+	job_ped[playername] = 0
+	job_blip[playername] = 0
+	job_pos[playername] = 0
 	--нужды
 	alcohol[playername] = 0
 	satiety[playername] = 0
@@ -4160,12 +4161,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 64 then--лиц. таксиста
 			if search_inv_player(playerid, id1, playername) ~= 0 then
-				if taxi_job[playername] == 0 then
-					taxi_job[playername] = 1
+				if job[playername] == 0 then
+					job[playername] = 1
 
 					me_chat(playerid, playername.." вышел(ла) на работу")
 				else
-					taxi_job[playername] = 0
+					job[playername] = 0
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
