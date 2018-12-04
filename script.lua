@@ -291,6 +291,7 @@ local info_png = {
 	[62] = {"ящик с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия таксиста на имя", ""},
+	[65] = {"инкасаторский мешок", "$ в мешке"},
 }
 
 local weapon = {
@@ -503,7 +504,7 @@ local cash_car = {
 	--[423] = {"MRWHOOP", 29000},--грузовик мороженого
 	[424] = {"BFINJECT", 15000},
 	[426] = {"PREMIER", 25000},
-	--[428] = {"SECURICA", 40000},--инкасаторский грузовик
+	[428] = {"SECURICA", 40000},--инкасаторский грузовик
 	[429] = {"BANSHEE", 45000},
 	--[431] = {"BUS", 15000},
 	--[432] = {"RHINO", 110000},--танк
@@ -728,7 +729,7 @@ local interior_job = {
 	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, ", Меню - X", 5},
 	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
 	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, ", Меню - X", 5},
-	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Разгрузить товар - E", 15},
+	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Загрузить товар - E", 15},
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
 	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
@@ -736,7 +737,7 @@ local interior_job = {
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
-	{1, "Казино Калигула",	2235.2524,1708.5146,1010.6129, 2196.9619140625,1677.1708984375,12.3671875, 44, 14, "", 5},
+	{1, "Казино Калигула",	2235.2524,1708.5146,1010.6129, 2196.9619140625,1677.1708984375,12.3671875, 44, 14, ", Разгрузить товар - E", 5},
 }
 
 local t_s_salon = {
@@ -748,6 +749,7 @@ local t_s_salon = {
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус, ид тс, ид пнг, зп}
 	{-86.208984375,-299.36328125,2.7646157741547, 15, 414, 24, 1},--завод продуктов
+	{2308.81640625,-13.25,26.7421875, 15, 428, 65, 1},--банк
 }
 
 local up_player_subject = {--{x,y,z, радиус, ид пнг, зп}
@@ -764,6 +766,7 @@ local up_player_subject = {--{x,y,z, радиус, ид пнг, зп}
 --места сброса предметов
 local down_car_subject = {--{x,y,z, радиус, ид пнг}
 	{2788.23046875,-2455.99609375,13.340852737427, 15, 24},--порт лс
+	{2196.9619140625,1677.1708984375,12.3671875, 15, 65},--калигула
 }
 
 local down_player_subject = {--{x,y,z, радиус, ид пнг} также нужно прописать ид пнг в throw_earth_server
@@ -1089,9 +1092,12 @@ end
 
 function timer_earth()--передача слотов земли на клиент
 	for k,playerid in pairs(getElementsByType("player")) do
+		local x,y,z = getElementPosition(playerid)
 
 		for i,v in pairs(earth) do
-			triggerClientEvent( playerid, "event_earth_load", playerid, "", i, v[1], v[2], v[3], v[4], v[5] )
+			if isPointInCircle3D(x,y,z, v[1], v[2], v[3], 20) then
+				triggerClientEvent( playerid, "event_earth_load", playerid, "", i, v[1], v[2], v[3], v[4], v[5] )
+			end
 		end
  
 		local playername = getPlayerName ( playerid )
@@ -1277,7 +1283,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 
 		if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 
 			sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
 
@@ -1295,35 +1301,25 @@ end
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------авто-------------------------------------------------------------
-function search_inv_car( playerid, value1, value2 )--цикл по поиску предмета в инв-ре авто
-	local playername = getPlayerName ( playerid )
-	local vehicleid = getPlayerVehicle(playerid)
+function search_inv_car( vehicleid, value1, value2 )--цикл по поиску предмета в инв-ре авто
 	local val = 0
+	local plate = getVehiclePlateText ( vehicleid )
 
-	if vehicleid then
-		local plate = getVehiclePlateText ( vehicleid )
-
-		for i=0,max_inv do
-			if array_car_1[plate][i+1] == value1 and array_car_2[plate][i+1] == value2 then
-				val = val + 1
-			end
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == value1 and array_car_2[plate][i+1] == value2 then
+			val = val + 1
 		end
-
-		return val
 	end
+
+	return val
 end
 
-function search_inv_car_2_parameter(playerid, id1)--вывод 2 параметра предмета в авто
-	local playername = getPlayerName ( playerid )
-	local vehicleid = getPlayerVehicle(playerid)
-	
-	if vehicleid then
-		local plate = getVehiclePlateText ( vehicleid )
+function search_inv_car_2_parameter(vehicleid, id1)--вывод 2 параметра предмета в авто
+	local plate = getVehiclePlateText ( vehicleid )
 
-		for i=0,max_inv do
-			if array_car_1[plate][i+1] == id1 then
-				return array_car_2[plate][i+1]
-			end
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == id1 then
+			return array_car_2[plate][i+1]
 		end
 	end
 end
@@ -1331,48 +1327,57 @@ end
 function inv_car_empty(playerid, id1, id2)--выдача предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
-	
-	if vehicleid then
-		local plate = getVehiclePlateText ( vehicleid )
+	local plate = getVehiclePlateText ( vehicleid )
 
-		for i=0,max_inv do
-			if array_car_1[plate][i+1] == 0 then
-				inv_server_load( "car", i, id1, id2, plate )
-				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, id1, id2 )
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == 0 then
+			inv_server_load( "car", i, id1, id2, plate )
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, id1, id2 )
 
-				if state_inv_player[playername] == 1 then
-					triggerClientEvent( playerid, "event_change_image", playerid, "car", i, id1 )
-				end
-
-				return true
+			if state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, id1 )
 			end
-		end
 
-		return false
+			return true
+		end
 	end
+
+	return false
 end
 
 function inv_car_delet(playerid, id1, id2)--удаления предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
-	
-	if vehicleid then
-		local plate = getVehiclePlateText ( vehicleid )
+	local plate = getVehiclePlateText ( vehicleid )
 
-		for i=0,max_inv do
-			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
-				inv_server_load( "car", i, 0, 0, plate )
-				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
+			inv_server_load( "car", i, 0, 0, plate )
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, 0, 0 )
 
-				if state_inv_player[playername] == 1 then
-					triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0 )
-				end
-
-				return true
+			if state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, 0 )
 			end
-		end
 
-		return false
+			return true
+		end
+	end
+
+	return false
+end
+
+function inv_car_throw_earth(vehicleid, id1, id2)--выброс предмета из авто на землю
+	local plate = getVehiclePlateText ( vehicleid )
+	local x,y,z = getElementPosition(vehicleid)
+
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
+			inv_server_load( "car", i, 0, 0, plate )
+
+			max_earth = max_earth+1
+			local j = max_earth
+			earth[j] = {x,y,z,id1,id2}
+		end
 	end
 end
 --------------------------------------------------------------------------------------------------------
@@ -2109,6 +2114,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_drugs_crimes = result[1]["zakon_drugs_crimes"]
 		zakon_kill_crimes = result[1]["zakon_kill_crimes"]
 		zakon_robbery_crimes = result[1]["zakon_robbery_crimes"]
+		zakon_65_crimes = result[1]["zakon_65_crimes"]
 
 		zakon_nalog_car = result[1]["zakon_nalog_car"]
 		zakon_nalog_house = result[1]["zakon_nalog_house"]
@@ -2117,6 +2123,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		up_car_subject[1][7] = result[1]["zp_car_24"]
 		up_player_subject[1][6] = result[1]["zp_player_48"]
 		zp_player_taxi = result[1]["zp_player_taxi"]
+		up_car_subject[2][7] = result[1]["zp_car_65"]
 
 		for k,v in pairs(anim_player_subject) do
 			anim_player_subject[k][7] = result[1]["zp_player_62"]
@@ -2546,7 +2553,7 @@ addEventHandler("event_log", getRootElement(), log_fun)
 function fixVehicle_fun( vehicleid )
 	fixVehicle(vehicleid)
 	fixVehicle(vehicleid)
-	setElementHealth(vehicleid, 250)
+	setElementHealth(vehicleid, 300)
 end
 
 function explode_car()
@@ -2554,6 +2561,19 @@ function explode_car()
 	local plate = getVehiclePlateText ( vehicleid )
 
 	setTimer(fixVehicle_fun, 5000, 1, vehicleid)
+
+	for k,playerid in pairs(getElementsByType("player")) do
+		if vehicleid == getPlayerVehicle(playerid) then
+			removePedFromVehicle ( playerid )
+		end
+	end
+
+	if getElementModel(vehicleid) == 428 then
+		for i=0,max_inv do
+			local sic2p = search_inv_car_2_parameter(vehicleid, 65)
+			inv_car_throw_earth(vehicleid, 65, sic2p)
+		end
+	end
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
 
@@ -3193,7 +3213,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 			end
 
 			if count2 ~= 0 then
-				local count = search_inv_car(playerid, id1, id2)
+				local count = search_inv_car(vehicleid, id1, id2)
 
 				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				sendPlayerMessage(playerid, "[TIPS] Езжайте на место разгрузки в порт или в любой бизнес", color_tips[1], color_tips[2], color_tips[3])
@@ -3221,8 +3241,8 @@ function delet_subject(playerid, id)--удаление предметов из �
 			return
 		end
 
-		local sic2p = search_inv_car_2_parameter(playerid, id)
-		local count = search_inv_car(playerid, id, sic2p)
+		local sic2p = search_inv_car_2_parameter(vehicleid, id)
+		local count = search_inv_car(vehicleid, id, sic2p)
 
 		if count ~= 0 then
 
@@ -3973,6 +3993,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						robbery_player[playername] = 1
 
+						me_chat(playerid, playername.." взломал(а) дверь")
+
 						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
@@ -3994,6 +4016,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						robbery_player[playername] = 1
 
+						me_chat(playerid, playername.." взломал(а) дверь")
+
 						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
@@ -4013,6 +4037,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					count = count+1
 
 					robbery_player[playername] = 1
+
+					me_chat(playerid, playername.." взломал(а) сейф")
 
 					sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 					sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
@@ -4080,7 +4106,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if alcohol_test >= zakon_alcohol then
 				local crimes_plus = zakon_alcohol_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
 
 		elseif id1 == 58 then--наркостестер
@@ -4092,7 +4118,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if drugs_test >= zakon_drugs then
 				local crimes_plus = zakon_drugs_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступлений, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 			end
 
 		elseif id1 == 59 then--налог дома
@@ -4172,6 +4198,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 			end
 			return
+
+		elseif id1 == 65 then--инкасаторский мешок
+			local randomize = id2
+
+			id2 = 0
+
+			me_chat(playerid, playername.." открыл(а) "..info_png[id1][1])
+
+			sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+			local crimes_plus = zakon_65_crimes
+			crimes[playername] = crimes[playername]+crimes_plus
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+
+			inv_server_load( "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -5222,6 +5263,22 @@ function (playerid)
 	local result = sqlite( "SELECT * FROM save_admin_action" )
 	for k,v in pairs(result) do
 		triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", "logadmin", k, v["admin_action"])
+	end
+
+	triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
+end)
+
+addCommandHandler ( "logrealtor",--чекнуть логи риэлторов
+function (playerid)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	local result = sqlite( "SELECT * FROM save_realtor_action" )
+	for k,v in pairs(result) do
+		triggerClientEvent(playerid, "event_logsave_fun", playerid, "save", "logrealtor", k, v["realtor_action"])
 	end
 
 	triggerClientEvent(playerid, "event_logsave_fun", playerid, "load", 0, 0, 0)
