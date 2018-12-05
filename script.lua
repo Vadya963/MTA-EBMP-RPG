@@ -3216,7 +3216,12 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				local count = search_inv_car(vehicleid, id1, id2)
 
 				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
-				sendPlayerMessage(playerid, "[TIPS] Езжайте на место разгрузки в порт или в любой бизнес", color_tips[1], color_tips[2], color_tips[3])
+				
+				if id1 == 24 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте на место разгрузки в порт или в любой бизнес", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 65 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в казино Калигула", color_tips[1], color_tips[2], color_tips[3])
+				end
 
 				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
 			else
