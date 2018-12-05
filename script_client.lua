@@ -92,7 +92,7 @@ local info_png = {
 	[62] = {"ящик с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия таксиста на имя", ""},
-	[65] = {"инкасаторский мешок", "$ в мешке"},
+	[65] = {"инкасаторская сумка", "$ в сумке"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -1218,7 +1218,7 @@ function tablet_fun()--создание планшета
 			end
 
 			local text_id2 = m2gui_label ( 0, 50, 200, 15, "Введите количество предмета", false, low_fon )
-			local text_id3 = m2gui_label ( 0, 65, 200, 15, "или его ID", false, low_fon )
+			local text_id3 = m2gui_label ( 0, 65, 200, 15, "или его стоимость", false, low_fon )
 			local edit_id2 = guiCreateEdit ( 0, 85, 200, 25, "", false, low_fon )
 			local text_money = m2gui_label ( 0, 115, 200, 15, "Введите стоимость предмета", false, low_fon )
 			local edit_money = guiCreateEdit ( 0, 135, 200, 25, "", false, low_fon )

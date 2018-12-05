@@ -291,7 +291,7 @@ local info_png = {
 	[62] = {"ящик с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия таксиста на имя", ""},
-	[65] = {"инкасаторский мешок", "$ в мешке"},
+	[65] = {"инкасаторская сумка", "$ в сумке"},
 }
 
 local weapon = {
@@ -725,19 +725,23 @@ local interior_house = {
 --здания для работ и фракций
 local interior_job = {
 	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1, ", Разгрузить товар - E", 15},
-	{6, "ЛСПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, ", Меню - X", 5},
-	{10, "СФПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, ", Меню - X", 5},
-	{3, "ЛВПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
+	{6, "Лос Сантос ПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, ", Меню - X", 5},
+	{10, "Сан Фиерро ПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, ", Меню - X", 5},
+	{3, "Лас Вентурас ПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
 	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, ", Меню - X", 5},
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, ", Загрузить товар - E", 15},
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
 	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
-	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},--10
+	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
-	{1, "Казино Калигула",	2235.2524,1708.5146,1010.6129, 2196.9619140625,1677.1708984375,12.3671875, 44, 14, ", Разгрузить товар - E", 5},
+	{1, "Казино Калигула", 2235.2524,1708.5146,1010.6129, 2196.9619140625,1677.1708984375,12.3671875, 44, 14, ", Разгрузить товар - E", 5},
+	{5, "Эль Кебрадос ПД", 322.72,306.43,999.15, -1389.66015625,2644.005859375,55.984375, 30, 15, ", Меню - X", 5},
+	{5, "Форт Карсон ПД", 322.72,306.43,999.15, -217.837890625,979.171875,19.504064559937, 30, 16, ", Меню - X", 5},
+	{5, "Диллимор ПД", 322.72,306.43,999.15, 626.9697265625,-571.796875,17.920680999756, 30, 17, ", Меню - X", 5},
+	{5, "Эйнджел Пайн ПД", 322.72,306.43,999.15, -2161.2099609375,-2384.9052734375,30.893091201782, 30, 18, ", Меню - X", 5},
 }
 
 local t_s_salon = {
@@ -3370,20 +3374,28 @@ local x,y,z = getElementPosition(playerid)
 
 
 				if enter_job[playername] == 1 then--здания
-					if interior_job[2][1] == getElementInterior(playerid) and interior_job[2][10] == getElementDimension(playerid) or interior_job[3][1] == getElementInterior(playerid) and interior_job[3][10] == getElementDimension(playerid) or interior_job[4][1] == getElementInterior(playerid) and interior_job[4][10] == getElementDimension(playerid) then
-						if search_inv_player(playerid, 10, playername) == 0 then
-							sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
+					local police_station = {2,3,4,15,16,17,18}
+					for k,v in pairs(police_station) do
+						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
+							if search_inv_player(playerid, 10, playername) == 0 then
+								sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3] )
+								return
+							end
+
+							triggerClientEvent( playerid, "event_cops_menu", playerid )
+							state_gui_window[playername] = 1
 							return
 						end
-
-						triggerClientEvent( playerid, "event_cops_menu", playerid )
-						state_gui_window[playername] = 1
-
-					elseif interior_job[5][1] == getElementInterior(playerid) and interior_job[5][10] == getElementDimension(playerid) or interior_job[7][1] == getElementInterior(playerid) and interior_job[7][10] == getElementDimension(playerid) or interior_job[8][1] == getElementInterior(playerid) and interior_job[8][10] == getElementDimension(playerid) then
-						triggerClientEvent( playerid, "event_mayoralty_menu", playerid )
-						state_gui_window[playername] = 1
 					end
 
+					local mayoralty = {5,7,8}
+					for k,v in pairs(mayoralty) do				
+						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
+							triggerClientEvent( playerid, "event_mayoralty_menu", playerid )
+							state_gui_window[playername] = 1
+							return
+						end
+					end
 				end
 
 			else
