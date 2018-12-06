@@ -292,6 +292,7 @@ local info_png = {
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия таксиста на имя", ""},
 	[65] = {"инкасаторская сумка", "$ в сумке"},
+	[66] = {"лицензия инкасатора на имя", ""},
 }
 
 local weapon = {
@@ -1984,6 +1985,7 @@ function mayoralty_menu_fun( playerid, text )--мэрия
 		[2] = {"права", 0, 1000},
 		[50] = {"лицензия на оружие", 0, 10000},
 		[64] = {"лицензия таксиста", 0, 5000},
+		[66] = {"лицензия инкасатора", 0, 10000},
 	}
 
 	local mayoralty_nalog = {
@@ -3208,6 +3210,12 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 			if not getVehicleOccupant ( vehicleid, 0 ) then
 				sendPlayerMessage(playerid, "[ERROR] Вы не водитель", red[1], red[2], red[3] )
 				return
+
+			elseif id1 == 65 then
+				if search_inv_player(playerid, 66, playername) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не инкасатор", red[1], red[2], red[3] )
+					return
+				end
 			end
 
 			for i=0,max_inv do
@@ -3637,7 +3645,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 			return
 
-		elseif id1 == 2 or id1 == 44 or id1 == 45 or id1 == 50 then--права, АЖ, РЛ, лиц на оружие
+		elseif id1 == 2 or id1 == 44 or id1 == 45 or id1 == 50 or id1 == 66 then--права, АЖ, РЛ, лиц на оружие, инка-ая лиц
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 
