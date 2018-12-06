@@ -1216,12 +1216,12 @@ end
 addEventHandler("onPlayerChat", getRootElement(), onChat)
 
 ---------------------------------------игрок------------------------------------------------------------
-function search_inv_player( playerid, value1, value2 )--цикл по поиску предмета в инв-ре игрока
+function search_inv_player( playerid, id1, id2 )--цикл по поиску предмета в инв-ре игрока
 	local playername = getPlayerName ( playerid )
 	local val = 0
 
 	for i=0,max_inv do
-		if array_player_1[playername][i+1] == value1 and array_player_2[playername][i+1] == value2 then
+		if array_player_1[playername][i+1] == id1 and array_player_2[playername][i+1] == id2 then
 			val = val + 1
 		end
 	end
@@ -1306,12 +1306,12 @@ end
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------авто-------------------------------------------------------------
-function search_inv_car( vehicleid, value1, value2 )--цикл по поиску предмета в инв-ре авто
+function search_inv_car( vehicleid, id1, id2 )--цикл по поиску предмета в инв-ре авто
 	local val = 0
 	local plate = getVehiclePlateText ( vehicleid )
 
 	for i=0,max_inv do
-		if array_car_1[plate][i+1] == value1 and array_car_2[plate][i+1] == value2 then
+		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
 			val = val + 1
 		end
 	end
