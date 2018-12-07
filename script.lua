@@ -3193,6 +3193,13 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 
 		for k,v in pairs(business_pos) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+				if vehicleid then
+					if getElementModel(vehicleid) ~= 414 then
+						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( 414 ).."(414)", red[1], red[2], red[3] )
+						return
+					end
+				end
+
 				delet_subject(playerid, 24)
 			end
 		end
@@ -3215,7 +3222,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
 			if area then
-				if (v[4] == 48 or v[4] == 24 or v[4] == 62) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
+				if (v[4] == 48 or v[4] == 24 or v[4] == 62 or v[4] == 67 or v[4] == 68 or v[4] == 69) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
 					sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 					return
 				end
@@ -3327,11 +3334,6 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					if id ~= 24 then
 						sendPlayerMessage(playerid, "[ERROR] Нужны только "..info_png[24][1], red[1], red[2], red[3] )
-						return
-					end
-
-					if getElementModel(vehicleid) ~= 414 then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( 414 ).."(414)", red[1], red[2], red[3] )
 						return
 					end
 
