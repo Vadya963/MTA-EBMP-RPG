@@ -2390,6 +2390,7 @@ function(ammo, attacker, weapon, bodypart)
 	local playername = getPlayerName ( playerid )
 	local playername_a = nil
 	local reason = weapon
+	local cash = 100
 
 	for k,v in pairs(deathReasons) do
 		if k == reason then
@@ -2405,6 +2406,16 @@ function(ammo, attacker, weapon, bodypart)
 				local crimes_plus = zakon_kill_crimes
 				crimes[playername_a] = crimes[playername_a]+crimes_plus
 				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+			else
+				if crimes[playername] ~= -1 then
+					arrest[playername] = 1
+
+					sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername]+1)).."$", green[1], green[2], green[3] )
+
+					inv_server_load( "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername]+1)), playername_a )
+
+					save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]+1))
+				end
 			end
 
 			sendPlayerMessage(attacker, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
@@ -2421,6 +2432,16 @@ function(ammo, attacker, weapon, bodypart)
 						local crimes_plus = zakon_kill_crimes
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
 						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+					else
+						if crimes[playername] ~= -1 then
+							arrest[playername] = 1
+
+							sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername]+1)).."$", green[1], green[2], green[3] )
+
+							inv_server_load( "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername]+1)), playername_a )
+
+							save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]+1))
+						end
 					end
 
 					sendPlayerMessage(player_id, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
