@@ -3123,6 +3123,10 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
+				if id1 == 67 then--предмет для работы
+					object_attach(playerid, 341, 12, 0,0,0, 0,-90,0, 2000)
+				end
+
 				setPedAnimation(playerid, v[8], v[9], -1, false, false, false, false)
 
 				save_player_action(playerid, "[throw_earth_anim] "..playername.." ["..info_png[v[6]][1]..", "..randomize.."]")
@@ -3333,7 +3337,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 
 					if id ~= 24 then
-						sendPlayerMessage(playerid, "[ERROR] Нужны только "..info_png[24][1], red[1], red[2], red[3] )
+						sendPlayerMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3] )
 						return
 					end
 
@@ -3754,7 +3758,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
 			end
 
-			--object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
+			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
 
 			if vehicleid then
 				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false, false, false, false)
@@ -3801,6 +3805,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if satiety[playername]-satiety_minys >= 0 then
 				satiety[playername] = satiety[playername]-satiety_minys
 				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			end
+
+			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
+
+			if vehicleid then
+				setPedAnimation(playerid, "ped", "smoke_in_car", -1, false, false, false, false)
+			else
+				setPedAnimation(playerid, "smoking", "m_smk_drag", -1, false, false, false, false)
 			end
 
 			me_chat(playerid, playername.." употребил(а) наркотики")
@@ -3850,7 +3862,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 			end
 
-			--object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
 
 			me_chat(playerid, playername.." выпил(а) пиво")
@@ -3883,7 +3895,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 			end
 
-			--object_attach(playerid, 2703, 12, 0.1,-0.02,0.13, 0,130,0, 2000)
+			object_attach(playerid, 2703, 12, 0,0,0.1, 0,130,0, 5000)
 			setPedAnimation(playerid, "food", "eat_burger", -1, false, false, false, false)
 
 		elseif id1 == 55 or id1 == 56 then--мыло, пижама
@@ -5136,6 +5148,38 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
+addCommandHandler ( "subcar",--выдача предметов с числом
+function (playerid, cmd, id1, id2 )
+	local val1, val2 = tonumber(id1), tonumber(id2)
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, playername) == 0 then
+		return
+	end
+
+	if not val1 or not val2  then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
+		return
+	end
+
+	if val1 > #info_png or val1 < 2 then
+		sendPlayerMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
+		return
+	end
+
+	if not vehicleid then
+		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+		return
+	end
+
+	give_subject(playerid, "car", val1, val2)
+
+	sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+
+	save_admin_action(playerid, "[admin_subcar] "..playername.." ["..val1..", "..val2.."]")
+end)
+
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	local playername = getPlayerName ( playerid )
@@ -5672,12 +5716,12 @@ function input_Console ( text )
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
 
---[[local objPick = 0
+local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (1485, x, y, z)
+	objPick = createObject (341, x, y, z)
 
-	attachElementToBone (objPick, thePlayer, 12, 0, 0, 0, 0, 0, 0)
+	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,130,0)
 end
 
 addCommandHandler ("orot",
@@ -5688,4 +5732,4 @@ end)
 addCommandHandler ("opos",
 function (playerid, cmd, id1, id2, id3)
 	setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
-end)]]
+end)
