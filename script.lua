@@ -4640,6 +4640,13 @@ function (playerid, cmd, id)
 							end
 
 							if search_inv_player(playerid, 6, id) ~= 0 then
+								for k,player in pairs(getElementsByType("player")) do
+									local vehicle = getPlayerVehicle(player)
+									if vehicle == vehicleid then
+										removePedFromVehicle ( player )
+									end
+								end
+
 								setElementPosition(vehicleid, x+5,y,z+1)
 								setElementRotation(vehicleid, 0,0,0)
 

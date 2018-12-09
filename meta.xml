@@ -1,9 +1,9 @@
 <meta>
-    <info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
+	<info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
 
-    <min_mta_version client="1.5.6-9.14664.0" server="1.5.6-9.14664.0" />
+	<min_mta_version client="1.5.6-9.14664.0" server="1.5.6-9.14664.0" />
 	
-    <script src="script.lua" type="server"/>
+	<script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client"/>
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
