@@ -854,7 +854,8 @@ local timer_robbery = {}--таймер ограбления
 local job = {}--работа, 0-нет, 1-да
 local job_call = {}--(таксист - есть ли вызов, 0-нет, 1-да, 2-сдаем вызов)
 local job_ped = {}--создан ли нпс, 0-нет
-local job_blip = {}--создан ли маркер, 0-нет
+local job_blip = {}--создан ли блип, 0-нет
+local job_marker = {}--создан ли маркер, 0-нет
 local job_pos = {}--позиция места назначения
 --нужды
 local alcohol = {}
@@ -911,6 +912,8 @@ function debuginfo ()
 			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "job_pos[playername] "..job_pos[playername] )
 		end
 
+		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 18, "job_marker[playername] "..tostring(job_marker[playername]) )
+
 		if logged[playername] == 1 then
 			--нужды
 			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
@@ -940,6 +943,7 @@ function taxi_job_timer ()
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
 								job_blip[playername] = createBlip ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then--есть вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
@@ -961,6 +965,7 @@ function taxi_job_timer ()
 									job_ped[playername] = createPed ( randomize_skin, taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0.0, true )
 
 									setElementPosition(job_blip[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
+									setElementPosition(job_marker[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
 								
 									if not getVehicleOccupant ( vehicleid, 1 ) then
 										warpPedIntoVehicle ( job_ped[playername], vehicleid, 1 )
@@ -983,9 +988,11 @@ function taxi_job_timer ()
 
 									destroyElement(job_ped[playername])
 									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
 
 									job_ped[playername] = 0
 									job_blip[playername] = 0
+									job_marker[playername] = 0
 									job_pos[playername] = 0
 									job_call[playername] = 0
 								end
@@ -1011,9 +1018,14 @@ function taxi_job_0( playername )
 		destroyElement(job_blip[playername])
 	end
 
+	if job_marker[playername] ~= 0 then
+		destroyElement(job_marker[playername])
+	end
+
 	job[playername] = 0
 	job_ped[playername] = 0
 	job_blip[playername] = 0
+	job_marker[playername] = 0
 	job_pos[playername] = 0
 	job_call[playername] = 0
 end
@@ -2300,6 +2312,7 @@ function()
 	job_call[playername] = 0
 	job_ped[playername] = 0
 	job_blip[playername] = 0
+	job_marker[playername] = 0
 	job_pos[playername] = 0
 	--нужды
 	alcohol[playername] = 0
