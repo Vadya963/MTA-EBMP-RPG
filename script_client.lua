@@ -1288,12 +1288,13 @@ function tablet_fun()--создание планшета
 			local loadURL = guiCreateStaticImage ( 100, 0, 25, 25, "comp/connect.png", false, low_fon )
 			local addressBar = guiCreateEdit ( 125, 0, width_fon-125, 25, "", false, low_fon )
 
-			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, low_fon )
+			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, true, false, false, low_fon )
 			local theBrowser = guiGetBrowser( browser )
 
 			addEventHandler("onClientBrowserCreated", theBrowser,
 			function ()
-				loadBrowserURL(theBrowser, "https://www.youtube.com")
+				--loadBrowserURL(theBrowser, "https://www.youtube.com")
+				loadBrowserURL(theBrowser, "http://mta/local/wiki/index.html")
 			end, false)
 
 			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )

@@ -7,6 +7,7 @@
 	<script src="script_client.lua" type="client"/>
 	<script src="log_reg_gui.lua" type="client"/>
 	<script src="reload_c.lua" type="client"/>
+	<!--<script src="ignore_server.lua" type="server"/>-->
 
 	<map src="map/map_gta.map" />
 	<script src="map/mapEditorScriptingExtension_s.lua" type="server"></script>
@@ -23,12 +24,14 @@
 	<file src="hud/drugs.png" />
 
 	<file src="gui/m2font.ttf" />
-	<file src="gui/gui1.png" />
-	<file src="gui/gui2.png" />
-	<file src="gui/gui4.png" />
-	<file src="gui/gui5.png" />
-	<file src="gui/gui6.png" />
 	<file src="gui/gui7.png" />
+
+	<!--мой сайт-->
+	<file src="wiki/comand.html" />
+	<file src="wiki/index.html" />
+	<file src="wiki/spisok.html" />
+	<file src="wiki/style.css" />
+	<file src="wiki/Mafia_2_2.jpg" />
 
 	<file src="speedometer/speed_v.png" />
 	<file src="speedometer/arrow_speed_v.png" />

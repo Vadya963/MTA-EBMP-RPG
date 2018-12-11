@@ -1252,6 +1252,16 @@ function onChat(message, messageType)
 end
 addEventHandler("onPlayerChat", getRootElement(), onChat)
 
+addEventHandler("onPlayerCommand",getRootElement(),
+function(command)
+	local playerid = source
+	local playername = getPlayerName(playerid)
+
+	if command == "msg" then
+		cancelEvent()
+	end
+end)
+
 ---------------------------------------игрок------------------------------------------------------------
 function search_inv_player( playerid, id1, id2 )--цикл по поиску предмета в инв-ре игрока
 	local playername = getPlayerName ( playerid )
