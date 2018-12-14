@@ -280,7 +280,7 @@ local info_png = {
 	[51] = {"jetpack", "шт"},
 	[52] = {"кислородный балон на 5 мин", "шт"},
 	[53] = {"бургер", "шт"},
-	[54] = {"хот-дог", "шт"},
+	[54] = {"пицца", "шт"},
 	[55] = {"мыло", "%"},
 	[56] = {"пижама", "%"},
 	[57] = {"алкотестер", "шт"},
@@ -3911,7 +3911,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." выпил(а) пиво")
 
-		elseif id1 == 53 or id1 == 54 then--бургер, хот-дог
+		elseif id1 == 53 or id1 == 54 then--бургер, пицца
 			id2 = id2 - 1
 
 			if id1 == 53 then
@@ -3926,6 +3926,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 
+				object_attach(playerid, 2703, 12, 0.02,0.05,0.04, 0,130,0, 5000)
+				setPedAnimation(playerid, "food", "eat_burger", -1, false, false, false, false)
+
 			elseif id1 == 54 then
 				local satiety_plus = 25
 
@@ -3937,10 +3940,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				satiety[playername] = satiety[playername]+satiety_plus
 				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
-			end
 
-			object_attach(playerid, 2703, 12, 0,0,0.1, 0,130,0, 5000)
-			setPedAnimation(playerid, "food", "eat_burger", -1, false, false, false, false)
+				object_attach(playerid, 2702, 12, 0,0.1,0.05, 0,270,0, 5000)
+				setPedAnimation(playerid, "food", "eat_pizza", -1, false, false, false, false)
+			end
 
 		elseif id1 == 55 or id1 == 56 then--мыло, пижама
 			id2 = id2 - 1
@@ -5770,9 +5773,9 @@ addEventHandler ( "onConsole", getRootElement(), input_Console )
 local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (341, x, y, z)
+	objPick = createObject (2702, x, y, z)
 
-	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,130,0)
+	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
 end
 
 addCommandHandler ("orot",
