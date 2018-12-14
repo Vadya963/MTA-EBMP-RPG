@@ -1,3 +1,4 @@
 a:link {color: white; text-decoration: none;}
 a:visited {color: white; text-decoration: none;}
 a:hover {color: #ffa500; text-decoration: underline;}
+body {background-image: url(mafia_2_2.jpg); background-repeat: no-repeat; background-position: top; background-attachment: fixed;}

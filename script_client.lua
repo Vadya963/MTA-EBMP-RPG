@@ -1208,7 +1208,7 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
 
-			function outputEditBox ( button, state, absoluteX, absoluteY )--купить предмет
+			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть предмет
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "return", text, 0, 0, 0 )
