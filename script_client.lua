@@ -1162,7 +1162,8 @@ function tablet_fun()--создание планшета
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
 
 	local auction_menu = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
-	local internet = guiCreateStaticImage( 90, 10, 60, 60, "comp/internet.png", false, fon )
+	local youtube = guiCreateStaticImage( 100, 10, 85, 60, "comp/youtube.png", false, fon )
+	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if tomorrow_weather == value then
@@ -1288,12 +1289,64 @@ function tablet_fun()--создание планшета
 			local loadURL = guiCreateStaticImage ( 100, 0, 25, 25, "comp/connect.png", false, low_fon )
 			local addressBar = guiCreateEdit ( 125, 0, width_fon-125, 25, "", false, low_fon )
 
+			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, false, false, false, low_fon )
+			local theBrowser = guiGetBrowser( browser )
+
+			addEventHandler("onClientBrowserCreated", theBrowser,
+			function ()
+				loadBrowserURL(theBrowser, "https://www.youtube.com")
+			end, false)
+
+			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )
+				guiSetText( addressBar, getBrowserURL( theBrowser ) )
+			end)
+
+			addEventHandler( "onClientGUIClick", resourceRoot,
+			function()
+				if source == NavigateBack then
+					navigateBrowserBack(theBrowser)
+
+				elseif source == NavigateForward then
+					navigateBrowserForward(theBrowser)
+
+				elseif source == reloadPage then
+					reloadBrowserPage(theBrowser)
+
+				elseif source == loadURL then
+					local text = guiGetText ( addressBar )
+					if text ~= "" then
+						loadBrowserURL(theBrowser, text)
+					else
+						sendPlayerMessage("[ERROR] URL пуст", red[1], red[2], red[3])
+					end
+
+				elseif source == home then
+					destroyElement(low_fon)
+
+					browser = nil
+				end
+			end)
+		end
+	end
+	addEventHandler ( "onClientGUIClick", youtube, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--вики
+		if not browser then
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+
+			local home = guiCreateStaticImage ( 0, 0, 25, 25, "comp/homebut.png", false, low_fon )
+			local NavigateBack = guiCreateStaticImage ( 25, 0, 25, 25, "comp/backbut.png", false, low_fon )
+			local NavigateForward = guiCreateStaticImage ( 50, 0, 25, 25, "comp/forbut.png", false, low_fon )
+			local reloadPage = guiCreateStaticImage ( 75, 0, 25, 25, "comp/update.png", false, low_fon )
+			local loadURL = guiCreateStaticImage ( 100, 0, 25, 25, "comp/connect.png", false, low_fon )
+			local addressBar = guiCreateEdit ( 125, 0, width_fon-125, 25, "", false, low_fon )
+
 			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, true, false, false, low_fon )
 			local theBrowser = guiGetBrowser( browser )
 
 			addEventHandler("onClientBrowserCreated", theBrowser,
 			function ()
-				--loadBrowserURL(theBrowser, "https://www.youtube.com")
 				loadBrowserURL(theBrowser, "http://mta/local/wiki/index.html")
 			end, false)
 
@@ -1328,7 +1381,7 @@ function tablet_fun()--создание планшета
 			end)
 		end
 	end
-	addEventHandler ( "onClientGUIClick", internet, outputEditBox, false )
+	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
@@ -1893,7 +1946,7 @@ end)
 addCommandHandler ( "showcursor",
 function ( cmd, id )
 	if not id then
-		sendPlayerMessage("[ERROR] /showcursor [true or false]", red[1], red[2], red[3])
+		sendPlayerMessage("[ERROR] /"..cmd.." [true or false]", red[1], red[2], red[3])
 	elseif id == "true" then
 		showCursor( true )
 		sendPlayerMessage("showcursor true")
