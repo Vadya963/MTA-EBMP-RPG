@@ -1,4 +1,4 @@
-local database = dbConnect( "sqlite", "ebmp-ver-4.db" )
+local database = dbConnect( "sqlite", "ebmp-rpg.db" )
 function sqlite(text)
 	local result = dbQuery( database, text )
 	local result = dbPoll( result, -1 )
@@ -2187,6 +2187,22 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 
 
+		local result = sqlite( "SELECT COUNT() FROM account" )
+		print("[account] "..result[1]["COUNT()"])
+
+
+		local result = sqlite( "SELECT * FROM account WHERE ban = '1'" )
+		local banned = 0
+		for k,v in pairs(result) do
+			banned = banned+1
+		end
+		print("[account_banned] "..banned)
+
+
+		local result = sqlite( "SELECT COUNT() FROM banserial_list" )
+		print("[account_banserial] "..result[1]["COUNT()"])
+
+
 		local result = sqlite( "SELECT * FROM car_db" )
 		local carnumber_number = 0
 		for k,v in pairs(result) do
@@ -2918,7 +2934,7 @@ function ( playerid, cmd, id )
 
 		sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
 
-		sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, frozen, evacuate, x, y, z, rot, fuel, day_engine_on, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '0', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..plate.."]")
 	else
@@ -3035,14 +3051,6 @@ local vehicleid = getPlayerVehicle(playerid)
 				else
 					setVehicleEngineState(vehicleid, true)
 					me_chat(playerid, playername.." завел(а) двигатель")
-
-					local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-					if result[1]["COUNT()"] == 1 then
-						local time = getRealTime()
-						local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-
-						sqlite( "UPDATE car_db SET day_engine_on = '"..client_time.."' WHERE carnumber = '"..plate.."'")
-					end
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 3 пункта:", red[1], red[2], red[3])
