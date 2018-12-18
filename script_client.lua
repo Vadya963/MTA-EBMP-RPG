@@ -1946,7 +1946,7 @@ end)
 addCommandHandler ( "showcursor",
 function ( cmd, id )
 	if not id then
-		sendPlayerMessage("[ERROR] /"..cmd.." [true or false]", red[1], red[2], red[3])
+		sendPlayerMessage("[ERROR] /"..cmd.." [true или false]", red[1], red[2], red[3])
 	elseif id == "true" then
 		showCursor( true )
 		sendPlayerMessage("showcursor true")
