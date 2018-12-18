@@ -3181,8 +3181,6 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 				setPedAnimation(playerid, v[8], v[9], -1, false, false, false, false)
 
-				save_player_action(playerid, "[throw_earth_anim] "..playername.." ["..info_png[v[6]][1]..", "..randomize.."]")
-
 				return
 			end
 		end
