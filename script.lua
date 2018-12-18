@@ -3044,7 +3044,7 @@ local vehicleid = getPlayerVehicle(playerid)
 				return
 			end
 
-			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and search_inv_player(playerid, 2, playername) ~= 0 then
+			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, playername) ~= 0 then
 				if getVehicleEngineState(vehicleid) then
 					setVehicleEngineState(vehicleid, false)
 					me_chat(playerid, playername.." заглушил(а) двигатель")
@@ -3053,10 +3053,9 @@ local vehicleid = getPlayerVehicle(playerid)
 					me_chat(playerid, playername.." завел(а) двигатель")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 3 пункта:", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 2 пункта:", red[1], red[2], red[3])
 				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от т/с", red[1], red[2], red[3])
-				sendPlayerMessage(playerid, "[ERROR] 2) сидеть на водительском месте", red[1], red[2], red[3])
-				sendPlayerMessage(playerid, "[ERROR] 3) иметь права на свое имя", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 2) иметь права на свое имя", red[1], red[2], red[3])
 			end
 		end
 	end
