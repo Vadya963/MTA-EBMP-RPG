@@ -28,7 +28,6 @@ local house_icon = 1273--пикап дома
 local business_icon = 1274--пикап бизнеса
 local job_icon = 1318--пикап работ
 local time_nalog = 12--время когда будет взиматься налог
-local vehicle_attach = {}--таблица заатаченных авто
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -2772,8 +2771,6 @@ function detachTrailer(vehicleid)--прицепка прицепа
 
 		sqlite( "UPDATE car_db SET evacuate = '1' WHERE carnumber = '"..plate.."'")
 	end
-
-	vehicle_attach[vehicleid] = trailer
 end
 addEventHandler("onTrailerAttach", getRootElement(), detachTrailer)
 
@@ -2792,8 +2789,6 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 
 		sqlite( "UPDATE car_db SET evacuate = '0' WHERE carnumber = '"..plate.."'")
 	end
-
-	vehicle_attach[vehicleid] = nil
 end
 addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
 
