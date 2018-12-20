@@ -28,6 +28,7 @@ local house_icon = 1273--пикап дома
 local business_icon = 1274--пикап бизнеса
 local job_icon = 1318--пикап работ
 local time_nalog = 12--время когда будет взиматься налог
+local vehicle_attach = {}--таблица заатаченных авто
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -910,31 +911,36 @@ function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 0, "max_earth "..max_earth )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 1, "state_inv_player[playername] "..state_inv_player[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 2, "state_gui_window[playername] "..state_gui_window[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 3, "logged[playername] "..logged[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 4, "enter_house[playername] "..enter_house[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 5, "enter_business[playername] "..enter_business[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 6, "enter_job[playername] "..enter_job[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 7, "speed_car_device[playername] "..speed_car_device[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 8, "arrest[playername] "..arrest[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 9, "crimes[playername] "..crimes[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 10, "robbery_player[playername] "..robbery_player[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 11, "gps_device[playername] "..gps_device[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 12, "timer_robbery[playername] "..tostring(timer_robbery[playername]) )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 13, "job[playername] "..job[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 14, "job_call[playername] "..job_call[playername] )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 15, "job_ped[playername] "..tostring(job_ped[playername]) )
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 16, "job_blip[playername] "..tostring(job_blip[playername]) )
-		
+		local debuginfo_table = {}
+		debuginfo_table[0] = "max_earth "..max_earth
+		debuginfo_table[1] = "state_inv_player[playername] "..state_inv_player[playername]
+		debuginfo_table[2] = "state_gui_window[playername] "..state_gui_window[playername]
+		debuginfo_table[3] = "logged[playername] "..logged[playername]
+		debuginfo_table[4] = "enter_house[playername] "..enter_house[playername]
+		debuginfo_table[5] = "enter_business[playername] "..enter_business[playername]
+		debuginfo_table[6] = "enter_job[playername] "..enter_job[playername]
+		debuginfo_table[7] = "speed_car_device[playername] "..speed_car_device[playername]
+		debuginfo_table[8] = "arrest[playername] "..arrest[playername]
+		debuginfo_table[9] = "crimes[playername] "..crimes[playername]
+		debuginfo_table[10] = "robbery_player[playername] "..robbery_player[playername]
+		debuginfo_table[11] = "gps_device[playername] "..gps_device[playername]
+		debuginfo_table[12] = "timer_robbery[playername] "..timer_robbery[playername]
+		debuginfo_table[13] = "job[playername] "..job[playername]
+		debuginfo_table[14] = "job_call[playername] "..job_call[playername]
+		debuginfo_table[15] = "job_ped[playername] "..tostring(job_ped[playername])
+		debuginfo_table[16] = "job_blip[playername] "..tostring(job_blip[playername])
+
 		if job_pos[playername] ~= 0 then
-			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "job_pos[playername] "..job_pos[playername][1]..", "..job_pos[playername][2]..", "..job_pos[playername][3] )
+			debuginfo_table[17] = "job_pos[playername] "..tostring(job_pos[playername][1])..", "..tostring(job_pos[playername][2])..", "..tostring(job_pos[playername][3])
 		else
-			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 17, "job_pos[playername] "..job_pos[playername] )
+			debuginfo_table[17] = "job_pos[playername] "..job_pos[playername]
 		end
 
-		triggerClientEvent( playerid, "event_debuginfo_fun", playerid, 18, "job_marker[playername] "..tostring(job_marker[playername]) )
+		debuginfo_table[18] = "job_marker[playername] "..tostring(job_marker[playername])
+
+		for k,v in pairs(debuginfo_table) do
+			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, k, v )
+		end
 
 		if logged[playername] == 1 then
 			--нужды
@@ -3207,7 +3213,13 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 					object_attach(playerid, 337, 12, 0,0,0, 0,-90,0, (v[12]*1000))
 				end
 
-				setPedAnimation(playerid, v[8], v[9], (v[12]*1000), true, false, false, false)
+				setPedAnimation(playerid, v[8], v[9], -1, true, false, false, false)
+
+				setTimer(function ()
+					if isElement(playerid) then
+						setPedAnimation(playerid, nil, nil)
+					end
+				end, (v[12]*1000), 1)
 
 				return
 			end
