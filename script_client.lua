@@ -638,7 +638,7 @@ function createText ()
 	if debuginfo == "true" then
 		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( "skin "..getElementModel(playerid), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( "skin "..getElementModel(playerid)..", interior "..getElementInterior(playerid)..", dimension "..getElementDimension(playerid), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		if isCursorShowing() then
 			local screenx, screeny, worldx, worldy, worldz = getCursorPosition()

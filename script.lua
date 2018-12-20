@@ -517,7 +517,6 @@ local cash_car = {
 	--[432] = {"RHINO", 110000},--танк
 	--[433] = {"BARRACKS", 10000},--военный грузовик
 	[434] = {"HOTKNIFE", 35000},
-	--[435] = {"Trailer 1", 35000},--продуктовый
 	[436] = {"PREVION", 9000},
 	--[437] = {"COACH", 20000},--автобус
 	--[438] = {"CABBIE", 10000},--такси
@@ -1162,6 +1161,7 @@ end
 
 function timer_earth()--передача слотов земли на клиент
 	for k,playerid in pairs(getElementsByType("player")) do
+		local playername = getPlayerName ( playerid )
 		local x,y,z = getElementPosition(playerid)
 
 		for i,v in pairs(earth) do
@@ -1169,8 +1169,6 @@ function timer_earth()--передача слотов земли на клиен
 				triggerClientEvent( playerid, "event_earth_load", playerid, "", i, v[1], v[2], v[3], v[4], v[5] )
 			end
 		end
- 
-		local playername = getPlayerName ( playerid )
 
 		if logged[playername] == 1 then
 			triggerClientEvent( playerid, "event_inv_load", playerid, "player", 0, array_player_1[playername][0+1], array_player_2[playername][0+1] )
@@ -2299,6 +2297,18 @@ function displayLoadedRes ( res )--старт ресурсов
 
 
 		--создание маркеров
+		for k,v in pairs(up_car_subject) do 
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
+			setElementInterior(marker, v[7])
+			setElementDimension(marker, v[8])
+		end
+
+		for k,v in pairs(down_car_subject) do 
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
+			setElementInterior(marker, v[7])
+			setElementDimension(marker, v[8])
+		end
+
 		for k,v in pairs(up_player_subject) do
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 			setElementInterior(marker, v[7])
@@ -2404,7 +2414,7 @@ function()
 	bindKey(playerid, "lalt", "down", left_alt_down )
 	bindKey(playerid, "h", "down", h_down )
 
-	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, 1)
+	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, math.random(1,1000))
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 	setElementFrozen( playerid, true )
@@ -2747,24 +2757,6 @@ function freez_car()--заморозка авто
 	end
 end
 
-function reattachTrailer(vehicleid)--отцепка прицепа
-	local trailer = source
-	local plate = getVehiclePlateText ( trailer )
-
-	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-	if result[1]["COUNT()"] == 1 then
-		local x,y,z = getElementPosition(trailer)
-		local rx,ry,rz = getElementRotation(trailer)
-
-		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
-			sqlite( "UPDATE car_db SET frozen = '1', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
-		end
-
-		sqlite( "UPDATE car_db SET evacuate = '0' WHERE carnumber = '"..plate.."'")
-	end
-end
-addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
-
 function detachTrailer(vehicleid)--прицепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
@@ -2780,8 +2772,30 @@ function detachTrailer(vehicleid)--прицепка прицепа
 
 		sqlite( "UPDATE car_db SET evacuate = '1' WHERE carnumber = '"..plate.."'")
 	end
+
+	vehicle_attach[vehicleid] = trailer
 end
 addEventHandler("onTrailerAttach", getRootElement(), detachTrailer)
+
+function reattachTrailer(vehicleid)--отцепка прицепа
+	local trailer = source
+	local plate = getVehiclePlateText ( trailer )
+
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+	if result[1]["COUNT()"] == 1 then
+		local x,y,z = getElementPosition(trailer)
+		local rx,ry,rz = getElementRotation(trailer)
+
+		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
+			sqlite( "UPDATE car_db SET frozen = '1', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+		end
+
+		sqlite( "UPDATE car_db SET evacuate = '0' WHERE carnumber = '"..plate.."'")
+	end
+
+	vehicle_attach[vehicleid] = nil
+end
+addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
 
 function car_spawn(number)
 
