@@ -821,11 +821,6 @@ local anim_player_subject = {--{x,y,z, радиус, ид пнг1, ид пнг2,
 	{-471.2958984375,-153.5048828125,75.246078491211, 1, 67, 68, 1, "chainsaw", "weapon_csaw", 0, 0, 5},
 
 	--рудник лв
-	{681.732421875,879.7626953125,-39.562740325928, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
-	{695.19219970703,886.27130126953,-38.105506896973, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
-	{691.26837158203,906.04571533203,-38.310031890869, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
-	{677.27325439453,908.61407470703,-39.635219573975, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
-	{672.15020751953,892.13360595703,-39.225635528564, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
 	{630.7001953125,865.71032714844,-42.660102844238, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
 	{619.72265625,873.4443359375,-42.9609375, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
 	{607.9052734375,864.9892578125,-42.809223175049, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
@@ -2211,7 +2206,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			anim_player_subject[k][7] = result[1]["zp_player_68"]
 		end
 
-		for k=27,41 do
+		for k=27,36 do
 			anim_player_subject[k][7] = result[1]["zp_player_71"]
 		end
 
@@ -2298,14 +2293,10 @@ function displayLoadedRes ( res )--старт ресурсов
 		--создание маркеров
 		for k,v in pairs(up_car_subject) do 
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
-			setElementInterior(marker, v[7])
-			setElementDimension(marker, v[8])
 		end
 
 		for k,v in pairs(down_car_subject) do 
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
-			setElementInterior(marker, v[7])
-			setElementDimension(marker, v[8])
 		end
 
 		for k,v in pairs(up_player_subject) do

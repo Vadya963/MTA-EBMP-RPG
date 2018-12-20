@@ -5,7 +5,6 @@
 	<removeWorldObject id="removeWorldObject (vgSbikeschl02) (1)" radius="15.246662" interior="0" model="8229" lodModel="0" posX="1142.0313" posY="1362.5" posZ="12.48438" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
 
 	<object id="object (des_gravelpile04) (1)" breakable="true" interior="0" alpha="255" model="16302" doublesided="false" scale="1" dimension="0" posX="620" posY="857.09998" posZ="-38.6" rotX="0" rotY="0" rotZ="0"></object>
-	<object id="object (des_gravelpile04) (2)" breakable="true" interior="0" alpha="255" model="16302" doublesided="false" scale="1" dimension="0" posX="685.20001" posY="894.70001" posZ="-35.3" rotX="0" rotY="0" rotZ="0"></object>
 	<removeWorldObject id="removeWorldObject (des_quarstmound_02) (1)" radius="35.442787" interior="0" model="16085" lodModel="0" posX="627.86719" posY="850.27344" posZ="-42.77344" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
 	<removeWorldObject id="removeWorldObject (des_quarrybelt15) (1)" radius="23.540108" interior="0" model="16311" lodModel="0" posX="585.84375" posY="869.63281" posZ="-39.36719" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
 	<removeWorldObject id="removeWorldObject (des_quarryhut02) (1)" radius="13.647183" interior="0" model="16325" lodModel="0" posX="590.29688" posY="870.27344" posZ="-44.26562" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
