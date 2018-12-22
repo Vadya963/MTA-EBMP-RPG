@@ -17,7 +17,7 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
-local max_speed = 80--масимальная скорость в городе
+local max_speed = 80--максимальная скорость в городе
 local time_game = 0--сколько минут играешь
 
 local no_use_subject = {-1,0,1}
@@ -471,7 +471,7 @@ local down_player_subject = {--3d text
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
 
 	{260.4326171875,1409.2626953125,10.506074905396, 15, "Нефтезавод (Загрузить бочки - E)"},
-	{2788.23046875,-2455.99609375,13.340852737427, 15, "Порт ЛС (Разгрузить товар - E)"},
+	{2787.8974609375,-2455.974609375,13.633636474609, 15, "Порт ЛС (Разгрузить товар - E)"},
 	{2308.81640625,-13.25,26.7421875, 15, "Банк (Загрузить деньги - E)"},
 
 	--завод продуктов
@@ -512,7 +512,7 @@ local down_player_subject = {--3d text
 	{-482.490234375,-154.0693359375,75.835266113281, 1, text3},
 	{-477.3134765625,-153.7890625,75.568603515625, 1, text3},
 	{-471.2958984375,-153.5048828125,75.246078491211, 1, text3},
-	{-1990.513671875,-2384.9560546875,31.061803817749, 15, "Лесопилка (Разгрузить товар - E)"},
+	{-1990.5732421875,-2384.921875,30.625, 15, "Лесопилка (Разгрузить товар - E)"},
 
 	--рудник лв
 	{576.8212890625,846.5732421875,-42.264389038086, 5, "Нажмите E, чтобы взять кирку"},
@@ -606,30 +606,33 @@ function createText ()
 	local text = "Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
-	dxDrawImage ( screenWidth-30, 105-7.5, 30, 30, "hud/health.png" )
-	dxDrawRectangle( screenWidth-145-30, 105, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105, (145/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
+	local width_need = (screenWidth/5.04)--ширина нужд 271
+	local height_need = (screenHeight/5.68)--высота нужд 135
+
+	dxDrawImage ( screenWidth-30, height_need-7.5, 30, 30, "hud/health.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need, (width_need/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
 
 	--нужды
-	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*1, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*1, (145/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
+	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, (width_need/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*2, 30, 30, "hud/drugs.png" )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*2, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*2, (145/100)*drugs, 15, tocolor ( 90, 151, 107, 255 ) )
+	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*2, 30, 30, "hud/drugs.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, (width_need/100)*drugs, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*3, 30, 30, "hud/satiety.png" )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*3, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*3, (145/100)*satiety, 15, tocolor ( 90, 151, 107, 255 ) )
+	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*3, 30, 30, "hud/satiety.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, (width_need/100)*satiety, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*4, 30, 30, "hud/hygiene.png" )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*4, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*4, (145/100)*hygiene, 15, tocolor ( 90, 151, 107, 255 ) )
+	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/hygiene.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*hygiene, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, 105-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*5, 145, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-145-30, 105+(20+7.5)*5, (145/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
@@ -649,12 +652,12 @@ function createText ()
 			dxdrawtext ( v, 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
-		dxdrawtext ( heal_player[1], screenWidth-145-30-30, 105, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( (alcohol/100), screenWidth-145-30-30, 105+(20+7.5)*1, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( drugs, screenWidth-145-30-30, 105+(20+7.5)*2, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( satiety, screenWidth-145-30-30, 105+(20+7.5)*3, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( hygiene, screenWidth-145-30-30, 105+(20+7.5)*4, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( sleep, screenWidth-145-30-30, 105+(20+7.5)*5, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( heal_player[1], screenWidth-width_need-30-30, height_need, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( (alcohol/100), screenWidth-width_need-30-30, height_need+(20+7.5)*1, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( drugs, screenWidth-width_need-30-30, height_need+(20+7.5)*2, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( satiety, screenWidth-width_need-30-30, height_need+(20+7.5)*3, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( hygiene, screenWidth-width_need-30-30, height_need+(20+7.5)*4, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( sleep, screenWidth-width_need-30-30, height_need+(20+7.5)*5, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 	end
 
 

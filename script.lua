@@ -782,10 +782,10 @@ local up_player_subject = {--{x,y,z, радиус, ид пнг, зп, интер
 
 --места сброса предметов
 local down_car_subject = {--{x,y,z, радиус, ид пнг, ид тс}
-	{2788.23046875,-2455.99609375,13.340852737427, 15, 24, 456},--порт лс
+	{2787.8974609375,-2455.974609375,13.633636474609, 15, 24, 456},--порт лс
 	{2196.9619140625,1677.1708984375,12.3671875, 15, 65, 428},--калигула
-	{-1990.513671875,-2384.9560546875,31.061803817749, 15, 68, 455},--лесопилка
-	{2788.23046875,-2455.99609375,13.340852737427, 15, 73, 456},--порт лс
+	{-1990.5732421875,-2384.921875,30.625, 15, 68, 455},--лесопилка
+	{2787.8974609375,-2455.974609375,13.633636474609, 15, 73, 456},--порт лс
 }
 
 local down_player_subject = {--{x,y,z, радиус, ид пнг, интерьер, мир} также нужно прописать ид пнг в throw_earth_server
@@ -922,7 +922,7 @@ function debuginfo ()
 		debuginfo_table[9] = "crimes[playername] "..crimes[playername]
 		debuginfo_table[10] = "robbery_player[playername] "..robbery_player[playername]
 		debuginfo_table[11] = "gps_device[playername] "..gps_device[playername]
-		debuginfo_table[12] = "timer_robbery[playername] "..timer_robbery[playername]
+		debuginfo_table[12] = "timer_robbery[playername] "..tostring(timer_robbery[playername])
 		debuginfo_table[13] = "job[playername] "..job[playername]
 		debuginfo_table[14] = "job_call[playername] "..job_call[playername]
 		debuginfo_table[15] = "job_ped[playername] "..tostring(job_ped[playername])
