@@ -826,6 +826,18 @@ function createText ()
 		local width,height = guiGetPosition ( gui_window, false )
 		dxDrawRectangle( width+10, height+25, 160, 160, tocolor ( tune_color_r, tune_color_g, tune_color_b, 255 ), true )
 	end
+
+
+	for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= -1 and player ~= playerid then
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.2, 0, false ) }
+			if coords[1] and coords[2] then
+				dxDrawImage ( coords[1]-(30/2), coords[2], 30, 20, "gui/Wanted_person.png" )
+			end
+		end
+	end
 end
 addEventHandler ( "onClientRender", getRootElement(), createText )
 

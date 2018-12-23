@@ -940,6 +940,9 @@ function debuginfo ()
 			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, k, v )
 		end
 
+		setElementData(playerid, "crimes_data", crimes[playername])
+
+
 		if logged[playername] == 1 then
 			--нужды
 			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
