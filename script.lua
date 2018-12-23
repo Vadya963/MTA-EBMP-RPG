@@ -170,7 +170,7 @@ function set_weather()
 		print("[tomorrow_weather] "..tomorrow_weather)
 
 		for k,playerid in pairs(getElementsByType("player")) do
-			triggerClientEvent( playerid, "event_tomorrow_weather_fun", playerid, tomorrow_weather )
+			setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
 		end
 	end
 end
@@ -1153,7 +1153,7 @@ function fuel_down()--система топлива авто
 		local vehicleid = getPlayerVehicle(playerid)
 		if vehicleid then
 			local veh = getVehiclePlateText(vehicleid)
-			triggerClientEvent( playerid, "event_fuel_load", playerid, fuel[veh] )
+			setElementData ( playerid, "fuel_data", fuel[veh] )
 		end
 	end
 end

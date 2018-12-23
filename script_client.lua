@@ -118,13 +118,6 @@ end
 addEvent( "event_earth_load", true )
 addEventHandler ( "event_earth_load", getRootElement(), earth_load )
 
-local fuel = 0--топливо авто для dxdrawimage
-function fuel_load_fun (i)
-	fuel = i
-end
-addEvent( "event_fuel_load", true )
-addEventHandler ( "event_fuel_load", getRootElement(), fuel_load_fun )
-
 local speed_car_device = 0--отображение скорости авто, 0-выкл, 1-вкл
 function speed_car_device_fun (i)
 	speed_car_device = i
@@ -138,13 +131,6 @@ function gps_device_fun (i)
 end
 addEvent( "event_gps_device_fun", true )
 addEventHandler ( "event_gps_device_fun", getRootElement(), gps_device_fun )
-
-local tomorrow_weather = 0--погода
-function tomorrow_weather_fun (i)
-	tomorrow_weather = i
-end
-addEvent( "event_tomorrow_weather_fun", true )
-addEventHandler ( "event_tomorrow_weather_fun", getRootElement(), tomorrow_weather_fun )
 
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
@@ -665,6 +651,7 @@ function createText ()
 	if vehicle then--отображение скорости авто
 		local speed_table = split(getSpeed(vehicle), ".")
 		local heal_vehicle = split(getElementHealth(vehicle), ".")
+		local fuel = getElementData ( playerid, "fuel_data" )
 		local fuel_table = split(fuel, ".")
 		local speed_car = 0
 
@@ -1206,7 +1193,7 @@ function tablet_fun()--создание планшета
 	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
-		if tomorrow_weather == value then
+		if getElementData(localPlayer, "tomorrow_weather_data") == value then
 			local set_weather = guiCreateStaticImage( width_fon-weather[2], height_fon-weather[3], weather[2], weather[3], "comp/"..weather[1]..".png", false, fon )
 			break
 		end
