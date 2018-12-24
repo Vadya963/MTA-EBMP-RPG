@@ -300,6 +300,8 @@ local info_png = {
 	[71] = {"руда", "кг"},
 	[72] = {"лицензия дальнобойщика на имя", ""},
 	[73] = {"бочка с нефтью", "$ за штуку"},
+	[74] = {"лицензия водителя мусоровоза на имя", ""},
+	[75] = {"мусор", "кг"},
 }
 
 local weapon = {
@@ -496,7 +498,7 @@ local cash_car = {
 	[405] = {"SENTINEL", 35000},
 	--[406] = {"DUMPER", 50000},--самосвал
 	--[407] = {"FIRETRUK", 15000},
-	--[408] = {"TRASH", 50000},--мусоровоз
+	[408] = {"TRASH", 50000},--мусоровоз
 	[409] = {"STRETCH", 40000},--лимузин
 	[410] = {"MANANA", 9000},
 	[411] = {"INFERNUS", 95000},
@@ -760,7 +762,7 @@ local t_s_salon = {
 
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус, ид тс, ид пнг, зп}
-	{89.9423828125,-304.623046875,1.578125, 15, 456, 24, 1},--завод продуктов
+	{89.9423828125,-304.623046875,1.578125, 15, 456, 24, 1},--склад продуктов
 	{2308.81640625,-13.25,26.7421875, 15, 428, 65, 1},--банк
 	{260.4326171875,1409.2626953125,10.506074905396, 15, 456, 73, 1},--нефтезавод
 }
@@ -786,6 +788,7 @@ local down_car_subject = {--{x,y,z, радиус, ид пнг, ид тс}
 	{2196.9619140625,1677.1708984375,12.3671875, 15, 65, 428},--калигула
 	{-1990.5732421875,-2384.921875,30.625, 15, 68, 455},--лесопилка
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 73, 456},--порт лс
+	{-1813.2890625,-1654.3330078125,22.398532867432, 15, 75, 408},--свалка
 }
 
 local down_player_subject = {--{x,y,z, радиус, ид пнг, интерьер, мир} также нужно прописать ид пнг в throw_earth_server
@@ -850,12 +853,6 @@ local prison_cell = {
 	{interior_job[4][1], interior_job[4][10], "кпз_лв3",	193.6708984375,	176.7255859375,	1003.0234375},
 }
 
---места для таксистов
-local taxi_pos = {
-	{2308.81640625,-13.25,26.7421875},--банк
-	{2788.23046875,-2455.99609375,13.340852737427},--порт
-}
-
 --инв-рь игрока
 local array_player_1 = {}
 local array_player_2 = {}
@@ -872,7 +869,7 @@ local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
 local timer_robbery = {}--таймер ограбления
-local job = {}--работа, 0-нет, 1-да
+local job = {}--работа, 0-нет, 1-таксист, 2-вод мусоровоза
 local job_call = {}--(таксист - есть ли вызов, 0-нет, 1-да, 2-сдаем вызов)
 local job_ped = {}--создан ли нпс, 0-нет
 local job_blip = {}--создан ли блип, 0-нет
@@ -951,7 +948,29 @@ function debuginfo ()
 	end
 end
 
-function taxi_job_timer ()
+function job_timer ()
+	--места для таксистов
+	local taxi_pos = {
+		{2308.81640625,-13.25,26.7421875},--банк
+	}
+
+	--загрузка позиций для работы таксист
+	local count = #taxi_pos
+	for k,v in pairs(house_pos) do
+		count = count+1
+		taxi_pos[count] = {v[1],v[2],v[3]}
+	end
+
+	for k,v in pairs(business_pos) do
+		count = count+1
+		taxi_pos[count] = {v[1],v[2],v[3]}
+	end
+
+	for k,v in pairs(interior_job) do
+		count = count+1
+		taxi_pos[count] = {v[6],v[7],v[8]}
+	end
+
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 		local vehicleid = getPlayerVehicle(playerid)
@@ -959,7 +978,7 @@ function taxi_job_timer ()
 		math.randomseed(getTickCount())
 
 		if logged[playername] == 1 then
-			if job[playername] == 1 then--вышел на работу
+			if job[playername] == 1 then--работа таксиста
 				if vehicleid then
 					if getElementModel(vehicleid) == 420 then
 						if getSpeed(vehicleid) < 1 then
@@ -1024,6 +1043,40 @@ function taxi_job_timer ()
 									job_marker[playername] = 0
 									job_pos[playername] = 0
 									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+
+
+			elseif job[playername] == 2 then--работа водителя мусоровоза
+				if vehicleid then
+					if getElementModel(vehicleid) == 408 then
+						if getSpeed(vehicleid) < 1 then
+
+							if job_call[playername] == 0 then--старт работы
+								local randomize = math.random(1,#taxi_pos)
+
+								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = 1
+								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+								job_blip[playername] = createBlip ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1, "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername] == 1 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = math.random(1,#taxi_pos)
+									local randomize_zp = math.random(1,zp_car_75)
+
+									give_subject( playerid, "car", 75, randomize_zp )
+
+									job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+
+									setElementPosition(job_blip[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
+									setElementPosition(job_marker[playername], taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1)
 								end
 							end
 
@@ -2061,7 +2114,8 @@ function mayoralty_menu_fun( playerid, text )--мэрия
 		[50] = {"лицензия на оружие", 0, 10000},
 		[64] = {"лицензия таксиста", 0, 5000},
 		[66] = {"лицензия инкасатора", 0, 10000},
-		[72] = {"лицензия дальнобойщика", 0, 5000},
+		[72] = {"лицензия дальнобойщика", 0, 15000},
+		[74] = {"лицензия водителя мусоровоза", 0, 20000},
 	}
 
 	local mayoralty_nalog = {
@@ -2184,7 +2238,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
 		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
 		setTimer(pay_nalog, (60*60000), 0)--списание налогов
-		setTimer(taxi_job_timer, 1000, 0)--работа таксиста
+		setTimer(job_timer, 1000, 0)--работы в цикле
 
 		setWeather(tomorrow_weather)
 
@@ -2207,6 +2261,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		zp_player_taxi = result[1]["zp_player_taxi"]
 		up_car_subject[2][7] = result[1]["zp_car_65"]
 		up_car_subject[3][7] = result[1]["zp_car_73"]
+		zp_car_75 = result[1]["zp_car_75"]
 
 		for k=1,10 do
 			anim_player_subject[k][7] = result[1]["zp_player_62"]
@@ -2296,6 +2351,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		createBlip ( -1990.513671875,-2384.9560546875,31.061803817749, 52, 0, 0,0,0,0, 0, max_blip )--лесопилка
 		createBlip ( 576.8212890625,846.5732421875,-42.264389038086, 51, 0, 0,0,0,0, 0, max_blip )--рудник лв
 		createBlip ( 260.4326171875,1409.2626953125,10.506074905396, 51, 0, 0,0,0,0, 0, max_blip )--нефтезавод
+		createBlip ( -1813.2890625,-1654.3330078125,22.398532867432, 52, 0, 0,0,0,0, 0, max_blip )--свалка
 
 		for k,v in pairs(t_s_salon) do
 			createBlip ( v[1], v[2], v[3], v[4], 0, 0,0,0,0, 0, max_blip )--салоны продажи
@@ -2329,28 +2385,6 @@ function displayLoadedRes ( res )--старт ресурсов
 			setElementDimension(marker, v[11])
 		end
 
-
-		--загрузка позиций для работы таксист
-		local count = #taxi_pos
-		for k,v in pairs(house_pos) do
-			count = count+1
-			taxi_pos[count] = {v[1],v[2],v[3]}
-		end
-
-		for k,v in pairs(business_pos) do
-			count = count+1
-			taxi_pos[count] = {v[1],v[2],v[3]}
-		end
-
-		for k,v in pairs(interior_job) do
-			count = count+1
-			taxi_pos[count] = {v[6],v[7],v[8]}
-		end
-
-		for k,v in pairs(t_s_salon) do
-			count = count+1
-			taxi_pos[count] = {v[1],v[2],v[3]}
-		end
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -3387,7 +3421,6 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 		if vehicleid then
 			if not getVehicleOccupant ( vehicleid, 0 ) then
-				sendPlayerMessage(playerid, "[ERROR] Вы не водитель", red[1], red[2], red[3] )
 				return
 
 			elseif id1 == 65 then
@@ -3398,6 +3431,11 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 			elseif id1 == 24 then
 				if search_inv_player(playerid, 72, playername) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3] )
+					return
+				end
+			elseif id1 == 75 then
+				if search_inv_player(playerid, 74, playername) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3] )
 					return
 				end
 			end
@@ -3414,11 +3452,13 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				
 				if id1 == 24 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте на место разгрузки в порт или в любой бизнес", color_tips[1], color_tips[2], color_tips[3])
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 				elseif id1 == 65 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в казино Калигула", color_tips[1], color_tips[2], color_tips[3])
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в казино Калигула, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 				elseif id1 == 73 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте на место разгрузки в порт", color_tips[1], color_tips[2], color_tips[3])
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 75 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 				end
 
 				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
@@ -3440,7 +3480,6 @@ function delet_subject(playerid, id)--удаление предметов из �
 		
 	if vehicleid then
 		if not getVehicleOccupant ( vehicleid, 0 ) then
-			sendPlayerMessage(playerid, "[ERROR] Вы не водитель", red[1], red[2], red[3] )
 			return
 		end
 
@@ -3839,7 +3878,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." показал(а) свой бумажник в котором находится "..id2.."$")
 			return
 
-		elseif id1 == 24 or id1 == 48 or id1 == 67 or id1 == 68 or id1 == 69 or id1 == 70 or id1 == 71 then--ящик, тушка свиньи, бензопила, бревна, пустая коробка, кирка, руда
+		elseif id1 == 24 or id1 == 48 or id1 == 67 or id1 == 68 or id1 == 69 or id1 == 70 or id1 == 71 or id1 == 73 or id1 == 75 then--ящик, тушка свиньи, бензопила, бревна, пустая коробка, кирка, руда, бочка, мусор
 			return
 
 -----------------------------------------------------нужды-------------------------------------------------------------
@@ -4435,6 +4474,20 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
 
 			inv_server_load( "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+		elseif id1 == 74 then--лиц. вод мусоровоза
+			if id2 == playername then
+				if job[playername] == 0 then
+					job[playername] = 2
+
+					me_chat(playerid, playername.." вышел(ла) на работу")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			end
+			return
 		end
 
 		-----------------------------------------------------------------------------------------------------------------------
@@ -5241,7 +5294,7 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
-local sub_text = {2,10,44,45,50,64,66,72}
+local sub_text = {2,10,44,45,50,64,66,72,74}
 addCommandHandler ( "subt",--выдача предметов с текстом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), id2
