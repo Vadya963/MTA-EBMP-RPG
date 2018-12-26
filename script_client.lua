@@ -284,12 +284,12 @@ local plate = ""
 local house = ""
 
 local max_inv = 23
-local inv_slot = {} -- инв-рь игрока
+local inv_slot_player = {} -- инв-рь игрока
 local inv_slot_car = {} -- инв-рь авто
 local inv_slot_house = {} -- инв-рь дома
 
 for i=0,max_inv do
-	inv_slot[i] = {0,0,0}
+	inv_slot_player[i] = {0,0,0}
 	inv_slot_car[i] = {0,0,0}
 	inv_slot_house[i] = {0,0,0}
 end
@@ -1433,8 +1433,8 @@ addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		inv_slot[info3_selection][2] = info1_selection_1
-		inv_slot[info3_selection][3] = info2_selection_1
+		inv_slot_player[info3_selection][2] = info1_selection_1
+		inv_slot_player[info3_selection][3] = info2_selection_1
 
 		triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 		
@@ -1473,41 +1473,41 @@ function inv_create ()--создание инв-ря
 
 	showCursor( true )
 
-	inv_slot[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot[0][2]..".png", false, tab_player )
-	inv_slot[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot[1][2]..".png", false, tab_player )
-	inv_slot[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot[2][2]..".png", false, tab_player )
-	inv_slot[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot[3][2]..".png", false, tab_player )
-	inv_slot[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot[4][2]..".png", false, tab_player )
-	inv_slot[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot[5][2]..".png", false, tab_player )
+	inv_slot_player[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_player[0][2]..".png", false, tab_player )
+	inv_slot_player[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_player[1][2]..".png", false, tab_player )
+	inv_slot_player[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_player[2][2]..".png", false, tab_player )
+	inv_slot_player[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_player[3][2]..".png", false, tab_player )
+	inv_slot_player[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_player[4][2]..".png", false, tab_player )
+	inv_slot_player[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_player[5][2]..".png", false, tab_player )
 
-	inv_slot[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot[6][2]..".png", false, tab_player )
-	inv_slot[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot[7][2]..".png", false, tab_player )
-	inv_slot[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot[8][2]..".png", false, tab_player )
-	inv_slot[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot[9][2]..".png", false, tab_player )
-	inv_slot[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot[10][2]..".png", false, tab_player )
-	inv_slot[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot[11][2]..".png", false, tab_player )
+	inv_slot_player[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_player[6][2]..".png", false, tab_player )
+	inv_slot_player[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_player[7][2]..".png", false, tab_player )
+	inv_slot_player[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_player[8][2]..".png", false, tab_player )
+	inv_slot_player[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_player[9][2]..".png", false, tab_player )
+	inv_slot_player[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_player[10][2]..".png", false, tab_player )
+	inv_slot_player[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_player[11][2]..".png", false, tab_player )
 
-	inv_slot[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot[12][2]..".png", false, tab_player )
-	inv_slot[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot[13][2]..".png", false, tab_player )
-	inv_slot[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot[14][2]..".png", false, tab_player )
-	inv_slot[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot[15][2]..".png", false, tab_player )
-	inv_slot[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot[16][2]..".png", false, tab_player )
-	inv_slot[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot[17][2]..".png", false, tab_player )
+	inv_slot_player[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_player[12][2]..".png", false, tab_player )
+	inv_slot_player[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_player[13][2]..".png", false, tab_player )
+	inv_slot_player[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_player[14][2]..".png", false, tab_player )
+	inv_slot_player[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_player[15][2]..".png", false, tab_player )
+	inv_slot_player[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_player[16][2]..".png", false, tab_player )
+	inv_slot_player[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_player[17][2]..".png", false, tab_player )
 
-	inv_slot[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot[18][2]..".png", false, tab_player )
-	inv_slot[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot[19][2]..".png", false, tab_player )
-	inv_slot[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot[20][2]..".png", false, tab_player )
-	inv_slot[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot[21][2]..".png", false, tab_player )
-	inv_slot[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot[22][2]..".png", false, tab_player )
-	inv_slot[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot[23][2]..".png", false, tab_player )
+	inv_slot_player[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_player[18][2]..".png", false, tab_player )
+	inv_slot_player[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_player[19][2]..".png", false, tab_player )
+	inv_slot_player[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_player[20][2]..".png", false, tab_player )
+	inv_slot_player[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_player[21][2]..".png", false, tab_player )
+	inv_slot_player[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_player[22][2]..".png", false, tab_player )
+	inv_slot_player[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_player[23][2]..".png", false, tab_player )
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			local x,y = guiGetPosition ( inv_slot[i][1], false )
+			local x,y = guiGetPosition ( inv_slot_player[i][1], false )
 
 			info3 = i
-			info1 = inv_slot[i][2]
-			info2 = inv_slot[i][3]
+			info1 = inv_slot_player[i][2]
+			info2 = inv_slot_player[i][3]
 
 			if lmb == 0 then
 				for k,v in pairs(no_use_subject) do 
@@ -1530,7 +1530,7 @@ function inv_create ()--создание инв-ря
 				info2_selection_1 = info2
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot[info3_selection_1][2] ~= 0 then
+				if inv_slot_player[info3_selection_1][2] ~= 0 then
 					for k,v in pairs(no_use_subject) do 
 						if v == info1 then
 							return
@@ -1546,8 +1546,8 @@ function inv_create ()--создание инв-ря
 					return
 				end
 
-				inv_slot[info3_selection_1][2] = info1_selection
-				inv_slot[info3_selection_1][3] = info2_selection
+				inv_slot_player[info3_selection_1][2] = info1_selection
+				inv_slot_player[info3_selection_1][3] = info2_selection
 
 				triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(localPlayer) )
 
@@ -1562,19 +1562,19 @@ function inv_create ()--создание инв-ря
 
 			--sendPlayerMessage(info3.." "..info1.." "..info2)
 		end
-		addEventHandler ( "onClientGUIClick", inv_slot[i][1], outputEditBox, false )
+		addEventHandler ( "onClientGUIClick", inv_slot_player[i][1], outputEditBox, false )
 	end
 
 	for i=0,max_inv do
 		function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
 			gui_2dtext = true
-			local x,y = guiGetPosition ( inv_slot[i][1], false )
+			local x,y = guiGetPosition ( inv_slot_player[i][1], false )
 			gui_pos_x = x
 			gui_pos_y = y
-			info1_png = inv_slot[i][2]
-			info2_png = inv_slot[i][3]
+			info1_png = inv_slot_player[i][2]
+			info2_png = inv_slot_player[i][3]
 		end
-		addEventHandler( "onClientMouseEnter", inv_slot[i][1], outputEditBox, false )
+		addEventHandler( "onClientMouseEnter", inv_slot_player[i][1], outputEditBox, false )
 	end
 
 	if plate ~= "" then
@@ -1814,7 +1814,7 @@ function inv_create ()--создание инв-ря
 				lmb = 0
 			end
 		end
-		addEventHandler( "onClientGUIClick", inv_slot[i][1], use_subject, false )
+		addEventHandler( "onClientGUIClick", inv_slot_player[i][1], use_subject, false )
 	end
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
@@ -1862,7 +1862,7 @@ function inv_delet ()--удаление инв-ря
 		showCursor( false )
 
 		for i=0,max_inv do
-			inv_slot[i] = {0,0,0}
+			inv_slot_player[i] = {0,0,0}
 			inv_slot_car[i] = {0,0,0}
 			inv_slot_house[i] = {0,0,0}
 		end
@@ -1918,8 +1918,8 @@ addEventHandler ( "event_gui_delet", getRootElement(), tune_close )
 
 function inv_load (value, id3, id1, id2)--загрузка инв-ря
 	if value == "player" then
-		inv_slot[id3][2] = id1
-		inv_slot[id3][3] = id2
+		inv_slot_player[id3][2] = id1
+		inv_slot_player[id3][3] = id2
 	elseif value == "car" then
 		inv_slot_car[id3][2] = id1
 		inv_slot_car[id3][3] = id2
@@ -1967,7 +1967,7 @@ addEventHandler ( "event_tab_load", getRootElement(), tab_load )
 
 function change_image (value, id3, filename)--замена картинок в инв-ре
 	if value == "player" then
-		guiStaticImageLoadImage ( inv_slot[id3][1], filename..".png" )
+		guiStaticImageLoadImage ( inv_slot_player[id3][1], filename..".png" )
 	elseif value == "car" then
 		guiStaticImageLoadImage ( inv_slot_car[id3][1], filename..".png" )
 	elseif value == "house" then
