@@ -1436,7 +1436,7 @@ function zamena_img()
 		inv_slot_player[info3_selection_1][2] = info1_selection_2
 		inv_slot_player[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_1, info1_selection_2, info2_selection_2, getPlayerName(localPlayer) )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1_selection_2, info2_selection_2, getPlayerName(localPlayer) )
 		
 		change_image ( "player", info3_selection_1, info1_selection_2 )
 
@@ -1445,7 +1445,7 @@ function zamena_img()
 		inv_slot_car[info3_selection_1][2] = info1_selection_2
 		inv_slot_car[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_1, info1_selection_2, info2_selection_2, plate )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1_selection_2, info2_selection_2, plate )
 		
 		change_image ( "car", info3_selection_1, info1_selection_2 )
 
@@ -1453,7 +1453,7 @@ function zamena_img()
 		inv_slot_house[info3_selection_1][2] = info1_selection_2
 		inv_slot_house[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_1, info1_selection_2, info2_selection_2, house )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1_selection_2, info2_selection_2, house )
 		
 		change_image ( "house", info3_selection_1, info1_selection_2 )
 	end
@@ -1549,7 +1549,7 @@ function inv_create ()--создание инв-ря
 				inv_slot_player[info3_selection_2][2] = info1_selection_1
 				inv_slot_player[info3_selection_2][3] = info2_selection_1
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_2, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_2, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 
 				change_image ( "player", info3_selection_2, info1_selection_1 )
 
@@ -1655,7 +1655,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_car[info3_selection_2][2] = info1_selection_1
 					inv_slot_car[info3_selection_2][3] = info2_selection_1
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_2, info1_selection_1, info2_selection_1, plate )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_2, info1_selection_1, info2_selection_1, plate )
 
 					change_image ( "car", info3_selection_2, info1_selection_1 )
 
@@ -1762,7 +1762,7 @@ function inv_create ()--создание инв-ря
 					inv_slot_house[info3_selection_2][2] = info1_selection_1
 					inv_slot_house[info3_selection_2][3] = info2_selection_1
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_2, info1_selection_1, info2_selection_1, house )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_2, info1_selection_1, info2_selection_1, house )
 
 					change_image ( "house", info3_selection_2, info1_selection_1 )
 
