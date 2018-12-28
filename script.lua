@@ -2433,6 +2433,7 @@ function()
 	setPlayerNametagColor ( playerid, white[1], white[2], white[3] )
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
+	setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
