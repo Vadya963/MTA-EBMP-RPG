@@ -567,13 +567,13 @@ local lmb = 0--лкм
 local gui_selection = false
 local gui_selection_pos_x = 0 --положение картинки x
 local gui_selection_pos_y = 0 --положение картинки y
-local info3_selection = -1 --слот картинки
-local info1_selection = -1 --номер картинки
-local info2_selection = -1 --значение картинки
-
 local info3_selection_1 = -1 --слот картинки
 local info1_selection_1 = -1 --номер картинки
 local info2_selection_1 = -1 --значение картинки
+----------------------------------------------------
+local info3_selection_2 = -1 --слот картинки
+local info1_selection_2 = -1 --номер картинки
+local info2_selection_2 = -1 --значение картинки
 
 --выбор цвета для окна тюнинга
 local tune_color_2d = false
@@ -1433,29 +1433,29 @@ addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		inv_slot_player[info3_selection][2] = info1_selection_1
-		inv_slot_player[info3_selection][3] = info2_selection_1
+		inv_slot_player[info3_selection_1][2] = info1_selection_2
+		inv_slot_player[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_1, info1_selection_2, info2_selection_2, getPlayerName(localPlayer) )
 		
-		change_image ( "player", info3_selection, info1_selection_1 )
+		change_image ( "player", info3_selection_1, info1_selection_2 )
 
 
 	elseif info_tab == tab_car then
-		inv_slot_car[info3_selection][2] = info1_selection_1
-		inv_slot_car[info3_selection][3] = info2_selection_1
+		inv_slot_car[info3_selection_1][2] = info1_selection_2
+		inv_slot_car[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection, info1_selection_1, info2_selection_1, plate )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_1, info1_selection_2, info2_selection_2, plate )
 		
-		change_image ( "car", info3_selection, info1_selection_1 )
+		change_image ( "car", info3_selection_1, info1_selection_2 )
 
 	elseif info_tab == tab_house then
-		inv_slot_house[info3_selection][2] = info1_selection_1
-		inv_slot_house[info3_selection][3] = info2_selection_1
+		inv_slot_house[info3_selection_1][2] = info1_selection_2
+		inv_slot_house[info3_selection_1][3] = info2_selection_2
 
-		triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection, info1_selection_1, info2_selection_1, house )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_1, info1_selection_2, info2_selection_2, house )
 		
-		change_image ( "house", info3_selection, info1_selection_1 )
+		change_image ( "house", info3_selection_1, info1_selection_2 )
 	end
 end
 
@@ -1520,17 +1520,17 @@ function inv_create ()--создание инв-ря
 				info_tab = tab_player
 				gui_selection_pos_x = x
 				gui_selection_pos_y = y
-				info3_selection = info3
-				info1_selection = info1
-				info2_selection = info2
-				lmb = 1
-			else
 				info3_selection_1 = info3
 				info1_selection_1 = info1
 				info2_selection_1 = info2
+				lmb = 1
+			else
+				info3_selection_2 = info3
+				info1_selection_2 = info1
+				info2_selection_2 = info2
 
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_player[info3_selection_1][2] ~= 0 then
+				if inv_slot_player[info3_selection_2][2] ~= 0 then
 					for k,v in pairs(no_use_subject) do 
 						if v == info1 then
 							return
@@ -1540,18 +1540,18 @@ function inv_create ()--создание инв-ря
 					info_tab = tab_player
 					gui_selection_pos_x = x
 					gui_selection_pos_y = y
-					info3_selection = info3
-					info1_selection = info1
-					info2_selection = info2
+					info3_selection_1 = info3
+					info1_selection_1 = info1
+					info2_selection_1 = info2
 					return
 				end
 
-				inv_slot_player[info3_selection_1][2] = info1_selection
-				inv_slot_player[info3_selection_1][3] = info2_selection
+				inv_slot_player[info3_selection_2][2] = info1_selection_1
+				inv_slot_player[info3_selection_2][3] = info2_selection_1
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_1, info1_selection, info2_selection, getPlayerName(localPlayer) )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), "player", info3_selection_2, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 
-				change_image ( "player", info3_selection_1, info1_selection )
+				change_image ( "player", info3_selection_2, info1_selection_1 )
 
 				zamena_img()
 
@@ -1626,17 +1626,17 @@ function inv_create ()--создание инв-ря
 					info_tab = tab_car
 					gui_selection_pos_x = x
 					gui_selection_pos_y = y
-					info3_selection = info3
-					info1_selection = info1
-					info2_selection = info2
-					lmb = 1
-				else
 					info3_selection_1 = info3
 					info1_selection_1 = info1
 					info2_selection_1 = info2
+					lmb = 1
+				else
+					info3_selection_2 = info3
+					info1_selection_2 = info1
+					info2_selection_2 = info2
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_car[info3_selection_1][2] ~= 0 then
+					if inv_slot_car[info3_selection_2][2] ~= 0 then
 						for k,v in pairs(no_use_subject) do 
 							if v == info1 then
 								return
@@ -1646,18 +1646,18 @@ function inv_create ()--создание инв-ря
 						info_tab = tab_car
 						gui_selection_pos_x = x
 						gui_selection_pos_y = y
-						info3_selection = info3
-						info1_selection = info1
-						info2_selection = info2
+						info3_selection_1 = info3
+						info1_selection_1 = info1
+						info2_selection_1 = info2
 						return
 					end
 
-					inv_slot_car[info3_selection_1][2] = info1_selection
-					inv_slot_car[info3_selection_1][3] = info2_selection
+					inv_slot_car[info3_selection_2][2] = info1_selection_1
+					inv_slot_car[info3_selection_2][3] = info2_selection_1
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_1, info1_selection, info2_selection, plate )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), "car", info3_selection_2, info1_selection_1, info2_selection_1, plate )
 
-					change_image ( "car", info3_selection_1, info1_selection )
+					change_image ( "car", info3_selection_2, info1_selection_1 )
 
 					zamena_img()
 
@@ -1733,17 +1733,17 @@ function inv_create ()--создание инв-ря
 					info_tab = tab_house
 					gui_selection_pos_x = x
 					gui_selection_pos_y = y
-					info3_selection = info3
-					info1_selection = info1
-					info2_selection = info2
-					lmb = 1
-				else
 					info3_selection_1 = info3
 					info1_selection_1 = info1
 					info2_selection_1 = info2
+					lmb = 1
+				else
+					info3_selection_2 = info3
+					info1_selection_2 = info1
+					info2_selection_2 = info2
 
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_house[info3_selection_1][2] ~= 0 then
+					if inv_slot_house[info3_selection_2][2] ~= 0 then
 						for k,v in pairs(no_use_subject) do 
 							if v == info1 then
 								return
@@ -1753,18 +1753,18 @@ function inv_create ()--создание инв-ря
 						info_tab = tab_house
 						gui_selection_pos_x = x
 						gui_selection_pos_y = y
-						info3_selection = info3
-						info1_selection = info1
-						info2_selection = info2
+						info3_selection_1 = info3
+						info1_selection_1 = info1
+						info2_selection_1 = info2
 						return
 					end
 
-					inv_slot_house[info3_selection_1][2] = info1_selection
-					inv_slot_house[info3_selection_1][3] = info2_selection
+					inv_slot_house[info3_selection_2][2] = info1_selection_1
+					inv_slot_house[info3_selection_2][3] = info2_selection_1
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_1, info1_selection, info2_selection, house )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), "house", info3_selection_2, info1_selection_1, info2_selection_1, house )
 
-					change_image ( "house", info3_selection_1, info1_selection )
+					change_image ( "house", info3_selection_2, info1_selection_1 )
 
 					zamena_img()
 
@@ -1879,13 +1879,13 @@ function inv_delet ()--удаление инв-ря
 		gui_selection = false
 		gui_selection_pos_x = 0
 		gui_selection_pos_y = 0
-		info3_selection = -1
-		info1_selection = -1
-		info2_selection = -1
-
 		info3_selection_1 = -1
 		info1_selection_1 = -1
 		info2_selection_1 = -1
+
+		info3_selection_2 = -1
+		info1_selection_2 = -1
+		info2_selection_2 = -1
 
 		info1 = -1
 		info2 = -1
