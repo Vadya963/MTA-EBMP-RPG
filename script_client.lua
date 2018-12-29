@@ -1450,7 +1450,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Ресурсы", 0.75)
 
 		local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
-			{info_png[20][1], info_png[3][1].." + "..info_png[4][1], "3,4", "1,1", "20,1"},
+			{info_png[20][1], info_png[3][1].."(1 шт) + "..info_png[4][1].."(1 шт)", "3,4", "1,1", "20,1"},
 		}
 
 		for k,v in pairs(craft_table) do
