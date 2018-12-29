@@ -333,7 +333,6 @@ local shop = {
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
-	[20] = {info_png[20][1], 1, 125},
 	[23] = {info_png[23][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
@@ -701,8 +700,8 @@ local interior_business = {
 }
 
 local interior_house = {
-	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
 	{5, "The Crack Den",	322.1117,	1119.3270,	1083.8830},--наркопритон
+	{1, "Burglary House 1",	224.6351,	1289.012,	1082.141},
 	{2, "Burglary House 2",	225.756,	1240.000,	1082.149},
 	{2, "Burglary House 3",	447.470,	1398.348,	1084.305},
 	{2, "Burglary House 4",	491.740,	1400.541,	1080.265},
@@ -2197,6 +2196,54 @@ function till_fun( playerid, number, money, value )
 end
 addEvent( "event_till_fun", true )
 addEventHandler ( "event_till_fun", getRootElement(), till_fun )
+
+
+----------------------------------крафт предметов -----------------------------------------------------------
+function craft_fun( playerid, text )--мэрия
+	local playername = getPlayerName(playerid)
+
+	local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
+		{info_png[20][1], info_png[3][1].." + "..info_png[4][1], "3,4", "1,1", "20,1"},
+	}
+
+	for k,v in pairs(craft_table) do
+		if text == v[1] then
+			local split_sub = split(v[3], ",")
+			local split_res = split(v[4], ",")
+			local split_sub_create = split(v[5], ",")
+			local len = #split_sub
+			local count = 0
+
+			for i=1,len do
+				if search_inv_player(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) >= tonumber(split_res[i]) then
+					count = count + 1
+				end
+			end
+			
+			if count == len then
+				if inv_player_empty(playerid, tonumber(split_sub_create[1]), tonumber(split_sub_create[2])) then
+
+					for i=1,len do
+						if inv_player_delet(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) then
+						end
+					end
+
+					sendPlayerMessage(playerid, "Вы создали "..v[1].." "..tonumber(split_sub_create[2]).." шт", orange[1], orange[2], orange[3])
+
+					save_player_action(playerid, "[craft_fun] "..playername.." craft ["..v[1].."]")
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
+			else
+				sendPlayerMessage(playerid, "[ERROR] Недостаточно ресурсов", red[1], red[2], red[3])
+			end
+
+			return
+		end
+	end
+end
+addEvent( "event_craft_fun", true )
+addEventHandler ( "event_craft_fun", getRootElement(), craft_fun )
 -------------------------------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов

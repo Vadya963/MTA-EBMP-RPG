@@ -417,7 +417,6 @@ local shop = {
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
-	[20] = {info_png[20][1], 1, 125},
 	[23] = {info_png[23][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
@@ -446,7 +445,6 @@ local interior_business = {
 	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
 	{0, "Заправочная станция", 0,0,0, 16},
 	{0, "Автомастерская", 0,0,0, 27},
-	{3, "Ферма", 292.4459,308.7790,999.1484, 56},
 }
 
 local text1 = "Нажмите E, чтобы взять пустую коробку"
@@ -1216,6 +1214,7 @@ function tablet_fun()--создание планшета
 	local auction_menu = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
 	local youtube = guiCreateStaticImage( 100, 10, 85, 60, "comp/youtube.png", false, fon )
 	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
+	local craft = guiCreateStaticImage( 270, 10, 55, 60, "comp/bookcraft.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(localPlayer, "tomorrow_weather_data") == value then
@@ -1434,6 +1433,43 @@ function tablet_fun()--создание планшета
 		end
 	end
 	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--крафт предметов
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+		local create = m2gui_button( 0, height_fon-16, "Создать", false, low_fon )
+		local home = m2gui_button( 100, height_fon-16, "Рабочий стол", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		guiGridListAddColumn(shoplist, "Предмет", 0.2)
+		guiGridListAddColumn(shoplist, "Ресурсы", 0.75)
+
+		local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
+			{info_png[20][1], info_png[3][1].." + "..info_png[4][1], "3,4", "1,1", "20,1"},
+		}
+
+		for k,v in pairs(craft_table) do
+			guiGridListAddRow(shoplist, v[1], v[2])
+		end
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть предмет
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+			if text == "" then
+				sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+				return
+			end
+
+			triggerServerEvent("event_craft_fun", getRootElement(), localPlayer, text )
+		end
+		addEventHandler ( "onClientGUIClick", create, outputEditBox, false )
+	end
+	addEventHandler ( "onClientGUIClick", craft, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
