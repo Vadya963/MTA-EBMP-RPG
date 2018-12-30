@@ -1438,8 +1438,8 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-		local create = m2gui_button( 0, height_fon-16, "Создать", false, low_fon )
-		local home = m2gui_button( 100, height_fon-16, "Рабочий стол", false, low_fon )
+		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local create = m2gui_button( 150, height_fon-16, "Создать", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 			destroyElement(low_fon)
@@ -1478,29 +1478,13 @@ addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		inv_slot_player[info3_selection_1][2] = info1_selection_2
-		inv_slot_player[info3_selection_1][3] = info2_selection_2
-
 		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1_selection_2, info2_selection_2, getPlayerName(localPlayer) )
-		
-		change_image ( "player", info3_selection_1, info1_selection_2 )
-
 
 	elseif info_tab == tab_car then
-		inv_slot_car[info3_selection_1][2] = info1_selection_2
-		inv_slot_car[info3_selection_1][3] = info2_selection_2
-
 		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1_selection_2, info2_selection_2, plate )
-		
-		change_image ( "car", info3_selection_1, info1_selection_2 )
 
 	elseif info_tab == tab_house then
-		inv_slot_house[info3_selection_1][2] = info1_selection_2
-		inv_slot_house[info3_selection_1][3] = info2_selection_2
-
 		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1_selection_2, info2_selection_2, house )
-		
-		change_image ( "house", info3_selection_1, info1_selection_2 )
 	end
 end
 
@@ -1591,12 +1575,7 @@ function inv_create ()--создание инв-ря
 					return
 				end
 
-				inv_slot_player[info3_selection_2][2] = info1_selection_1
-				inv_slot_player[info3_selection_2][3] = info2_selection_1
-
 				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_2, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
-
-				change_image ( "player", info3_selection_2, info1_selection_1 )
 
 				zamena_img()
 
@@ -1697,12 +1676,7 @@ function inv_create ()--создание инв-ря
 						return
 					end
 
-					inv_slot_car[info3_selection_2][2] = info1_selection_1
-					inv_slot_car[info3_selection_2][3] = info2_selection_1
-
 					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_2, info1_selection_1, info2_selection_1, plate )
-
-					change_image ( "car", info3_selection_2, info1_selection_1 )
 
 					zamena_img()
 
@@ -1804,12 +1778,7 @@ function inv_create ()--создание инв-ря
 						return
 					end
 
-					inv_slot_house[info3_selection_2][2] = info1_selection_1
-					inv_slot_house[info3_selection_2][3] = info2_selection_1
-
 					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_2, info1_selection_1, info2_selection_1, house )
-
-					change_image ( "house", info3_selection_2, info1_selection_1 )
 
 					zamena_img()
 
