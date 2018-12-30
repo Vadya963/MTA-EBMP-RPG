@@ -1255,12 +1255,22 @@ function tablet_fun()--создание планшета
 			function outputEditBox ( button, state, absoluteX, absoluteY )--купить предмет
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
+				if text == "" then
+					sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					return
+				end
+				
 				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "buy", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть предмет
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+				if text == "" then
+					sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					return
+				end
 
 				triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "return", text, 0, 0, 0 )
 			end
