@@ -1416,6 +1416,16 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 		timer_robbery[playername] = 0
 	end
 end
+
+function select_business_or_house(id1, id2)--выводит имя владельца любого предмета
+	for i=0,max_inv do
+		local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '"..id1.."' AND slot_"..i.."_2 = '"..id2.."'" )
+		if result[1]["COUNT()"] == 1 then
+			local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '"..id1.."' AND slot_"..i.."_2 = '"..id2.."'" )
+			return result[1]["name"]
+		end
+	end
+end
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------авто-------------------------------------------------------------
@@ -1504,13 +1514,10 @@ function pickupUse( playerid )
 			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				for i=0,max_inv do
-					local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
-					if result[1]["COUNT()"] == 1 then
-						local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '43' AND slot_"..i.."_2 = '"..k.."'" )
-						sendPlayerMessage(playerid, "Владелец бизнеса "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-						break
-					end
+				if select_business_or_house(43, k) then
+					sendPlayerMessage(playerid, "Владелец бизнеса "..select_business_or_house(43, k), yellow[1], yellow[2], yellow[3])
+				else
+					sendPlayerMessage(playerid, "Владелец бизнеса нету", yellow[1], yellow[2], yellow[3])
 				end
 
 				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
@@ -1532,13 +1539,10 @@ function pickupUse( playerid )
 			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				for i=0,max_inv do
-					local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
-					if result[1]["COUNT()"] == 1 then
-						local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '25' AND slot_"..i.."_2 = '"..k.."'" )
-						sendPlayerMessage(playerid, "Владелец дома "..result[1]["name"], yellow[1], yellow[2], yellow[3])
-						break
-					end
+				if select_business_or_house(25, k) then
+					sendPlayerMessage(playerid, "Владелец дома "..select_business_or_house(25, k), yellow[1], yellow[2], yellow[3])
+				else
+					sendPlayerMessage(playerid, "Владелец дома нету", yellow[1], yellow[2], yellow[3])
 				end
 
 				if search_inv_player(playerid, 25, k) ~= 0 then
@@ -2206,41 +2210,53 @@ function craft_fun( playerid, text )--мэрия
 		{info_png[20][1], info_png[3][1].."(1 шт) + "..info_png[4][1].."(1 шт)", "3,4", "1,1", "20,1"},
 	}
 
-	for k,v in pairs(craft_table) do
-		if text == v[1] then
-			local split_sub = split(v[3], ",")
-			local split_res = split(v[4], ",")
-			local split_sub_create = split(v[5], ",")
-			local len = #split_sub
-			local count = 0
+	if enter_house[playername] == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3] )
+		return
+	end
 
-			for i=1,len do
-				if search_inv_player(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) >= tonumber(split_res[i]) then
-					count = count + 1
-				end
-			end
-			
-			if count == len then
-				if inv_player_empty(playerid, tonumber(split_sub_create[1]), tonumber(split_sub_create[2])) then
+	for k,v in pairs(business_pos) do 
+		if search_inv_player(playerid, 25, k) ~= 0 then
+
+			for k,v in pairs(craft_table) do
+				if text == v[1] then
+					local split_sub = split(v[3], ",")
+					local split_res = split(v[4], ",")
+					local split_sub_create = split(v[5], ",")
+					local len = #split_sub
+					local count = 0
 
 					for i=1,len do
-						if inv_player_delet(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) then
+						if search_inv_player(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) >= tonumber(split_res[i]) then
+							count = count + 1
 						end
 					end
+					
+					if count == len then
+						if inv_player_empty(playerid, tonumber(split_sub_create[1]), tonumber(split_sub_create[2])) then
 
-					sendPlayerMessage(playerid, "Вы создали "..v[1].." "..tonumber(split_sub_create[2]).." шт", orange[1], orange[2], orange[3])
+							for i=1,len do
+								if inv_player_delet(playerid, tonumber(split_sub[i]), search_inv_player_2_parameter(playerid, tonumber(split_sub[i]) )) then
+								end
+							end
 
-					save_player_action(playerid, "[craft_fun] "..playername.." craft ["..v[1].."]")
-				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendPlayerMessage(playerid, "Вы создали "..v[1].." "..tonumber(split_sub_create[2]).." шт", orange[1], orange[2], orange[3])
+
+							save_player_action(playerid, "[craft_fun] "..playername.." craft ["..v[1].."]")
+						else
+							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						end
+					else
+						sendPlayerMessage(playerid, "[ERROR] Недостаточно ресурсов", red[1], red[2], red[3])
+					end
 				end
-			else
-				sendPlayerMessage(playerid, "[ERROR] Недостаточно ресурсов", red[1], red[2], red[3])
 			end
 
 			return
 		end
 	end
+
+	sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3])
 end
 addEvent( "event_craft_fun", true )
 addEventHandler ( "event_craft_fun", getRootElement(), craft_fun )
@@ -4190,6 +4206,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			triggerClientEvent( playerid, "event_tablet_fun", playerid )
 			state_inv_player[playername] = 0
 			state_gui_window[playername] = 1
+
 			return
 
 		elseif id1 >= 28 and id1 <= 33 then--шевроны
