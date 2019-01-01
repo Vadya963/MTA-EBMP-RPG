@@ -1891,7 +1891,6 @@ function inv_delet ()--удаление инв-ря
 			inv_slot_house[i] = {0,0,0}
 		end
 
-		plate = ""
 		house = ""
 
 		gui_2dtext = false

@@ -3084,6 +3084,8 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
 					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
+
+				triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
 			end
 		end
 	end
@@ -3226,7 +3228,6 @@ local x,y,z = getElementPosition(playerid)
 						for i=0,max_inv do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 						end
-						triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
 					end
 				end
 
