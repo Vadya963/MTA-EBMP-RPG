@@ -580,7 +580,17 @@ local tune_color_g = 0
 local tune_color_b = 0
 
 function dxdrawtext(text, x, y, width, height, color, scale, font)
+	dxDrawText ( text, x, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+	dxDrawText ( text, x-1, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+	dxDrawText ( text, x+1, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+
+	dxDrawText ( text, x-1, y, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+	dxDrawText ( text, x+1, y, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+
+	dxDrawText ( text, x, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+	dxDrawText ( text, x-1, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x+1, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
+
 	dxDrawText ( text, x, y, width, height, color, scale, font )
 end
 
