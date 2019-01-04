@@ -2374,6 +2374,7 @@ function displayLoadedRes ( res )--старт ресурсов
 			business_number = business_number+1
 		end
 		print("[business_number] "..business_number)
+		print("")
 
 
 		--создание блипов
@@ -2488,10 +2489,8 @@ function()
 	bindKey(playerid, "lalt", "down", left_alt_down )
 	bindKey(playerid, "h", "down", h_down )
 
-	spawnPlayer(playerid, spawnX, spawnY, spawnZ, 0, 0, 0, math.random(1,1000))
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
-	setElementFrozen( playerid, true )
 	setPlayerNametagColor ( playerid, white[1], white[2], white[3] )
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
@@ -2505,6 +2504,8 @@ function()
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
+
+	reg_or_login(playerid)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -2680,8 +2681,8 @@ function nickChangeHandler(oldNick, newNick)
 end
 addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
 
-----------------------------------Регистрация--------------------------------------------
-function reg_fun(playerid, cmd)
+----------------------------------Регистрация-Авторизация--------------------------------------------
+function reg_or_login(playerid)
 	local playername = getPlayerName ( playerid )
 	local serial = getPlayerSerial(playerid)
 	local ip = getPlayerIP(playerid)
@@ -2695,7 +2696,7 @@ function reg_fun(playerid, cmd)
 			return
 		end
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, password, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..md5(cmd).."', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '-1', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '-1', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -2714,28 +2715,15 @@ function reg_fun(playerid, cmd)
 		setElementHealth( playerid, result[1]["heal"] )
 		setElementFrozen( playerid, false )
 
-		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
-
-		triggerClientEvent( playerid, "event_delet_okno", playerid )
+		sendPlayerMessage(playerid, "Вы удачно зарегистрировались!", turquoise[1], turquoise[2], turquoise[3])
 
 		sqlite_save_player_action( "CREATE TABLE "..playername.." (player_action TEXT)" )
 
 		save_player_action(playerid, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 
 		house_bussiness_job_pos_load( playerid )
-	end
-end
-addEvent( "event_reg", true )
-addEventHandler("event_reg", getRootElement(), reg_fun)
 
-----------------------------------Авторизация--------------------------------------------
-function log_fun(playerid, cmd)
-	local playername = getPlayerName ( playerid )
-	local serial = getPlayerSerial(playerid)
-	local ip = getPlayerIP(playerid)
-
-	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
-	if result[1]["COUNT()"] == 1 then
+	elseif result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
 		if result[1]["reg_serial"] ~= serial then
@@ -2743,52 +2731,37 @@ function log_fun(playerid, cmd)
 			return
 		end
 
-		if md5(cmd) == result[1]["password"] then
-			for i=0,max_inv do
-				array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
-				array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
-			end
-
-			logged[playername] = 1
-			arrest[playername] = result[1]["arrest"]
-			crimes[playername] = result[1]["crimes"]
-			alcohol[playername] = result[1]["alcohol"]
-			satiety[playername] = result[1]["satiety"]
-			hygiene[playername] = result[1]["hygiene"]
-			sleep[playername] = result[1]["sleep"]
-			drugs[playername] = result[1]["drugs"]
-
-			--[[for h,v in pairs(house_pos) do
-				if search_inv_player(playerid, 25, h) ~= 0 then
-					spawnPlayer(playerid, v[1], v[2], v[3], 0, result[1]["skin"], 0, 0)
-					break
-				end
-			end]]
-
-			if arrest[playername] == 1 then--не удалять
-				local randomize = math.random(1,#prison_cell)
-				spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
-			else
-				spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
-			end
-
-			setElementHealth( playerid, result[1]["heal"] )
-			setElementFrozen( playerid, false )
-
-			sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
-
-			triggerClientEvent( playerid, "event_delet_okno", playerid )
-
-			save_player_action(playerid, "[log_fun] "..playername.." [ip - "..ip..", serial - "..serial.."]")
-
-			house_bussiness_job_pos_load( playerid )
-		else
-			sendPlayerMessage(playerid, "[ERROR] Неверный пароль!", red[1], red[2], red[3])
+		for i=0,max_inv do
+			array_player_1[playername][i+1] = result[1]["slot_"..i.."_1"]
+			array_player_2[playername][i+1] = result[1]["slot_"..i.."_2"]
 		end
+
+		logged[playername] = 1
+		arrest[playername] = result[1]["arrest"]
+		crimes[playername] = result[1]["crimes"]
+		alcohol[playername] = result[1]["alcohol"]
+		satiety[playername] = result[1]["satiety"]
+		hygiene[playername] = result[1]["hygiene"]
+		sleep[playername] = result[1]["sleep"]
+		drugs[playername] = result[1]["drugs"]
+
+		if arrest[playername] == 1 then--не удалять
+			local randomize = math.random(1,#prison_cell)
+			spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
+		else
+			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
+		end
+
+		setElementHealth( playerid, result[1]["heal"] )
+		setElementFrozen( playerid, false )
+
+		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
+
+		save_player_action(playerid, "[log_fun] "..playername.." [ip - "..ip..", serial - "..serial.."]")
+
+		house_bussiness_job_pos_load( playerid )
 	end
 end
-addEvent( "event_log", true )
-addEventHandler("event_log", getRootElement(), log_fun)
 
 ------------------------------------взрыв авто-------------------------------------------
 function fixVehicle_fun( vehicleid )
@@ -4558,25 +4531,6 @@ addEvent( "event_use_inv", true )
 addEventHandler ( "event_use_inv", getRootElement(), use_inv )
 
 -------------------------------команды игроков----------------------------------------------------------
-addCommandHandler("changepass",--смена пароля
-function (playerid, cmd, id)
-	local playername = getPlayerName ( playerid )
-	local x,y,z = getElementPosition(playerid)
-
-	if logged[playername] == 0 then
-		return
-	end
-
-	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [пароль]", red[1], red[2], red[3])
-		return
-	end
-
-	sendPlayerMessage(playerid, "Вы сменили пароль", turquoise[1], turquoise[2], turquoise[3])
-
-	sqlite( "UPDATE account SET password = '"..md5(id).."' WHERE name = '"..playername.."'")
-end)
-
 addCommandHandler ( "sms",--смс игроку
 function (playerid, cmd, id, ...)
 	local playername = getPlayerName ( playerid )
