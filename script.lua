@@ -2500,6 +2500,8 @@ function()
 	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
 	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
 	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
+	setElementData(playerid, "speed_car_device_data", 0)
+	setElementData(playerid, "gps_device_data", 0)
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -4350,12 +4352,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 46 then--радар
 			if speed_car_device[playername] == 0 then
 				speed_car_device[playername] = 1
-				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
+				setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 
 				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
 			else
 				speed_car_device[playername] = 0
-				triggerClientEvent( playerid, "event_speed_car_device_fun", playerid, speed_car_device[playername])
+				setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 
 				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
 			end
@@ -4457,12 +4459,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 63 then--gps навигатор
 			if gps_device[playername] == 0 then
 				gps_device[playername] = 1
-				triggerClientEvent( playerid, "event_gps_device_fun", playerid, gps_device[playername])
+				setElementData(playerid, "gps_device_data", gps_device[playername])
 
 				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
 			else
 				gps_device[playername] = 0
-				triggerClientEvent( playerid, "event_gps_device_fun", playerid, gps_device[playername])
+				setElementData(playerid, "gps_device_data", gps_device[playername])
 
 				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
 			end

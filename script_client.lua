@@ -120,20 +120,6 @@ end
 addEvent( "event_earth_load", true )
 addEventHandler ( "event_earth_load", getRootElement(), earth_load )
 
-local speed_car_device = 0--отображение скорости авто, 0-выкл, 1-вкл
-function speed_car_device_fun (i)
-	speed_car_device = i
-end
-addEvent( "event_speed_car_device_fun", true )
-addEventHandler ( "event_speed_car_device_fun", getRootElement(), speed_car_device_fun )
-
-local gps_device = 0--отображение координат игрока, 0-выкл, 1-вкл
-function gps_device_fun (i)
-	gps_device = i
-end
-addEvent( "event_gps_device_fun", true )
-addEventHandler ( "event_gps_device_fun", getRootElement(), gps_device_fun )
-
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( localPlayer, 4000 )
@@ -671,7 +657,7 @@ function createText ()
 			local plate = getVehiclePlateText(vehicle)
 
 			if coords[1] and coords[2] then
-				if speed_car_device == 1 then
+				if getElementData(playerid, "speed_car_device_data") == 1 then
 					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 					local speed_table = split(getSpeed(vehicle), ".")
 					local dimensions = dxGetTextWidth ( speed_table[1].." km/h", 1, m2font_dx1 )
@@ -691,7 +677,7 @@ function createText ()
 		end
 	end
 
-	if gps_device == 1 then
+	if getElementData(playerid, "gps_device_data") == 1 then
 		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
 		local x_table = split(x, ".")
 		local y_table = split(y, ".")
