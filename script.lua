@@ -2713,7 +2713,6 @@ function reg_or_login(playerid)
 
 		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 		setElementHealth( playerid, result[1]["heal"] )
-		setElementFrozen( playerid, false )
 
 		sendPlayerMessage(playerid, "Вы удачно зарегистрировались!", turquoise[1], turquoise[2], turquoise[3])
 
@@ -2753,7 +2752,6 @@ function reg_or_login(playerid)
 		end
 
 		setElementHealth( playerid, result[1]["heal"] )
-		setElementFrozen( playerid, false )
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
