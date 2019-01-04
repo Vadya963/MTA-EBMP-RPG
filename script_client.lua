@@ -168,32 +168,6 @@ end
 addEvent( "event_auction_fun", true )
 addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
 
-local alcohol = 0--макс 500
-local satiety = 0--макс 100
-local hygiene = 0--макс 100
-local sleep = 0--макс 100
-local drugs = 0--макс 100
-function need_fun (i1, i2, i3, i4, i5)--нужды	
-	alcohol = i1
-	satiety = i2
-	hygiene = i3
-	sleep = i4
-	drugs = i5
-end
-addEvent( "event_need_fun", true )
-addEventHandler ( "event_need_fun", getRootElement(), need_fun )
-
-local zakon_nalog_car = 0
-local zakon_nalog_house = 0
-local zakon_nalog_business = 0
-function nalog_fun (i1, i2, i3)--налоги
-	zakon_nalog_car = i1
-	zakon_nalog_house = i2
-	zakon_nalog_business = i3
-end
-addEvent( "event_nalog_fun", true )
-addEventHandler ( "event_nalog_fun", getRootElement(), nalog_fun )
-
 local name_player = 0
 local logplayer = {}
 function logsave_fun (value, name, i, id)--таблица логов
@@ -251,10 +225,6 @@ end
 -----------------------------------------------------------------------------------------
 
 ---------------------таймеры-------------------------------------------------------------
-setTimer(function ()
-	setCameraShakeLevel ( (alcohol/2) )
-end, 1000, 0)
-
 setTimer(function ()
 	time_game = time_game+1
 end, 60000, 0)
@@ -599,6 +569,15 @@ function createText ()
 
 	local time = getRealTime()
 	local playerid = localPlayer
+
+	local alcohol = getElementData ( playerid, "alcohol_data" )--макс 500
+	local satiety = getElementData ( playerid, "satiety_data" )--макс 100
+	local hygiene = getElementData ( playerid, "hygiene_data" )--макс 100
+	local sleep = getElementData ( playerid, "sleep_data" )--макс 100
+	local drugs = getElementData ( playerid, "drugs_data" )--макс 100
+
+	setCameraShakeLevel ( (alcohol/2) )
+
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -1160,6 +1139,10 @@ function mayoralty_menu()--мэрия
 	local column_width1 = 0.7
 	local column_width2 = 0.2
 	local day_nalog = 7
+
+	local zakon_nalog_car = getElementData ( localPlayer, "zakon_nalog_car_data" )
+	local zakon_nalog_house = getElementData ( localPlayer, "zakon_nalog_house_data" )
+	local zakon_nalog_business = getElementData ( localPlayer, "zakon_nalog_business_data" )
 
 	local mayoralty_shop = {
 		[2] = {"права", 0, 1000},

@@ -936,14 +936,13 @@ function debuginfo ()
 			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, k, v )
 		end
 
+		--элементдата
 		setElementData(playerid, "crimes_data", crimes[playername])
-
-
-		if logged[playername] == 1 then
-			--нужды
-			triggerClientEvent( playerid, "event_need_fun", playerid, alcohol[playername], satiety[playername], hygiene[playername], sleep[playername], drugs[playername] )
-			triggerClientEvent( playerid, "event_nalog_fun", playerid, zakon_nalog_car, zakon_nalog_house, zakon_nalog_business )
-		end
+		setElementData(playerid, "alcohol_data", alcohol[playername])
+		setElementData(playerid, "satiety_data", satiety[playername])
+		setElementData(playerid, "hygiene_data", hygiene[playername])
+		setElementData(playerid, "sleep_data", sleep[playername])
+		setElementData(playerid, "drugs_data", drugs[playername])
 	end
 end
 
@@ -2496,7 +2495,12 @@ function()
 	setPlayerNametagColor ( playerid, white[1], white[2], white[3] )
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
+
+	--элементдата2
 	setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
+	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
+	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
+	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -3071,6 +3075,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 
 		if isVehicleLocked ( vehicleid ) then
 			removePedFromVehicle ( playerid )
+			return
 		end
 
 		setVehicleEngineState(vehicleid, false)
@@ -3085,7 +3090,9 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 
-				triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+				if tonumber(plate) ~= 0 then
+					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+				end
 			end
 		end
 	end
