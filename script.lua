@@ -895,9 +895,6 @@ local fuel = {}--топливный бак
 local array_house_1 = {}
 local array_house_2 = {}
 
---бизнесы
-local business_pos = {}--позиции бизнесов для dxdrawtext
-
 -------------------пользовательские функции 2----------------------------------------------
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
@@ -957,9 +954,9 @@ function job_timer ()
 		taxi_pos[count] = {v["x"],v["y"],v["z"]}
 	end
 
-	for k,v in pairs(business_pos) do
+	for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
 		count = count+1
-		taxi_pos[count] = {v[1],v[2],v[3]}
+		taxi_pos[count] = {v["x"],v["y"],v["z"]}
 	end
 
 	for k,v in pairs(interior_job) do
@@ -1507,25 +1504,24 @@ function pickupUse( playerid )
 	local x,y,z = getElementPosition(playerid)
 
 	if getElementModel(pickup) == business_icon then
-		for k,v in pairs(business_pos) do 
-			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
+			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				if select_business_or_house(43, k) then
-					sendPlayerMessage(playerid, "Владелец бизнеса "..select_business_or_house(43, k), yellow[1], yellow[2], yellow[3])
+				if select_business_or_house(43, v["number"]) then
+					sendPlayerMessage(playerid, "Владелец бизнеса "..select_business_or_house(43, v["number"]), yellow[1], yellow[2], yellow[3])
 				else
 					sendPlayerMessage(playerid, "Владелец бизнеса нету", yellow[1], yellow[2], yellow[3])
 				end
 
-				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
-				sendPlayerMessage(playerid, "Тип "..result[1]["type"], yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..result[1]["price"].."$", green[1], green[2], green[3])
-				sendPlayerMessage(playerid, "Цена закупки товара "..result[1]["buyprod"].."$", green[1], green[2], green[3])
+				sendPlayerMessage(playerid, "Тип "..v["type"], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green[1], green[2], green[3])
+				sendPlayerMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green[1], green[2], green[3])
 
-				if search_inv_player(playerid, 43, k) ~= 0 then
-					sendPlayerMessage(playerid, "Состояние кассы "..result[1]["money"].."$", green[1], green[2], green[3])
-					sendPlayerMessage(playerid, "Налог бизнеса оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+				if search_inv_player(playerid, 43, v["number"]) ~= 0 then
+					sendPlayerMessage(playerid, "Состояние кассы "..v["money"].."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Налог бизнеса оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 				return
 			end
@@ -1566,8 +1562,8 @@ function house_bussiness_job_pos_load( playerid )
 		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, v["number"], v["x"], v["y"], v["z"], "house", house_bussiness_radius )
 	end
 
-	for h,v in pairs(business_pos) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "biz", house_bussiness_radius )
+	for h,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, v["number"], v["x"], v["y"], v["z"], "biz", house_bussiness_radius )
 	end
 
 	for h,v in pairs(interior_job) do 
@@ -2362,8 +2358,6 @@ function displayLoadedRes ( res )--старт ресурсов
 			local h = v["number"]
 			createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )
-
-			business_pos[h] = {v["x"], v["y"], v["z"], v["type"], v["world"]}
 
 			business_number = business_number+1
 		end
@@ -3338,8 +3332,8 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			end
 		end
 
-		for k,v in pairs(business_pos) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], house_bussiness_radius) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= 456 then
 						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( 456 ).."(456)", red[1], red[2], red[3] )
@@ -3488,24 +3482,22 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 		if count ~= 0 then
 
-			for k,v in pairs(business_pos) do
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 
 					if id ~= 24 then
 						sendPlayerMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3] )
 						return
 					end
 
-					local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
-
-					if result[1]["buyprod"] == 0 then
+					if v["buyprod"] == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3] )
 						return
 					end
 
-					money = count*result[1]["buyprod"]
+					money = count*v["buyprod"]
 
-					if result[1]["money"] < money then
+					if v["money"] < money then
 						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3] )
 						return
 					end
@@ -3515,13 +3507,13 @@ function delet_subject(playerid, id)--удаление предметов из �
 						end
 					end
 
-					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..k.."'")
+					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..result[1]["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..v["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
 
-					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(k))
+					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(v["number"]))
 					return
 				end
 			end
@@ -3561,43 +3553,42 @@ local x,y,z = getElementPosition(playerid)
 		if state_inv_player[playername] == 0 then--инв-рь игрока
 			if state_gui_window[playername] == 0 then
 
-				for k,v in pairs(business_pos) do--бизнесы
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and v[4] == interior_business[5][2] then
+				for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do--бизнесы
+					if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then
 
-						local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
-						if result[1]["nalog"] <= 0 then
+						if v["nalog"] <= 0 then
 							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 							return
 						end
 
-						triggerClientEvent( playerid, "event_tune_create", playerid, k )
+						triggerClientEvent( playerid, "event_tune_create", playerid, v["number"] )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[1][2] and enter_business[playername] == 1 then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 1 )
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[1][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 1 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[2][2] and enter_business[playername] == 1 then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 2 )
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[2][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 2 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[3][2] and enter_business[playername] == 1 then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 3 )
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[3][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 3 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v[5] and v[4] == interior_business[4][2] and enter_business[playername] == 1 then
-						triggerClientEvent( playerid, "event_shop_menu", playerid, k, 4 )
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[4][2] and enter_business[playername] == 1 then
+						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 4 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, k) ~= 0 then
+					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, v["number"]) ~= 0 then
 						for j,i in pairs(interior_business) do
-							if v[4] == interior_business[j][2] then
-								triggerClientEvent( playerid, "event_business_menu", playerid, k )
+							if v["type"] == interior_business[j][2] then
+								triggerClientEvent( playerid, "event_business_menu", playerid, v["number"] )
 								state_gui_window[playername] = 1
 								return
 							end
@@ -3690,17 +3681,16 @@ function left_alt_down (playerid, key, keyState)
 		end
 
 
-		for id2,v in pairs(business_pos) do--вход в бизнесы
+		for id2,v in pairs(sqlite( "SELECT * FROM business_db" )) do--вход в бизнесы
 			if not vehicleid then
-				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
-				local id = result[1]["interior"]
+				local id = v["interior"]
 
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 					if id == 5 then
 						return
 					end
 
-					if result[1]["nalog"] <= 0 then
+					if v["nalog"] <= 0 then
 						sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 						return
 					end
@@ -3709,60 +3699,20 @@ function left_alt_down (playerid, key, keyState)
 
 					state_gui_window[playername] = 0
 					enter_business[playername] = 1
-					setElementDimension(playerid, result[1]["world"])
+					setElementDimension(playerid, v["world"])
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 5 then
+				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 5 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
 					state_gui_window[playername] = 0
 					enter_business[playername] = 0
 					setElementDimension(playerid, 0)
-					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+					setElementInterior(playerid, 0, v["x"],v["y"],v["z"])
 					return
 				end
-			--[[else--убрал из-за бага, игрок при тп падает с мотика
-				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..id2.."'" )
-				local id = result[1]["interior"]
-
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and id == 5 then
-
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-
-					state_gui_window[playername] = 0
-					enter_business[playername] = 1
-
-					setElementRotation(vehicleid, 0, 0, 90)
-
-					setElementDimension(vehicleid, result[1]["world"])
-					setElementInterior(vehicleid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
-
-					setElementDimension(playerid, result[1]["world"])
-					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
-
-					setElementFrozen(vehicleid, true)
-					setElementFrozen(playerid, true)
-					return
-
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id == 5 then
-					
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-
-					state_gui_window[playername] = 0
-					enter_business[playername] = 0
-
-					setElementDimension(vehicleid, 0)
-					setElementInterior(vehicleid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
-
-					setElementDimension(playerid, 0)
-					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
-
-					setElementFrozen(vehicleid, false)
-					setElementFrozen(playerid, false)
-					return
-				end]]
 			end
 		end
 
@@ -4283,8 +4233,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					end
 				end
 
-				for k,v in pairs(business_pos) do
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
+				for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+					if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
 						local time_rob = 1--время для ограбления
 
 						id2 = id2 - 1
@@ -4298,9 +4248,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
-						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." бизнеса, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
+						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." бизнеса, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v[1],v[2],v[3], house_bussiness_radius, "business - "..k)
+						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
 
 						break
 					end
@@ -4412,9 +4362,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 60 then--налог бизнеса
 			local count = 0
-			for k,v in pairs(business_pos) do
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-					sqlite( "UPDATE business_db SET nalog = nalog + '"..id2.."' WHERE number = '"..k.."'")
+			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+					sqlite( "UPDATE business_db SET nalog = nalog + '"..id2.."' WHERE number = '"..v["number"].."'")
 					
 					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
@@ -5103,8 +5053,8 @@ function (playerid)
 
 	local result = sqlite( "SELECT COUNT() FROM business_db" )
 	local business_number = result[1]["COUNT()"]
-	for h,v in pairs(business_pos) do 
-		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+	for h,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
+		if not isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 			business_count = business_count+1
 		end
 	end
@@ -5168,8 +5118,8 @@ function (playerid, cmd, id)
 
 		local result = sqlite( "SELECT COUNT() FROM business_db" )
 		local business_number = result[1]["COUNT()"]
-		for h,v in pairs(business_pos) do 
-			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+		for h,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
+			if not isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				business_count = business_count+1
 			end
 		end
@@ -5193,18 +5143,16 @@ function (playerid, cmd, id)
 			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
-				business_pos[dim] = {x,y,z, interior_business[id][2], dim}
-
-				createBlip ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], interior_business[id][6], 0, 0,0,0,0, 0, 500 )
-				createPickup ( business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], 3, business_icon, 10000 )
+				createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 )
+				createPickup ( x, y, z, 3, business_icon, 10000 )
 
 				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
-				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, business_pos[dim][1], business_pos[dim][2], business_pos[dim][3], "biz", house_bussiness_radius )
+				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "biz", house_bussiness_radius )
 
-				save_realtor_action(playerid, "[sellbusiness] "..playername.." [business - "..dim..", x - "..business_pos[dim][1]..", y - "..business_pos[dim][2]..", z - "..business_pos[dim][3].."]")
+				save_realtor_action(playerid, "[sellbusiness] "..playername.." [business - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
