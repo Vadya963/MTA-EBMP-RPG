@@ -2211,8 +2211,8 @@ function craft_fun( playerid, text )--мэрия
 		return
 	end
 
-	for k,v in pairs(business_pos) do 
-		if search_inv_player(playerid, 25, k) ~= 0 then
+	for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do 
+		if search_inv_player(playerid, 25, v["number"]) ~= 0 then
 
 			for k,v in pairs(craft_table) do
 				if text == v[1] then
