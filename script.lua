@@ -2306,9 +2306,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("[account] "..result[1]["COUNT()"])
 
 
-		local result = sqlite( "SELECT * FROM account WHERE ban = '1'" )
 		local banned = 0
-		for k,v in pairs(result) do
+		for k,v in pairs(sqlite( "SELECT * FROM account WHERE ban = '1'" )) do
 			banned = banned+1
 		end
 		print("[account_banned] "..banned)
@@ -2318,18 +2317,16 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("[account_banserial] "..result[1]["COUNT()"])
 
 
-		local result = sqlite( "SELECT * FROM car_db" )
 		local carnumber_number = 0
-		for k,v in pairs(result) do
+		for k,v in pairs(sqlite( "SELECT * FROM car_db" )) do
 			car_spawn(v["carnumber"])
 			carnumber_number = carnumber_number+1
 		end
 		print("[number_car_spawn] "..carnumber_number)
 
 
-		local result = sqlite( "SELECT * FROM house_db" )
 		local house_number = 0
-		for k,v in pairs(result) do
+		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 			local h = v["number"]
 			createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip )
 			createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )
@@ -2347,9 +2344,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("[house_number] "..house_number)
 
 
-		local result = sqlite( "SELECT * FROM business_db" )
 		local business_number = 0
-		for k,v in pairs(result) do
+		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
 			local h = v["number"]
 			createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )
