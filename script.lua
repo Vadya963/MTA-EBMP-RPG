@@ -894,8 +894,6 @@ local fuel = {}--топливный бак
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
-local house_pos = {}--позиции домов для dxdrawtext
-local house_door = {}--состояние двери 0-закрыта, 1-открыта
 
 --бизнесы
 local business_pos = {}--позиции бизнесов для dxdrawtext
@@ -954,9 +952,9 @@ function job_timer ()
 
 	--загрузка позиций для работы таксист
 	local count = #taxi_pos
-	for k,v in pairs(house_pos) do
+	for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 		count = count+1
-		taxi_pos[count] = {v[1],v[2],v[3]}
+		taxi_pos[count] = {v["x"],v["y"],v["z"]}
 	end
 
 	for k,v in pairs(business_pos) do
@@ -1534,19 +1532,18 @@ function pickupUse( playerid )
 		end
 
 	elseif getElementModel(pickup) == house_icon then
-		for k,v in pairs(house_pos) do
-			if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				if select_business_or_house(25, k) then
-					sendPlayerMessage(playerid, "Владелец дома "..select_business_or_house(25, k), yellow[1], yellow[2], yellow[3])
+				if select_business_or_house(25, v["number"]) then
+					sendPlayerMessage(playerid, "Владелец дома "..select_business_or_house(25, v["number"]), yellow[1], yellow[2], yellow[3])
 				else
 					sendPlayerMessage(playerid, "Владелец дома нету", yellow[1], yellow[2], yellow[3])
 				end
 
-				if search_inv_player(playerid, 25, k) ~= 0 then
-					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..k.."'" )
-					sendPlayerMessage(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+				if search_inv_player(playerid, 25, v["number"]) ~= 0 then
+					sendPlayerMessage(playerid, "Налог дома оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 				return
 			end
@@ -1565,8 +1562,8 @@ end
 addEventHandler( "onPickupUse", getRootElement(), pickupUse )
 
 function house_bussiness_job_pos_load( playerid )
-	for h,v in pairs(house_pos) do
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[1], v[2], v[3], "house", house_bussiness_radius )
+	for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, v["number"], v["x"], v["y"], v["z"], "house", house_bussiness_radius )
 	end
 
 	for h,v in pairs(business_pos) do 
@@ -2345,9 +2342,6 @@ function displayLoadedRes ( res )--старт ресурсов
 			local h = v["number"]
 			createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip )
 			createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )
-
-			house_pos[h] = {v["x"], v["y"], v["z"]}
-			house_door[h] = v["door"]
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -3211,15 +3205,13 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
-				for h,v in pairs(house_pos) do
-					local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
-
-					if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] and search_inv_player(playerid, 25, h) ~= 0 and enter_house[playername] == 1 then
+				for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+					if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] and search_inv_player(playerid, 25, v["number"]) ~= 0 and enter_house[playername] == 1 then
 						for i=0,max_inv do
-							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[h][i+1], array_house_2[h][i+1] )
+							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[v["number"]][i+1], array_house_2[v["number"]][i+1] )
 						end
 
-						triggerClientEvent( playerid, "event_tab_load", playerid, "house", h )
+						triggerClientEvent( playerid, "event_tab_load", playerid, "house", v["number"] )
 						break
 					end
 				end
@@ -3658,38 +3650,38 @@ function left_alt_down (playerid, key, keyState)
 
 	if keyState == "down" then
 
-		for id2,v in pairs(house_pos) do--вход в дома
+		for id2,v in pairs(sqlite( "SELECT * FROM house_db" )) do--вход в дома
 			if not vehicleid then
-				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
-				local id = result[1]["interior"]
+				local id = v["interior"]
+				local house_door = v["door"]
 
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
-					if house_door[id2] == 0 then
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+					if house_door == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 						return
 					end
 
-					if result[1]["nalog"] <= 0 then
+					if v["nalog"] <= 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дом арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 						return
 					end
 
 					enter_house[playername] = 1
-					setElementDimension(playerid, result[1]["world"])
+					setElementDimension(playerid, v["world"])
 					setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 					return
 
-				elseif getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername] == 1 then
-					if house_door[id2] == 0 then
+				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername] == 1 then
+					if house_door == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3] )
 						return
 					end
 
 					enter_house[playername] = 0
 					setElementDimension(playerid, 0)
-					setElementInterior(playerid, 0, result[1]["x"],result[1]["y"],result[1]["z"])
+					setElementInterior(playerid, 0, v["x"],v["y"],v["z"])
 
-					if search_inv_player(playerid, 25, id2) ~= 0 then
+					if search_inv_player(playerid, 25, v["number"]) ~= 0 then
 						triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 					end
 					return
@@ -3821,7 +3813,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
-		
+
 		sqlite( "UPDATE account SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
 
 		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
@@ -4220,15 +4212,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..h.."'" )
 				if getElementDimension(playerid) == result[1]["world"] and getElementInterior(playerid) == interior_house[result[1]["interior"]][1] or isPointInCircle3D(result[1]["x"],result[1]["y"],result[1]["z"], x,y,z, house_bussiness_radius) then
-					if house_door[h] == 0 then
-						house_door[h] = 1
+					local house_door = result[1]["door"]
+
+					if house_door == 0 then
+						house_door = 1
 						me_chat(playerid, playername.." открыл(а) дверь дома")
 					else
-						house_door[h] = 0
+						house_door = 0
 						me_chat(playerid, playername.." закрыл(а) дверь дома")
 					end
 
-					sqlite( "UPDATE house_db SET door = '"..house_door[h].."' WHERE number = '"..h.."'")
+					sqlite( "UPDATE house_db SET door = '"..house_door.."' WHERE number = '"..h.."'")
 
 					return
 				end
@@ -4266,8 +4260,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local x1,y1 = player_position( playerid )
 
 			if hour >= 0 and hour <= 7 then
-				for k,v in pairs(house_pos) do
-					if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
+				for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+					if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
 						local time_rob = 1--время для ограбления
 
 						id2 = id2 - 1
@@ -4281,9 +4275,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
 						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
-						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..k.." дома, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
+						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." дома, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 500, v[1],v[2],v[3], house_bussiness_radius, "house - "..k)
+						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 500, v[1],v[2],v[3], house_bussiness_radius, "house - "..v["number"])
 
 						break
 					end
@@ -5101,8 +5095,8 @@ function (playerid)
 
 	local result = sqlite( "SELECT COUNT() FROM house_db" )
 	local house_number = result[1]["COUNT()"]
-	for h,v in pairs(house_pos) do
-		if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+	for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+		if not isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 			house_count = house_count+1
 		end
 	end
@@ -5126,21 +5120,20 @@ function (playerid)
 		local dim = house_number+1
 
 		if inv_player_empty(playerid, 25, dim) then
-			house_pos[dim] = {x,y,z}
 			array_house_1[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			house_door[dim] = 0
+			local house_door = 0
 
-			createBlip ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 32, 0, 0,0,0,0, 0, 500 )
-			createPickup ( house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], 3, house_icon, 10000 )
+			createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 )
+			createPickup ( x, y, z, 3, house_icon, 10000 )
 
-			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door[dim].."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
-			triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, house_pos[dim][1], house_pos[dim][2], house_pos[dim][3], "house", house_bussiness_radius )
+			triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "house", house_bussiness_radius )
 
-			save_realtor_action(playerid, "[sellhouse] "..playername.." [house - "..dim..", x - "..house_pos[dim][1]..", y - "..house_pos[dim][2]..", z - "..house_pos[dim][3].."]")
+			save_realtor_action(playerid, "[sellhouse] "..playername.." [house - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -5183,8 +5176,8 @@ function (playerid, cmd, id)
 
 		local result = sqlite( "SELECT COUNT() FROM house_db" )
 		local house_number = result[1]["COUNT()"]
-		for h,v in pairs(house_pos) do
-			if not isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) then
+		for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+			if not isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				house_count = house_count+1
 			end
 		end
@@ -5241,10 +5234,10 @@ function (playerid, cmd, id)
 
 	if id >= 1 and id <= #interior_house then
 		if (cash*id) <= array_player_2[playername][1] then
-			for h,v in pairs(house_pos) do
-				if isPointInCircle3D(v[1],v[2],v[3], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
-					if search_inv_player(playerid, 25, h) ~= 0 then
-						sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..h.."'")
+			for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
+					if search_inv_player(playerid, 25, v["number"]) ~= 0 then
+						sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..v["number"].."'")
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*id), playername )
 
