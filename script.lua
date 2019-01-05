@@ -900,38 +900,33 @@ function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 
-		local debuginfo_table = {}
-		debuginfo_table[0] = "max_earth "..max_earth
-		debuginfo_table[1] = "state_inv_player[playername] "..state_inv_player[playername]
-		debuginfo_table[2] = "state_gui_window[playername] "..state_gui_window[playername]
-		debuginfo_table[3] = "logged[playername] "..logged[playername]
-		debuginfo_table[4] = "enter_house[playername] "..enter_house[playername]
-		debuginfo_table[5] = "enter_business[playername] "..enter_business[playername]
-		debuginfo_table[6] = "enter_job[playername] "..enter_job[playername]
-		debuginfo_table[7] = "speed_car_device[playername] "..speed_car_device[playername]
-		debuginfo_table[8] = "arrest[playername] "..arrest[playername]
-		debuginfo_table[9] = "crimes[playername] "..crimes[playername]
-		debuginfo_table[10] = "robbery_player[playername] "..robbery_player[playername]
-		debuginfo_table[11] = "gps_device[playername] "..gps_device[playername]
-		debuginfo_table[12] = "timer_robbery[playername] "..tostring(timer_robbery[playername])
-		debuginfo_table[13] = "job[playername] "..job[playername]
-		debuginfo_table[14] = "job_call[playername] "..job_call[playername]
-		debuginfo_table[15] = "job_ped[playername] "..tostring(job_ped[playername])
-		debuginfo_table[16] = "job_blip[playername] "..tostring(job_blip[playername])
+		--элементдата
+		setElementData(playerid, "0", "max_earth "..max_earth)
+		setElementData(playerid, "1", "state_inv_player[playername] "..state_inv_player[playername])
+		setElementData(playerid, "2", "state_gui_window[playername] "..state_gui_window[playername])
+		setElementData(playerid, "3", "logged[playername] "..logged[playername])
+		setElementData(playerid, "4", "enter_house[playername] "..enter_house[playername])
+		setElementData(playerid, "5", "enter_business[playername] "..enter_business[playername])
+		setElementData(playerid, "6", "enter_job[playername] "..enter_job[playername])
+		setElementData(playerid, "7", "speed_car_device[playername] "..speed_car_device[playername])
+		setElementData(playerid, "8", "arrest[playername] "..arrest[playername])
+		setElementData(playerid, "9", "crimes[playername] "..crimes[playername])
+		setElementData(playerid, "10", "robbery_player[playername] "..robbery_player[playername])
+		setElementData(playerid, "11", "gps_device[playername] "..gps_device[playername])
+		setElementData(playerid, "12", "timer_robbery[playername] "..tostring(timer_robbery[playername]))
+		setElementData(playerid, "13", "job[playername] "..job[playername])
+		setElementData(playerid, "14", "job_call[playername] "..job_call[playername])
+		setElementData(playerid, "15", "job_ped[playername] "..tostring(job_ped[playername]))
+		setElementData(playerid, "16", "job_blip[playername] "..tostring(job_blip[playername]))
 
 		if job_pos[playername] ~= 0 then
-			debuginfo_table[17] = "job_pos[playername] "..tostring(job_pos[playername][1])..", "..tostring(job_pos[playername][2])..", "..tostring(job_pos[playername][3])
+			setElementData(playerid, "17", "job_pos[playername] "..tostring(job_pos[playername][1])..", "..tostring(job_pos[playername][2])..", "..tostring(job_pos[playername][3]))
 		else
-			debuginfo_table[17] = "job_pos[playername] "..job_pos[playername]
+			setElementData(playerid, "17", "job_pos[playername] "..job_pos[playername])
 		end
 
-		debuginfo_table[18] = "job_marker[playername] "..tostring(job_marker[playername])
+		setElementData(playerid, "18", "job_marker[playername] "..tostring(job_marker[playername]))
 
-		for k,v in pairs(debuginfo_table) do
-			triggerClientEvent( playerid, "event_debuginfo_fun", playerid, k, v )
-		end
-
-		--элементдата
 		setElementData(playerid, "crimes_data", crimes[playername])
 		setElementData(playerid, "alcohol_data", alcohol[playername])
 		setElementData(playerid, "satiety_data", satiety[playername])

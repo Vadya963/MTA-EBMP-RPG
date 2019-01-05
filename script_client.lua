@@ -3,6 +3,7 @@ local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
+local debuginfo = "true"
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -128,14 +129,6 @@ function setPedOxygenLevel_fun ()--кислородный балон
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
-
-local debuginfo = "true"
-local debuginfo_table = {}
-function debuginfo_fun (k, v)--дебагинфа
-	debuginfo_table[k] = v
-end
-addEvent( "event_debuginfo_fun", true )
-addEventHandler ( "event_debuginfo_fun", getRootElement(), debuginfo_fun )
 
 function body_hit_sound ()--звук поподания в тело
 	playSound("parachute/body_hit_sound.mp3")
@@ -608,8 +601,8 @@ function createText ()
 			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
-		for i,v in pairs(debuginfo_table) do
-			dxdrawtext ( v, 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		for i=0,18 do
+			dxdrawtext ( getElementData(playerid, tostring(i)), 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
 		dxdrawtext ( heal_player[1], screenWidth-width_need-30-30, height_need, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
