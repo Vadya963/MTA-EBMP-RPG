@@ -3821,6 +3821,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
+		
 		sqlite( "UPDATE account SET slot_"..id3.."_1 = '"..array_player_1[playername][id3+1].."', slot_"..id3.."_2 = '"..array_player_2[playername][id3+1].."' WHERE name = '"..playername.."'")
 
 		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
@@ -3848,10 +3849,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		array_house_1[h][id3+1] = id1
 		array_house_2[h][id3+1] = id2
 
-		local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..h.."'" )
-		if result[1]["COUNT()"] == 1 then
-			sqlite( "UPDATE house_db SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
-		end
+		sqlite( "UPDATE house_db SET slot_"..id3.."_1 = '"..array_house_1[h][id3+1].."', slot_"..id3.."_2 = '"..array_house_2[h][id3+1].."' WHERE number = '"..h.."'")
 
 		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_house_1[h][id3+1], array_house_2[h][id3+1] )
 		
