@@ -3222,7 +3222,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
 
-		if getVehicleOccupant ( vehicleid, 0 ) and id2 == plate and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+		if getVehicleOccupant ( vehicleid, 0 ) and id2 == tonumber(plate) and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 		end
 	end
