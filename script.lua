@@ -1566,18 +1566,6 @@ function house_bussiness_job_pos_load( playerid )
 	end
 end
 
-function reg_or_log_fun(playerid, text)
-	local playername = getPlayerName ( playerid )
-	local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..playername.."'" )
-	if result[1]["COUNT()"] == 0 then
-		reg_fun(playerid, text)
-	else
-		log_fun(playerid, text)
-	end
-end
-addEvent( "event_reg_or_log_fun", true )
-addEventHandler ( "event_reg_or_log_fun", getRootElement(), reg_or_log_fun )
-
 function auction(playerid)--загрузка аука
 	local result = sqlite( "SELECT * FROM auction" )
 

@@ -529,12 +529,14 @@ local tune_color_g = 0
 local tune_color_b = 0
 
 function dxdrawtext(text, x, y, width, height, color, scale, font)
+	dxDrawText ( text, x, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x-1, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x+1, y-1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 
 	dxDrawText ( text, x-1, y, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x+1, y, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 
+	dxDrawText ( text, x, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x-1, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 	dxDrawText ( text, x+1, y+1, width, height, tocolor ( 0, 0, 0, 255 ), scale, font )
 
@@ -680,50 +682,47 @@ function createText ()
 	end
 	
 
-	if house_pos ~= nil then
-		for k,v in pairs(house_pos) do
-			if isPointInCircle3D(x,y,z, house_pos[k][1],house_pos[k][2],house_pos[k][3], house_bussiness_radius) then
-				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
-					dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+	for k,v in pairs(house_pos) do
+		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+			if coords[1] and coords[2] then
+				local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
+				dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
-				end
+				local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, m2font_dx1 )
+				dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
 
-	if business_pos ~= nil then
-		for k,v in pairs(business_pos) do
-			if isPointInCircle3D(x,y,z, business_pos[k][1],business_pos[k][2],business_pos[k][3], house_bussiness_radius) then	
-				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
-					dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
-				end
+	for k,v in pairs(business_pos) do
+		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then	
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+			if coords[1] and coords[2] then
+				local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
+				dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+
+				local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, m2font_dx1 )
+				dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
 
-	if job_pos ~= nil then
-		for k,v in pairs(job_pos) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[5]) then				
-				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
-					dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[4]..")", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT"..v[4]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
-				end
+	for k,v in pairs(job_pos) do
+		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[5]) then				
+			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+			if coords[1] and coords[2] then
+				local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
+				dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+
+				local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[4]..")", 1, m2font_dx1 )
+				dxdrawtext ( "(Войти - ALT"..v[4]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
+
 
 	for k,v in pairs(down_player_subject) do--отображение 3д надписей
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
