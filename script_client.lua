@@ -1981,3 +1981,16 @@ function ( cmd, id )
 		sendPlayerMessage("showcursor false")
 	end
 end)
+
+addCommandHandler ( "showdebuginfo",
+function ( cmd, id )
+	if not id then
+		sendPlayerMessage("[ERROR] /"..cmd.." [true или false]", red[1], red[2], red[3])
+	elseif id == "true" then
+		debuginfo = "true"
+		sendPlayerMessage("showdebuginfo true")
+	elseif id == "false" then
+		debuginfo = "false"
+		sendPlayerMessage("showdebuginfo false")
+	end
+end)

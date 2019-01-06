@@ -2452,7 +2452,6 @@ function()
 	bindKey(playerid, "tab", "down", tab_down )
 	bindKey(playerid, "e", "down", e_down )
 	bindKey(playerid, "x", "down", x_down )
-	bindKey(playerid, "2", "down", to_down )
 	bindKey(playerid, "lalt", "down", left_alt_down )
 	bindKey(playerid, "h", "down", h_down )
 
@@ -2867,15 +2866,9 @@ function ( playerid, cmd, id )
 	end
 
 	if id >= 400 and id <= 611 then
-		local number = randomize_number()
+		local result = sqlite( "SELECT COUNT() FROM car_db" )
+		local number = result[1]["COUNT()"]+1
 		local val1, val2 = 6, number
-
-		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..number.."'" )
-		if result[1]["COUNT()"] == 1 then
-			sendPlayerMessage(playerid, "[ERROR] Этот номер числится в базе т/с, пожалуйста повторите попытку снова", red[1], red[2], red[3])
-			return
-		end
-
 
 		if isPointInCircle3D(t_s_salon[1][1],t_s_salon[1][2],t_s_salon[1][3], x1,y1,z1, 5) then
 			if cash_car[id] == nil then
@@ -3018,10 +3011,34 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			return
 		end
 
-		setVehicleEngineState(vehicleid, false)
-
 		if seat == 0 then
-			sendPlayerMessage( playerid, "Чтобы завести (заглушить) двигатель используйте клавишу 2", yellow[1], yellow[2], yellow[3] )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+				if result[1]["nalog"] <= 0 then
+					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+					setVehicleEngineState(vehicleid, false)
+					removePedFromVehicle ( playerid )
+					return
+				end
+			end
+
+			if fuel[plate] <= 0 then
+				sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
+				setVehicleEngineState(vehicleid, false)
+				return
+			end
+
+			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, playername) ~= 0 then
+
+			else
+				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 2 пункта:", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от т/с", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] 2) иметь права на свое имя", red[1], red[2], red[3])
+				setVehicleEngineState(vehicleid, false)
+				removePedFromVehicle ( playerid )
+				return
+			end
 
 			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
@@ -3085,50 +3102,6 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 end
 addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
 
-function to_down (playerid, key, keyState)--вкл выкл двигатель авто
-local playername = getPlayerName ( playerid )
-local vehicleid = getPlayerVehicle(playerid)
-
-	if keyState == "down" then
-		if vehicleid then
-			local plate = getVehiclePlateText ( vehicleid )
-
-			if fuel[plate] <= 0 then
-				sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
-				return
-			end
-
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-			if result[1]["COUNT()"] == 1 then
-				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
-				if result[1]["nalog"] <= 0 then
-					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
-					return
-				end
-			end
-
-			if getSpeed(vehicleid) > 5 then
-				sendPlayerMessage(playerid, "[ERROR] Остановите машину", red[1], red[2], red[3])
-				return
-			end
-
-			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, playername) ~= 0 then
-				if getVehicleEngineState(vehicleid) then
-					setVehicleEngineState(vehicleid, false)
-					me_chat(playerid, playername.." заглушил(а) двигатель")
-				else
-					setVehicleEngineState(vehicleid, true)
-					me_chat(playerid, playername.." завел(а) двигатель")
-				end
-			else
-				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 2 пункта:", red[1], red[2], red[3])
-				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от т/с", red[1], red[2], red[3])
-				sendPlayerMessage(playerid, "[ERROR] 2) иметь права на свое имя", red[1], red[2], red[3])
-			end
-		end
-	end
-end
-
 function h_down (playerid, key, keyState)--вкл выкл сирены
 local playername = getPlayerName ( playerid )
 local vehicleid = getPlayerVehicle(playerid)
@@ -3142,13 +3115,6 @@ local vehicleid = getPlayerVehicle(playerid)
 			end
 		end
 	end
-end
-
-function randomize_number()--генератор номеров для авто
-	math.randomseed(getTickCount())
-
-	local randomize = math.random(1,99999999)
-	return randomize
 end
 -----------------------------------------------------------------------------------------
 
