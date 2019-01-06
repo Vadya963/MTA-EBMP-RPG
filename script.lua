@@ -3030,24 +3030,21 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			end
 
 			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, playername) ~= 0 then
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				if result[1]["COUNT()"] == 1 then
+					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+				end
 
+				if tonumber(plate) ~= 0 then
+					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо выполнить 2 пункта:", red[1], red[2], red[3])
 				sendPlayerMessage(playerid, "[ERROR] 1) нужно иметь ключ от т/с", red[1], red[2], red[3])
 				sendPlayerMessage(playerid, "[ERROR] 2) иметь права на свое имя", red[1], red[2], red[3])
 				setVehicleEngineState(vehicleid, false)
 				removePedFromVehicle ( playerid )
-				return
-			end
-
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-			if result[1]["COUNT()"] == 1 then
-				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
-				sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
-			end
-
-			if tonumber(plate) ~= 0 then
-				triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
 			end
 		end
 	end
