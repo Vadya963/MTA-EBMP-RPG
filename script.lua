@@ -3063,9 +3063,8 @@ function exit_car_fun( playerid )
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
 
-		setVehicleEngineState(vehicleid, false)
-
 		if getVehicleOccupant ( vehicleid, 0 ) then
+			setVehicleEngineState(vehicleid, false)
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -3085,9 +3084,9 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 		local playername = getPlayerName ( playerid )
 		local plate = getVehiclePlateText ( vehicleid )
 
-		setVehicleEngineState(vehicleid, false)
-
 		if seat == 0 then
+			setVehicleEngineState(vehicleid, false)
+
 			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
