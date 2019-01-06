@@ -3040,16 +3040,14 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				return
 			end
 
-			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
-					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
-				end
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+				sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+			end
 
-				if tonumber(plate) ~= 0 then
-					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
-				end
+			if tonumber(plate) ~= 0 then
+				triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
 			end
 		end
 	end
