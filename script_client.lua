@@ -517,10 +517,6 @@ local gui_selection_pos_y = 0 --положение картинки y
 local info3_selection_1 = -1 --слот картинки
 local info1_selection_1 = -1 --номер картинки
 local info2_selection_1 = -1 --значение картинки
-----------------------------------------------------
-local info3_selection_2 = -1 --слот картинки
-local info1_selection_2 = -1 --номер картинки
-local info2_selection_2 = -1 --значение картинки
 
 --выбор цвета для окна тюнинга
 local tune_color_2d = false
@@ -730,11 +726,11 @@ function createText ()
 
 	if gui_2dtext then--отображение инфы
 		local width,height = guiGetPosition ( stats_window, false )
-		local x = 9
-		local y = 20+24
+		local x,y = guiGetPosition ( tabPanel, false )
+		y = y+24
 		local offset = dxGetFontHeight(1,m2font_dx1)
 		if info1_png ~= 0 then
-			--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
+
 			if info1_png == 6 and info2_png ~= 0 then
 				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], 1, m2font_dx1 )
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
@@ -747,14 +743,14 @@ function createText ()
 			
 			if debuginfo == "true" then
 				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, m2font_dx1 )
-				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
+
 				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+30, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+30, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			end
 			
 			if tab_player == guiGetSelectedTab(tabPanel) then
 				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx1 )
-				--dxDrawRectangle( ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, dimensions, offset, tocolor ( 0, 0, 0, 255 ), true )
+
 				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			end
@@ -764,8 +760,8 @@ function createText ()
 
 	if gui_selection and info_tab == guiGetSelectedTab(tabPanel) then--выделение картинки
 		local width,height = guiGetPosition ( stats_window, false )
-		local x = 10
-		local y = 20+24
+		local x,y = guiGetPosition ( tabPanel, false )
+		y = y+24
 		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 100 ), true )
 	end
 
@@ -1448,13 +1444,13 @@ addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1_selection_2, info2_selection_2, getPlayerName(localPlayer) )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_1, info1, info2, getPlayerName(localPlayer) )
 
 	elseif info_tab == tab_car then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1_selection_2, info2_selection_2, plate )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_1, info1, info2, plate )
 
 	elseif info_tab == tab_house then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1_selection_2, info2_selection_2, house )
+		triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_1, info1, info2, house )
 	end
 end
 
@@ -1524,12 +1520,8 @@ function inv_create ()--создание инв-ря
 				info2_selection_1 = info2
 				lmb = 1
 			else
-				info3_selection_2 = info3
-				info1_selection_2 = info1
-				info2_selection_2 = info2
-
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_player[info3_selection_2][2] ~= 0 then
+				if inv_slot_player[info3][2] ~= 0 then
 					for k,v in pairs(no_use_subject) do 
 						if v == info1 then
 							return
@@ -1545,7 +1537,7 @@ function inv_create ()--создание инв-ря
 					return
 				end
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3_selection_2, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 
 				zamena_img()
 
@@ -1625,12 +1617,8 @@ function inv_create ()--создание инв-ря
 					info2_selection_1 = info2
 					lmb = 1
 				else
-					info3_selection_2 = info3
-					info1_selection_2 = info1
-					info2_selection_2 = info2
-
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_car[info3_selection_2][2] ~= 0 then
+					if inv_slot_car[info3][2] ~= 0 then
 						for k,v in pairs(no_use_subject) do 
 							if v == info1 then
 								return
@@ -1646,7 +1634,7 @@ function inv_create ()--создание инв-ря
 						return
 					end
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3_selection_2, info1_selection_1, info2_selection_1, plate )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3, info1_selection_1, info2_selection_1, plate )
 
 					zamena_img()
 
@@ -1727,12 +1715,8 @@ function inv_create ()--создание инв-ря
 					info2_selection_1 = info2
 					lmb = 1
 				else
-					info3_selection_2 = info3
-					info1_selection_2 = info1
-					info2_selection_2 = info2
-
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_house[info3_selection_2][2] ~= 0 then
+					if inv_slot_house[info3][2] ~= 0 then
 						for k,v in pairs(no_use_subject) do 
 							if v == info1 then
 								return
@@ -1748,7 +1732,7 @@ function inv_create ()--создание инв-ря
 						return
 					end
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3_selection_2, info1_selection_1, info2_selection_1, house )
+					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3, info1_selection_1, info2_selection_1, house )
 
 					zamena_img()
 
@@ -1865,10 +1849,6 @@ function inv_delet ()--удаление инв-ря
 		info3_selection_1 = -1
 		info1_selection_1 = -1
 		info2_selection_1 = -1
-
-		info3_selection_2 = -1
-		info1_selection_2 = -1
-		info2_selection_2 = -1
 
 		info1 = -1
 		info2 = -1
