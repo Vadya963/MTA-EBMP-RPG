@@ -731,7 +731,7 @@ function createText ()
 		local offset = dxGetFontHeight(1,m2font_dx1)
 		if info1_png ~= 0 then
 
-			if info1_png == 6 and info2_png ~= 0 then
+			if info1_png == 6 and info2_png ~= 0 and getVehicleNameFromPlate( info2_png ) then
 				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], 1, m2font_dx1 )
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
