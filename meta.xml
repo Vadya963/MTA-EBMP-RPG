@@ -5,8 +5,6 @@
 	
 	<script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client" cache="false"/>
-	<script src="reload_c.lua" type="client"/>
-
 	<!--<script src="ignore_server.lua" type="server"/>-->
 
 	<map src="map/map_gta.map" />
