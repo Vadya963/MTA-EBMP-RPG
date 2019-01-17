@@ -1279,7 +1279,7 @@ end
 function pay_nalog()
 	local time = getRealTime()
 
-	if time["hour"] == time["hour"] then
+	if time["hour"] == time_nalog then
 		local result = sqlite( "SELECT * FROM car_db" )
 		for k,v in pairs(result) do
 			if v["nalog"] > 0 then
@@ -2255,6 +2255,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(job_timer, 1000, 0)--работы в цикле
 
 		setWeather(tomorrow_weather)
+		setGlitchEnabled ( "quickreload", true )
 
 
 		local result = sqlite( "SELECT * FROM zakon_mayoralty" )
