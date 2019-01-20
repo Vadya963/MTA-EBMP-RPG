@@ -3,7 +3,18 @@ local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
-local debuginfo = "true"
+local debuginfo = true
+local car_spawn_value = 0
+
+addEventHandler( "onClientResourceStart", getRootElement( ),
+function ( startedRes )
+	if car_spawn_value == 0 then
+		car_spawn_value = 1
+
+		bindKey ( "F1", "down", showcursor_b )
+		bindKey ( "F2", "down", showdebuginfo_b )
+	end
+end)
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -580,7 +591,7 @@ function createText ()
 	local rx,ry,rz = getElementRotation(playerid)
 	local heal_player = split(getElementHealth(playerid), ".")
 
-	if debuginfo == "true" then
+	if debuginfo then
 		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( "skin "..getElementModel(playerid)..", interior "..getElementInterior(playerid)..", dimension "..getElementDimension(playerid), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -619,7 +630,7 @@ function createText ()
 
 		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
 
-		if debuginfo == "true" then
+		if debuginfo then
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
@@ -741,7 +752,7 @@ function createText ()
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			end
 			
-			if debuginfo == "true" then
+			if debuginfo then
 				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, m2font_dx1 )
 
 				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+30, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
@@ -1949,28 +1960,14 @@ function(absoluteX, absoluteY, gui)
 	info2_png = -1
 end)
 
-addCommandHandler ( "showcursor",
-function ( cmd, id )
-	if not id then
-		sendPlayerMessage("[ERROR] /"..cmd.." [true или false]", red[1], red[2], red[3])
-	elseif id == "true" then
-		showCursor( true )
-		sendPlayerMessage("showcursor true")
-	elseif id == "false" then
-		showCursor( false )
-		sendPlayerMessage("showcursor false")
+function showcursor_b (key, keyState)
+	if keyState == "down" then
+		showCursor( not isCursorShowing ( playerid ) )
 	end
-end)
+end
 
-addCommandHandler ( "showdebuginfo",
-function ( cmd, id )
-	if not id then
-		sendPlayerMessage("[ERROR] /"..cmd.." [true или false]", red[1], red[2], red[3])
-	elseif id == "true" then
-		debuginfo = "true"
-		sendPlayerMessage("showdebuginfo true")
-	elseif id == "false" then
-		debuginfo = "false"
-		sendPlayerMessage("showdebuginfo false")
+function showdebuginfo_b (key, keyState)
+	if keyState == "down" then
+		debuginfo = not debuginfo
 	end
-end)
+end
