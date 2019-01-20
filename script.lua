@@ -1073,13 +1073,13 @@ function job_timer ()
 				end
 
 			elseif job[playername] == 0 then--нету вызова
-				taxi_job_0( playername )
+				job_0( playername )
 			end
 		end
 	end
 end
 
-function taxi_job_0( playername )
+function job_0( playername )
 	if job_ped[playername] ~= 0 then
 		destroyElement(job_ped[playername])
 	end
@@ -2489,7 +2489,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		save_player_action(playerid, "[quitPlayer] "..playername.." [heal - "..heal.."]")
 
 		exit_car_fun(playerid)
-		taxi_job_0( playername )
+		job_0( playername )
 
 		if robbery_player[playername] == 1 then
 			killTimer ( timer_robbery[playername] )
