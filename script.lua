@@ -3209,9 +3209,9 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 		end
 	end
 
-	--[[max_earth = max_earth+1
+	max_earth = max_earth+1
 	local j = max_earth
-	earth[j] = {x,y,z,id1,id2}]]
+	earth[j] = {x,y,z,id1,id2}
 
 	if search_inv_player(playerid, 25, id2) ~= 0 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
