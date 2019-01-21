@@ -353,19 +353,19 @@ local bar = {
 }
 
 local deathReasons = {
-	[19] = "Ракета",
-	[37] = "Обжигать",
-	[49] = "Утрамбованный",
-	[50] = "Наезд / лопасти вертолета",
-	[51] = "Взрыв",
-	[52] = "Стрелять из авто",
-	[53] = "Утопленный",
-	[54] = "Упасть",
-	[55] = "Неизвестный",
-	[56] = "Свалка",
-	[57] = "Оружие",
-	[59] = "Танковая Граната",
-	[63] = "Взорванный"
+	[19] = "Rocket",
+	[37] = "Burnt",
+	[49] = "Rammed",
+	[50] = "Ranover/Helicopter Blades",
+	[51] = "Explosion",
+	[52] = "Driveby",
+	[53] = "Drowned",
+	[54] = "Fall",
+	[55] = "Unknown",
+	[56] = "Melee",
+	[57] = "Weapon",
+	[59] = "Tank Grenade",
+	[63] = "Blown"
 }
 
 local interior = {
@@ -2550,9 +2550,6 @@ function(ammo, attacker, weapon, bodypart)
 				end
 			end
 
-			sendPlayerMessage(attacker, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
-
 		elseif getElementType ( attacker ) == "vehicle" then
 			for i,player_id in pairs(getElementsByType("player")) do
 				local vehicleid = getPlayerVehicle(player_id)
@@ -2576,9 +2573,6 @@ function(ammo, attacker, weapon, bodypart)
 						end
 					end
 
-					sendPlayerMessage(player_id, "Вы убили "..playername, yellow[1], yellow[2], yellow[3])
-					sendPlayerMessage(playerid, "Вас убил "..playername_a, yellow[1], yellow[2], yellow[3])
-
 					break
 				end
 			end
@@ -2592,6 +2586,12 @@ function(ammo, attacker, weapon, bodypart)
 	end
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
+
+	if not playername_a then
+		sendPlayerMessage(getRootElement(), "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
+	else
+		sendPlayerMessage(getRootElement(), "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
+	end
 
 	save_player_action(playerid, "[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
 end)
@@ -2639,7 +2639,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		me_chat(playerid, playername_attacker.." оглушил(а) "..playername)
 	end
 end
-addEventHandler ( "onPlayerDamage", getRootElement (), playerDamage_text )
+addEventHandler ( "onPlayerDamage", getRootElement(), playerDamage_text )
 
 function nickChangeHandler(oldNick, newNick)
 	local playerid = source
