@@ -541,8 +541,20 @@ function dxdrawtext(text, x, y, width, height, color, scale, font)
 	dxDrawText ( text, x, y, width, height, color, scale, font )
 end
 
+local FPSLimit, lastTick, framesRendered, FPS = 100, getTickCount(), 0, 0
 function createText ()
 	--setTime( 0, 0 )
+
+	local currentTick = getTickCount()
+	local elapsedTime = currentTick - lastTick
+
+	if elapsedTime >= 1000 then
+		FPS = framesRendered
+		lastTick = currentTick
+		framesRendered = 0
+	else
+		framesRendered = framesRendered + 1
+	end
 
 	local time = getRealTime()
 	local playerid = localPlayer
@@ -556,7 +568,7 @@ function createText ()
 	setCameraShakeLevel ( (alcohol/2) )
 
 	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-	local text = "Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
+	local text = "FPS: "..FPS.." Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	local width_need = (screenWidth/5.04)--ширина нужд 271
