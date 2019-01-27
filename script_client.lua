@@ -373,10 +373,11 @@ local weapon = {
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 1, 250},
-	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
+	[21] = {info_png[21][1], 1, 45},
+	[22] = {info_png[22][1], 1, 60},
 	[23] = {info_png[23][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
@@ -391,19 +392,17 @@ local shop = {
 	[63] = {info_png[63][1], 1, 100},
 }
 
-local bar = {
-	[21] = {info_png[21][1], 1, 45},
-	[22] = {info_png[22][1], 1, 60},
+local gas = {
+	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 }
 
 local skin = {"мужская одежда", 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 264, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
 
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
-	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},--магаз одежды
+	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
 	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
-	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
-	{0, "Заправочная станция", 0,0,0, 16},
+	{0, "Заправка", 0,0,0, 56},
 	{0, "Автомастерская", 0,0,0, 27},
 }
 
@@ -541,7 +540,7 @@ function dxdrawtext(text, x, y, width, height, color, scale, font)
 	dxDrawText ( text, x, y, width, height, color, scale, font )
 end
 
-local FPSLimit, lastTick, framesRendered, FPS = 100, getTickCount(), 0, 0
+local lastTick, framesRendered, FPS = getTickCount(), 0, 0
 function createText ()
 	--setTime( 0, 0 )
 
@@ -567,7 +566,7 @@ function createText ()
 
 	setCameraShakeLevel ( (alcohol/2) )
 
-	local client_time = " Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
+	local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 	local text = "FPS: "..FPS.." Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
@@ -1067,7 +1066,7 @@ function shop_menu(number, value)--создание окна магазина
 	elseif value == 4 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(bar) do
+		for k,v in pairs(gas) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 	end
@@ -1167,6 +1166,297 @@ function mayoralty_menu()--мэрия
 end
 addEvent( "event_mayoralty_menu", true )
 addEventHandler ( "event_mayoralty_menu", getRootElement(), mayoralty_menu )
+
+
+function avto_bikes_menu()--создание окна машин
+
+	showCursor( true )
+
+	local vehicleIds = {
+		[400] = {"LANDSTAL", 25000},
+		[401] = {"BRAVURA", 9000},
+		[402] = {"BUFFALO", 35000},
+		[403] = {"LINERUN", 35000},
+		[404] = {"PEREN", 10000},
+		[405] = {"SENTINEL", 35000},
+		--[406] = {"DUMPER", 50000},--самосвал
+		--[407] = {"FIRETRUK", 15000},
+		[408] = {"TRASH", 50000},--мусоровоз
+		[409] = {"STRETCH", 40000},--лимузин
+		[410] = {"MANANA", 9000},
+		[411] = {"INFERNUS", 95000},
+		[412] = {"VOODOO", 30000},
+		[413] = {"PONY", 20000},--грузовик с колонками
+		--[414] = {"MULE", 22000},--грузовик развозчика
+		[415] = {"CHEETAH", 105000},
+		--[416] = {"AMBULAN", 10000},--скорая
+		[418] = {"MOONBEAM", 16000},
+		[419] = {"ESPERANT", 19000},
+		[420] = {"TAXI", 20000},
+		[421] = {"WASHING", 18000},
+		[422] = {"BOBCAT", 26000},
+		--[423] = {"MRWHOOP", 29000},--грузовик мороженого
+		[424] = {"BFINJECT", 15000},
+		[426] = {"PREMIER", 25000},
+		[428] = {"SECURICA", 40000},--инкасаторский грузовик
+		[429] = {"BANSHEE", 45000},
+		--[431] = {"BUS", 15000},
+		--[432] = {"RHINO", 110000},--танк
+		--[433] = {"BARRACKS", 10000},--военный грузовик
+		[434] = {"HOTKNIFE", 35000},
+		[436] = {"PREVION", 9000},
+		--[437] = {"COACH", 20000},--автобус
+		--[438] = {"CABBIE", 10000},--такси
+		[439] = {"STALLION", 19000},
+		[440] = {"RUMPO", 26000},--грузовик развозчика в сампрп
+		--[442] = {"ROMERO", 10000},--гробовозка
+		--[443] = {"PACKER", 20000},--фура с траплином
+		[444] = {"MONSTER", 40000},
+		[445] = {"ADMIRAL", 35000},
+		[451] = {"TURISMO", 95000},
+		[455] = {"FLATBED", 10000},--пустой грузовик
+		[456] = {"YANKEE", 22000},--грузовик
+		--[457] = {"CADDY", 9000},--гольфкар
+		[458] = {"SOLAIR", 18000},
+		[459] = {"TOPFUN", 20000},--грузовик с игру-ми машинами
+		[466] = {"GLENDALE", 20000},
+		[467] = {"OCEANIC", 20000},
+		--[470] = {"PATRIOT", 40000},--военный хамер
+		[471] = {"QUADBIKE", 9000},--квадроцикл
+		[474] = {"HERMES", 19000},
+		[475] = {"SABRE", 19000},
+		[477] = {"ZR350", 45000},
+		[478] = {"WALTON", 26000},
+		[479] = {"REGINA", 18000},
+		[480] = {"COMET", 35000},
+		[482] = {"BURRITO", 26000},
+		[483] = {"CAMPER", 26000},
+		--[485] = {"BAGGAGE", 9000},--погрузчик багажа
+		--[486] = {"DOZER", 50000},--бульдозер
+		[489] = {"RANCHER", 40000},
+		[491] = {"VIRGO", 9000},
+		[492] = {"GREENWOO", 19000},
+		[494] = {"HOTRING", 145000},--гоночная
+		[495] = {"SANDKING", 40000},
+		[496] = {"BLISTAC", 35000},
+		[498] = {"BOXVILLE", 22000},
+		[499] = {"BENSON", 22000},
+		[500] = {"MESA", 25000},
+		[502] = {"Hotring Racer 2", 145000},--гоночная
+		[503] = {"Hotring Racer 3", 145000},--гоночная
+		[504] = {"BLOODRA", 45000},--дерби тачка
+		[506] = {"SUPERGT", 105000},
+		[507] = {"ELEGANT", 35000},
+		[508] = {"JOURNEY", 22000},
+		--[514] = {"Tanker", 30000},--тягач
+		--[515] = {"RDTRAIN", 35000},--тягач
+		[516] = {"NEBULA", 35000},
+		[517] = {"MAJESTIC", 35000},
+		[518] = {"BUCCANEE", 19000},
+		--[524] = {"CEMENT", 50000},
+		[526] = {"FORTUNE", 19000},
+		[527] = {"CADRONA", 9000},
+		[529] = {"WILLARD", 19000},
+		--[530] = {"FORKLIFT", 9000},--вилочный погр-ик
+		--[531] = {"TRACTOR", 9000},
+		--[532] = {"COMBINE", 10000},
+		[533] = {"FELTZER", 35000},
+		[534] = {"REMINGTN", 30000},
+		[535] = {"SLAMVAN", 19000},
+		[536] = {"BLADE", 19000},
+		[540] = {"VINCENT", 19000},
+		[541] = {"BULLET", 105000},
+		[542] = {"CLOVER", 19000},
+		[543] = {"SADLER", 26000},
+		--[544] = {"Fire Truck", 15000},--с лестницей
+		[545] = {"HUSTLER", 20000},
+		[546] = {"INTRUDER", 19000},
+		[547] = {"PRIMO", 19000},
+		[549] = {"TAMPA", 19000},
+		[550] = {"SUNRISE", 19000},
+		[551] = {"MERIT", 35000},
+		--[552] = {"UTILITY", 20000},--санитарный фургон
+		[554] = {"YOSEMITE", 40000},
+		[555] = {"WINDSOR", 35000},
+		[556] = {"Monster 2", 40000},
+		[557] = {"Monster 3", 40000},
+		[558] = {"URANUS", 35000},
+		[559] = {"JESTER", 35000},
+		[560] = {"SULTAN", 35000},
+		[561] = {"STRATUM", 35000},
+		[562] = {"ELEGY", 35000},
+		[565] = {"FLASH", 35000},
+		[566] = {"TAHOMA", 35000},
+		[567] = {"SAVANNA", 19000},
+		[568] = {"BANDITO", 15000},
+		--[571] = {"KART", 15000},
+		--[572] = {"MOWER", 15000},--газонокосилка
+		[573] = {"DUNE", 40000},
+		--[574] = {"SWEEPER", 15000},--очистка улиц
+		[575] = {"BROADWAY", 19000},
+		[576] = {"TORNADO", 19000},
+		--[578] = {"DFT30", 5000},--3 колесная тачка
+		[579] = {"HUNTLEY", 40000},
+		[580] = {"STAFFORD", 35000},
+		--[582] = {"NEWSVAN", 20000},--фургон новостей
+		--[583] = {"TUG", 15000},--буксир
+		--[584] = {"PETROTR", 35000},--трейлер бензина
+		[585] = {"EMPEROR", 35000},
+		[587] = {"EUROS", 35000},
+		--[588] = {"HOTDOG", 22000},
+		[589] = {"CLUB", 35000},
+		[600] = {"PICADOR", 26000},
+		[602] = {"ALPHA", 35000},
+		[603] = {"PHOENIX", 35000},
+		[604] = {"Damaged Glendale", 5000},
+		[605] = {"Damaged Sadler", 5000},
+
+		--тачки копов
+		[596] = {"Police LS", 25000},
+		[597] = {"Police SF", 25000},
+		[598] = {"Police LV", 25000},
+		[599] = {"Police Ranger", 25000},
+		[427] = {"ENFORCER", 40000},--пол-ий грузовик
+		[601] = {"S.W.A.T.", 40000},
+		[490] = {"FBIRANCH", 40000},
+		[525] = {"TOWTRUCK", 20000},--эвакуатор для копов
+		[523] = {"HPV1000", 10000},--мотик полиции
+		[528] = {"FBITRUCK", 40000},
+
+		--bikes
+		[586] = {"WAYFARER", 10000},
+		[468] = {"Sanchez", 15000},
+		[448] = {"Pizza Boy", 1000},
+		[461] = {"PCJ-600", 20000},
+		[521] = {"FCR900", 20000},
+		[522] = {"NRG500", 90000},
+		[462] = {"Faggio", 1000},
+		[463] = {"FREEWAY", 10000},
+		[581] = {"BF400", 20000},
+	}
+
+	local width = 400+10
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Автомобили и мотоциклы", false )
+
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	for k,v in pairs(vehicleIds) do
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+	end
+
+	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+		
+		if text == "" then
+			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			return
+		end
+
+		triggerServerEvent( "event_buycar", getRootElement(), localPlayer, getVehicleModelFromName (text) )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+end
+addEvent( "event_avto_bikes_menu", true )
+addEventHandler ( "event_avto_bikes_menu", getRootElement(), avto_bikes_menu )
+
+
+function boats_menu()--создание окна машин
+
+	showCursor( true )
+
+	local vehicleIds = {
+		--[472] = {"COASTGRD", 10000},--лодка берег-ой охраны
+		[473] = {"DINGHY", 5000},--моторная лодка
+		[493] = {"Jetmax", 60000},--лодка
+		--[595] = {"LAUNCH", 30000},--военная лодка
+		[484] = {"MARQUIS", 99000},--яхта с парусом
+		[430] = {"PREDATOR", 40000},--поли-ая лодка
+		[452] = {"SPEEDER", 30000},--лодка
+		[453] = {"REEFER", 25000},--рыболовное судно
+		[454] = {"TROPIC", 73000},--яхта
+		[446] = {"SQUALO", 60000},--лодка
+		[539] = {"VORTEX", 26000},--возд-ая подушка
+	}
+
+	local width = 400+10
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Лодки", false )
+
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	for k,v in pairs(vehicleIds) do
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+	end
+
+	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+		
+		if text == "" then
+			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			return
+		end
+
+		triggerServerEvent( "event_buycar", getRootElement(), localPlayer, getVehicleModelFromName (text) )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+end
+addEvent( "event_boats_menu", true )
+addEventHandler ( "event_boats_menu", getRootElement(), boats_menu )
+
+
+function helicopters_menu()--создание окна машин
+
+	showCursor( true )
+
+	local vehicleIds = {
+		--[[[548] = {"CARGOBOB", 25000},
+		[425] = {"HUNTER", 99000},--верт военный с ракетами
+		[417] = {"LEVIATHN", 25000},--верт военный
+		[487] = {"MAVERICK", 45000},--верт
+		[488] = {"News Chopper", 45000},--верт новостей
+		[563] = {"RAINDANC", 99000},--верт спасателей
+		[469] = {"SPARROW", 25000},--верт без пушки
+		[447] = {"SEASPAR", 28000},--верт с пуляметом]]
+		[497] = {"Police Maverick", 45000},
+	}
+
+	local width = 400+10
+	local height = 320.0+(16.0*1)+10
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Вертолеты", false )
+
+	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	for k,v in pairs(vehicleIds) do
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+	end
+
+	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+		
+		if text == "" then
+			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			return
+		end
+
+		triggerServerEvent( "event_buycar", getRootElement(), localPlayer, getVehicleModelFromName (text) )
+	end
+	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+end
+addEvent( "event_helicopters_menu", true )
+addEventHandler ( "event_helicopters_menu", getRootElement(), helicopters_menu )
 
 
 function tablet_fun()--создание планшета

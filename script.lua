@@ -209,22 +209,6 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 end
 -----------------------------------------------------------------------------------------
 
-function timer_earth_clear()
-	local time = getRealTime()
-
-	if time["minute"] == 0 or time["minute"] == 30 then
-		print("[timer_earth_clear] max_earth "..max_earth)
-
-		earth = {}
-		max_earth = 0
-
-		for k,playerid in pairs(getElementsByType("player")) do
-			sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
-			triggerClientEvent( playerid, "event_earth_load", playerid, "nil", 0, 0, 0, 0, 0, 0 )
-		end
-	end
-end
-
 local info_png = {
 	[0] = {"", ""},
 	[1] = {"деньги", "$"},
@@ -329,10 +313,11 @@ local weapon = {
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 1, 250},
-	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 	[7] = {info_png[7][1], 20, 10},
 	[8] = {info_png[8][1], 20, 15},
 	[11] = {info_png[11][1], 1, 100},
+	[21] = {info_png[21][1], 1, 45},
+	[22] = {info_png[22][1], 1, 60},
 	[23] = {info_png[23][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 10000},
@@ -347,9 +332,8 @@ local shop = {
 	[63] = {info_png[63][1], 1, 100},
 }
 
-local bar = {
-	[21] = {info_png[21][1], 1, 45},
-	[22] = {info_png[22][1], 1, 60},
+local gas = {
+	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
 }
 
 local deathReasons = {
@@ -695,7 +679,7 @@ local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
 	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
 	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
-	{17, "Клуб", 493.4687,-23.0080,1000.6796, 48},
+	{0, "Заправка", 0,0,0, 56},
 	{0, "Автомастерская", 0,0,0, 27},
 }
 
@@ -1212,6 +1196,19 @@ function timer_earth()--передача слотов земли на клиен
 				triggerClientEvent( playerid, "event_earth_load", playerid, "", i, v[1], v[2], v[3], v[4], v[5] )
 			end
 		end
+	end
+end
+
+function timer_earth_clear()--очистка земли
+
+	print("[timer_earth_clear] max_earth "..max_earth)
+
+	earth = {}
+	max_earth = 0
+
+	for k,playerid in pairs(getElementsByType("player")) do
+		sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
+		triggerClientEvent( playerid, "event_earth_load", playerid, "nil", 0, 0, 0, 0, 0, 0 )
 	end
 end
 
@@ -1983,7 +1980,7 @@ function buy_subject_fun( playerid, text, number, value )
 				end
 
 			elseif value == 4 then
-				for k,v in pairs(bar) do
+				for k,v in pairs(gas) do
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
 							if inv_player_empty(playerid, k, v[2]) then
@@ -1993,7 +1990,7 @@ function buy_subject_fun( playerid, text, number, value )
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
-								save_player_action(playerid, "[buy_subject_fun] [bar - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+								save_player_action(playerid, "[buy_subject_fun] [gas - "..text.."], "..playername.." [-"..cash*v[3].."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 							else
 								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							end
@@ -2241,12 +2238,14 @@ function displayLoadedRes ( res )--старт ресурсов
 	if car_spawn_value == 0 then
 		car_spawn_value = 1
 
+		setTime(0,0)
+
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(freez_car, 1000, 0)--заморозка авто
 		setTimer(need, 60000, 0)--уменьшение потребностей
 		setTimer(need_1, 1000, 0)--смена скина на бомжа
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
-		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
+		setTimer(timer_earth_clear, (24*60000), 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 60000, 0)--погода сервера
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
@@ -2713,12 +2712,12 @@ function reg_or_login(playerid)
 		sleep[playername] = result[1]["sleep"]
 		drugs[playername] = result[1]["drugs"]
 
-		if arrest[playername] == 1 then--не удалять
+		--[[if arrest[playername] == 1 then--не удалять
 			local randomize = math.random(1,#prison_cell)
 			spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
-		else
+		else]]
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
-		end
+		--end
 
 		setElementHealth( playerid, result[1]["heal"] )
 
@@ -2845,8 +2844,8 @@ function car_spawn(number)
 		end
 end
 
-addCommandHandler ( "buycar",--покупка авто
-function ( playerid, cmd, id )
+--addCommandHandler ( "buycar",--покупка авто
+function buycar ( playerid, id )
 	local police_car = {596,597,598,599,427,601,490,525,523,528}
 	local police_boats = {430}
 	local police_helicopters = {497}
@@ -2997,7 +2996,9 @@ function ( playerid, cmd, id )
 	else
 		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end
-end)
+end
+addEvent( "event_buycar", true )
+addEventHandler ( "event_buycar", getRootElement(), buycar )
 
 --------------------------------------вход и выход в авто--------------------------------
 function enter_car ( vehicleid, seat, jacked )--евент входа в авто
@@ -3019,7 +3020,6 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				if result[1]["nalog"] <= 0 then
 					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 					setVehicleEngineState(vehicleid, false)
-					removePedFromVehicle ( playerid )
 					return
 				end
 			end
@@ -3494,18 +3494,7 @@ local x,y,z = getElementPosition(playerid)
 			if state_gui_window[playername] == 0 then
 
 				for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do--бизнесы
-					if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then
-
-						if v["nalog"] <= 0 then
-							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
-							return
-						end
-
-						triggerClientEvent( playerid, "event_tune_create", playerid, v["number"] )
-						state_gui_window[playername] = 1
-						return
-
-					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[1][2] and enter_business[playername] == 1 then
+					if getElementDimension(playerid) == v["world"] and v["type"] == interior_business[1][2] and enter_business[playername] == 1 then
 						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 1 )
 						state_gui_window[playername] = 1
 						return
@@ -3520,8 +3509,25 @@ local x,y,z = getElementPosition(playerid)
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[4][2] and enter_business[playername] == 1 then
+					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[4][2] then
+
+						if v["nalog"] <= 0 then
+							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+							return
+						end
+
 						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 4 )
+						state_gui_window[playername] = 1
+						return
+
+					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then
+
+						if v["nalog"] <= 0 then
+							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+							return
+						end
+
+						triggerClientEvent( playerid, "event_tune_create", playerid, v["number"] )
 						state_gui_window[playername] = 1
 						return
 
@@ -3560,6 +3566,20 @@ local x,y,z = getElementPosition(playerid)
 							return
 						end
 					end
+				end
+
+				if isPointInCircle3D(t_s_salon[1][1],t_s_salon[1][2],t_s_salon[1][3], x,y,z, 5) then
+					triggerClientEvent( playerid, "event_avto_bikes_menu", playerid )
+					state_gui_window[playername] = 1
+					return
+				elseif isPointInCircle3D(t_s_salon[2][1],t_s_salon[2][2],t_s_salon[2][3], x,y,z, 5) then
+					triggerClientEvent( playerid, "event_helicopters_menu", playerid )
+					state_gui_window[playername] = 1
+					return
+				elseif isPointInCircle3D(t_s_salon[3][1],t_s_salon[3][2],t_s_salon[3][3], x,y,z, 5) then
+					triggerClientEvent( playerid, "event_boats_menu", playerid )
+					state_gui_window[playername] = 1
+					return
 				end
 
 			else
@@ -3626,7 +3646,7 @@ function left_alt_down (playerid, key, keyState)
 				local id = v["interior"]
 
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
-					if id == 5 then
+					if id == 5 or id == 4 then
 						return
 					end
 
@@ -4015,7 +4035,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if vehicleid then
 				local plate = getVehiclePlateText ( vehicleid )
 
-				if not getVehicleEngineState(vehicleid) then
+				if getSpeed(vehicleid) < 5 then
 					if fuel[plate]+id2 <= max_fuel then
 
 						fuel[plate] = fuel[plate]+id2
@@ -4027,7 +4047,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						return
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] Заглушите двигатель", red[1], red[2], red[3])
+					sendPlayerMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
 					return
 				end
 			else
@@ -4075,8 +4095,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
-				if getVehicleEngineState(vehicleid) then
-					sendPlayerMessage(playerid, "[ERROR] Заглушите двигатель", red[1], red[2], red[3])
+				if getSpeed(vehicleid) > 5 then
+					sendPlayerMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
 					return
 				end
 
