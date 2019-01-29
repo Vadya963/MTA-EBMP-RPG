@@ -286,6 +286,7 @@ local info_png = {
 	[73] = {"бочка с нефтью", "$ за штуку"},
 	[74] = {"лицензия водителя мусоровоза на имя", ""},
 	[75] = {"мусор", "кг"},
+	[76] = {"антипохмелин", "шт"},
 }
 
 local weapon = {
@@ -330,6 +331,7 @@ local shop = {
 	[57] = {info_png[57][1], 1, 100},
 	[58] = {info_png[58][1], 1, 100},
 	[63] = {info_png[63][1], 1, 100},
+	[76] = {info_png[76][1], 1, 250},
 }
 
 local gas = {
@@ -4029,6 +4031,19 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendPlayerMessage(playerid, "-"..drugs_minys.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
 			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 
+		elseif id1 == 76 then--антипохмелин
+			id2 = id2 - 1
+
+			local alcohol_minys = 50
+
+			if alcohol[playername]-alcohol_minys < 0 then
+				sendPlayerMessage(playerid, "[ERROR] Вы не пьяны", red[1], red[2], red[3] )
+				return
+			end
+
+			alcohol[playername] = alcohol[playername]-alcohol_minys
+			sendPlayerMessage(playerid, "-"..(alcohol_minys/100).." промилле", yellow[1], yellow[2], yellow[3])
+			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 -----------------------------------------------------------------------------------------------------------------------
 
 		elseif id1 == 5 then--канистра
