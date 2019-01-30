@@ -746,10 +746,10 @@ local t_s_salon = {
 }
 
 --места поднятия предметов
-local up_car_subject = {--{x,y,z, радиус, ид тс, ид пнг, зп}
-	{89.9423828125,-304.623046875,1.578125, 15, 456, 24, 1},--склад продуктов
-	{2308.81640625,-13.25,26.7421875, 15, 428, 65, 1},--банк
-	{260.4326171875,1409.2626953125,10.506074905396, 15, 456, 73, 1},--нефтезавод
+local up_car_subject = {--{x,y,z, радиус, ид пнг, ид тс, зп}
+	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 1},--склад продуктов
+	{2308.81640625,-13.25,26.7421875, 15, 65, 428, 1},--банк
+	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 1},--нефтезавод
 }
 
 local up_player_subject = {--{x,y,z, радиус, ид пнг, зп, интерьер, мир, скин}
@@ -1405,14 +1405,16 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 	end
 end
 
-function select_business_or_house(id1, id2)--выводит имя владельца любого предмета
+function select_sqlite(id1, id2)--выводит имя владельца любого предмета
 	for i=0,max_inv do
 		local result = sqlite( "SELECT COUNT() FROM account WHERE slot_"..i.."_1 = '"..id1.."' AND slot_"..i.."_2 = '"..id2.."'" )
 		if result[1]["COUNT()"] == 1 then
 			local result = sqlite( "SELECT * FROM account WHERE slot_"..i.."_1 = '"..id1.."' AND slot_"..i.."_2 = '"..id2.."'" )
-			return result[1]["name"]
+			return {result[1]["name"], i}
 		end
 	end
+
+	return {false, 0}
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -1502,8 +1504,9 @@ function pickupUse( playerid )
 			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				if select_business_or_house(43, v["number"]) then
-					sendPlayerMessage(playerid, "Владелец бизнеса "..select_business_or_house(43, v["number"]), yellow[1], yellow[2], yellow[3])
+				local s_sql = select_sqlite(43, v["number"])
+				if s_sql[1] then
+					sendPlayerMessage(playerid, "Владелец бизнеса "..s_sql[1], yellow[1], yellow[2], yellow[3])
 				else
 					sendPlayerMessage(playerid, "Владелец бизнеса нету", yellow[1], yellow[2], yellow[3])
 				end
@@ -1526,8 +1529,9 @@ function pickupUse( playerid )
 			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
-				if select_business_or_house(25, v["number"]) then
-					sendPlayerMessage(playerid, "Владелец дома "..select_business_or_house(25, v["number"]), yellow[1], yellow[2], yellow[3])
+				local s_sql = select_sqlite(25, v["number"])
+				if s_sql[1] then
+					sendPlayerMessage(playerid, "Владелец дома "..s_sql[1], yellow[1], yellow[2], yellow[3])
 				else
 					sendPlayerMessage(playerid, "Владелец дома нету", yellow[1], yellow[2], yellow[3])
 				end
@@ -2259,36 +2263,35 @@ function displayLoadedRes ( res )--старт ресурсов
 		setGlitchEnabled ( "quickreload", true )
 
 
-		local result = sqlite( "SELECT * FROM zakon_mayoralty" )
-		zakon_alcohol = result[1]["zakon_alcohol"]
-		zakon_alcohol_crimes = result[1]["zakon_alcohol_crimes"]
-		zakon_drugs = result[1]["zakon_drugs"]
-		zakon_drugs_crimes = result[1]["zakon_drugs_crimes"]
-		zakon_kill_crimes = result[1]["zakon_kill_crimes"]
-		zakon_robbery_crimes = result[1]["zakon_robbery_crimes"]
-		zakon_65_crimes = result[1]["zakon_65_crimes"]
+		zakon_alcohol = 1
+		zakon_alcohol_crimes = 1
+		zakon_drugs = 1
+		zakon_drugs_crimes = 1
+		zakon_kill_crimes = 1
+		zakon_robbery_crimes = 1
+		zakon_65_crimes = 1
 
-		zakon_nalog_car = result[1]["zakon_nalog_car"]
-		zakon_nalog_house = result[1]["zakon_nalog_house"]
-		zakon_nalog_business = result[1]["zakon_nalog_business"]
+		zakon_nalog_car = 500
+		zakon_nalog_house = 1000
+		zakon_nalog_business = 2000
 
-		up_car_subject[1][7] = result[1]["zp_car_24"]
-		up_player_subject[1][6] = result[1]["zp_player_48"]
-		zp_player_taxi = result[1]["zp_player_taxi"]
-		up_car_subject[2][7] = result[1]["zp_car_65"]
-		up_car_subject[3][7] = result[1]["zp_car_73"]
-		zp_car_75 = result[1]["zp_car_75"]
+		up_car_subject[1][7] = 50
+		up_player_subject[1][6] = 20
+		zp_player_taxi = 250
+		up_car_subject[2][7] = 100
+		up_car_subject[3][7] = 150
+		zp_car_75 = 200
 
 		for k=1,10 do
-			anim_player_subject[k][7] = result[1]["zp_player_62"]
+			anim_player_subject[k][7] = 40
 		end
 
 		for k=11,26 do
-			anim_player_subject[k][7] = result[1]["zp_player_68"]
+			anim_player_subject[k][7] = 60
 		end
 
 		for k=27,36 do
-			anim_player_subject[k][7] = result[1]["zp_player_71"]
+			anim_player_subject[k][7] = 80
 		end
 
 
@@ -2497,6 +2500,31 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 			robbery_player[playername] = 0
 			timer_robbery[playername] = 0
 		end
+
+		state_inv_player[playername] = 0
+		state_gui_window[playername] = 0
+		logged[playername] = 0
+		enter_house[playername] = 0
+		enter_business[playername] = 0
+		enter_job[playername] = 0
+		speed_car_device[playername] = 0
+		arrest[playername] = 0
+		crimes[playername] = -1
+		robbery_player[playername] = 0
+		gps_device[playername] = 0
+		timer_robbery[playername] = 0
+		job[playername] = 0
+		job_call[playername] = 0
+		job_ped[playername] = 0
+		job_blip[playername] = 0
+		job_marker[playername] = 0
+		job_pos[playername] = 0
+		--нужды
+		alcohol[playername] = 0
+		satiety[playername] = 0
+		hygiene[playername] = 0
+		sleep[playername] = 0
+		drugs[playername] = 0
 	else
 		
 	end
@@ -3251,13 +3279,13 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 		for k,v in pairs(up_car_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
-					if getElementModel(vehicleid) ~= v[5] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[5] ).."("..v[5]..")", red[1], red[2], red[3] )
+					if getElementModel(vehicleid) ~= v[6] then
+						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3] )
 						return
 					end
 				end
 
-				give_subject(playerid, "car", v[6], math.random(1,v[7]))
+				give_subject(playerid, "car", v[5], math.random(1,v[7]))
 			end
 		end
 
@@ -3277,8 +3305,8 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
 			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], house_bussiness_radius) then
 				if vehicleid then
-					if getElementModel(vehicleid) ~= 456 then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( 456 ).."(456)", red[1], red[2], red[3] )
+					if getElementModel(vehicleid) ~= down_car_subject[1][6] then
+						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", red[1], red[2], red[3] )
 						return
 					end
 				end
@@ -4701,12 +4729,16 @@ function (playerid, cmd, id)
 
 	if cash <= array_player_2[playername][1] then
 		for k,vehicleid in pairs(getElementsByType("vehicle")) do
+
 			local plate = getVehiclePlateText(vehicleid)
 			if id == tonumber(plate) then
+
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
+
 					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
 					for k,v in pairs(result) do
+						
 						if v["frozen"] == 0 then
 							if v["evacuate"] == 1 then
 								sendPlayerMessage(playerid, "[ERROR] Т/с на эвакуаторе", red[1], red[2], red[3])
@@ -4892,77 +4924,7 @@ function (playerid, cmd, id)
 	end
 end)
 
-addCommandHandler("givepolicerank",--выдать шеврон
-function (playerid, cmd, id)
-	local playername = getPlayerName ( playerid )
-	local id = tonumber(id)
-
-	if logged[playername] == 0 then
-		return
-	end
-
-	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [от 1 до 5]", red[1], red[2], red[3])
-		return
-	end
-
-	if search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3] )
-		return
-	end
-
-	if id >= 1 and id <= 5 then
-		if id == 1 then
-			if inv_player_empty(playerid, 28, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..info_png[28][1].." 1 "..info_png[28][2], yellow[1], yellow[2], yellow[3])
-
-				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[28][1]..", 1]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-
-		elseif id == 2 then
-			if inv_player_empty(playerid, 29, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..info_png[29][1].." 1 "..info_png[29][2], yellow[1], yellow[2], yellow[3])
-
-				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[29][1]..", 1]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-
-		elseif id == 3 then
-			if inv_player_empty(playerid, 30, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..info_png[30][1].." 1 "..info_png[30][2], yellow[1], yellow[2], yellow[3])
-
-				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[30][1]..", 1]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-
-		elseif id == 4 then
-			if inv_player_empty(playerid, 31, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..info_png[31][1].." 1 "..info_png[31][2], yellow[1], yellow[2], yellow[3])
-
-				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[31][1]..", 1]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-
-		elseif id == 5 then
-			if inv_player_empty(playerid, 32, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..info_png[32][1].." 1 "..info_png[32][2], yellow[1], yellow[2], yellow[3])
-
-				save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[32][1]..", 1]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-		end
-	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до 5", red[1], red[2], red[3])
-	end
-end)
-
---[[addCommandHandler("takepolicetoken",--забрать пол-ий жетон
+addCommandHandler("takepolicetoken",--забрать пол-ий жетон
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
 
@@ -4997,9 +4959,99 @@ function (playerid, cmd, id)
 			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		local s_sql = select_sqlite(10, id)
+		if id == s_sql[1] then
+			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
+
+			sqlite( "UPDATE account SET slot_"..s_sql[2].."_1 = '0', slot_"..s_sql[2].."_2 = '0' WHERE name = '"..s_sql[1].."'")
+
+			save_player_action(playerid, "[police_take_sub] "..playername.." ["..info_png[10][1]..", "..id.."]")
+		else
+			sendPlayerMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
+		end
 	end
-end)]]
+end)
+
+addCommandHandler("givepolicerang",--выдать шеврон
+function (playerid, cmd, id)
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [от 28 до 32]", red[1], red[2], red[3])
+		return
+	end
+
+	if search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3] )
+		return
+	end
+
+	if id >= 28 and id <= 32 then
+		if inv_player_empty(playerid, id, 1) then
+			sendPlayerMessage(playerid, "Вы получили "..info_png[id][1], yellow[1], yellow[2], yellow[3])
+
+			save_player_action(playerid, "[police_sub] "..playername.." ["..info_png[id][1]..", 1]")
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] от 28 до 32", red[1], red[2], red[3])
+	end
+end)
+
+addCommandHandler("takepolicerang",--забрать шеврон
+function (playerid, cmd, id, rang)
+	local playername = getPlayerName ( playerid )
+	local rang = tonumber(rang)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not id or not rang then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [от 28 до 32]", red[1], red[2], red[3])
+		return
+	end
+
+	if search_inv_player(playerid, 10, playername) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3] )
+		return
+	end
+
+	local player = getPlayerFromName ( id )
+	if player then
+		local player_name = getPlayerName ( player )
+
+		if id == player_name then
+			if inv_player_delet(player, rang, 1) then
+				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+
+				save_player_action(playerid, "[police_take_sub] "..playername.." ["..info_png[rang][1]..", "..id.."]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
+			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		end
+	else
+		local s_sql = select_sqlite(rang, 1)
+		if id == s_sql[1] then
+			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+
+			sqlite( "UPDATE account SET slot_"..s_sql[2].."_1 = '0', slot_"..s_sql[2].."_2 = '0' WHERE name = '"..s_sql[1].."'")
+
+			save_player_action(playerid, "[police_take_sub] "..playername.." ["..info_png[rang][1]..", "..id.."]")
+		else
+			sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
+		end
+	end
+end)
 
 addCommandHandler ( "sellhouse",--команда для риэлторов
 function (playerid)
@@ -5333,7 +5385,7 @@ function ( playerid, cmd, ... )
 		text = text..v.." "
 	end
 
-	local result = sqlite( "INSERT INTO position (description, x, y, z) VALUES ('"..text.."', '"..x.."', '"..y.."', '"..z.."')" )
+	local result = sqlite( "INSERT INTO position (description, pos) VALUES ('"..text.."', '"..x..","..y..","..z.."')" )
 	sendPlayerMessage(playerid, "save pos "..text, lyme[1], lyme[2], lyme[3])
 end)
 
