@@ -413,7 +413,7 @@ local text2 = "Выбросите пустую коробку, чтобы пол
 local text3 = "Выбросите бензопилу, чтобы получить бревна"
 local text4 = "Выбросите кирку, чтобы получить руду"
 
-local down_player_subject = {--3d text
+local text_3d = {--3d text
 	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи"},
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
 
@@ -735,7 +735,7 @@ function createText ()
 	end
 
 
-	for k,v in pairs(down_player_subject) do--отображение 3д надписей
+	for k,v in pairs(text_3d) do--отображение 3д надписей
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], v[4] )
 
 		if area then
