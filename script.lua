@@ -1909,6 +1909,107 @@ addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicle
 ---------------------------------------магазины-------------------------------------------------------------
 function buy_subject_fun( playerid, text, number, value )
 	local playername = getPlayerName(playerid)
+
+	if value == "pd" then
+		local weapon_cops = {
+			[9] = {info_png[9][1], 16, 360, 5},
+			[12] = {info_png[12][1], 22, 240, 25},
+			[15] = {info_png[15][1], 31, 5400, 25},
+			[17] = {info_png[17][1], 29, 2400, 25},
+			[19] = {info_png[19][1], 17, 360, 5},
+			[34] = {info_png[34][1], 25, 720, 25},
+			[36] = {info_png[36][1], 3, 150, 1},
+			[41] = {info_png[41][1], 34, 6000, 25},
+			[47] = {info_png[47][1], 41, 50, 25},
+			[39] = {info_png[39][1], 39, 50, 1},
+		}
+
+		if text == weapon_cops[39][1] then
+			if inv_player_empty(playerid, 39, 1) then
+				sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+
+				save_player_action(playerid, "[cops_weapon_fun] "..playername.." [weapon - "..text.."]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			end
+			return
+		end
+
+		for k,v in pairs(weapon_cops) do
+			if v[1] == text then
+				if inv_player_empty(playerid, k, v[4]) then
+					sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+
+					save_player_action(playerid, "[cops_weapon_fun] "..playername.." [weapon - "..text.."]")
+				else
+					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				end
+			end
+		end
+
+		return
+
+	elseif value == "mer" then
+		local day_nalog = 7
+
+		local mayoralty_shop = {
+			[2] = {"права", 0, 1000},
+			[50] = {"лицензия на оружие", 0, 10000},
+			[64] = {"лицензия таксиста", 0, 5000},
+			[66] = {"лицензия инкасатора", 0, 10000},
+			[72] = {"лицензия дальнобойщика", 0, 15000},
+			[74] = {"лицензия водителя мусоровоза", 0, 20000},
+		}
+
+		local mayoralty_nalog = {
+			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
+			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
+			[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
+		}
+
+		for k,v in pairs(mayoralty_shop) do
+			if v[1] == text then
+				if v[3] <= array_player_2[playername][1] then
+					if inv_player_empty(playerid, k, playername) then
+						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+
+						save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_shop - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+					else
+						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					end
+				else
+					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				end
+
+				return
+			end
+		end
+
+		for k,v in pairs(mayoralty_nalog) do
+			if v[1] == text then
+				if v[3] <= array_player_2[playername][1] then
+					if inv_player_empty(playerid, k, v[2]) then
+						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+
+						save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_nalog - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+					else
+						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					end
+				else
+					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				end
+
+				return
+			end
+		end
+		
+		return
+	end
+
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 	local prod = 1
 	local cash = result[1]["price"]
@@ -2017,112 +2118,6 @@ end
 addEvent( "event_buy_subject_fun", true )
 addEventHandler ( "event_buy_subject_fun", getRootElement(), buy_subject_fun )
 ------------------------------------------------------------------------------------------------------------
-
-
-function cops_weapon_fun( playerid, text )--склад копов
-	local playername = getPlayerName(playerid)
-
-	local weapon_cops = {
-		[9] = {info_png[9][1], 16, 360, 5},
-		[12] = {info_png[12][1], 22, 240, 25},
-		[15] = {info_png[15][1], 31, 5400, 25},
-		[17] = {info_png[17][1], 29, 2400, 25},
-		[19] = {info_png[19][1], 17, 360, 5},
-		[34] = {info_png[34][1], 25, 720, 25},
-		[36] = {info_png[36][1], 3, 150, 1},
-		[41] = {info_png[41][1], 34, 6000, 25},
-		[47] = {info_png[47][1], 41, 50, 25},
-		[39] = {info_png[39][1], 39, 50, 1},
-	}
-
-	if text == weapon_cops[39][1] then
-		if inv_player_empty(playerid, 39, 1) then
-			sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
-
-			save_player_action(playerid, "[cops_weapon_fun] [weapon - "..text.."], "..playername)
-		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-		end
-		return
-	end
-
-	for k,v in pairs(weapon_cops) do
-		if v[1] == text then
-			if inv_player_empty(playerid, k, v[4]) then
-				sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
-
-				save_player_action(playerid, "[cops_weapon_fun] [weapon - "..text.."], "..playername)
-			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-			end
-		end
-	end
-end
-addEvent( "event_cops_weapon_fun", true )
-addEventHandler ( "event_cops_weapon_fun", getRootElement(), cops_weapon_fun )
-
-
-function mayoralty_menu_fun( playerid, text )--мэрия
-	local playername = getPlayerName(playerid)
-	local day_nalog = 7
-
-	local mayoralty_shop = {
-		[2] = {"права", 0, 1000},
-		[50] = {"лицензия на оружие", 0, 10000},
-		[64] = {"лицензия таксиста", 0, 5000},
-		[66] = {"лицензия инкасатора", 0, 10000},
-		[72] = {"лицензия дальнобойщика", 0, 15000},
-		[74] = {"лицензия водителя мусоровоза", 0, 20000},
-	}
-
-	local mayoralty_nalog = {
-		[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
-		[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
-		[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
-	}
-
-	for k,v in pairs(mayoralty_shop) do
-		if v[1] == text then
-			if v[3] <= array_player_2[playername][1] then
-				if inv_player_empty(playerid, k, playername) then
-					sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
-
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
-
-					save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_shop - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
-				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-				end
-			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
-			end
-
-			return
-		end
-	end
-
-	for k,v in pairs(mayoralty_nalog) do
-		if v[1] == text then
-			if v[3] <= array_player_2[playername][1] then
-				if inv_player_empty(playerid, k, v[2]) then
-					sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
-
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
-
-					save_player_action(playerid, "[mayoralty_menu_fun] [mayoralty_nalog - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
-				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-				end
-			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
-			end
-
-			return
-		end
-	end
-end
-addEvent( "event_mayoralty_menu_fun", true )
-addEventHandler ( "event_mayoralty_menu_fun", getRootElement(), mayoralty_menu_fun )
 
 
 --------------------------эвент по кассе для бизнесов-------------------------------------------------------
@@ -3050,6 +3045,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				if result[1]["nalog"] <= 0 then
 					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 					setVehicleEngineState(vehicleid, false)
+					removePedFromVehicle ( playerid )--для мотиков, не удалять
 					return
 				end
 			end
@@ -3524,22 +3520,22 @@ local x,y,z = getElementPosition(playerid)
 			if state_gui_window[playername] == 0 then
 
 				for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do--бизнесы
-					if getElementDimension(playerid) == v["world"] and v["type"] == interior_business[1][2] and enter_business[playername] == 1 then
+					if getElementDimension(playerid) == v["world"] and v["type"] == interior_business[1][2] and enter_business[playername] == 1 then--оружие
 						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 1 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[2][2] and enter_business[playername] == 1 then
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[2][2] and enter_business[playername] == 1 then--одежда
 						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 2 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[3][2] and enter_business[playername] == 1 then
+					elseif getElementDimension(playerid) == v["world"] and v["type"] == interior_business[3][2] and enter_business[playername] == 1 then--24/7
 						triggerClientEvent( playerid, "event_shop_menu", playerid, v["number"], 3 )
 						state_gui_window[playername] = 1
 						return
 
-					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[4][2] then
+					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[4][2] then--заправка
 
 						if v["nalog"] <= 0 then
 							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
@@ -3550,7 +3546,7 @@ local x,y,z = getElementPosition(playerid)
 						state_gui_window[playername] = 1
 						return
 
-					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then
+					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then--тюнинг
 
 						if v["nalog"] <= 0 then
 							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
@@ -3582,7 +3578,7 @@ local x,y,z = getElementPosition(playerid)
 								return
 							end
 
-							triggerClientEvent( playerid, "event_cops_menu", playerid )
+							triggerClientEvent( playerid, "event_shop_menu", playerid, -1, "pd" )
 							state_gui_window[playername] = 1
 							return
 						end
@@ -3591,7 +3587,7 @@ local x,y,z = getElementPosition(playerid)
 					local mayoralty = {5,7,8}
 					for k,v in pairs(mayoralty) do				
 						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
-							triggerClientEvent( playerid, "event_mayoralty_menu", playerid )
+							triggerClientEvent( playerid, "event_shop_menu", playerid, -1, "mer" )
 							state_gui_window[playername] = 1
 							return
 						end

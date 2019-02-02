@@ -1028,6 +1028,88 @@ function shop_menu(number, value)--создание окна магазина
 
 	showCursor( true )
 
+	if value == "pd" then
+		local weapon_cops = {
+			[9] = {info_png[9][1], 16, 360, 5},
+			[12] = {info_png[12][1], 22, 240, 25},
+			[15] = {info_png[15][1], 31, 5400, 25},
+			[17] = {info_png[17][1], 29, 2400, 25},
+			[19] = {info_png[19][1], 17, 360, 5},
+			[34] = {info_png[34][1], 25, 720, 25},
+			[36] = {info_png[36][1], 3, 150, 1},
+			[41] = {info_png[41][1], 34, 6000, 25},
+			[47] = {info_png[47][1], 41, 50, 25},
+			[39] = {info_png[39][1], 39, 50, 1},
+		}
+
+		local width = 400+10
+		local height = 320.0+(16.0*1)+10
+		gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
+
+		local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+		guiGridListAddColumn(shoplist, "Товары", 0.9)
+		for k,v in pairs(weapon_cops) do
+			guiGridListAddRow(shoplist, v[1])
+		end
+
+		local buy_subject = m2gui_button( 5, 320, "Взять", false, gui_window )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+			triggerServerEvent( "event_buy_subject_fun", getRootElement(), localPlayer, text, number_business, value )
+		end
+		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+		return
+		
+	elseif value == "mer" then
+		local column_width1 = 0.7
+		local column_width2 = 0.2
+		local day_nalog = 7
+
+		local zakon_nalog_car = getElementData ( localPlayer, "zakon_nalog_car_data" )
+		local zakon_nalog_house = getElementData ( localPlayer, "zakon_nalog_house_data" )
+		local zakon_nalog_business = getElementData ( localPlayer, "zakon_nalog_business_data" )
+
+		local mayoralty_shop = {
+			[2] = {"права", 0, 1000},
+			[50] = {"лицензия на оружие", 0, 10000},
+			[64] = {"лицензия таксиста", 0, 5000},
+			[66] = {"лицензия инкасатора", 0, 10000},
+			[72] = {"лицензия дальнобойщика", 0, 15000},
+			[74] = {"лицензия водителя мусоровоза", 0, 20000},
+			
+			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
+			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
+			[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
+		}
+
+		local width = 400+10
+		local height = 320.0+(16.0*1)+10
+		gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Мэрия", false )
+
+		local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
+
+		guiGridListAddColumn(shoplist, "Услуги", column_width1)
+		guiGridListAddColumn(shoplist, "Цена", column_width2)
+		for k,v in pairs(mayoralty_shop) do
+			guiGridListAddRow(shoplist, v[1], v[3])
+		end
+
+		local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+			triggerServerEvent( "event_buy_subject_fun", getRootElement(), localPlayer, text, number_business, value )
+		end
+		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
+
+		return
+	end
+
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
@@ -1075,99 +1157,6 @@ function shop_menu(number, value)--создание окна магазина
 end
 addEvent( "event_shop_menu", true )
 addEventHandler ( "event_shop_menu", getRootElement(), shop_menu )
-
-
-function cops_menu()--создание склада полиции
-
-	showCursor( true )
-
-	local weapon_cops = {
-		[9] = {info_png[9][1], 16, 360, 5},
-		[12] = {info_png[12][1], 22, 240, 25},
-		[15] = {info_png[15][1], 31, 5400, 25},
-		[17] = {info_png[17][1], 29, 2400, 25},
-		[19] = {info_png[19][1], 17, 360, 5},
-		[34] = {info_png[34][1], 25, 720, 25},
-		[36] = {info_png[36][1], 3, 150, 1},
-		[41] = {info_png[41][1], 34, 6000, 25},
-		[47] = {info_png[47][1], 41, 50, 25},
-		[39] = {info_png[39][1], 39, 50, 1},
-	}
-
-	local width = 400+10
-	local height = 320.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
-
-	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
-
-	guiGridListAddColumn(shoplist, "Товары", 0.9)
-	for k,v in pairs(weapon_cops) do
-		guiGridListAddRow(shoplist, v[1])
-	end
-
-	local buy_subject = m2gui_button( 5, 320, "Взять", false, gui_window )
-
-	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-
-		triggerServerEvent( "event_cops_weapon_fun", getRootElement(), localPlayer, text )
-	end
-	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
-
-end
-addEvent( "event_cops_menu", true )
-addEventHandler ( "event_cops_menu", getRootElement(), cops_menu )
-
-
-function mayoralty_menu()--мэрия
-
-	showCursor( true )
-
-	local column_width1 = 0.7
-	local column_width2 = 0.2
-	local day_nalog = 7
-
-	local zakon_nalog_car = getElementData ( localPlayer, "zakon_nalog_car_data" )
-	local zakon_nalog_house = getElementData ( localPlayer, "zakon_nalog_house_data" )
-	local zakon_nalog_business = getElementData ( localPlayer, "zakon_nalog_business_data" )
-
-	local mayoralty_shop = {
-		[2] = {"права", 0, 1000},
-		[50] = {"лицензия на оружие", 0, 10000},
-		[64] = {"лицензия таксиста", 0, 5000},
-		[66] = {"лицензия инкасатора", 0, 10000},
-		[72] = {"лицензия дальнобойщика", 0, 15000},
-		[74] = {"лицензия водителя мусоровоза", 0, 20000},
-		
-		[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
-		[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
-		[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
-	}
-
-	local width = 400+10
-	local height = 320.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Мэрия", false )
-
-	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
-
-	guiGridListAddColumn(shoplist, "Услуги", column_width1)
-	guiGridListAddColumn(shoplist, "Цена", column_width2)
-	for k,v in pairs(mayoralty_shop) do
-		guiGridListAddRow(shoplist, v[1], v[3])
-	end
-
-	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
-
-	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-
-		triggerServerEvent( "event_mayoralty_menu_fun", getRootElement(), localPlayer, text )
-	end
-	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
-
-end
-addEvent( "event_mayoralty_menu", true )
-addEventHandler ( "event_mayoralty_menu", getRootElement(), mayoralty_menu )
 
 
 function avto_bikes_menu()--создание окна машин
