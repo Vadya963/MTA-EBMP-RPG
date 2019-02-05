@@ -1825,21 +1825,23 @@ function inv_create ()--создание инв-ря
 				lmb = 1
 			else
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				if inv_slot_player[info3][2] ~= 0 then
-					for k,v in pairs(no_use_subject) do 
+				--if inv_slot_player[info3][2] ~= 0 then
+
+					local no_use_subject_1 = {-1,1}
+					for k,v in pairs(no_use_subject_1) do 
 						if v == info1 then
 							return
 						end
 					end
 
-					info_tab = tab_player
+					--[[info_tab = tab_player
 					gui_selection_pos_x = x
 					gui_selection_pos_y = y
 					info3_selection_1 = info3
 					info1_selection_1 = info1
 					info2_selection_1 = info2
 					return
-				end
+				end]]
 
 				triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 
@@ -1922,21 +1924,23 @@ function inv_create ()--создание инв-ря
 					lmb = 1
 				else
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_car[info3][2] ~= 0 then
-						for k,v in pairs(no_use_subject) do 
+					--if inv_slot_car[info3][2] ~= 0 then
+						
+						local no_use_subject_1 = {-1,1}
+						for k,v in pairs(no_use_subject_1) do 
 							if v == info1 then
 								return
 							end
 						end
 						
-						info_tab = tab_car
+						--[[info_tab = tab_car
 						gui_selection_pos_x = x
 						gui_selection_pos_y = y
 						info3_selection_1 = info3
 						info1_selection_1 = info1
 						info2_selection_1 = info2
 						return
-					end
+					end]]
 
 					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "car", info3, info1_selection_1, info2_selection_1, plate )
 
@@ -2020,21 +2024,23 @@ function inv_create ()--создание инв-ря
 					lmb = 1
 				else
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-					if inv_slot_house[info3][2] ~= 0 then
-						for k,v in pairs(no_use_subject) do 
+					--if inv_slot_house[info3][2] ~= 0 then
+						
+						local no_use_subject_1 = {-1,1}
+						for k,v in pairs(no_use_subject_1) do 
 							if v == info1 then
 								return
 							end
 						end
 						
-						info_tab = tab_house
+						--[[info_tab = tab_house
 						gui_selection_pos_x = x
 						gui_selection_pos_y = y
 						info3_selection_1 = info3
 						info1_selection_1 = info1
 						info2_selection_1 = info2
 						return
-					end
+					end]]
 
 					triggerServerEvent( "event_inv_server_load", getRootElement(), localPlayer, "house", info3, info1_selection_1, info2_selection_1, house )
 
@@ -2090,13 +2096,13 @@ function inv_create ()--создание инв-ря
 	end
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
-		for k,v in pairs(no_use_subject) do
-			if v == info1 then
-				return
-			end
-		end
-
 		if lmb == 1 then
+			for k,v in pairs(no_use_subject) do
+				if v == info1 then
+					return
+				end
+			end
+
 			local x,y = guiGetPosition ( stats_window, false )
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
