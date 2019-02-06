@@ -168,10 +168,6 @@ function set_weather()
 
 		tomorrow_weather = math.random(22)
 		print("[tomorrow_weather] "..tomorrow_weather)
-
-		for k,playerid in pairs(getElementsByType("player")) do
-			setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
-		end
 	end
 end
 
@@ -919,6 +915,7 @@ function debuginfo ()
 		setElementData(playerid, "hygiene_data", hygiene[playername])
 		setElementData(playerid, "sleep_data", sleep[playername])
 		setElementData(playerid, "drugs_data", drugs[playername])
+		setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
@@ -2460,7 +2457,6 @@ function()
 	setPlayerHudComponentVisible ( playerid, "health", false )
 
 	--элементдата2
-	setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
 	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
 	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
 	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
