@@ -569,7 +569,7 @@ function createText ()
 	setCameraShakeLevel ( (alcohol/2) )
 
 	local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-	local text = "FPS: "..FPS.." Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
+	local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | Serial: "..getPlayerSerial(playerid).." | Players online: "..#getElementsByType("player").." | "..client_time.." | Minute in game: "..time_game
 	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 	local width_need = (screenWidth/5.04)--ширина нужд 271
@@ -641,7 +641,7 @@ function createText ()
 			speed_car = getSpeed(vehicle)*1.125+43
 		end
 
-		local speed_vehicle = "vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
+		local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
 
 		if debuginfo then
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )

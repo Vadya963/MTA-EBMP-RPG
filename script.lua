@@ -1282,7 +1282,7 @@ function pay_nalog()
 		local result = sqlite( "SELECT * FROM car_db" )
 		for k,v in pairs(result) do
 			if v["nalog"] > 0 then
-				sqlite( "UPDATE car_db SET nalog = nalog - '1' WHERE carnumber = '"..v["carnumber"].."'")
+				sqlite( "UPDATE car_db SET nalog = nalog - '1' WHERE number = '"..v["number"].."'")
 			end
 		end
 
@@ -1709,9 +1709,9 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 				save_player_action(playerid, "[addVehicleUpgrade_fun] [plate - "..plate..", upgrades - "..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -1760,9 +1760,9 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 				save_player_action(playerid, "[removeVehicleUpgrade_fun] [plate - "..plate..", upgrades - "..value.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -1803,9 +1803,9 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 
 				save_player_action(playerid, "[setVehiclePaintjob_fun] [plate - "..plate..", paintjob - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET paintjob = '"..text.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET paintjob = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -1846,9 +1846,9 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
 				save_player_action(playerid, "[setVehicleColor_fun] [plate - "..plate..", color - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -1889,9 +1889,9 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 
 				save_player_action(playerid, "[setVehicleHeadLightColor_fun] [plate - "..plate..", color - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET headlight_rgb = '"..text.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET headlight_rgb = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -2307,7 +2307,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		local carnumber_number = 0
 		for k,v in pairs(sqlite( "SELECT * FROM car_db" )) do
-			car_spawn(v["carnumber"])
+			car_spawn(v["number"])
 			carnumber_number = carnumber_number+1
 		end
 		print("[number_car_spawn] "..carnumber_number)
@@ -2787,9 +2787,9 @@ function freez_car()--заморозка авто
 		local x,y,z = getElementPosition( vehicleid )
 		local plate = getVehiclePlateText ( vehicleid )
 
-		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
-			local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 			for k,v in pairs(result) do
 				if v["frozen"] == 1 then
 					setElementFrozen(vehicleid, true)
@@ -2805,16 +2805,16 @@ function detachTrailer(vehicleid)--прицепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
 
-	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
 		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
-			sqlite( "UPDATE car_db SET frozen = '0', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			sqlite( "UPDATE car_db SET frozen = '0', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 		end
 
-		sqlite( "UPDATE car_db SET evacuate = '1' WHERE carnumber = '"..plate.."'")
+		sqlite( "UPDATE car_db SET evacuate = '1' WHERE number = '"..plate.."'")
 	end
 end
 addEventHandler("onTrailerAttach", getRootElement(), detachTrailer)
@@ -2823,16 +2823,16 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
 
-	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 	if result[1]["COUNT()"] == 1 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
 		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
-			sqlite( "UPDATE car_db SET frozen = '1', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+			sqlite( "UPDATE car_db SET frozen = '1', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 		end
 
-		sqlite( "UPDATE car_db SET evacuate = '0' WHERE carnumber = '"..plate.."'")
+		sqlite( "UPDATE car_db SET evacuate = '0' WHERE number = '"..plate.."'")
 	end
 end
 addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
@@ -2840,8 +2840,8 @@ addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
 function car_spawn(number)
 
 		local plate = number
-		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
-		local vehicleid = createVehicle(result[1]["carmodel"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
+		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+		local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
 		setVehicleLocked ( vehicleid, true )
 
@@ -3015,7 +3015,7 @@ function buycar ( playerid, id )
 
 		sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
 
-		sqlite( "INSERT INTO car_db (carnumber, carmodel, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0',' 0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..plate.."]")
 	else
@@ -3039,9 +3039,9 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 		end
 
 		if seat == 0 then
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
-				local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["nalog"] <= 0 then
 					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 					setVehicleEngineState(vehicleid, false)
@@ -3057,9 +3057,9 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			end
 
 			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, playername) ~= 0 then
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+					local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 
@@ -3088,12 +3088,12 @@ function exit_car_fun( playerid )
 		if getVehicleOccupant ( vehicleid, 0 ) then
 			setVehicleEngineState(vehicleid, false)
 
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
 				local x,y,z = getElementPosition(vehicleid)
 				local rx,ry,rz = getElementRotation(vehicleid)
 
-				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 			end
 		end
 	end
@@ -3111,12 +3111,12 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 
 			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
 				local x,y,z = getElementPosition(vehicleid)
 				local rx,ry,rz = getElementRotation(vehicleid)
 
-				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 			end
 		end
 	end
@@ -3762,9 +3762,9 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		array_car_1[plate][id3+1] = id1
 		array_car_2[plate][id3+1] = id2
 
-		local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 		if result[1]["COUNT()"] == 1 then
-			sqlite( "UPDATE car_db SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE carnumber = '"..plate.."'")
+			sqlite( "UPDATE car_db SET slot_"..id3.."_1 = '"..array_car_1[plate][id3+1].."', slot_"..id3.."_2 = '"..array_car_2[plate][id3+1].."' WHERE number = '"..plate.."'")
 		end
 
 		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_car_1[plate][id3+1], array_car_2[plate][id3+1] )
@@ -3799,7 +3799,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	if value == "player" then
 
 		if id1 == 6 then--ключ авто
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..id2.."'" )
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
 
 				for k,vehicle in pairs(getElementsByType("vehicle")) do
@@ -4348,14 +4348,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 59 then--налог дома
-			if enter_house[playername] == 1 then
-				sqlite( "UPDATE house_db SET nalog = nalog + '"..id2.."' WHERE number = '"..getElementDimension(playerid).."'")
+			local count = 0
+			for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+					sqlite( "UPDATE house_db SET nalog = nalog + '"..id2.."' WHERE number = '"..v["number"].."'")
+					
+					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
-				me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+					id2 = 0
+					count = 1
+					break
+				end
+			end
 
-				id2 = 0
-			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3] )
+			if count == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около дома", red[1], red[2], red[3] )
 				return
 			end
 
@@ -4381,9 +4388,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 61 then--налог авто
 			if vehicleid then
 				local plate = getVehiclePlateText(vehicleid)
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET nalog = nalog + '"..id2.."' WHERE carnumber = '"..plate.."'")
+					sqlite( "UPDATE car_db SET nalog = nalog + '"..id2.."' WHERE number = '"..plate.."'")
 
 					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
@@ -4729,10 +4736,10 @@ function (playerid, cmd, id)
 			local plate = getVehiclePlateText(vehicleid)
 			if id == tonumber(plate) then
 
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..plate.."'" )
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
 
-					local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..plate.."'" )
+					local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 					for k,v in pairs(result) do
 						
 						if v["frozen"] == 0 then
@@ -4752,7 +4759,7 @@ function (playerid, cmd, id)
 								setElementPosition(vehicleid, x+5,y,z+1)
 								setElementRotation(vehicleid, 0,0,0)
 
-								sqlite( "UPDATE car_db SET x = '"..(x+5).."', y = '"..y.."', z = '"..(z+1).."', fuel = '"..fuel[plate].."' WHERE carnumber = '"..plate.."'")
+								sqlite( "UPDATE car_db SET x = '"..(x+5).."', y = '"..y.."', z = '"..(z+1).."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
@@ -5496,9 +5503,9 @@ function (playerid, cmd, id)
 		return
 	end
 
-	local result = sqlite( "SELECT COUNT() FROM car_db WHERE carnumber = '"..id.."'" )
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..id.."'" )
 	if result[1]["COUNT()"] == 1 then
-		local result = sqlite( "SELECT * FROM car_db WHERE carnumber = '"..id.."'" )
+		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id.."'" )
 		for i=0,max_inv do
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, i, result[1]["slot_"..i.."_1"], result[1]["slot_"..i.."_2"])
 		end
