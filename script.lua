@@ -919,6 +919,12 @@ function debuginfo ()
 		setElementData(playerid, "hygiene_data", hygiene[playername])
 		setElementData(playerid, "sleep_data", sleep[playername])
 		setElementData(playerid, "drugs_data", drugs[playername])
+
+		local vehicleid = getPlayerVehicle(playerid)
+		if (vehicleid) then
+			local veh = getVehiclePlateText(vehicleid)
+			setElementData ( playerid, "fuel_data", fuel[veh] )
+		end
 	end
 end
 
@@ -1176,14 +1182,6 @@ function fuel_down()--система топлива авто
 					fuel[veh] = fuel[veh] - (fuel_down_number*getSpeed(vehicle))
 				end
 			end
-		end
-	end
-
-	for k,playerid in pairs(getElementsByType("player")) do
-		local vehicleid = getPlayerVehicle(playerid)
-		if vehicleid then
-			local veh = getVehiclePlateText(vehicleid)
-			setElementData ( playerid, "fuel_data", fuel[veh] )
 		end
 	end
 end
