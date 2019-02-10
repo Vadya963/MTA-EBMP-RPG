@@ -919,8 +919,8 @@ function debuginfo ()
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
-			local veh = getVehiclePlateText(vehicleid)
-			setElementData ( playerid, "fuel_data", fuel[veh] )
+			local plate = getVehiclePlateText(vehicleid)
+			setElementData ( playerid, "fuel_data", fuel[plate] )
 		end
 	end
 end
@@ -1165,18 +1165,18 @@ end
 
 function fuel_down()--система топлива авто
 	for k,vehicle in pairs(getElementsByType("vehicle")) do
-		local veh = getVehiclePlateText(vehicle)
+		local plate = getVehiclePlateText(vehicle)
 		local engine = getVehicleEngineState ( vehicle )
 		local fuel_down_number = 0.0002
 
 		if engine then
-			if fuel[veh] <= 0 then
+			if fuel[plate] <= 0 then
 				setVehicleEngineState ( vehicle, false )
 			else
 				if getSpeed(vehicle) == 0 then
-					fuel[veh] = fuel[veh] - fuel_down_number
+					fuel[plate] = fuel[plate] - fuel_down_number
 				else
-					fuel[veh] = fuel[veh] - (fuel_down_number*getSpeed(vehicle))
+					fuel[plate] = fuel[plate] - (fuel_down_number*getSpeed(vehicle))
 				end
 			end
 		end
@@ -4121,9 +4121,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			state_inv_player[playername] = 0
 			state_gui_window[playername] = 1
 
-			return
-
-		elseif id1 >= 28 and id1 <= 33 then--шевроны
 			return
 
 		elseif id1 == 23 then--ремонтный набор
