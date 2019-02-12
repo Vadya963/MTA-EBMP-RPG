@@ -78,6 +78,11 @@ function getSpeed(vehicle)
 	end
 end
 
+function random(min, max)
+	math.randomseed(getTickCount())
+	return math.random(min, max)
+end
+
 function me_chat(playerid, text)
 	local x,y,z = getElementPosition(playerid)
 
@@ -162,11 +167,9 @@ function set_weather()
 	local hour, minute = getTime()
 
 	if hour == 0 then
-		math.randomseed(getTickCount())
-
 		setWeatherBlended(tomorrow_weather)
 
-		tomorrow_weather = math.random(22)
+		tomorrow_weather = random(0,22)
 		print("[tomorrow_weather] "..tomorrow_weather)
 	end
 end
@@ -952,7 +955,6 @@ function job_timer ()
 		local playername = getPlayerName(playerid)
 		local vehicleid = getPlayerVehicle(playerid)
 		local x,y,z = getElementPosition(playerid)
-		math.randomseed(getTickCount())
 
 		if logged[playername] == 1 then
 			if job[playername] == 1 then--работа таксиста
@@ -961,7 +963,7 @@ function job_timer ()
 						if getSpeed(vehicleid) < 1 then
 
 							if job_call[playername] == 0 then--нету вызова
-								local randomize = math.random(1,#taxi_pos)
+								local randomize = random(1,#taxi_pos)
 
 								sendPlayerMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
 
@@ -972,11 +974,11 @@ function job_timer ()
 
 							elseif job_call[playername] == 1 then--есть вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = math.random(1,#taxi_pos)
+									local randomize = random(1,#taxi_pos)
 									local randomize_skin = 1
 
 									for k,v in pairs(getValidPedModels()) do
-										local random = math.random(2,312)
+										local random = random(2,312)
 										if v == random then
 											randomize_skin = random
 											break
@@ -1003,7 +1005,7 @@ function job_timer ()
 
 							elseif job_call[playername] == 2 then--сдаем вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = math.random(1,zp_player_taxi)
+									local randomize = random(1,zp_player_taxi)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -1034,7 +1036,7 @@ function job_timer ()
 						if getSpeed(vehicleid) < 1 then
 
 							if job_call[playername] == 0 then--старт работы
-								local randomize = math.random(1,#taxi_pos)
+								local randomize = random(1,#taxi_pos)
 
 								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
 
@@ -1045,8 +1047,8 @@ function job_timer ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = math.random(1,#taxi_pos)
-									local randomize_zp = math.random(1,zp_car_75)
+									local randomize = random(1,#taxi_pos)
+									local randomize_zp = random(1,zp_car_75)
 
 									give_subject( playerid, "car", 75, randomize_zp )
 
@@ -1223,7 +1225,7 @@ function prison_timer()--античит если не в тюрьме
 			end
 
 			if count == #prison_cell then
-				local randomize = math.random(1,#prison_cell)
+				local randomize = random(1,#prison_cell)
 
 				triggerClientEvent( playerid, "event_inv_delet", playerid )
 				state_inv_player[playername] = 0
@@ -1254,7 +1256,7 @@ function prison()--таймер заключения
 				arrest[playername] = 0
 				crimes[playername] = -1
 
-				local randomize = math.random(2,4)
+				local randomize = random(2,4)
 
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, interior_job[randomize][6], interior_job[randomize][7], interior_job[randomize][8])
@@ -1374,13 +1376,11 @@ function inv_player_delet(playerid, id1, id2)--удаления предмета
 end
 
 function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
-	math.randomseed(getTickCount())
-
 	if isElement ( playerid ) then
 		local x,y,z = getElementPosition(playerid)
 		local playername = getPlayerName ( playerid )
 		local crimes_plus = zakon
-		local cash = math.random(1,money)
+		local cash = random(1,money)
 
 		if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 			crimes[playername] = crimes[playername]+crimes_plus
@@ -1577,9 +1577,8 @@ addEvent( "event_auction", true )
 addEventHandler ( "event_auction", getRootElement(), auction )
 
 function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа покупка вещей
-	math.randomseed(getTickCount())
 	local playername = getPlayerName ( playerid )
-	local randomize = math.random(0,9999)
+	local randomize = random(0,9999)
 	local count = 0
 
 	if value == "sell" then
@@ -1589,7 +1588,7 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 				if result[1]["COUNT()"] == 0 then
 					break
 				else
-					randomize = math.random(0,99999)
+					randomize = random(0,99999)
 				end
 			end
 
@@ -2732,7 +2731,7 @@ function reg_or_login(playerid)
 		drugs[playername] = result[1]["drugs"]
 
 		--[[if arrest[playername] == 1 then--не удалять
-			local randomize = math.random(1,#prison_cell)
+			local randomize = random(1,#prison_cell)
 			spawnPlayer(playerid, prison_cell[randomize][4], prison_cell[randomize][5], prison_cell[randomize][6], 0, result[1]["skin"], prison_cell[randomize][1], prison_cell[randomize][2])
 		else]]
 			spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
@@ -3184,7 +3183,6 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
-	math.randomseed(getTickCount())
 
 	if value == "player" then
 		for k,v in pairs(down_player_subject) do
@@ -3202,7 +3200,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 		for k,v in pairs(anim_player_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] and not vehicleid then--обработка предметов
-				local randomize = math.random(1,v[7])
+				local randomize = random(1,v[7])
 
 				inv_server_load( playerid, value, id3, 0, 0, tabpanel )
 
@@ -3258,7 +3256,6 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 	local x,y,z = getElementPosition(playerid)
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
-	math.randomseed(getTickCount())
 	
 	if logged[playername] == 0 then
 		return
@@ -3275,7 +3272,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					end
 				end
 
-				give_subject(playerid, "car", v[5], math.random(1,v[7]))
+				give_subject(playerid, "car", v[5], random(1,v[7]))
 			end
 		end
 
@@ -3288,7 +3285,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					end
 				end
 
-				give_subject(playerid, "player", v[5], math.random(1,v[6]))
+				give_subject(playerid, "player", v[5], random(1,v[6]))
 			end
 		end
 
@@ -3788,7 +3785,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	local vehicleid = getPlayerVehicle(playerid)
 	local x,y,z = getElementPosition(playerid)
 	local id1, id2 = id_1, id_2
-	math.randomseed(getTickCount())
 
 	if value == "player" then
 
@@ -4556,8 +4552,7 @@ function (playerid, cmd, id, cash)
 	local x,y,z = getElementPosition(playerid)
 	local id = tostring(id)
 	local cash = tonumber(cash)
-	math.randomseed(getTickCount())
-	local randomize = math.random(0,36)
+	local randomize = random(0,36)
 	local roulette_game = {"красное","черное","четное","нечетное","1-18","19-36","1-12","2-12","3-12","3-1","3-2","3-3"}
 
 	if logged[playername] == 0 then
@@ -5862,6 +5857,8 @@ function input_Console ( text )
 
 	if text == "z" then
 		--pay_nalog()
+
+		--print(random(0,22))
 
 	elseif text == "x" then
 		restartAllResources()
