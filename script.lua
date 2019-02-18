@@ -746,13 +746,13 @@ local t_s_salon = {
 
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, зп 7}
-	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 1},--склад продуктов
-	{2308.81640625,-13.25,26.7421875, 15, 65, 428, 1},--банк
-	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 1},--нефтезавод
+	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 50},--склад продуктов
+	{2308.81640625,-13.25,26.7421875, 15, 65, 428, 100},--банк
+	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 150},--нефтезавод
 }
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 1, 1, 1, 0},--мясокомбинат
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 20, 1, 1, 0},--мясокомбинат
 	
 	{2559.1171875,-1287.2275390625,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2551.1318359375,-1287.2294921875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
@@ -824,6 +824,18 @@ local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пн
 	{552.41442871094,878.68420410156,-42.364948272705, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
 	{563.02087402344,863.94885253906,-42.350147247314, 1, 70, 71, 1, "baseball", "bat_4", 0, 0, 5},
 }
+
+for k=1,10 do
+	anim_player_subject[k][7] = 40
+end
+
+for k=11,26 do
+	anim_player_subject[k][7] = 60
+end
+
+for k=27,36 do
+	anim_player_subject[k][7] = 80
+end
 
 --камеры полиции
 local prison_cell = {
@@ -1905,6 +1917,11 @@ function buy_subject_fun( playerid, text, number, value )
 	local playername = getPlayerName(playerid)
 
 	if value == "pd" then
+		if search_inv_player(playerid, 50, playername) == 0 then
+			sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
+			return
+		end
+
 		local weapon_cops = {
 			[9] = {info_png[9][1], 16, 360, 5},
 			[12] = {info_png[12][1], 22, 240, 25},
@@ -2018,7 +2035,7 @@ function buy_subject_fun( playerid, text, number, value )
 
 			if value == 1 then
 				if search_inv_player(playerid, 50, playername) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в магазине 24/7", red[1], red[2], red[3])
+					sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
 					return
 				end
 
@@ -2264,24 +2281,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_nalog_house = 1000
 		zakon_nalog_business = 2000
 
-		up_car_subject[1][7] = 50
-		up_player_subject[1][6] = 20
 		zp_player_taxi = 250
-		up_car_subject[2][7] = 100
-		up_car_subject[3][7] = 150
 		zp_car_75 = 200
-
-		for k=1,10 do
-			anim_player_subject[k][7] = 40
-		end
-
-		for k=11,26 do
-			anim_player_subject[k][7] = 60
-		end
-
-		for k=27,36 do
-			anim_player_subject[k][7] = 80
-		end
 
 
 		local result = sqlite( "SELECT COUNT() FROM account" )
@@ -2489,30 +2490,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 			timer_robbery[playername] = 0
 		end
 
-		state_inv_player[playername] = 0
-		state_gui_window[playername] = 0
 		logged[playername] = 0
-		enter_house[playername] = 0
-		enter_business[playername] = 0
-		enter_job[playername] = 0
-		speed_car_device[playername] = 0
-		arrest[playername] = 0
-		crimes[playername] = -1
-		robbery_player[playername] = 0
-		gps_device[playername] = 0
-		timer_robbery[playername] = 0
-		job[playername] = 0
-		job_call[playername] = 0
-		job_ped[playername] = 0
-		job_blip[playername] = 0
-		job_marker[playername] = 0
-		job_pos[playername] = 0
-		--нужды
-		alcohol[playername] = 0
-		satiety[playername] = 0
-		hygiene[playername] = 0
-		sleep[playername] = 0
-		drugs[playername] = 0
 	else
 		
 	end
