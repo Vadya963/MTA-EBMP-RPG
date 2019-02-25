@@ -1264,7 +1264,7 @@ function prison()--таймер заключения
 		local playername = getPlayerName(playerid)
 
 		if arrest[playername] == 1 then
-			if crimes[playername] == 0 then
+			if crimes[playername] == 1 then
 				arrest[playername] = 0
 				crimes[playername] = 0
 
@@ -1277,7 +1277,7 @@ function prison()--таймер заключения
 
 				save_player_action(playerid, "[prison_timer] "..playername.." вышел из тюрьмы")
 
-			elseif crimes[playername] > 0 then
+			elseif crimes[playername] > 1 then
 				crimes[playername] = crimes[playername]-1
 
 				sendPlayerMessage(playerid, "Вам сидеть ещё "..(crimes[playername]).." мин", yellow[1], yellow[2], yellow[3])
