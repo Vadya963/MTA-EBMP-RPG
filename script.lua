@@ -1266,7 +1266,7 @@ function prison()--таймер заключения
 		if arrest[playername] == 1 then
 			if crimes[playername] == 0 then
 				arrest[playername] = 0
-				crimes[playername] = -1
+				crimes[playername] = 0
 
 				local randomize = random(2,4)
 
@@ -1275,10 +1275,12 @@ function prison()--таймер заключения
 
 				sendPlayerMessage(playerid, "Вы свободны, больше не нарушайте", yellow[1], yellow[2], yellow[3])
 
+				save_player_action(playerid, "[prison_timer] "..playername.." вышел из тюрьмы")
+
 			elseif crimes[playername] > 0 then
 				crimes[playername] = crimes[playername]-1
 
-				sendPlayerMessage(playerid, "Вам сидеть ещё "..(crimes[playername]+1).." мин", yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "Вам сидеть ещё "..(crimes[playername]).." мин", yellow[1], yellow[2], yellow[3])
 			end
 		end
 	end
@@ -1396,7 +1398,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 
 		if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 
 			sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
 
@@ -2432,7 +2434,7 @@ function()
 	enter_job[playername] = 0
 	speed_car_device[playername] = 0
 	arrest[playername] = 0
-	crimes[playername] = -1
+	crimes[playername] = 0
 	robbery_player[playername] = 0
 	gps_device[playername] = 0
 	timer_robbery[playername] = 0
@@ -2554,16 +2556,16 @@ function(ammo, attacker, weapon, bodypart)
 			if search_inv_player(attacker, 10, playername_a) == 0 then
 				local crimes_plus = zakon_kill_crimes
 				crimes[playername_a] = crimes[playername_a]+crimes_plus
-				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], yellow[1], yellow[2], yellow[3])
 			else
-				if crimes[playername] ~= -1 then
+				if crimes[playername] ~= 0 then
 					arrest[playername] = 1
 
-					sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername]+1)).."$", green[1], green[2], green[3] )
+					sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername]+1)), playername_a )
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 
-					save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]+1))
+					save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]))
 				end
 			end
 
@@ -2577,16 +2579,16 @@ function(ammo, attacker, weapon, bodypart)
 					if search_inv_player(player_id, 10, playername_a) == 0 then
 						local crimes_plus = zakon_kill_crimes
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a]+1, yellow[1], yellow[2], yellow[3])
+						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], yellow[1], yellow[2], yellow[3])
 					else
-						if crimes[playername] ~= -1 then
+						if crimes[playername] ~= 0 then
 							arrest[playername] = 1
 
-							sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername]+1)).."$", green[1], green[2], green[3] )
+							sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername]+1)), playername_a )
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 
-							save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]+1))
+							save_player_action(playerid, "[police_prison_kill] "..playername_a.." prison "..playername.." time "..(crimes[playername]))
 						end
 					end
 
@@ -2682,7 +2684,7 @@ function reg_or_login(playerid)
 			return
 		end
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '-1', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, slot_0_1, slot_0_2, slot_1_1, slot_1_2, slot_2_1, slot_2_2, slot_3_1, slot_3_2, slot_4_1, slot_4_2, slot_5_1, slot_5_2, slot_6_1, slot_6_2, slot_7_1, slot_7_2, slot_8_1, slot_8_2, slot_9_1, slot_9_2, slot_10_1, slot_10_2, slot_11_1, slot_11_2, slot_12_1, slot_12_2, slot_13_1, slot_13_2, slot_14_1, slot_14_2, slot_15_1, slot_15_2, slot_16_1, slot_16_2, slot_17_1, slot_17_2, slot_18_1, slot_18_2, slot_19_1, slot_19_2, slot_20_1, slot_20_2, slot_21_1, slot_21_2, slot_22_1, slot_22_2, slot_23_1, slot_23_2) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '1', '500', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		for i=0,max_inv do
@@ -4319,7 +4321,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if alcohol_test >= zakon_alcohol then
 				local crimes_plus = zakon_alcohol_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 			end
 
 		elseif id1 == 58 then--наркостестер
@@ -4331,7 +4333,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if drugs_test >= zakon_drugs then
 				local crimes_plus = zakon_drugs_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 			end
 
 		elseif id1 == 59 then--налог дома
@@ -4430,7 +4432,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			local crimes_plus = zakon_65_crimes
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername]+1, yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -4860,21 +4862,26 @@ function (playerid, cmd, id)
 				return
 			end
 
-			if crimes[id] == -1 then
+			if arrest[id] == 1 then
+				sendPlayerMessage(playerid, "[ERROR] Игрок в тюрьме", red[1], red[2], red[3])
+				return
+			end
+
+			if crimes[id] == 0 then
 				sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3])
 				return
 			end
 
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]+1).." мин")
+				me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]).." мин")
 
 				arrest[id] = 1
 
-				sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id]+1)).."$", green[1], green[2], green[3] )
+				sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", green[1], green[2], green[3] )
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id]+1)), playername )
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id])), playername )
 
-				save_player_action(playerid, "[police_prison] "..playername.." prison "..id.." time "..(crimes[id]+1))
+				save_player_action(playerid, "[police_prison] "..playername.." prison "..id.." time "..(crimes[id]))
 			else
 				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 			end
@@ -5533,7 +5540,7 @@ function (playerid, cmd, id, time, ...)
 			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 			arrest[id] = 1
-			crimes[id] = time-1
+			crimes[id] = time
 
 			save_admin_action(playerid, "[admin_prisonplayer] "..playername.." prisonplayer "..id.." time "..time.." reason "..reason)
 		else
