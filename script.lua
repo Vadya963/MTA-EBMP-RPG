@@ -864,7 +864,6 @@ local arrest = {}--арест игрока, 0-нет, 1-да
 local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
-local timer_robbery = {}--таймер ограбления
 local job = {}--работа, 0-нет, 1-таксист, 2-вод мусоровоза
 local job_call = {}--(таксист - есть ли вызов, 0-нет, 1-да, 2-сдаем вызов)
 local job_ped = {}--создан ли нпс, 0-нет
@@ -910,7 +909,7 @@ function debuginfo ()
 		setElementData(playerid, "9", "crimes[playername] "..crimes[playername])
 		setElementData(playerid, "10", "robbery_player[playername] "..robbery_player[playername])
 		setElementData(playerid, "11", "gps_device[playername] "..gps_device[playername])
-		setElementData(playerid, "12", "timer_robbery[playername] "..tostring(timer_robbery[playername]))
+		setElementData(playerid, "12", "0[playername] 0")
 		setElementData(playerid, "13", "job[playername] "..job[playername])
 		setElementData(playerid, "14", "job_call[playername] "..job_call[playername])
 		setElementData(playerid, "15", "job_ped[playername] "..tostring(job_ped[playername]))
@@ -1390,27 +1389,29 @@ function inv_player_delet(playerid, id1, id2)--удаления предмета
 end
 
 function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
+	local playername = getPlayerName ( playerid )
+
 	if isElement ( playerid ) then
-		local x,y,z = getElementPosition(playerid)
-		local playername = getPlayerName ( playerid )
-		local crimes_plus = zakon
-		local cash = random(1,money)
+		if robbery_player[playername] == 1 then
+			local x,y,z = getElementPosition(playerid)
+			local crimes_plus = zakon
+			local cash = random(1,money)
 
-		if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
-			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+			if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
+				crimes[playername] = crimes[playername]+crimes_plus
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 
-			sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
+				sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
 
-			save_player_action(playerid, "[robbery] "..playername.." ["..text.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
-		else
-			sendPlayerMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3])
+				save_player_action(playerid, "[robbery] "..playername.." ["..text.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3])
+			end
+
+			robbery_player[playername] = 0
 		end
-
-		robbery_player[playername] = 0
-		timer_robbery[playername] = 0
 	end
 end
 
@@ -1554,7 +1555,7 @@ function pickupUse( playerid )
 
 	elseif getElementModel(pickup) == job_icon then
 		for k,v in pairs(interior_job) do 
-			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, 5) then
+			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, v[12]) then
 				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 				sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
 				return
@@ -2437,7 +2438,6 @@ function()
 	crimes[playername] = 0
 	robbery_player[playername] = 0
 	gps_device[playername] = 0
-	timer_robbery[playername] = 0
 	job[playername] = 0
 	job_call[playername] = 0
 	job_ped[playername] = 0
@@ -2509,9 +2509,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		job_0( playername )
 
 		if robbery_player[playername] == 1 then
-			killTimer ( timer_robbery[playername] )
 			robbery_player[playername] = 0
-			timer_robbery[playername] = 0
 		end
 
 		logged[playername] = 0
@@ -2599,9 +2597,7 @@ function(ammo, attacker, weapon, bodypart)
 	end
 
 	if robbery_player[playername] == 1 then
-		killTimer ( timer_robbery[playername] )
 		robbery_player[playername] = 0
-		timer_robbery[playername] = 0
 	end
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
@@ -3322,7 +3318,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
 			if area then
-				if (v[4] == 48 or v[4] == 24 or v[4] == 62 or v[4] == 67 or v[4] == 68 or v[4] == 69 or v[4] == 70 or v[4] == 71) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
+				if (v[4] == 48 or v[4] == 67 or v[4] == 69 or v[4] == 70) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
 					sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 					return
 				end
@@ -4215,7 +4211,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." дома, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 500, v[1],v[2],v[3], house_bussiness_radius, "house - "..v["number"])
+						setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 500, v["x"],v["y"],v["z"], house_bussiness_radius, "house - "..v["number"])
 
 						break
 					end
@@ -4238,7 +4234,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." бизнеса, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
+						setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
 
 						break
 					end
@@ -4260,7 +4256,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
-					timer_robbery[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
+					setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
 				end
 
 				if count == 0 then
@@ -4713,6 +4709,10 @@ function (playerid, cmd, id)
 		return
 	end
 
+	if arrest[playername] == 1 then
+		return
+	end
+
 	if not id then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red[1], red[2], red[3])
 		return
@@ -4782,6 +4782,10 @@ function (playerid, cmd, id, cash)
 	local cash = tonumber(cash)
 
 	if logged[playername] == 0 then
+		return
+	end
+
+	if arrest[playername] == 1 then
 		return
 	end
 
@@ -5433,7 +5437,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -5459,7 +5463,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер дома]", red[1], red[2], red[3])
 		return
 	end
 
@@ -5551,7 +5555,7 @@ function (playerid, cmd, id, time, ...)
 	end
 end)
 
-addCommandHandler ( "banplayer",
+--[[addCommandHandler ( "banplayer",
 function ( playerid, cmd, id, ... )
 	local playername = getPlayerName ( playerid )
 	local reason = ""
@@ -5666,7 +5670,7 @@ function ( playerid, cmd, id, ... )
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
-end)
+end)]]
 
 addCommandHandler ( "int",
 function ( playerid, cmd, id )
