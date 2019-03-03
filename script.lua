@@ -2905,7 +2905,7 @@ function buycar ( playerid, id )
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
-				save_player_action(playerid, "[buy_vehicle] "+playername+" [plate - "+val2+"] [-"+cash_car[id][2]+"$, been "+array_player_2[playername][1]+"$]")
+				save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..val2.."] [-"..cash_car[id][2].."$, been "..array_player_2[playername][1].."$]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
@@ -2936,7 +2936,7 @@ function buycar ( playerid, id )
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
-				save_player_action(playerid, "[buy_vehicle] "+playername+" [plate - "+val2+"] [-"+cash_helicopters[id][2]+"$, been "+array_player_2[playername][1]+"$]")
+				save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..val2.."] [-"..cash_helicopters[id][2].."$, been "..array_player_2[playername][1].."$]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
@@ -2967,7 +2967,7 @@ function buycar ( playerid, id )
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
-				save_player_action(playerid, "[buy_vehicle] "+playername+" [plate - "+val2+"] [-"+cash_boats[id][2]+"$, been "+array_player_2[playername][1]+"$]")
+				save_player_action(playerid, "[buy_vehicle] "..playername.." [plate - "..val2.."] [-"..cash_boats[id][2].."$, been "..array_player_2[playername][1].."$]")
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
