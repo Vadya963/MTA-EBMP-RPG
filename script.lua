@@ -2091,16 +2091,20 @@ function buy_subject_fun( playerid, text, number, value )
 					return
 				end
 
-				if inv_player_empty(playerid, 27, text) then
-					sendPlayerMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", orange[1], orange[2], orange[3])
+				if cash <= array_player_2[playername][1] then
+					if inv_player_empty(playerid, 27, text) then
+						sendPlayerMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", orange[1], orange[2], orange[3])
 
-					sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+						sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-					save_player_action(playerid, "[buy_subject_fun] [skin - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+						save_player_action(playerid, "[buy_subject_fun] [skin - "..text.."], "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$], "..info_bisiness(number))
+					else
+						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
 
 			elseif value == 3 then
