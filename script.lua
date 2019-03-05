@@ -3999,7 +3999,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			id2 = id2 - 1
 
 			if id1 == 55 then
-				local sleep_hygiene_plus = 100
+				local sleep_hygiene_plus = 50
 
 				if hygiene[playername]+sleep_hygiene_plus > max_hygiene then
 					sendPlayerMessage(playerid, "[ERROR] Вы чисты", red[1], red[2], red[3])
@@ -4016,7 +4016,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setPedAnimation(playerid, "int_house", "wash_up", -1, false, false, false, false)
 
 			elseif id1 == 56 then
-				local sleep_hygiene_plus = 100
+				local sleep_hygiene_plus = 50
 
 				if sleep[playername]+sleep_hygiene_plus > max_sleep then
 					sendPlayerMessage(playerid, "[ERROR] Вы бодры", red[1], red[2], red[3])
@@ -4325,7 +4325,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 58 then--наркостестер
 			local drugs_test = drugs[playername]
 			
-			me_chat(playerid, playername.." подул(а) в "..info_png[id1][1])
+			me_chat(playerid, playername.." смочил(а) слюной палочку")
 			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости")
 
 			if drugs_test >= zakon_drugs then
@@ -5530,6 +5530,10 @@ function (playerid, cmd, id, time, ...)
 
 	if not id or reason == "" or not time then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [время] [причина]", red[1], red[2], red[3])
+		return
+	end
+
+	if time < 1 then
 		return
 	end
 
