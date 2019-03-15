@@ -83,8 +83,8 @@ local info_png = {
 	[41] = {"sniper", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
-	[44] = {"админский жетон на имя", ""},
-	[45] = {"риэлторская лицензия на имя", ""},
+	[44] = {"админский жетон", "шт"},
+	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "боеприпасов"},
 	[48] = {"тушка свиньи", "$ за штуку"},
@@ -116,6 +116,7 @@ local info_png = {
 	[74] = {"лицензия водителя мусоровоза", "шт"},
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
+	[77] = {"проездной жетон", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -187,11 +188,11 @@ function save_logplayer()
 	end
 end
 
-local invplayer = {}
-function invsave_fun (value, name, i, id1, id2)--таблица inv
+local invplayer = ""
+function invsave_fun (value, name, text)--таблица inv
 	if value == "save" then
 		name_player = name
-		invplayer[i] = {id1,id2}
+		invplayer = text
 
 	elseif value == "load" then
 		save_invplayer()
@@ -203,9 +204,7 @@ addEventHandler ( "event_invsave_fun", getRootElement(), invsave_fun )
 function save_invplayer()
 	local newFile = fileCreate("inv-"..name_player..".txt")
 	if (newFile) then
-		for i=0,#invplayer do
-			fileWrite(newFile, "slot ["..i.."] value ["..info_png[invplayer[i][1]][1]..", "..invplayer[i][2].."]\n")
-		end
+		fileWrite(newFile, invplayer.."\n")
 
 		sendPlayerMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
 		fileClose(newFile)
@@ -381,7 +380,7 @@ local shop = {
 	[22] = {info_png[22][1], 1, 60},
 	[23] = {info_png[23][1], 1, 100},
 	[40] = {info_png[40][1], 10, 500},
-	[42] = {info_png[42][1], 1, 10000},
+	[42] = {info_png[42][1], 1, 5000},
 	[46] = {info_png[46][1], 1, 100},
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
@@ -423,8 +422,12 @@ local text_3d = {--3d text
 
 	{260.4326171875,1409.2626953125,10.506074905396, 15, "Нефтезавод (Загрузить бочки - E)"},
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, "Порт ЛС (Разгрузить товар - E)"},
-	{2308.81640625,-13.25,26.7421875, 15, "Банк (Загрузить деньги - E)"},
+	{2308.81640625,-13.25,26.7421875, 15, "Банк (Разгрузить деньги - E)"},
 	{-1813.2890625,-1654.3330078125,22.398532867432, 15, "Свалка (Разгрузить мусор - E)"},
+
+	{1743.119140625,-1943.5732421875,13.569796562195, 10, "Используйте жетон, чтобы отправиться на Вокзал СФ"},
+	{-1973.22265625,116.78515625,27.6875, 10, "Используйте жетон, чтобы отправиться на Вокзал ЛВ"},
+	{2848.4521484375,1291.462890625,11.390625, 10, "Используйте жетон, чтобы отправиться на Вокзал ЛС"},
 
 	--завод продуктов
 	{89.9423828125,-304.623046875,1.578125, 15, "Склад продуктов (Загрузить ящики - E)"},
@@ -822,7 +825,7 @@ function createText ()
 	for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
 		local x1,y1,z1 = getElementPosition(player)
 
-		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= -1 and player ~= playerid then
+		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.2, 0, false ) }
 			if coords[1] and coords[2] then
 				dxDrawImage ( coords[1]-(30/2), coords[2], 30, 20, "gui/Wanted_person.png" )
@@ -1086,12 +1089,13 @@ function shop_menu(number, value)--создание окна магазина
 		local zakon_nalog_business = getElementData ( localPlayer, "zakon_nalog_business_data" )
 
 		local mayoralty_shop = {
-			[2] = {"права", 0, 1000},
-			[50] = {"лицензия на оружие", 0, 10000},
-			[64] = {"лицензия таксиста", 0, 5000},
-			[66] = {"лицензия инкасатора", 0, 10000},
-			[72] = {"лицензия дальнобойщика", 0, 15000},
-			[74] = {"лицензия водителя мусоровоза", 0, 20000},
+			[2] = {info_png[2][1], 1, 1000},
+			[50] = {info_png[50][1], 1, 10000},
+			[64] = {info_png[64][1], 1, 5000},
+			[66] = {info_png[66][1], 1, 20000},
+			[72] = {info_png[72][1], 1, 10000},
+			[74] = {info_png[74][1], 1, 15000},
+			[77] = {info_png[77][1], 100, 100},
 			
 			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
 			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
@@ -1344,9 +1348,10 @@ function avto_bikes_menu()--создание окна машин
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
-	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	guiGridListAddColumn(shoplist, "Название тс", 0.5)
+	guiGridListAddColumn(shoplist, "Цена", 0.4)
 	for k,v in pairs(vehicleIds) do
-		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k), v[2])
 	end
 
 	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
@@ -1392,9 +1397,10 @@ function boats_menu()--создание окна машин
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
-	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	guiGridListAddColumn(shoplist, "Название тс", 0.5)
+	guiGridListAddColumn(shoplist, "Цена", 0.4)
 	for k,v in pairs(vehicleIds) do
-		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k), v[2])
 	end
 
 	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
@@ -1438,9 +1444,10 @@ function helicopters_menu()--создание окна машин
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
-	guiGridListAddColumn(shoplist, "Название тс", 0.9)
+	guiGridListAddColumn(shoplist, "Название тс", 0.5)
+	guiGridListAddColumn(shoplist, "Цена", 0.4)
 	for k,v in pairs(vehicleIds) do
-		guiGridListAddRow(shoplist, getVehicleNameFromModel(k))
+		guiGridListAddRow(shoplist, getVehicleNameFromModel(k), v[2])
 	end
 
 	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
@@ -1729,10 +1736,10 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		guiGridListAddColumn(shoplist, "Предмет", 0.2)
-		guiGridListAddColumn(shoplist, "Ресурсы", 0.75)
+		guiGridListAddColumn(shoplist, "Ресурсы", 1.0)
 
 		local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
-			{info_png[20][1], info_png[3][1].."(1 шт) + "..info_png[4][1].."(1 шт)", "3,4", "1,1", "20,1"},
+			{info_png[20][1].."(1 гр)", info_png[3][1].."(20 шт) + "..info_png[7][1].."(20 шт) + "..info_png[8][1].."(20 шт)", "3,7,8", "20,20,20", "20,1"},
 		}
 
 		for k,v in pairs(craft_table) do
