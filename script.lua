@@ -878,6 +878,7 @@ local speed_car_device = {}--отображение скорости авто, 0
 local arrest = {}--арест игрока, 0-нет, 1-да
 local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
+local robbery_timer = {}--таймер ограбления
 local gps_device = {}--отображение координат игрока, 0-выкл, 1-вкл
 local job = {}--работа, 0-нет, 1-таксист, 2-вод мусоровоза
 local job_call = {}--(таксист - есть ли вызов, 0-нет, 1-да, 2-сдаем вызов)
@@ -937,6 +938,7 @@ function debuginfo ()
 		end
 
 		setElementData(playerid, "18", "job_marker[playername] "..tostring(job_marker[playername]))
+		setElementData(playerid, "19", "robbery_timer[playername] "..tostring(robbery_timer[playername]))
 
 		setElementData(playerid, "crimes_data", crimes[playername])
 		setElementData(playerid, "alcohol_data", alcohol[playername])
@@ -1531,8 +1533,20 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 				sendPlayerMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3])
 			end
 
-			robbery_player[playername] = 0
+			robbery_kill( playername )
 		end
+	end
+end
+
+function robbery_kill( playername )
+	if robbery_player[playername] == 1 then
+		robbery_player[playername] = 0
+
+		if isTimer(robbery_timer[playername]) then
+			killTimer(robbery_timer[playername])
+		end
+
+		robbery_timer[playername] = 0
 	end
 end
 
@@ -2674,6 +2688,7 @@ function()
 	arrest[playername] = 0
 	crimes[playername] = 0
 	robbery_player[playername] = 0
+	robbery_timer[playername] = 0
 	gps_device[playername] = 0
 	job[playername] = 0
 	job_call[playername] = 0
@@ -2753,9 +2768,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		exit_car_fun(playerid)
 		job_0( playername )
 
-		if robbery_player[playername] == 1 then
-			robbery_player[playername] = 0
-		end
+		robbery_kill( playername )
 
 		logged[playername] = 0
 	else
@@ -2842,9 +2855,7 @@ function(ammo, attacker, weapon, bodypart)
 		end
 	end
 
-	if robbery_player[playername] == 1 then
-		robbery_player[playername] = 0
-	end
+	robbery_kill( playername )
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
 
@@ -4486,7 +4497,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." дома, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "house - "..v["number"])
+						robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "house - "..v["number"])
 
 						break
 					end
@@ -4509,7 +4520,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." бизнеса, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
+						robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
 
 						break
 					end
@@ -4531,7 +4542,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
-					setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
+					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
 				end
 
 				if count == 0 then
