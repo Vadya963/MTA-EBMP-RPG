@@ -4383,7 +4383,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -4440,7 +4440,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." починил(а) т/с")
 			else
-				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -4497,6 +4497,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local count = 0
 			local hour, minute = getTime()
 			local x1,y1 = player_position( playerid )
+
+			if vehicleid then
+				sendPlayerMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
+				return
+			end
 
 			if hour >= 0 and hour <= 5 then
 				for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
@@ -4690,7 +4695,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -4763,6 +4768,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 77 then--жетон
 			if vehicleid then
+				sendPlayerMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -4776,7 +4782,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setElementPosition(playerid, station[1][1],station[1][2],station[1][3])
 				id2 = id2 - 1
 			else 
-				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
 				return
 			end
 		else
