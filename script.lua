@@ -410,7 +410,7 @@ local interior = {
 	{5, "Vank Hoff Hotel",	2232.8210,	-1110.0180,	1050.8830},--48 комната в отеле
 
 	{6, "Ammu-Nation 3",	297.4460,	-109.9680,	1001.5160},
-	{6, "Ammu-Nation 4",	317.2380,	-168.0520,	999.5930},
+	{6, "Ammu-Nation 4",	317.2380,	-168.0520,	999.5930},--инт для военного склада
 	{6, "LSPD HQ",	246.4510,	65.5860,	1003.6410},
 	{6, "Safe House 3",	2333.0330,	-1073.9600,	1049.0230},
 	{6, "Safe House 5",	2194.2910,	-1204.0150,	1049.0230},
@@ -729,7 +729,7 @@ local interior_job = {--12
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
 	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
-	{7, "Гонки на автомобилях", -1417.8720,-276.4260,1051.1910, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
+	{7, "Гонки на автомобилях", -1406.8232421875,-255.7607421875,1043.6507568359, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
@@ -1261,8 +1261,13 @@ function timer_earth()--передача слотов земли на клиен
 end
 
 function timer_earth_clear()--очистка земли
+	local count_earth = 0
 
-	print("[timer_earth_clear] max_earth "..max_earth)
+	for i,v in pairs(earth) do
+		count_earth = count_earth+1
+	end
+
+	print("[timer_earth_clear] max_earth "..max_earth..", count_earth "..count_earth)
 
 	earth = {}
 	max_earth = 0
@@ -1838,7 +1843,7 @@ addEventHandler ( "event_auction", getRootElement(), auction )
 
 function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа покупка вещей
 	local playername = getPlayerName ( playerid )
-	local randomize = random(0,9999)
+	local randomize = random(1,9999)
 	local count = 0
 
 	if value == "sell" then
@@ -1848,7 +1853,7 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 				if result[1]["COUNT()"] == 0 then
 					break
 				else
-					randomize = random(0,99999)
+					randomize = random(1,99999)
 				end
 			end
 
@@ -2539,6 +2544,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
 		setTimer(pay_nalog, (60*60000), 0)--списание налогов
 		setTimer(job_timer, 1000, 0)--работы в цикле
+		setTimer(no_damage_car, 1000, 0)--отключает урон авто
 
 		setWeather(tomorrow_weather)
 		setGlitchEnabled ( "quickreload", true )
@@ -3044,6 +3050,17 @@ function freez_car()--заморозка авто
 	end
 end
 
+local table_no_damage_car = {528,432,601}
+function no_damage_car()
+	for k,vehicleid in pairs(getElementsByType("vehicle")) do
+		for k,v in pairs(table_no_damage_car) do
+			if getElementModel(vehicleid) == v then
+				setVehicleDamageProof(vehicleid, true)
+			end
+		end
+	end
+end
+
 function detachTrailer(vehicleid)--прицепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
@@ -3293,12 +3310,6 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				end
 			end
 
-			if fuel[plate] <= 0 then
-				sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
-				setVehicleEngineState(vehicleid, false)
-				return
-			end
-
 			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 then
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
@@ -3308,6 +3319,12 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 
 				if tonumber(plate) ~= 0 then
 					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
+				end
+
+				if fuel[plate] <= 0 then
+					sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
+					setVehicleEngineState(vehicleid, false)
+					return
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права(можно купить в Мэрии)", red[1], red[2], red[3])
@@ -4272,6 +4289,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
 					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." помылся(ась)")
+					id2 = id2 - 1
 
 					setPedAnimation(playerid, "int_house", "wash_up", -1, false, false, false, false)
 
@@ -4300,6 +4318,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					sleep[playername] = sleep[playername]+sleep_hygiene_plus
 					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." вздремнул(а)")
+					id2 = id2 - 1
 
 				elseif (enter_job[playername] == 1 and interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid)) then
 				
@@ -4364,7 +4383,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				return
 			end
 
@@ -4421,7 +4440,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." починил(а) т/с")
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				return
 			end
 
@@ -4479,7 +4498,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local hour, minute = getTime()
 			local x1,y1 = player_position( playerid )
 
-			if hour >= 0 and hour <= 7 then
+			if hour >= 0 and hour <= 5 then
 				for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 					if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and robbery_player[playername] == 0 then
 						local time_rob = 1--время для ограбления
@@ -4550,7 +4569,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Ограбление доступно с 0 до 7 часов игрового времени", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] Ограбление доступно с 0 до 6 часов игрового времени", red[1], red[2], red[3])
 				return
 			end
 
@@ -4671,7 +4690,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 				return
 			end
 
@@ -5567,17 +5586,18 @@ function (playerid, cmd, id)
 	local x,y,z = getElementPosition(playerid)
 	local id = tonumber(id)
 	local cash = 1000
+	local max_interior_house = #interior_house
 
 	if logged[playername] == 0 then
 		return
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..#interior_house.."]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..max_interior_house.."]", red[1], red[2], red[3])
 		return
 	end
 
-	if id >= 1 and id <= #interior_house then
+	if id >= 1 and id <= max_interior_house then
 		if (cash*id) <= array_player_2[playername][1] then
 			for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
@@ -5602,7 +5622,7 @@ function (playerid, cmd, id)
 			sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..(cash*id).."$", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_house, red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
 	end
 
 end)
