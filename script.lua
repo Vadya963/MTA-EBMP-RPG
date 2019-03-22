@@ -1374,8 +1374,35 @@ function onChat(message, messageType)
 	local playerid = source
 	local playername = getPlayerName(playerid)
 
-	if logged[playername] == 1 then
-		ic_chat(playerid, playername..": "..message)
+	if logged[playername] == 0 then
+		return
+	end
+
+	local count = 0
+	local say = "(Всем) "..getPlayerName( playerid )..": " .. message
+	local say_10_r = "(10 метров) "..getPlayerName( playerid )..": " .. message
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x,y,z = getElementPosition(playerid)
+		local x1,y1,z1 = getElementPosition(player)
+		local player_name = getPlayerName(player)
+
+		if(logged[player_name] == 1 and isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) and player ~= playerid) then
+		
+			count = count + 1
+		end
+	end
+	
+	if (count == 0) then
+	
+		sendPlayerMessage( getRootElement(), say, white[1], white[2], white[3] )
+
+		print("[CHAT] "..say)
+	
+	else 
+	
+		ic_chat( playerid, say_10_r )
+		print("[CHAT] "..say_10_r)
 	end
 
 	cancelEvent()
@@ -2520,7 +2547,7 @@ function craft_fun( playerid, text )
 		end
 	end
 
-	sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3])
+	sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
 end
 addEvent( "event_craft_fun", true )
 addEventHandler ( "event_craft_fun", getRootElement(), craft_fun )
@@ -2812,6 +2839,10 @@ function(ammo, attacker, weapon, bodypart)
 		end
 	end
 
+	if tonumber(reason) then
+		reason = getWeaponNameFromID(reason)
+	end
+
 	if attacker then
 		if getElementType ( attacker ) == "player" then
 			playername_a = getPlayerName ( attacker )
@@ -2904,12 +2935,6 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		end
 	end
 
-	for k,v in pairs(deathReasons) do
-		if k == reason then
-			reason = v
-		end
-	end
-
 	if (reason == 16 or reason == 3) and not isElementFrozen(playerid) then--удар дубинкой оглушает игрока на 15 сек
 		local playername_attacker = getPlayerName ( attacker )
 		setElementFrozen( playerid, true )
@@ -2938,7 +2963,7 @@ function reg_or_login(playerid)
 	if result[1]["COUNT()"] == 0 then
 
 		local result = sqlite( "SELECT COUNT() FROM account WHERE reg_serial = '"..serial.."'" )
-		if result[1]["COUNT()"] == 1 then
+		if result[1]["COUNT()"] >= 1 then
 			kickPlayer(playerid, "Регистрация твинков запрещена")
 			return
 		end
@@ -3102,7 +3127,7 @@ function car_spawn(number)
 		local plate = number
 		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 
-		if result[1]["nalog"] ~= 0 then
+		--if result[1]["nalog"] ~= 0 then
 			local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
 			setVehicleLocked ( vehicleid, true )
@@ -3128,7 +3153,7 @@ function car_spawn(number)
 			load_inv(plate, "car", result[1]["inventory"])
 
 			carnumber_number = carnumber_number+1
-		end
+		--end
 end
 
 --addCommandHandler ( "buycar",--покупка авто
@@ -3327,7 +3352,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права(можно купить в Мэрии)", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права (можно купить в Мэрии)", red[1], red[2], red[3])
 				setVehicleEngineState(vehicleid, false)
 				removePedFromVehicle ( playerid )
 			end
@@ -5090,7 +5115,7 @@ function (playerid, cmd, id)
 
 								save_player_action(playerid, "[evacuationcar] "..playername.." [-"..cash.."$, "..array_player_2[playername][1].."$]")
 							else
-								sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от этого т/с", red[1], red[2], red[3])
+								sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от этого т/с", red[1], red[2], red[3])
 							end
 						else
 							sendPlayerMessage(playerid, "[ERROR] Т/с на штрафстоянке", red[1], red[2], red[3])
@@ -5616,7 +5641,7 @@ function (playerid, cmd, id)
 
 						save_player_action(playerid, "[buyinthouse] "..playername.." [id - "..id.."], [-"..(cash*id).."$, "..array_player_2[playername][1].."$]")
 					else
-						sendPlayerMessage(playerid, "[ERROR] У вас нет ключей от дома", red[1], red[2], red[3])
+						sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
 					end
 
 					return

@@ -826,7 +826,7 @@ function createText ()
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
-			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.2, 0, false ) }
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
 			if coords[1] and coords[2] then
 				dxDrawImage ( coords[1]-(30/2), coords[2], 30, 20, "gui/Wanted_person.png" )
 			end
