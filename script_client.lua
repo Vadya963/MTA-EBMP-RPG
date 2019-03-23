@@ -29,8 +29,11 @@ local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
+local purple = {175,0,255}--фиолетовый
+
 local max_speed = 80--максимальная скорость в городе
 local time_game = 0--сколько минут играешь
+local afk = 0--сколько минут в афк
 
 local no_use_subject = {-1,0,1}
 
@@ -218,6 +221,24 @@ end
 setTimer(function ()
 	time_game = time_game+1
 end, 60000, 0)
+
+setTimer(function ()
+	if isChatBoxInputActive() or isConsoleActive() then
+		setElementData(localPlayer, "is_chat_open", 1)
+	else
+		setElementData(localPlayer, "is_chat_open", 0)
+	end
+end, 500, 0)
+
+setTimer(function ()
+	if isMainMenuActive() then
+		afk = afk+1
+		setElementData(localPlayer, "afk", afk)
+	else
+		afk = 0
+		setElementData(localPlayer, "afk", afk)
+	end
+end, 1000, 0)
 -----------------------------------------------------------------------------------------
 
 local image = {}--загрузка картинок для отображения на земле
@@ -826,9 +847,26 @@ function createText ()
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
-			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
+			local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 			if coords[1] and coords[2] then
-				dxDrawImage ( coords[1]-(30/2), coords[2], 30, 20, "gui/Wanted_person.png" )
+				dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-30, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+			end
+		end
+
+		if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 and player ~= playerid then
+			local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+			if coords[1] and coords[2] then
+				dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			end
+		end
+
+		if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and player ~= playerid and getElementData(player, "afk") then
+			local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." seconds", 1, m2font_dx1 )
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+			if coords[1] and coords[2] then
+				dxdrawtext ( "[AFK] "..getElementData(player, "afk").." seconds", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
@@ -2280,7 +2318,7 @@ end)
 
 function showcursor_b (key, keyState)
 	if keyState == "down" then
-		showCursor( not isCursorShowing ( playerid ) )
+		showCursor( not isCursorShowing () )
 	end
 end
 

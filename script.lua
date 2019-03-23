@@ -43,6 +43,8 @@ local orange_do = {255,150,0}--оранжевый do
 local pink = {255,100,255}--розовый
 local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
+local crimson = {220,20,60}--малиновый
+local purple = {175,0,255}--фиолетовый
 
 -------------------пользовательские функции----------------------------------------------
 function sendPlayerMessage(playerid, text, r, g, b)
@@ -739,6 +741,8 @@ local interior_job = {--12
 	{5, "Диллимор ПД", 322.72,306.43,999.15, 626.9697265625,-571.796875,17.920680999756, 30, 17, ", Меню - X", 5},
 	{5, "Эйнджел Пайн ПД", 322.72,306.43,999.15, -2161.2099609375,-2384.9052734375,30.893091201782, 30, 18, ", Меню - X", 5},
 	{18, "Отель Атриум", 1726.1370,-1645.2300,20.2260, 1727.0732421875,-1637.03515625,20.217393875122, 35, 19, "", 5},
+	{18, "Отель Сфинкс", 1726.1370,-1645.2300,20.2260, 2239.05078125,1285.7119140625,10.8203125, 35, 20, "", 5},
+	{18, "Отель Виктория", 1726.1370,-1645.2300,20.2260, -2463.44140625,131.7275390625,35.171875, 35, 21, "", 5},
 }
 
 local t_s_salon = {
@@ -947,11 +951,16 @@ function debuginfo ()
 		setElementData(playerid, "sleep_data", sleep[playername])
 		setElementData(playerid, "drugs_data", drugs[playername])
 		setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
+		setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
+		setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
+		setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
+		setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
+		setElementData(playerid, "gps_device_data", gps_device[playername])
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
 			local plate = getVehiclePlateText(vehicleid)
-			setElementData ( playerid, "fuel_data", fuel[plate] )
+			setElementData(playerid, "fuel_data", fuel[plate])
 		end
 	end
 end
@@ -2765,13 +2774,6 @@ function()
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
 
-	--элементдата2
-	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
-	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
-	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
-	setElementData(playerid, "speed_car_device_data", 0)
-	setElementData(playerid, "gps_device_data", 0)
-
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
@@ -3019,6 +3021,16 @@ function reg_or_login(playerid)
 		--end
 
 		setElementHealth( playerid, result[1]["heal"] )
+
+		if (search_inv_player(playerid, 44, 1) ~= 0) then
+			setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
+		elseif (search_inv_player(playerid, 45, 1) ~= 0) then
+			setPlayerNametagColor(playerid, green[1],green[2],green[3])
+		elseif (search_inv_player(playerid, 10, 1) ~= 0) then
+			setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
+		else 
+			setPlayerNametagColor(playerid, white[1],white[2],white[3])
+		end
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
@@ -3638,175 +3650,6 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 	end
 end
 
-function give_subject( playerid, value, id1, id2 )--выдача предметов игроку или авто
-	local playername = getPlayerName ( playerid )
-	local x,y,z = getElementPosition(playerid)
-	local vehicleid = getPlayerVehicle(playerid)
-	local count2 = 0
-
-	if value == "player" then
-
-		if search_inv_player(playerid, id1, search_inv_player_2_parameter(playerid, id1)) >= 1 then
-			sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
-			return
-		end
-
-		if inv_player_empty(playerid, id1, id2) then
-
-			sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
-
-			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] ["..info_png[id1][1]..", "..id2.."]")
-		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-		end
-
-	elseif value == "car" then--для работ по перевозке ящиков
-
-		if vehicleid then
-			if not getVehicleOccupant ( vehicleid, 0 ) then
-				return
-
-			elseif id1 == 65 then
-				if search_inv_player(playerid, 66, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не инкасатор", red[1], red[2], red[3])
-					return
-				end
-			elseif id1 == 24 or id1 == 73 then
-				if search_inv_player(playerid, 72, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
-					return
-				end
-			elseif id1 == 75 then
-				if search_inv_player(playerid, 74, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
-					return
-				end
-			end
-
-			for i=0,max_inv do
-				if inv_car_empty(playerid, id1, id2) then
-					count2 = count2 + 1
-				end
-			end
-
-			if count2 ~= 0 then
-				local count = search_inv_car(vehicleid, id1, id2)
-
-				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
-				
-				if id1 == 24 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 65 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 73 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 75 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				end
-
-				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
-			end
-		else
-			sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
-		end
-	end
-
-end
-
-function delet_subject(playerid, id)--удаление предметов из авто, для работ по перевозке ящиков
-	local playername = getPlayerName ( playerid )
-	local vehicleid = getPlayerVehicle(playerid)
-	local x,y,z = getElementPosition(playerid)
-	local money = 0
-		
-	if vehicleid then
-		if not getVehicleOccupant ( vehicleid, 0 ) then
-			return
-		end
-
-		local sic2p = search_inv_car_2_parameter(vehicleid, id)
-		local count = search_inv_car(vehicleid, id, sic2p)
-
-		if count ~= 0 then
-
-			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
-
-					if id ~= 24 then
-						sendPlayerMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3])
-						return
-					end
-
-					if v["buyprod"] == 0 then
-						sendPlayerMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3])
-						return
-					end
-
-					if v["warehouse"] >= 100 then
-						sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
-						return
-					end
-
-					money = count*v["buyprod"]
-
-					if v["money"] < money then
-						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
-						return
-					end
-
-					for i=0,max_inv do
-						if inv_car_delet(playerid, id, sic2p) then
-						end
-					end
-
-					triggerClientEvent( playerid, "event_inv_delet", playerid )
-					state_inv_player[playername] = 0
-
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-					state_gui_window[playername] = 0
-
-					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
-
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
-
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..v["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
-
-					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(v["number"]))
-					return
-				end
-			end
-
-			for k,v in pairs(down_car_subject) do
-				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
-					for i=0,max_inv do
-						if inv_car_delet(playerid, id, sic2p) then
-						end
-					end
-
-					triggerClientEvent( playerid, "event_inv_delet", playerid )
-					state_inv_player[playername] = 0
-
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-					state_gui_window[playername] = 0
-
-					money = count*sic2p
-
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
-
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
-
-					save_player_action(playerid, "[delet_subject_job] "..playername.." [count - "..count..", price - "..sic2p.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
-					return
-				end
-			end
-		end
-	else
-		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
-	end
-end
-
 function x_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 local x,y,z = getElementPosition(playerid)
@@ -4038,6 +3881,175 @@ function left_alt_down (playerid, key, keyState)
 			end
 		end
 
+	end
+end
+
+function give_subject( playerid, value, id1, id2 )--выдача предметов игроку или авто
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
+	local count2 = 0
+
+	if value == "player" then
+
+		if search_inv_player(playerid, id1, search_inv_player_2_parameter(playerid, id1)) >= 1 then
+			sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
+			return
+		end
+
+		if inv_player_empty(playerid, id1, id2) then
+
+			sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+
+			save_player_action(playerid, "[give_subject] "..playername.." [value - "..value.."] ["..info_png[id1][1]..", "..id2.."]")
+		else
+			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		end
+
+	elseif value == "car" then--для работ по перевозке ящиков
+
+		if vehicleid then
+			if not getVehicleOccupant ( vehicleid, 0 ) then
+				return
+
+			elseif id1 == 65 then
+				if search_inv_player(playerid, 66, 1) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не инкасатор", red[1], red[2], red[3])
+					return
+				end
+			elseif id1 == 24 or id1 == 73 then
+				if search_inv_player(playerid, 72, 1) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
+					return
+				end
+			elseif id1 == 75 then
+				if search_inv_player(playerid, 74, 1) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
+					return
+				end
+			end
+
+			for i=0,max_inv do
+				if inv_car_empty(playerid, id1, id2) then
+					count2 = count2 + 1
+				end
+			end
+
+			if count2 ~= 0 then
+				local count = search_inv_car(vehicleid, id1, id2)
+
+				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+				
+				if id1 == 24 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 65 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 73 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 75 then
+					sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				end
+
+				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
+			else
+				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
+			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+		end
+	end
+
+end
+
+function delet_subject(playerid, id)--удаление предметов из авто, для работ по перевозке ящиков
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	local x,y,z = getElementPosition(playerid)
+	local money = 0
+		
+	if vehicleid then
+		if not getVehicleOccupant ( vehicleid, 0 ) then
+			return
+		end
+
+		local sic2p = search_inv_car_2_parameter(vehicleid, id)
+		local count = search_inv_car(vehicleid, id, sic2p)
+
+		if count ~= 0 then
+
+			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+
+					if id ~= 24 then
+						sendPlayerMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3])
+						return
+					end
+
+					if v["buyprod"] == 0 then
+						sendPlayerMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3])
+						return
+					end
+
+					if v["warehouse"] >= 100 then
+						sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
+						return
+					end
+
+					money = count*v["buyprod"]
+
+					if v["money"] < money then
+						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
+						return
+					end
+
+					for i=0,max_inv do
+						if inv_car_delet(playerid, id, sic2p) then
+						end
+					end
+
+					triggerClientEvent( playerid, "event_inv_delet", playerid )
+					state_inv_player[playername] = 0
+
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+					state_gui_window[playername] = 0
+
+					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
+
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+
+					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..v["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+
+					save_player_action(playerid, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(v["number"]))
+					return
+				end
+			end
+
+			for k,v in pairs(down_car_subject) do
+				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
+					for i=0,max_inv do
+						if inv_car_delet(playerid, id, sic2p) then
+						end
+					end
+
+					triggerClientEvent( playerid, "event_inv_delet", playerid )
+					state_inv_player[playername] = 0
+
+					triggerClientEvent( playerid, "event_gui_delet", playerid )
+					state_gui_window[playername] = 0
+
+					money = count*sic2p
+
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+
+					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+
+					save_player_action(playerid, "[delet_subject_job] "..playername.." [count - "..count..", price - "..sic2p.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
+					return
+				end
+			end
+		end
+	else
+		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 	end
 end
 
@@ -4318,7 +4330,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					setPedAnimation(playerid, "int_house", "wash_up", -1, false, false, false, false)
 
-				elseif (enter_job[playername] == 1 and interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid)) then
+				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid)) ) then
 				
 					if (player_hotel(playerid, 55)) then
 					
@@ -4345,7 +4357,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вздремнул(а)")
 					id2 = id2 - 1
 
-				elseif (enter_job[playername] == 1 and interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid)) then
+				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid)) ) then
 				
 					if (player_hotel(playerid, 56)) then
 					
@@ -4613,12 +4625,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 46 then--радар
 			if speed_car_device[playername] == 0 then
 				speed_car_device[playername] = 1
-				setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 
 				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
 			else
 				speed_car_device[playername] = 0
-				setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 
 				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
 			end
@@ -4727,12 +4737,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 63 then--gps навигатор
 			if gps_device[playername] == 0 then
 				gps_device[playername] = 1
-				setElementData(playerid, "gps_device_data", gps_device[playername])
 
 				me_chat(playerid, playername.." включил(а) "..info_png[id1][1])
 			else
 				gps_device[playername] = 0
-				setElementData(playerid, "gps_device_data", gps_device[playername])
 
 				me_chat(playerid, playername.." выключил(а) "..info_png[id1][1])
 			end
