@@ -23,7 +23,6 @@
 
 	<file src="gui/m2font.ttf" />
 	<file src="gui/gui7.png" />
-	<file src="gui/Wanted_person.png" />
 
 	<!--мой сайт-->
 	<file src="wiki/comand.html" />
