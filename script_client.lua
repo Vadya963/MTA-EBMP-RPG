@@ -846,7 +846,7 @@ function createText ()
 	for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
 		local x1,y1,z1 = getElementPosition(player)
 
-		if isPointInCircle3D( x, y, z, x1,y1,z1, 20 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
+		if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
 			local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 			if coords[1] and coords[2] then
@@ -863,10 +863,10 @@ function createText ()
 		end
 
 		if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and player ~= playerid and getElementData(player, "afk") then
-			local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." seconds", 1, m2font_dx1 )
+			local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 			if coords[1] and coords[2] then
-				dxdrawtext ( "[AFK] "..getElementData(player, "afk").." seconds", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+				dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
 			end
 		end
 	end
