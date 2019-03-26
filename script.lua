@@ -6395,12 +6395,10 @@ function input_Console ( text )
 
 		--print(random(0,22))
 		--[[for model=400,611 do
-			print("------------------["..model.."]----------------------------")
-			for k,v in pairs(getOriginalHandling( model ) ) do
-				print(k,v)
-			end
-			print("----------------------------------------------")
-		end]]
+			local hendling = getModelHandling(model)
+			setModelHandling(model, "engineAcceleration", hendling["engineAcceleration"]*2.5)
+		end
+		print("hendling true")]]
 	elseif text == "x" then
 		restartAllResources()
 	end
