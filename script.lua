@@ -3161,14 +3161,14 @@ function explode_car()
 
 	for k,playerid in pairs(getElementsByType("player")) do
 		if vehicleid == getPlayerVehicle(playerid) then
-			removePedFromVehicle ( playerid )
+			removePedFromVehicle ( playerid )--антибаг
 		end
 	end
 
 	if getElementModel(vehicleid) == 428 then
 		for i=0,max_inv do
 			local sic2p = search_inv_car_2_parameter(vehicleid, 65)
-			inv_car_throw_earth(vehicleid, 65, sic2p)--антибаг
+			inv_car_throw_earth(vehicleid, 65, sic2p)
 		end
 	end
 end
