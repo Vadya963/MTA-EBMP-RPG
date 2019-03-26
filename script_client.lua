@@ -120,6 +120,8 @@ local info_png = {
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
+	[78] = {"рыба", "кг"},
+	[79] = {"лицензия рыболова", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -445,6 +447,7 @@ local text_3d = {--3d text
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, "Порт ЛС (Разгрузить товар - E)"},
 	{2308.81640625,-13.25,26.7421875, 15, "Банк (Разгрузить деньги - E)"},
 	{-1813.2890625,-1654.3330078125,22.398532867432, 15, "Свалка (Разгрузить мусор - E)"},
+	{2463.7587890625,-2716.375,1.1451852619648, 15, "Доки ЛС (Разгрузить рыбу - E)"},
 
 	{1743.119140625,-1943.5732421875,13.569796562195, 10, "Используйте жетон, чтобы отправиться на Вокзал СФ"},
 	{-1973.22265625,116.78515625,27.6875, 10, "Используйте жетон, чтобы отправиться на Вокзал ЛВ"},
@@ -572,8 +575,7 @@ end
 
 local lastTick, framesRendered, FPS = getTickCount(), 0, 0
 function createText ()
-	--setTime( 0, 0 )
-
+	local playerid = localPlayer
 	local currentTick = getTickCount()
 	local elapsedTime = currentTick - lastTick
 
@@ -581,12 +583,16 @@ function createText ()
 		FPS = framesRendered
 		lastTick = currentTick
 		framesRendered = 0
+
+		if getElementData(playerid, "timeserver") then
+			local timeserver = split(getElementData(playerid, "timeserver"), ":")
+			setTime(timeserver[1], timeserver[2])
+		end
 	else
 		framesRendered = framesRendered + 1
 	end
 
 	local time = getRealTime()
-	local playerid = localPlayer
 
 	local alcohol = getElementData ( playerid, "alcohol_data" )--макс 500
 	local satiety = getElementData ( playerid, "satiety_data" )--макс 100
@@ -1134,6 +1140,7 @@ function shop_menu(number, value)--создание окна магазина
 			[72] = {info_png[72][1], 1, 5000},
 			[74] = {info_png[74][1], 1, 5000},
 			[77] = {info_png[77][1], 100, 100},
+			[79] = {info_png[79][1], 1, 5000},
 			
 			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
 			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},

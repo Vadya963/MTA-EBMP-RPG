@@ -173,7 +173,7 @@ function set_weather()
 		setWeatherBlended(tomorrow_weather)
 
 		tomorrow_weather = random(0,22)
-		print("[tomorrow_weather] "..tomorrow_weather)
+		print("[tomorrow_weather] "..tomorrow_weather..", hour "..hour)
 	end
 end
 
@@ -290,6 +290,8 @@ local info_png = {
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
+	[78] = {"рыба", "кг"},
+	[79] = {"лицензия рыболова", "шт"},
 }
 
 local weapon = {
@@ -751,6 +753,13 @@ local t_s_salon = {
 	{-2187.46875,2416.5576171875,5.1651339530945, 9},--лодки
 }
 
+local fish_pos = {}
+
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_fish'" )) do
+	local spl = split(v["pos"], ",")
+	fish_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, зп 7}
 	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 50},--склад продуктов
@@ -779,6 +788,7 @@ local down_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6}
 	{-1990.5732421875,-2384.921875,30.625, 15, 68, 455},--лесопилка
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 73, 456},--порт лс
 	{-1813.2890625,-1654.3330078125,22.398532867432, 15, 75, 408},--свалка
+	{2463.7587890625,-2716.375,1.1451852619648, 15, 78, 453},--доки лс
 }
 
 local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интерьер 6, мир 7}
@@ -915,6 +925,7 @@ local array_house_2 = {}
 function debuginfo ()
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
+		local hour, minute = getTime()
 
 		--элементдата
 		setElementData(playerid, "0", "max_earth "..max_earth)
@@ -956,6 +967,8 @@ function debuginfo ()
 		setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
 		setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 		setElementData(playerid, "gps_device_data", gps_device[playername])
+		setElementData(playerid, "fuel_data", 0)
+		setElementData(playerid, "timeserver", hour..":"..minute)
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
@@ -1084,7 +1097,6 @@ function job_timer ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = random(1,#taxi_pos)
 									local randomize_zp = random(1,zp_car_75)
 
 									job_call[playername] = 2
@@ -1132,7 +1144,6 @@ function job_timer ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = random(1,#taxi_pos)
 									local randomize_zp = random(1,zp_car_65)
 
 									job_call[playername] = 2
@@ -1147,6 +1158,52 @@ function job_timer ()
 
 							elseif job_call[playername] == 2 then--сдаем вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[2][4]) then
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+
+			elseif job[playername] == 4 then--работа рыболова
+				if vehicleid then
+					if getElementModel(vehicleid) == down_car_subject[6][6] then
+						if getSpeed(vehicleid) <= 5 then
+
+							if job_call[playername] == 0 then--старт работы
+								local randomize = random(1,#fish_pos)
+
+								sendPlayerMessage(playerid, "Плывите на место ловли", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = 1
+								job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername] == 1 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize_zp = random(1,zp_car_78)
+
+									job_call[playername] = 2
+
+									give_subject( playerid, "car", 78, randomize_zp )
+
+									job_pos[playername] = {down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								end
+
+							elseif job_call[playername] == 2 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[6][4]) then
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -2332,6 +2389,7 @@ function buy_subject_fun( playerid, text, number, value )
 			[72] = {info_png[72][1], 1, 5000},
 			[74] = {info_png[74][1], 1, 5000},
 			[77] = {info_png[77][1], 100, 100},
+			[79] = {info_png[79][1], 1, 5000},
 		}
 
 		local mayoralty_nalog = {
@@ -2615,7 +2673,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTime(0,0)
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
-		setTimer(freez_car, 1000, 0)--заморозка авто
+		setTimer(freez_car, 1000, 0)--заморозка авто и не только
 		setTimer(need, 60000, 0)--уменьшение потребностей
 		setTimer(need_1, 1000, 0)--смена скина на бомжа
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
@@ -2626,11 +2684,10 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
 		setTimer(pay_nalog, (60*60000), 0)--списание налогов
 		setTimer(job_timer, 1000, 0)--работы в цикле
-		setTimer(no_damage_car, 1000, 0)--отключает урон авто
 
 		setWeather(tomorrow_weather)
 		setGlitchEnabled ( "quickreload", true )
-
+		setModelHandling(453, "engineAcceleration", 1.20)
 
 		zakon_alcohol = 1
 		zakon_alcohol_crimes = 1
@@ -2647,6 +2704,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		zp_player_taxi = 1000
 		zp_car_75 = 150
 		zp_car_65 = 200
+		zp_car_78 = 250
 
 
 		local result = sqlite( "SELECT COUNT() FROM account" )
@@ -2705,14 +2763,16 @@ function displayLoadedRes ( res )--старт ресурсов
 			createPickup ( v[6], v[7], v[8], 3, job_icon, 10000 )
 		end
 
-		createBlip ( 2308.81640625, -13.25, 26.7421875, 52, 0, 0,0,0,0, 0, max_blip )--банк
-		createBlip ( 89.9423828125,-304.623046875,1.578125, 51, 0, 0,0,0,0, 0, max_blip )--склад продуктов
-		createBlip ( 2788.23046875,-2455.99609375,13.340852737427, 52, 0, 0,0,0,0, 0, max_blip )--порт
 		createBlip ( -491.4609375,-194.43359375,78.394332885742, 51, 0, 0,0,0,0, 0, max_blip )--лесоповал
-		createBlip ( -1990.513671875,-2384.9560546875,31.061803817749, 52, 0, 0,0,0,0, 0, max_blip )--лесопилка
 		createBlip ( 576.8212890625,846.5732421875,-42.264389038086, 51, 0, 0,0,0,0, 0, max_blip )--рудник лв
-		createBlip ( 260.4326171875,1409.2626953125,10.506074905396, 51, 0, 0,0,0,0, 0, max_blip )--нефтезавод
-		createBlip ( -1813.2890625,-1654.3330078125,22.398532867432, 52, 0, 0,0,0,0, 0, max_blip )--свалка
+
+		for k,v in pairs(up_car_subject) do
+			createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
+		end
+
+		for k,v in pairs(down_car_subject) do
+			createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+		end
 
 		for k,v in pairs(t_s_salon) do
 			createBlip ( v[1], v[2], v[3], v[4], 0, 0,0,0,0, 0, max_blip )--салоны продажи
@@ -3108,7 +3168,7 @@ function explode_car()
 	if getElementModel(vehicleid) == 428 then
 		for i=0,max_inv do
 			local sic2p = search_inv_car_2_parameter(vehicleid, 65)
-			inv_car_throw_earth(vehicleid, 65, sic2p)
+			inv_car_throw_earth(vehicleid, 65, sic2p)--антибаг
 		end
 	end
 end
@@ -3130,12 +3190,8 @@ function freez_car()--заморозка авто
 				end
 			end
 		end
-	end
-end
 
-local table_no_damage_car = {528,432,601}
-function no_damage_car()
-	for k,vehicleid in pairs(getElementsByType("vehicle")) do
+		local table_no_damage_car = {528,432,601}
 		for k,v in pairs(table_no_damage_car) do
 			if getElementModel(vehicleid) == v then
 				setVehicleDamageProof(vehicleid, true)
@@ -3973,6 +4029,11 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
 					return
 				end
+			elseif id1 == 78 then
+				if search_inv_player(playerid, 79, 1) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не рыболов", red[1], red[2], red[3])
+					return
+				end
 			end
 
 			for i=0,max_inv do
@@ -3994,6 +4055,8 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 				elseif id1 == 75 then
 					sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				elseif id1 == 78 then
+					sendPlayerMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 				end
 
 				save_player_action(playerid, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
@@ -4870,6 +4933,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
 				return
 			end
+
+		elseif id1 == 79 then--лиц. рыболова
+			if job[playername] == 0 then
+				job[playername] = 4
+
+				me_chat(playerid, playername.." вышел(ла) на работу Рыболов")
+			else
+				job[playername] = 0
+
+				me_chat(playerid, playername.." закончил(а) работу")
+			end
+			return
 		else
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
@@ -5783,6 +5858,7 @@ addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	local playername = getPlayerName ( playerid )
 	local x,y,z = tonumber(x), tonumber(y), tonumber(z)
+	local vehicleid = getPlayerVehicle(playerid)
 
 	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
 		return
@@ -5793,8 +5869,12 @@ function ( playerid, cmd, x, y, z )
 		return
 	end
 
-	local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
-	spawnPlayer(playerid, x, y, z, 0, result[1]["skin"], getElementInterior(playerid), getElementDimension(playerid))
+	if not vehicleid then
+		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
+		spawnPlayer(playerid, x, y, z, 0, result[1]["skin"], getElementInterior(playerid), getElementDimension(playerid))
+	else
+		spawnVehicle(vehicleid, x,y,z)
+	end
 end)
 
 addCommandHandler ( "fuel",
@@ -6314,11 +6394,13 @@ function input_Console ( text )
 		--pay_nalog()
 
 		--print(random(0,22))
-		local x = "0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,"
-
-		for k,v in pairs(split(x, ",")) do
-			print(k,v)
-		end
+		--[[for model=400,611 do
+			print("------------------["..model.."]----------------------------")
+			for k,v in pairs(getOriginalHandling( model ) ) do
+				print(k,v)
+			end
+			print("----------------------------------------------")
+		end]]
 	elseif text == "x" then
 		restartAllResources()
 	end
