@@ -62,6 +62,9 @@ function player_position( playerid )
 end
 
 local car_shtraf_stoyanka = createColRectangle( 2054.1,2367.5, 62, 70 )
+local ls_airport = createColRectangle( 1364.041015625,-2766.3720703125, 789, 581 )
+local lv_airport = createColRectangle( 1258.2685546875,1143.7607421875, 473, 719 )
+local sf_airport = createColRectangle( -1734.609375,-695.794921875, 680, 1156 )
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
 	local hash = createColSphere ( x, y, z, radius )
 	local area = isInsideColShape( hash, x1, y1, z1 )
@@ -221,24 +224,24 @@ local info_png = {
 	[6] = {"ключ от автомобиля с номером", ""},
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
-	[9] = {"граната", "боеприпасов"},
+	[9] = {"Граната", "боеприпасов"},
 	[10] = {"полицейский жетон", "шт"},
 	[11] = {"планшет", "шт"},
-	[12] = {"colt-45", "боеприпасов"},
-	[13] = {"deagle", "боеприпасов"},
+	[12] = {"Кольт-45", "боеприпасов"},
+	[13] = {"Дигл", "боеприпасов"},
 	[14] = {"AK-47", "боеприпасов"},
 	[15] = {"M4", "боеприпасов"},
-	[16] = {"tec-9", "боеприпасов"},
-	[17] = {"MP5", "боеприпасов"},
-	[18] = {"uzi", "боеприпасов"},
-	[19] = {"слезоточивый газ", "боеприпасов"},
+	[16] = {"Тэк-9", "боеприпасов"},
+	[17] = {"МП5", "боеприпасов"},
+	[18] = {"Узи", "боеприпасов"},
+	[19] = {"Слезоточивый газ", "боеприпасов"},
 	[20] = {"наркотики", "гр"},
 	[21] = {"пиво старый эмпайр", "шт"},
 	[22] = {"пиво штольц", "шт"},
 	[23] = {"ремонтный набор", "шт"},
 	[24] = {"ящик с товаром", "$ за штуку"},
 	[25] = {"ключ от дома с номером", ""},
-	[26] = {"silenced", "боеприпасов"},
+	[26] = {"Кольт-45 с глушителем", "боеприпасов"},
 	[27] = {"одежда", ""},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
@@ -246,20 +249,20 @@ local info_png = {
 	[31] = {"шеврон Лейтенанта", "шт"},
 	[32] = {"шеврон Капитан", "шт"},
 	[33] = {"шеврон Шефа полиции", "шт"},
-	[34] = {"shotgun", "боеприпасов"},
+	[34] = {"Дробовик", "боеприпасов"},
 	[35] = {"парашют", "шт"},
 	[36] = {"дубинка", "шт"},
 	[37] = {"бита", "шт"},
 	[38] = {"нож", "шт"},
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "%"},
-	[41] = {"sniper", "боеприпасов"},
+	[41] = {"Снайперская винтовка", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон", "шт"},
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
-	[47] = {"перцовый балончик", "боеприпасов"},
+	[47] = {"Перцовый балончик", "боеприпасов"},
 	[48] = {"тушка свиньи", "$ за штуку"},
 	[49] = {"лопата", "шт"},
 	[50] = {"лицензия на оружие", "шт"},
@@ -292,6 +295,7 @@ local info_png = {
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
 	[79] = {"лицензия рыболова", "шт"},
+	[80] = {"лицензия пилота", "шт"},
 }
 
 local weapon = {
@@ -666,6 +670,8 @@ local cash_helicopters = {
 	[469] = {"SPARROW", 25000},--верт без пушки
 	[447] = {"SEASPAR", 28000},--верт с пуляметом]]
 	[497] = {"Police Maverick", 45000},
+	[519] = {"SHAMAL", 45000},
+	[553] = {"NEVADA", 45000},--самолет
 }
 
 local cash_airplanes = {
@@ -675,9 +681,7 @@ local cash_airplanes = {
 	[511] = {"BEAGLE", 45000},--самолет
 	[512] = {"CROPDUST", 45000},--кукурузник
 	[513] = {"STUNT", 45000},--спорт самолет
-	[519] = {"SHAMAL", 45000},
 	[520] = {"HYDRA", 45000},
-	[553] = {"NEVADA", 45000},--самолет
 	[476] = {"RUSTLER", 45000},--самолет с пушками
 	[460] = {"Skimmer", 30000},--самолет садится на воду
 }
@@ -749,16 +753,9 @@ local interior_job = {--12
 
 local t_s_salon = {
 	{2131.9775390625,-1151.322265625,24.062105178833, 55},--авто
-	{-2236.951171875,2354.212890625,4.9799103736877, 5},--верт
+	{1590.1689453125,1170.60546875,14.224066734314, 5},--верт
 	{-2187.46875,2416.5576171875,5.1651339530945, 9},--лодки
 }
-
-local fish_pos = {}
-
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_fish'" )) do
-	local spl = split(v["pos"], ",")
-	fish_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
 
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, зп 7}
@@ -876,6 +873,18 @@ local station = {
 	{1743.119140625,-1943.5732421875,13.569796562195, 10, "вокзал лс"},
 	{-1973.22265625,116.78515625,27.6875, 10, "вокзал сф"},
 	{2848.4521484375,1291.462890625,11.390625, 10, "вокзал лв"},
+}
+
+local fish_pos = {}
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_fish'" )) do
+	local spl = split(v["pos"], ",")
+	fish_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+
+local plane_job = {
+	{1532.904296875,1449.3662109375,11.769500732422},
+	{-1339.0771484375,-225.6962890625,15.069016456604},
+	{1940.416015625,-2326.716796875,14.466937065125},
 }
 
 --инв-рь игрока
@@ -1204,6 +1213,58 @@ function job_timer ()
 
 							elseif job_call[playername] == 2 then--сдаем вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[6][4]) then
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+
+			elseif job[playername] == 5 then--работа пилота
+				if vehicleid then
+					if getElementModel(vehicleid) == 553 then
+						if getSpeed(vehicleid) <= 5 then
+
+							if job_call[playername] == 0 then--нету вызова
+								local randomize = random(1,#plane_job)
+
+								sendPlayerMessage(playerid, "Летите в аэропорт", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = 1
+								job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername] == 1 then--есть вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = random(1,#plane_job)
+
+									sendPlayerMessage(playerid, "Летите в аэропорт", yellow[1], yellow[2], yellow[3])
+
+									job_call[playername] = 2
+									job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								end
+
+							elseif job_call[playername] == 2 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = random(1,zp_player_plane)
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+									save_player_action(playerid, "[pilot_job_timer] "..playername.." [+"..randomize.."$, "..array_player_2[playername][1].."$]")
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -2390,6 +2451,7 @@ function buy_subject_fun( playerid, text, number, value )
 			[74] = {info_png[74][1], 1, 5000},
 			[77] = {info_png[77][1], 100, 100},
 			[79] = {info_png[79][1], 1, 5000},
+			[80] = {info_png[80][1], 1, 5000},
 		}
 
 		local mayoralty_nalog = {
@@ -2675,7 +2737,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(freez_car, 1000, 0)--заморозка авто и не только
 		setTimer(need, 60000, 0)--уменьшение потребностей
-		setTimer(need_1, 1000, 0)--смена скина на бомжа
+		setTimer(need_1, 5000, 0)--смена скина на бомжа
 		setTimer(timer_earth, 500, 0)--передача слотов земли на клиент
 		setTimer(timer_earth_clear, 60000, 0)--очистка земли от предметов
 		setTimer(fuel_down, 1000, 0)--система топлива
@@ -2687,7 +2749,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setWeather(tomorrow_weather)
 		setGlitchEnabled ( "quickreload", true )
-		setModelHandling(453, "engineAcceleration", 1.20)
+		setModelHandling(453, "engineAcceleration", 1.0)
 
 		zakon_alcohol = 1
 		zakon_alcohol_crimes = 1
@@ -2702,6 +2764,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		zakon_nalog_business = 2000
 
 		zp_player_taxi = 1000
+		zp_player_plane = 2000
 		zp_car_75 = 150
 		zp_car_65 = 200
 		zp_car_78 = 250
@@ -3001,6 +3064,7 @@ function(ammo, attacker, weapon, bodypart)
 	end
 
 	robbery_kill( playername )
+	job_0( playername )
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
 
@@ -3197,6 +3261,14 @@ function freez_car()--заморозка авто
 				setVehicleDamageProof(vehicleid, true)
 			end
 		end
+
+		--[[if getVehicleType (vehicleid) == "Plane" or getVehicleType (vehicleid) == "Helicopter" then
+			if isInsideColShape(lv_airport, x,y,z) or isInsideColShape(sf_airport, x,y,z) or isInsideColShape(ls_airport, x,y,z) then
+				setElementCollisionsEnabled(vehicleid, false)
+			else
+				setElementCollisionsEnabled(vehicleid, true)
+			end
+		end]]
 	end
 end
 
@@ -3356,7 +3428,7 @@ function buycar ( playerid, id )
 
 			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_helicopters[id][2].."$", orange[1], orange[2], orange[3])
 
-			x,y,z,rot = -2225.8125,2326.9091796875,7.6982507705688,90
+			x,y,z,rot = 1582.072265625,1197.61328125,12.73429775238,0
 
 		elseif isPointInCircle3D(t_s_salon[3][1],t_s_salon[3][2],t_s_salon[3][3], x1,y1,z1, 5) then
 			if cash_boats[id] == nil then
@@ -4891,6 +4963,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
 		elseif id1 == 66 then--лиц. инкасатора
+			if crimes[playername] ~= 0 then
+				sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
+				return
+			end
+
 			if job[playername] == 0 then
 				job[playername] = 3
 
@@ -4939,6 +5016,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				job[playername] = 4
 
 				me_chat(playerid, playername.." вышел(ла) на работу Рыболов")
+			else
+				job[playername] = 0
+
+				me_chat(playerid, playername.." закончил(а) работу")
+			end
+			return
+
+		elseif id1 == 80 then--лиц. пилота
+			if job[playername] == 0 then
+				job[playername] = 5
+
+				me_chat(playerid, playername.." вышел(ла) на работу Пилот")
 			else
 				job[playername] = 0
 
@@ -5239,10 +5328,14 @@ function (playerid, cmd, id)
 									end
 								end
 
-								setElementPosition(vehicleid, x+5,y,z+1)
+								if getVehicleLandingGearDown(vehicleid) ~= nil then
+									setVehicleLandingGearDown(vehicleid,true)
+								end
+
+								setElementPosition(vehicleid, x+5,y,z+2)
 								setElementRotation(vehicleid, 0,0,0)
 
-								sqlite( "UPDATE car_db SET x = '"..(x+5).."', y = '"..y.."', z = '"..(z+1).."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
+								sqlite( "UPDATE car_db SET x = '"..(x+5).."', y = '"..y.."', z = '"..(z+2).."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
@@ -5791,6 +5884,21 @@ function (playerid, cmd, id)
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
 	end
 
+end)
+
+addCommandHandler("info_png",
+function (playerid)
+
+	local playername = getPlayerName ( playerid )
+	if (logged[playername] == 0) then
+		return
+	end
+
+	sendPlayerMessage(playerid, "====[ПРЕДМЕТЫ]====", white[1], white[2], white[3])
+
+	for i=1,#info_png do
+		sendPlayerMessage(playerid, "["..i.."] "..info_png[i][1].." 0 "..info_png[i][2], white[1], white[2], white[3])
+	end
 end)
 
 --------------------------------------------админские команды----------------------------

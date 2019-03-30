@@ -5,6 +5,7 @@ local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = true
 local car_spawn_value = 0
+local hud = true
 
 addEventHandler( "onClientResourceStart", getRootElement( ),
 function ( startedRes )
@@ -51,24 +52,24 @@ local info_png = {
 	[6] = {"ключ от автомобиля с номером", ""},
 	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
 	[8] = {"сигареты Big Break White", "сигарет в пачке"},
-	[9] = {"граната", "боеприпасов"},
+	[9] = {"Граната", "боеприпасов"},
 	[10] = {"полицейский жетон", "шт"},
 	[11] = {"планшет", "шт"},
-	[12] = {"colt-45", "боеприпасов"},
-	[13] = {"deagle", "боеприпасов"},
+	[12] = {"Кольт-45", "боеприпасов"},
+	[13] = {"Дигл", "боеприпасов"},
 	[14] = {"AK-47", "боеприпасов"},
 	[15] = {"M4", "боеприпасов"},
-	[16] = {"tec-9", "боеприпасов"},
-	[17] = {"MP5", "боеприпасов"},
-	[18] = {"uzi", "боеприпасов"},
-	[19] = {"слезоточивый газ", "боеприпасов"},
+	[16] = {"Тэк-9", "боеприпасов"},
+	[17] = {"МП5", "боеприпасов"},
+	[18] = {"Узи", "боеприпасов"},
+	[19] = {"Слезоточивый газ", "боеприпасов"},
 	[20] = {"наркотики", "гр"},
 	[21] = {"пиво старый эмпайр", "шт"},
 	[22] = {"пиво штольц", "шт"},
 	[23] = {"ремонтный набор", "шт"},
 	[24] = {"ящик с товаром", "$ за штуку"},
 	[25] = {"ключ от дома с номером", ""},
-	[26] = {"silenced", "боеприпасов"},
+	[26] = {"Кольт-45 с глушителем", "боеприпасов"},
 	[27] = {"одежда", ""},
 	[28] = {"шеврон Офицера", "шт"},
 	[29] = {"шеврон Детектива", "шт"},
@@ -76,20 +77,20 @@ local info_png = {
 	[31] = {"шеврон Лейтенанта", "шт"},
 	[32] = {"шеврон Капитан", "шт"},
 	[33] = {"шеврон Шефа полиции", "шт"},
-	[34] = {"shotgun", "боеприпасов"},
+	[34] = {"Дробовик", "боеприпасов"},
 	[35] = {"парашют", "шт"},
 	[36] = {"дубинка", "шт"},
 	[37] = {"бита", "шт"},
 	[38] = {"нож", "шт"},
 	[39] = {"бронежилет", "шт"},
 	[40] = {"лом", "%"},
-	[41] = {"sniper", "боеприпасов"},
+	[41] = {"Снайперская винтовка", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на", "бизнес"},
 	[44] = {"админский жетон", "шт"},
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
-	[47] = {"перцовый балончик", "боеприпасов"},
+	[47] = {"Перцовый балончик", "боеприпасов"},
 	[48] = {"тушка свиньи", "$ за штуку"},
 	[49] = {"лопата", "шт"},
 	[50] = {"лицензия на оружие", "шт"},
@@ -122,6 +123,7 @@ local info_png = {
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
 	[79] = {"лицензия рыболова", "шт"},
+	[80] = {"лицензия пилота", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -147,6 +149,18 @@ function setPedOxygenLevel_fun ()--кислородный балон
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
+
+function createFire_fun (x,y,z, size)--создание огня
+	createFire(x,y,z, size)
+end
+addEvent( "event_createFire", true )
+addEventHandler ( "event_createFire", getRootElement(), createFire_fun )
+
+function extinguishFire_fun (x,y,z, r)--тушение огня
+	extinguishFire(x,y,z, r)
+end
+addEvent( "event_extinguishFire", true )
+addEventHandler ( "event_extinguishFire", getRootElement(), extinguishFire_fun )
 
 function body_hit_sound ()--звук поподания в тело
 	playSound("parachute/body_hit_sound.mp3")
@@ -440,7 +454,7 @@ local text_3d = {--3d text
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
 
 	{2131.9775390625,-1151.322265625,24.062105178833, 5, "Покупка т/с (Меню - X)"},
-	{-2236.951171875,2354.212890625,4.9799103736877, 5, "Покупка вертолетов (Меню - X)"},
+	{1590.1689453125,1170.60546875,14.224066734314, 5, "Покупка вертолетов (Меню - X)"},
 	{-2187.46875,2416.5576171875,5.1651339530945, 5, "Покупка лодок (Меню - X)"},
 
 	{260.4326171875,1409.2626953125,10.506074905396, 15, "Нефтезавод (Загрузить бочки - E)"},
@@ -599,40 +613,41 @@ function createText ()
 	local hygiene = getElementData ( playerid, "hygiene_data" )--макс 100
 	local sleep = getElementData ( playerid, "sleep_data" )--макс 100
 	local drugs = getElementData ( playerid, "drugs_data" )--макс 100
-
-	setCameraShakeLevel ( (alcohol/2) )
-
-	local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-	local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
-	dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-
 	local width_need = (screenWidth/5.04)--ширина нужд 271
 	local height_need = (screenHeight/5.68)--высота нужд 135
 
-	dxDrawImage ( screenWidth-30, height_need-7.5, 30, 30, "hud/health.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need, (width_need/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
+	setCameraShakeLevel ( (alcohol/2) )
 
-	--нужды
-	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, (width_need/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
+	if hud then
+		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
+		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
+		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
-	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*2, 30, 30, "hud/drugs.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, (width_need/100)*drugs, 15, tocolor ( 90, 151, 107, 255 ) )
+		dxDrawImage ( screenWidth-30, height_need-7.5, 30, 30, "hud/health.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need, (width_need/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*3, 30, 30, "hud/satiety.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, (width_need/100)*satiety, 15, tocolor ( 90, 151, 107, 255 ) )
+		--нужды
+		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*1, (width_need/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/hygiene.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*hygiene, 15, tocolor ( 90, 151, 107, 255 ) )
+		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*2, 30, 30, "hud/drugs.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*2, (width_need/100)*drugs, 15, tocolor ( 90, 151, 107, 255 ) )
 
-	dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-	dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*3, 30, 30, "hud/satiety.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*3, (width_need/100)*satiety, 15, tocolor ( 90, 151, 107, 255 ) )
+
+		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/hygiene.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*hygiene, 15, tocolor ( 90, 151, 107, 255 ) )
+
+		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+	end
 
 	local x,y,z = getElementPosition(playerid)
 	local rx,ry,rz = getElementRotation(playerid)
@@ -662,29 +677,31 @@ function createText ()
 	end
 
 
-	local vehicle = getPlayerVehicle ( playerid )
-	if vehicle then--отображение скорости авто
-		local speed_table = split(getSpeed(vehicle), ".")
-		local heal_vehicle = split(getElementHealth(vehicle), ".")
-		local fuel = getElementData ( playerid, "fuel_data" )
-		local fuel_table = split(fuel, ".")
-		local speed_car = 0
+	if hud then
+		local vehicle = getPlayerVehicle ( playerid )
+		if vehicle then--отображение скорости авто
+			local speed_table = split(getSpeed(vehicle), ".")
+			local heal_vehicle = split(getElementHealth(vehicle), ".")
+			local fuel = getElementData ( playerid, "fuel_data" )
+			local fuel_table = split(fuel, ".")
+			local speed_car = 0
 
-		if getSpeed(vehicle) >= 240 then
-			speed_car = 240*1.125+43
-		else
-			speed_car = getSpeed(vehicle)*1.125+43
+			if getSpeed(vehicle) >= 240 then
+				speed_car = 240*1.125+43
+			else
+				speed_car = getSpeed(vehicle)*1.125+43
+			end
+
+			local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
+
+			if debuginfo then
+				dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+			end
+
+			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
+			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
+			dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
 		end
-
-		local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
-
-		if debuginfo then
-			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		end
-
-		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
-		dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
-		dxDrawImage ( (screenWidth-250)+(fuel*1.6+63), screenHeight-250+166, 6, 13, "speedometer/fuel_v.png" )
 	end
 
 
@@ -849,30 +866,32 @@ function createText ()
 	end
 
 
-	for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
-		local x1,y1,z1 = getElementPosition(player)
+	if hud then
+		for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
+			local x1,y1,z1 = getElementPosition(player)
 
-		if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
-			local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
-			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-			if coords[1] and coords[2] then
-				dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-30, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-30, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+				end
 			end
-		end
 
-		if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 and player ~= playerid then
-			local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
-			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-			if coords[1] and coords[2] then
-				dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
 			end
-		end
 
-		if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and player ~= playerid and getElementData(player, "afk") then
-			local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
-			local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-			if coords[1] and coords[2] then
-				dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and player ~= playerid and getElementData(player, "afk") then
+				local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+				end
 			end
 		end
 	end
@@ -1141,6 +1160,7 @@ function shop_menu(number, value)--создание окна магазина
 			[74] = {info_png[74][1], 1, 5000},
 			[77] = {info_png[77][1], 100, 100},
 			[79] = {info_png[79][1], 1, 5000},
+			[80] = {info_png[80][1], 1, 5000},
 			
 			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
 			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
@@ -1481,6 +1501,8 @@ function helicopters_menu()--создание окна машин
 		[469] = {"SPARROW", 25000},--верт без пушки
 		[447] = {"SEASPAR", 28000},--верт с пуляметом]]
 		[497] = {"Police Maverick", 45000},
+		[519] = {"SHAMAL", 45000},
+		[553] = {"NEVADA", 45000},--самолет
 	}
 
 	local width = 400+10
@@ -2332,5 +2354,6 @@ end
 function showdebuginfo_b (key, keyState)
 	if keyState == "down" then
 		debuginfo = not debuginfo
+		hud = not hud
 	end
 end
