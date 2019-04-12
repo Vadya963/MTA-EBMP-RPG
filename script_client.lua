@@ -46,12 +46,12 @@ local info_png = {
 	[0] = {"", ""},
 	[1] = {"деньги", "$"},
 	[2] = {"права", "шт"},
-	[3] = {"сигареты Big Break Red", "сигарет в пачке"},
+	[3] = {"сигареты Big Break Red", "сигарет"},
 	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "лит."},
 	[6] = {"ключ от автомобиля с номером", ""},
-	[7] = {"сигареты Big Break Blue", "сигарет в пачке"},
-	[8] = {"сигареты Big Break White", "сигарет в пачке"},
+	[7] = {"сигареты Big Break Blue", "сигарет"},
+	[8] = {"сигареты Big Break White", "сигарет"},
 	[9] = {"Граната", "боеприпасов"},
 	[10] = {"полицейский жетон", "шт"},
 	[11] = {"планшет", "шт"},
@@ -124,6 +124,9 @@ local info_png = {
 	[78] = {"рыба", "кг"},
 	[79] = {"лицензия рыболова", "шт"},
 	[80] = {"лицензия пилота", "шт"},
+	[81] = {"динамит", "шт"},
+	[82] = {"шнур", "шт"},
+	[83] = {"тратил", "гр"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -178,6 +181,17 @@ function auction_fun (value, i, name_sell, id1, id2, money)--аукцион
 end
 addEvent( "event_auction_fun", true )
 addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
+
+local carparking_table = {}
+function carparking_fun (value, i, plate)--список тс
+	if value == "clear" then
+		carparking_table = {}
+	else
+		carparking_table[i] = plate
+	end
+end
+addEvent( "event_carparking_fun", true )
+addEventHandler ( "event_carparking_fun", getRootElement(), carparking_fun )
 
 local name_player = 0
 local logplayer = {}
@@ -692,11 +706,9 @@ function createText ()
 				speed_car = getSpeed(vehicle)*1.125+43
 			end
 
-			local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel
+			local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel.." | kilometrage "..getElementData ( playerid, "probeg_data" )
 
-			if debuginfo then
-				dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-			end
+			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
 			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
@@ -1502,7 +1514,7 @@ function helicopters_menu()--создание окна машин
 		[447] = {"SEASPAR", 28000},--верт с пуляметом]]
 		[497] = {"Police Maverick", 45000},
 		[519] = {"SHAMAL", 45000},
-		[553] = {"NEVADA", 45000},--самолет
+		--[553] = {"NEVADA", 45000},--самолет
 	}
 
 	local width = 400+10
@@ -1561,6 +1573,7 @@ function tablet_fun()--создание планшета
 	local youtube = guiCreateStaticImage( 100, 10, 85, 60, "comp/youtube.png", false, fon )
 	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
 	local craft = guiCreateStaticImage( 270, 10, 55, 60, "comp/bookcraft.png", false, fon )
+	local carparking = guiCreateStaticImage( 340, 10, 60, 60, "comp/carparking.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(localPlayer, "tomorrow_weather_data") == value then
@@ -1584,7 +1597,7 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
 			sendPlayerMessage("Аукцион загрузится через 5 секунд")
 
-			triggerServerEvent( "event_auction", getRootElement(), localPlayer )
+			triggerServerEvent( "event_sqlite_load", getRootElement(), localPlayer, "auc_load" )
 
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
@@ -1674,7 +1687,7 @@ function tablet_fun()--создание планшета
 					end
 				end
 
-				if id1 >= 2 and id1 <= #info_png and id2 and money then
+				if id1 >= 2 and id1 <= #info_png and id2 and money > 0 then
 					triggerServerEvent("event_auction_buy_sell", getRootElement(), localPlayer, "sell", 0, id1, id2, money )
 				end
 			end
@@ -1797,7 +1810,7 @@ function tablet_fun()--создание планшета
 		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 		local create = m2gui_button( 150, height_fon-16, "Создать", false, low_fon )
 
-		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
+		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
@@ -1806,14 +1819,14 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Ресурсы", 1.0)
 
 		local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
-			{info_png[20][1].."(1 гр)", info_png[3][1].."(20 шт) + "..info_png[7][1].."(20 шт) + "..info_png[8][1].."(20 шт)", "3,7,8", "20,20,20", "20,1"},
+			{info_png[81][1].."(1 шт)", info_png[82][1].."(1 шт) + "..info_png[83][1].."(100 гр)", "82,83", "1,100", "81,1"},
 		}
 
 		for k,v in pairs(craft_table) do
 			guiGridListAddRow(shoplist, v[1], v[2])
 		end
 
-		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть предмет
+		function outputEditBox ( button, state, absoluteX, absoluteY )
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
@@ -1826,6 +1839,49 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", create, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", craft, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--штрафстоянка неоплаченного тс
+		sendPlayerMessage("Список конфискованных т/с загрузится через 5 секунд")
+
+		triggerServerEvent( "event_sqlite_load", getRootElement(), localPlayer, "car_load" )
+
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local return_car = m2gui_button( 150, height_fon-16, "Забрать т/с", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть тс
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+
+			if text == "" then
+				sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+				return
+			end
+
+			triggerServerEvent("event_spawn_carparking", getRootElement(), localPlayer, text )
+		end
+		addEventHandler ( "onClientGUIClick", return_car, outputEditBox, false )
+
+		guiGridListAddColumn(shoplist, "Номер т/с", 0.95)
+
+		setTimer(function ()
+			if isElement (shoplist) then
+				if carparking_table then
+					for k,v in pairs(carparking_table) do
+						guiGridListAddRow(shoplist, v)
+					end
+				end
+			end
+		end, 5000, 1)
+	end
+	addEventHandler ( "onClientGUIClick", carparking, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

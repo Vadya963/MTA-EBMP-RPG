@@ -53,6 +53,7 @@
 	<file src="comp/wiki.png" />
 	<file src="comp/youtube.png" />
 	<file src="comp/bookcraft.png" />
+	<file src="comp/carparking.png" />
 	
 	<file src="0.png" />
 	<file src="1.png" />
@@ -135,6 +136,9 @@
 	<file src="78.png" />
 	<file src="79.png" />
 	<file src="80.png" />
+	<file src="81.png" />
+	<file src="82.png" />
+	<file src="83.png" />
 	
 	<file src="upgrade/999_w_s.png" />
 	<file src="upgrade/1000_w_s.jpg" />
