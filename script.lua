@@ -29,6 +29,7 @@ local business_icon = 1274--пикап бизнеса
 local job_icon = 1318--пикап работ
 local time_nalog = 12--время когда будет взиматься налог
 local price_hotel = 100--цена в отеле
+local crimes_giuseppe = 25--//прес-ия для джузеппе
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -348,7 +349,11 @@ local shop = {
 }
 
 local gas = {
-	[5] = {info_png[5][1].." 20 "..info_png[5][2], 20, 250},
+	[5] = {info_png[5][1].." 25 "..info_png[5][2], 25, 250},
+}
+
+local giuseppe = {
+	[83] = {info_png[83][1], 100, 1000},
 }
 
 local deathReasons = {
@@ -753,6 +758,7 @@ local interior_job = {--12
 	{18, "Отель Атриум", 1726.1370,-1645.2300,20.2260, 1727.0732421875,-1637.03515625,20.217393875122, 35, 19, "", 5},
 	{18, "Отель Сфинкс", 1726.1370,-1645.2300,20.2260, 2239.05078125,1285.7119140625,10.8203125, 35, 20, "", 5},
 	{18, "Отель Виктория", 1726.1370,-1645.2300,20.2260, -2463.44140625,131.7275390625,35.171875, 35, 21, "", 5},
+	{5, "Черный рынок", 322.1117,1119.3270,1083.8830, 2165.9541015625,-1671.1748046875,15.07315826416, 18, 22, ", Меню - X", 5},
 }
 
 local t_s_salon = {
@@ -2598,6 +2604,29 @@ function buy_subject_fun( playerid, text, number, value )
 		end
 		
 		return
+
+	elseif value == "giuseppe" then
+		for k,v in pairs(giuseppe) do
+			if v[1] == text then
+				if v[3] <= array_player_2[playername][1] then
+					if inv_player_empty(playerid, k, v[2]) then
+						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+
+						save_player_action(playername, "[giuseppe] [giuseppe_shop - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
+					else
+						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					end
+				else
+					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				end
+
+				return
+			end
+		end
+		
+		return
 	end
 
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
@@ -3048,7 +3077,7 @@ function()
 	sendPlayerMessage(playerid, "[TIPS] Листать чат page up и page down", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] Команды сервера находятся в WIKI в планшете", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] Первоначальная работа находится в ЛВ мясокомбинат", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отеле Атриум ЛС", color_tips[1], color_tips[2], color_tips[3])
+	sendPlayerMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips[1], color_tips[2], color_tips[3])
 
 	reg_or_login(playerid)
@@ -4037,6 +4066,20 @@ local x,y,z = getElementPosition(playerid)
 					for k,v in pairs(mayoralty) do				
 						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
 							triggerClientEvent( playerid, "event_shop_menu", playerid, -1, "mer" )
+							state_gui_window[playername] = 1
+							return
+						end
+					end
+
+					local black_auc = {22}
+					for k,v in pairs(black_auc) do
+						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
+							if crimes[playername] < crimes_giuseppe then
+								sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
+								return
+							end
+
+							triggerClientEvent( playerid, "event_shop_menu", playerid, -1, "giuseppe" )
 							state_gui_window[playername] = 1
 							return
 						end
