@@ -87,12 +87,12 @@ local info_png = {
 	[40] = {"лом", "%"},
 	[41] = {"Снайперская винтовка", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
-	[43] = {"документы на", "бизнес"},
+	[43] = {"документы на бизнес под номером", ""},
 	[44] = {"админский жетон", "шт"},
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"Перцовый балончик", "боеприпасов"},
-	[48] = {"тушка свиньи", "$ за штуку"},
+	[48] = {"тушка коровы", "$ за штуку"},
 	[49] = {"лопата", "шт"},
 	[50] = {"лицензия на оружие", "шт"},
 	[51] = {"jetpack", "шт"},
@@ -128,23 +128,16 @@ local info_png = {
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
+	[84] = {"отмычка", "процентов"},
+	[85] = {"лицензия угонщика", "шт"},
+	[86] = {"документы на скотобойню под номером", ""},
+	[87] = {"лицензия забойщика скота на", "скотобойне"},
+	[88] = {"тушка коровы с фермы", "$ за штуку"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
-local earth = {}--слоты земли
-
 -----------эвенты------------------------------------------------------------------------
-function earth_load (value, i, x, y, z, id1, id2)--изменения слотов земли
-	if value ~= "nil" then
-		earth[i] = {x,y,z,id1,id2}
-	else
-		earth = {}
-	end
-end
-addEvent( "event_earth_load", true )
-addEventHandler ( "event_earth_load", getRootElement(), earth_load )
-
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
@@ -171,28 +164,6 @@ function body_hit_sound ()--звук поподания в тело
 end
 addEvent( "event_body_hit_sound", true )
 addEventHandler ( "event_body_hit_sound", getRootElement(), body_hit_sound )
-
-local auc = {}
-function auction_fun (value, i, name_sell, id1, id2, money)--аукцион
-	if value == "clear" then
-		auc = {}
-	else
-		auc[i] = {name_sell, id1, id2, money}
-	end
-end
-addEvent( "event_auction_fun", true )
-addEventHandler ( "event_auction_fun", getRootElement(), auction_fun )
-
-local carparking_table = {}
-function carparking_fun (value, i, plate)--список тс
-	if value == "clear" then
-		carparking_table = {}
-	else
-		carparking_table[i] = plate
-	end
-end
-addEvent( "event_carparking_fun", true )
-addEventHandler ( "event_carparking_fun", getRootElement(), carparking_fun )
 
 local name_player = 0
 local logplayer = {}
@@ -264,10 +235,10 @@ end, 500, 0)
 setTimer(function ()
 	if isMainMenuActive() then
 		afk = afk+1
-		setElementData(playerid, "afk", afk)
+		setElementData(localPlayer, "afk", afk)
 	else
 		afk = 0
-		setElementData(playerid, "afk", afk)
+		setElementData(localPlayer, "afk", afk)
 	end
 end, 1000, 0)
 
@@ -368,12 +339,12 @@ function m2gui_window( x,y, width, height, text, bool_r )
 end
 
 function m2gui_button( x,y, text, bool_r, parent)
-	local sym = 16+5+15
+	local sym = 16+5+20
 	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
 	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
 	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
-	local text = m2gui_label ( 16+5, 0, dimensions+15, dimensions_h, text, bool_r, m2gui_fon )
+	local text = m2gui_label ( 16+5, 0, dimensions+20, dimensions_h, text, bool_r, m2gui_fon )
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
 		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
@@ -456,6 +427,8 @@ local gas = {
 
 local giuseppe = {
 	[83] = {info_png[83][1], 100, 1000},
+	[84] = {info_png[84][1], 10, 500},
+	[85] = {info_png[85][1], 1, 5000},
 }
 
 local skin = {"мужская одежда", 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 264, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
@@ -490,6 +463,11 @@ local text_3d = {--3d text
 	{1743.119140625,-1943.5732421875,13.569796562195, 10, "Используйте жетон, чтобы отправиться на Вокзал СФ"},
 	{-1973.22265625,116.78515625,27.6875, 10, "Используйте жетон, чтобы отправиться на Вокзал ЛВ"},
 	{2848.4521484375,1291.462890625,11.390625, 10, "Используйте жетон, чтобы отправиться на Вокзал ЛС"},
+
+	{-1106.65234375,-1620.943359375,76.3671875, 5, "Отстойник"},
+
+	{-1061.6103515625,-1195.5166015625,129.828125, 15, "Скотобойня (Загрузить тушки коров - E)"},
+	{966.951171875,2132.8623046875,10.8203125, 15, "Мясокомбинат (Разгрузить тушки коров - E)"},
 
 	--завод продуктов
 	{89.9423828125,-304.623046875,1.578125, 15, "Склад продуктов (Загрузить ящики - E)"},
@@ -683,7 +661,7 @@ function createText ()
 			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
-		for i=0,19 do
+		for i=0,20 do--setdata
 			dxdrawtext ( getElementData(playerid, tostring(i)), 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
@@ -859,7 +837,7 @@ function createText ()
 	end
 
 
-	for i,v in pairs(earth) do--отображение предметов на земле
+	for i,v in pairs(getElementData(playerid, "earth")) do--отображение предметов на земле
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 
 		if area then
@@ -1538,13 +1516,13 @@ function helicopters_menu()--создание окна машин
 		--[[[548] = {"CARGOBOB", 25000},
 		[425] = {"HUNTER", 99000},--верт военный с ракетами
 		[417] = {"LEVIATHN", 25000},--верт военный
-		[487] = {"MAVERICK", 45000},--верт
 		[488] = {"News Chopper", 45000},--верт новостей
 		[563] = {"RAINDANC", 99000},--верт спасателей
 		[469] = {"SPARROW", 25000},--верт без пушки
 		[447] = {"SEASPAR", 28000},--верт с пуляметом]]
 		[497] = {"Police Maverick", 45000},
 		[519] = {"SHAMAL", 45000},
+		[487] = {"MAVERICK", 45000},--верт
 		--[553] = {"NEVADA", 45000},--самолет
 	}
 
@@ -1605,6 +1583,7 @@ function tablet_fun()--создание планшета
 	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
 	local craft = guiCreateStaticImage( 270, 10, 55, 60, "comp/bookcraft.png", false, fon )
 	local carparking = guiCreateStaticImage( 340, 10, 60, 60, "comp/carparking.png", false, fon )
+	local shop = guiCreateStaticImage( 410, 10, 60, 60, "comp/shop.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -1626,10 +1605,6 @@ function tablet_fun()--создание планшета
 
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
-			sendPlayerMessage("Аукцион загрузится через 5 секунд")
-
-			triggerServerEvent( "event_sqlite_load", getRootElement(), playerid, "auc_load" )
-
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
@@ -1666,20 +1641,15 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", return_subject, outputEditBox, false )
 
-			guiGridListAddColumn(shoplist, "№", 0.1)
-			guiGridListAddColumn(shoplist, "Продавец", 0.20)
-			guiGridListAddColumn(shoplist, "Товар", 0.50)
-			guiGridListAddColumn(shoplist, "Стоимость", 0.15)
-
-			setTimer(function ()
-				if isElement (shoplist) then
-					if auc then
-						for k,v in pairs(auc) do
-							guiGridListAddRow(shoplist, k, v[1], info_png[v[2]][1].." "..v[3].." "..info_png[v[2]][2], v[4])
-						end
-					end
+			if getElementData(playerid, "auc") then
+				guiGridListAddColumn(shoplist, "№", 0.1)
+				guiGridListAddColumn(shoplist, "Продавец", 0.20)
+				guiGridListAddColumn(shoplist, "Товар", 0.50)
+				guiGridListAddColumn(shoplist, "Стоимость", 0.15)
+				for k,v in pairs(getElementData(playerid, "auc")) do
+					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"])
 				end
-			end, 5000, 1)
+			end
 		end
 		addEventHandler ( "onClientGUIClick", buy_sub, outputEditBox, false )
 
@@ -1834,6 +1804,7 @@ function tablet_fun()--создание планшета
 	end
 	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
 
+
 	function outputEditBox ( button, state, absoluteX, absoluteY )--крафт предметов
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
@@ -1873,10 +1844,6 @@ function tablet_fun()--создание планшета
 
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--штрафстоянка неоплаченного тс
-		sendPlayerMessage("Список конфискованных т/с загрузится через 5 секунд")
-
-		triggerServerEvent( "event_sqlite_load", getRootElement(), playerid, "car_load" )
-
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
@@ -1900,19 +1867,108 @@ function tablet_fun()--создание планшета
 		end
 		addEventHandler ( "onClientGUIClick", return_car, outputEditBox, false )
 
-		guiGridListAddColumn(shoplist, "Номер т/с", 0.95)
-
-		setTimer(function ()
-			if isElement (shoplist) then
-				if carparking_table then
-					for k,v in pairs(carparking_table) do
-						guiGridListAddRow(shoplist, v)
-					end
-				end
+		if getElementData(playerid, "carparking_table") then
+			guiGridListAddColumn(shoplist, "Номер т/с", 0.95)
+			for k,v in pairs(getElementData(playerid, "carparking_table")) do
+				guiGridListAddRow(shoplist, v)
 			end
-		end, 5000, 1)
+		end
 	end
 	addEventHandler ( "onClientGUIClick", carparking, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--скотобойня
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local buy_ferm = m2gui_button( 0, 0, "Купить скотобойню", false, low_fon )
+		local menu_ferm = m2gui_button( 0, 20, "Меню скотобойни", false, low_fon )
+		local job_ferm = m2gui_button( 0, 20*2, "Устроиться на скотобойню", false, low_fon )
+		local work_table = m2gui_button( 0, 20*3, "Рабочий стол", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			triggerServerEvent("event_cow_farms", getRootElement(), playerid, "buy", 0,0 )
+		end
+		addEventHandler ( "onClientGUIClick", buy_ferm, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "0", false, low_fon )
+			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button = m2gui_button( 150, height_fon-16, "Выполнить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				local text2 = tonumber(guiGetText ( edit ))
+				
+				if text == "" then
+					sendPlayerMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					return
+				end
+
+				if not text2 then
+					sendPlayerMessage("[ERROR] Введите число в белое поле", red[1], red[2], red[3])
+					return
+				end
+
+				triggerServerEvent( "event_cow_farms", getRootElement(), playerid, "menu", text, text2 )
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+			if getElementData(playerid, "cow_farms_table1")[1] then
+				guiGridListAddColumn(shoplist, "Ферма "..getElementData(playerid, "cow_farms_table1")[1][1], 0.5)
+				guiGridListAddColumn(shoplist, "", 0.4)
+				for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+					guiGridListAddRow(shoplist, v[2], v[3])
+				end
+			end
+		end
+		addEventHandler ( "onClientGUIClick", menu_ferm, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button = m2gui_button( 150, height_fon-16, "Устроиться", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendPlayerMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					return
+				end
+
+				triggerServerEvent( "event_cow_farms", getRootElement(), playerid, "job", tonumber(text), 0 )
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+			if getElementData(playerid, "cow_farms_table2") then
+				guiGridListAddColumn(shoplist, "Скотобойни", 0.15)
+				guiGridListAddColumn(shoplist, "Зарплата", 0.4)
+				guiGridListAddColumn(shoplist, "Доход от продаж", 0.4)
+				for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+					guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"])
+				end
+			end
+		end
+		addEventHandler ( "onClientGUIClick", job_ferm, outputEditBox, false )
+	end
+	addEventHandler ( "onClientGUIClick", shop, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
