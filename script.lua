@@ -3311,9 +3311,13 @@ function cow_farms(playerid, value, val1, val2)
 		return true
 
 	elseif value == "unload_prod" then
+		local money = val1*val2
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
 
 		if not result[1] then
+			return false
+		elseif result[1]["money"] < money then
+			sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 			return false
 		end
 
@@ -3332,8 +3336,6 @@ function cow_farms(playerid, value, val1, val2)
 		triggerClientEvent( playerid, "event_gui_delet", playerid )
 		state_gui_window[playername] = 0
 
-		local money = val1*val2
-
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
 		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
@@ -3341,7 +3343,7 @@ function cow_farms(playerid, value, val1, val2)
 		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
 
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", prod - "..result[1]["prod"].." price - "..val2..", money - "..result[1]["money"]..", cash2 - "..money.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
+		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", prod - "..result[1]["prod"]..", price - "..val2..", money - "..result[1]["money"]..", cash2 - "..money.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
 
 		return true
 	end
