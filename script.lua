@@ -3138,7 +3138,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[86][1].." "..result.." "..info_png[86][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
-			save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result.."] [-"..cash*result.."$, "..array_player_2[playername][1].."$]")
+			save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result.."] [-"..cash*result.."$, "..array_player_2[playername][1].."$]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -3160,7 +3160,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sendPlayerMessage(playerid, "Вы установили зарплату "..val2.."$", yellow[1], yellow[2], yellow[3])
 
-			save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", price - "..val2.."]")
+			save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", price - "..val2.."]")
 
 		elseif val1 == "Доход от продаж" then
 			if val2 < 1 or val2 > 100 then
@@ -3177,7 +3177,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sendPlayerMessage(playerid, "Вы установили доход от продаж "..val2.." процентов", yellow[1], yellow[2], yellow[3])
 
-			save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", coef - "..val2.."]")
+			save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", coef - "..val2.."]")
 
 		elseif val1 == "Баланс" then
 			if val2 == 0 then
@@ -3199,9 +3199,9 @@ function cow_farms(playerid, value, val1, val2)
 					sendPlayerMessage(playerid, "Вы забрали из кассы "..(val2*-1).."$", green[1], green[2], green[3])
 
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-					save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [+"..(val2*-1).."$, "..array_player_2[playername][1].."$]")
+					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [+"..(val2*-1).."$, "..array_player_2[playername][1].."$]")
 				else
-					sendPlayerMessage(playerid, "[ERROR] В кассе недостаточно средств", red[1], red[2], red[3])
+					sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 				end
 			else
 				if val2 <= array_player_2[playername][1] then
@@ -3218,7 +3218,7 @@ function cow_farms(playerid, value, val1, val2)
 					sendPlayerMessage(playerid, "Вы положили в кассу "..val2.."$", orange[1], orange[2], orange[3])
 
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-					save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [-"..val2.."$, "..array_player_2[playername][1].."$]")
+					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [-"..val2.."$, "..array_player_2[playername][1].."$]")
 				else
 					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
@@ -3238,7 +3238,7 @@ function cow_farms(playerid, value, val1, val2)
 					sendPlayerMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, 86).." скотобойни", yellow[1], yellow[2], yellow[3])
 
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-					save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", nalog - "..result[1]["nalog"].."]")
+					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", nalog - "..result[1]["nalog"].."]")
 				end
 			else
 				sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[60][1].." 7 "..info_png[60][2], red[1], red[2], red[3])
@@ -3268,7 +3268,7 @@ function cow_farms(playerid, value, val1, val2)
 		sqlite( "UPDATE cow_farms_db SET warehouse = warehouse - '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
 
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-		save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", warehouse - "..result[1]["warehouse"].."]")
+		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", warehouse - "..result[1]["warehouse"].."]")
 
 		return true
 
@@ -3294,10 +3294,10 @@ function cow_farms(playerid, value, val1, val2)
 		triggerClientEvent( playerid, "event_gui_delet", playerid )
 		state_gui_window[playername] = 0
 
-		money = val1*val2
+		local money = val1*val2
 
-		local cash = (money*((100-result[1]["coef"])/100))
-		local cash2 = (money*(result[1]["coef"]/100))
+		local cash2 = (money*((100-result[1]["coef"])/100))
+		local cash = (money*(result[1]["coef"]/100))
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
 
@@ -3306,7 +3306,42 @@ function cow_farms(playerid, value, val1, val2)
 		sqlite( "UPDATE cow_farms_db SET money = money + '"..cash2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
 
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-		save_player_action(playername, "[cow_farms] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", price - "..val2..", money - "..result[1]["money"]..", cash2 - "..cash2.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
+		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", price - "..val2..", money - "..result[1]["money"]..", cash2 - "..cash2.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
+
+		return true
+
+	elseif value == "unload_prod" then
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+
+		if not result[1] then
+			return false
+		end
+
+		if not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+			return false
+		end
+
+		for i=0,max_inv do
+			if inv_car_delet(playerid, 88, val2) then
+			end
+		end
+
+		triggerClientEvent( playerid, "event_inv_delet", playerid )
+		state_inv_player[playername] = 0
+
+		triggerClientEvent( playerid, "event_gui_delet", playerid )
+		state_gui_window[playername] = 0
+
+		local money = val1*val2
+
+		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+
+		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+
+		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
+
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", prod - "..result[1]["prod"].." price - "..val2..", money - "..result[1]["money"]..", cash2 - "..money.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
 
 		return true
 	end
@@ -3511,6 +3546,11 @@ function()
 			kickPlayer(playerid, "ban player reason: "..result[1]["reason"])
 			return
 		end
+	end
+
+	if not string.find(playername, "^%u%l+_%u%l+$") then
+		kickPlayer(playerid, "Неправильный формат ника (Имя_Фамилия)")
+		return
 	end
 
 	----бинд клавиш----
@@ -7270,6 +7310,12 @@ function input_Console ( text )
 			setModelHandling(model, "engineAcceleration", hendling["engineAcceleration"]*2.5)
 		end
 		print("hendling true")]]
+
+		--[[local ta = {"Ivan_Logov","Ivan_logov", "Ivan_Logov3", "Paolo_Ricchi"}
+
+		for k,v in pairs(ta) do
+			print(string.find(v,"^%u%l+_%u%l+$"))
+		end]]
 	elseif text == "x" then
 		restartAllResources()
 	end
