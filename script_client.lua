@@ -131,7 +131,7 @@ local info_png = {
 	[84] = {"отмычка", "процентов"},
 	[85] = {"лицензия угонщика", "шт"},
 	[86] = {"документы на скотобойню под номером", ""},
-	[87] = {"лицензия забойщика скота на", "скотобойне"},
+	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы с фермы", "$ за штуку"},
 }
 local info1_png = -1 --номер картинки
@@ -1051,7 +1051,7 @@ function business_menu(number)--создание окна бизнеса
 	showCursor( true )
 
 	local width = 340+10
-	local height = 165.0+(16.0*1)+10
+	local height = 140.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
 	local tune_text = m2gui_label ( 0, 20, width, 20, "Укажите сумму", false, gui_window )
 	guiLabelSetHorizontalAlign ( tune_text, "center" )
@@ -1060,8 +1060,7 @@ function business_menu(number)--создание окна бизнеса
 	local tune_radio_button1 = m2gui_radiobutton ( 5, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
 	local tune_radio_button2 = m2gui_radiobutton ( 5, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
 	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 330, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
-	local tune_radio_button4 = m2gui_radiobutton ( 5, 140, 260, 15, "Установить цену закупки товара", false, gui_window )
-	local complete_button = m2gui_button( 5, 165, "Выполнить", false, gui_window )
+	local complete_button = m2gui_button( 5, 140, "Выполнить", false, gui_window )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGetText ( tune_text_edit )
@@ -1075,9 +1074,6 @@ function business_menu(number)--создание окна бизнеса
 
 			elseif guiRadioButtonGetSelected( tune_radio_button3 ) == true then
 				triggerServerEvent( "event_till_fun", getRootElement(), playerid, number_business, tonumber(text), "price" )
-
-			elseif guiRadioButtonGetSelected( tune_radio_button4 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), playerid, number_business, tonumber(text), "buyprod" )
 			end
 		end
 	end
@@ -1961,7 +1957,7 @@ function tablet_fun()--создание планшета
 				guiGridListAddColumn(shoplist, "Зарплата", 0.4)
 				guiGridListAddColumn(shoplist, "Доход от продаж", 0.4)
 				for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
-					guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"])
+					guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
 				end
 			end
 		end

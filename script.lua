@@ -49,6 +49,9 @@ local zp_player_plane = 2000
 local zp_car_75 = 150
 local zp_car_65 = 200
 local zp_car_78 = 250
+--вместимость складов бизнесов
+local max_business = 100
+local max_cf = 1000
 
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
@@ -323,7 +326,7 @@ local info_png = {
 	[84] = {"отмычка", "процентов"},
 	[85] = {"лицензия угонщика", "шт"},
 	[86] = {"документы на скотобойню под номером", ""},
-	[87] = {"лицензия забойщика скота на", "скотобойне"},
+	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы с фермы", "$ за штуку"},
 }
 
@@ -1456,7 +1459,7 @@ function job_timer2 ()
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
 
 					if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and result[1] and getPedWeapon(playerid) == weapon[38][2] then
-						if result[1]["warehouse"] < 1000 and result[1]["money"] >= result[1]["price"] and result[1]["nalog"] ~= 0 then
+						if result[1]["warehouse"] < max_cf and result[1]["money"] >= result[1]["price"] and result[1]["nalog"] ~= 0 then
 							local randomize = result[1]["price"]
 
 							job_call[playername] = 2
@@ -1476,6 +1479,8 @@ function job_timer2 ()
 							sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 							save_player_action(playername, "[cow_farms_job_timer] "..playername.." [number - "..result[1]["number"]..", money - "..(result[1]["money"]-randomize)..", warehouse - "..(result[1]["warehouse"]+1).."] [+"..randomize.."$, "..array_player_2[playername][1].."$]")
+						else
+							sendPlayerMessage(playerid, "[ERROR] Авария на производстве", red[1], red[2], red[3])
 						end
 					end
 
@@ -2149,7 +2154,7 @@ function search_inv_car_2_parameter(vehicleid, id1)--вывод 2 парамет
 	return 0
 end
 
-function symma_inv_car_1_parameter(vehicleid, id1)--выводит коли-во предметов
+function amount_inv_car_1_parameter(vehicleid, id1)--выводит коли-во предметов
 
 	local plate = getVehiclePlateText ( vehicleid )
 	local val = 0
@@ -2163,7 +2168,7 @@ function symma_inv_car_1_parameter(vehicleid, id1)--выводит коли-во
 	return val
 end
 
-function symma_inv_car_2_parameter(vehicleid, id1)--выводит сумму 2 параметра предмета
+function amount_inv_car_2_parameter(vehicleid, id1)--выводит сумму 2 параметра предмета
 
 	local plate = getVehiclePlateText ( vehicleid )
 	local val = 0
@@ -2260,7 +2265,7 @@ function search_inv_house_2_parameter(house, id1)--вывод 2 параметр
 	return 0
 end
 
-function symma_inv_house_1_parameter(house, id1)--выводит коли-во предметов
+function amount_inv_house_1_parameter(house, id1)--выводит коли-во предметов
 
 	local val = 0
 
@@ -2273,7 +2278,7 @@ function symma_inv_house_1_parameter(house, id1)--выводит коли-во �
 	return val
 end
 
-function symma_inv_house_2_parameter(house, id1)--выводит сумму 2 параметра предмета
+function amount_inv_house_2_parameter(house, id1)--выводит сумму 2 параметра предмета
 
 	local val = 0
 
@@ -2289,7 +2294,7 @@ end
 
 function info_bisiness( number )
 	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-	return "[business "..number..", type "..result[1]["type"]..", price "..result[1]["price"]..", buyprod "..result[1]["buyprod"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
+	return "[business "..number..", type "..result[1]["type"]..", price "..result[1]["price"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
 end
 
 function pickupUse( playerid )
@@ -2311,7 +2316,7 @@ function pickupUse( playerid )
 				sendPlayerMessage(playerid, "Тип "..v["type"], yellow[1], yellow[2], yellow[3])
 				sendPlayerMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
 				sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green[1], green[2], green[3])
-				sendPlayerMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green[1], green[2], green[3])
+				--sendPlayerMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green[1], green[2], green[3])
 
 				if search_inv_player(playerid, 43, v["number"]) ~= 0 then
 					sendPlayerMessage(playerid, "Состояние кассы "..v["money"].."$", green[1], green[2], green[3])
@@ -2376,11 +2381,11 @@ function sqlite_load(playerid)
 	local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
 	if result[1] then
 		local farms = {
-			[1] = {result[1]["number"], "Зарплата", result[1]["price"].."$"},
-			[2] = {result[1]["number"], "Баланс", result[1]["money"].."$"},
-			[3] = {result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
-			[4] = {result[1]["number"], "Налог", result[1]["nalog"].." дней"},
-			[5] = {result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
+			{result[1]["number"], "Зарплата", result[1]["price"].."$"},
+			{result[1]["number"], "Баланс", result[1]["money"].."$"},
+			{result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
+			{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
+			{result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
 		}
 		
 		setElementData(playerid, "cow_farms_table1", farms)
@@ -3040,14 +3045,14 @@ function till_fun( playerid, number, money, value )
 
 		save_player_action(playername, "[till_fun_price] "..playername.." "..info_bisiness(number))
 
-	elseif value == "buyprod" then
+	--[[elseif value == "buyprod" then
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 
 		sqlite( "UPDATE business_db SET buyprod = '"..money.."' WHERE number = '"..number.."'")
 
 		sendPlayerMessage(playerid, "Вы установили цену закупки товара "..money.."$", yellow[1], yellow[2], yellow[3])
 
-		save_player_action(playername, "[till_fun_buyprod] "..playername.." "..info_bisiness(number))
+		save_player_action(playername, "[till_fun_buyprod] "..playername.." "..info_bisiness(number))]]
 	end
 end
 addEvent( "event_till_fun", true )
@@ -3120,6 +3125,8 @@ function cow_farms(playerid, value, val1, val2)
 	local playername = getPlayerName(playerid)
 	local x,y,z = getElementPosition(playerid)
 	local cash = 50000
+	local doc = 86
+	local lic = 87
 
 	if value == "buy" then
 		local result = sqlite( "SELECT COUNT() FROM cow_farms_db" )
@@ -3129,14 +3136,14 @@ function cow_farms(playerid, value, val1, val2)
 			return
 		end
 
-		if inv_player_empty(playerid, 86, result) then
+		if inv_player_empty(playerid, doc, result) then
 			sqlite( "INSERT INTO cow_farms_db (number, price, coef, money, nalog, warehouse) VALUES ('"..result.."', '0', '50', '0', '5', '0')" )
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash*result, playername )
 
 			sendPlayerMessage(playerid, "Вы купили скотобойню за "..cash*result.."$", orange[1], orange[2], orange[3])
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[86][1].." "..result.." "..info_png[86][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendPlayerMessage(playerid, "Вы получили "..info_png[doc][1].." "..result.." "..info_png[doc][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
 			save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result.."] [-"..cash*result.."$, "..array_player_2[playername][1].."$]")
 		else
@@ -3150,13 +3157,13 @@ function cow_farms(playerid, value, val1, val2)
 				return
 			end
 
-			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 			if not result[1] then
 				return
 			end
 
-			sqlite( "UPDATE cow_farms_db SET price = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+			sqlite( "UPDATE cow_farms_db SET price = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 			sendPlayerMessage(playerid, "Вы установили зарплату "..val2.."$", yellow[1], yellow[2], yellow[3])
 
@@ -3167,13 +3174,13 @@ function cow_farms(playerid, value, val1, val2)
 				return
 			end
 
-			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 			if not result[1] then
 				return
 			end
 
-			sqlite( "UPDATE cow_farms_db SET coef = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+			sqlite( "UPDATE cow_farms_db SET coef = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 			sendPlayerMessage(playerid, "Вы установили доход от продаж "..val2.." процентов", yellow[1], yellow[2], yellow[3])
 
@@ -3185,7 +3192,7 @@ function cow_farms(playerid, value, val1, val2)
 			end
 
 			if val2 < 1 then
-				local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+				local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 				if not result[1] then
 					return
@@ -3194,18 +3201,18 @@ function cow_farms(playerid, value, val1, val2)
 				if (val2*-1) <= result[1]["money"] then
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(val2*-1), playername )
 
-					sqlite( "UPDATE cow_farms_db SET money = money - '"..(val2*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					sqlite( "UPDATE cow_farms_db SET money = money - '"..(val2*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 					sendPlayerMessage(playerid, "Вы забрали из кассы "..(val2*-1).."$", green[1], green[2], green[3])
 
-					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [+"..(val2*-1).."$, "..array_player_2[playername][1].."$]")
 				else
 					sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 				end
 			else
 				if val2 <= array_player_2[playername][1] then
-					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 					if not result[1] then
 						return
@@ -3213,11 +3220,11 @@ function cow_farms(playerid, value, val1, val2)
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-val2, playername )
 
-					sqlite( "UPDATE cow_farms_db SET money = money + '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					sqlite( "UPDATE cow_farms_db SET money = money + '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 					sendPlayerMessage(playerid, "Вы положили в кассу "..val2.."$", orange[1], orange[2], orange[3])
 
-					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", money - "..result[1]["money"].."] [-"..val2.."$, "..array_player_2[playername][1].."$]")
 				else
 					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
@@ -3225,7 +3232,7 @@ function cow_farms(playerid, value, val1, val2)
 			end
 
 		elseif val1 == "Налог" then
-			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+			local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 			if not result[1] then
 				return
@@ -3233,11 +3240,11 @@ function cow_farms(playerid, value, val1, val2)
 
 			if search_inv_player(playerid, 60, 7) ~= 0 then
 				if inv_player_delet(playerid, 60, 7) then
-					sqlite( "UPDATE cow_farms_db SET nalog = nalog + '7' WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'")
+					sqlite( "UPDATE cow_farms_db SET nalog = nalog + '7' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
-					sendPlayerMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, 86).." скотобойни", yellow[1], yellow[2], yellow[3])
+					sendPlayerMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, doc).." скотобойни", yellow[1], yellow[2], yellow[3])
 
-					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 					save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", nalog - "..result[1]["nalog"].."]")
 				end
 			else
@@ -3246,40 +3253,31 @@ function cow_farms(playerid, value, val1, val2)
 		end
 
 	elseif value == "job" then
-		give_subject(playerid, "player", 87, val1)
+		give_subject(playerid, "player", lic, val1)
 
 	elseif value == "load" then
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
 		if not result[1] then
 			return false
-		end
-
-		if val1 == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
-			return false
-		end
-
-		if result[1]["warehouse"]-val1 < 0 then
+		elseif result[1]["warehouse"]-val1 < 0 then
 			sendPlayerMessage(playerid, "[ERROR] Склад пуст", red[1], red[2], red[3])
 			return false
 		end
 
-		sqlite( "UPDATE cow_farms_db SET warehouse = warehouse - '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
+		sqlite( "UPDATE cow_farms_db SET warehouse = warehouse - '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", warehouse - "..result[1]["warehouse"].."]")
 
 		return true
 
 	elseif value == "unload" then
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
 		if not result[1] then
-			return false
-		end
-
-		if not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+			return true
+		elseif not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
 			return false
 		end
 
@@ -3303,25 +3301,26 @@ function cow_farms(playerid, value, val1, val2)
 
 		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..cash.."$", green[1], green[2], green[3])
 
-		sqlite( "UPDATE cow_farms_db SET money = money + '"..cash2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
+		sqlite( "UPDATE cow_farms_db SET money = money + '"..cash2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", price - "..val2..", money - "..result[1]["money"]..", cash2 - "..cash2.."], [+"..cash.."$, "..array_player_2[playername][1].."$]")
 
 		return true
 
 	elseif value == "unload_prod" then
 		local money = val1*val2
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
 		if not result[1] then
-			return false
+			return true
 		elseif result[1]["money"] < money then
 			sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
-			return false
-		end
-
-		if not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+			return true
+		elseif result[1]["prod"] >= max_cf then
+			sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
+			return true
+		elseif not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
 			return false
 		end
 
@@ -3340,9 +3339,9 @@ function cow_farms(playerid, value, val1, val2)
 
 		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
 
-		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'")
+		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
-		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 		save_player_action(playername, "[cow_farms_db] "..playername.." [value - "..value..", number - "..result[1]["number"]..", count - "..val1..", prod - "..result[1]["prod"]..", price - "..val2..", money - "..result[1]["money"]..", cash2 - "..money.."], [+"..money.."$, "..array_player_2[playername][1].."$]")
 
 		return true
@@ -4395,6 +4394,19 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 
 	if keyState == "down" then
 
+		for k,v in pairs(down_car_subject) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
+				if vehicleid then
+					if getElementModel(vehicleid) ~= v[6] then
+						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
+						return
+					end
+				end
+
+				delet_subject(playerid, v[5])
+			end
+		end
+
 		for k,v in pairs(up_car_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
@@ -4431,19 +4443,6 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 				end
 
 				delet_subject(playerid, 24)
-			end
-		end
-
-		for k,v in pairs(down_car_subject) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
-				if vehicleid then
-					if getElementModel(vehicleid) ~= v[6] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
-						return
-					end
-				end
-
-				delet_subject(playerid, v[5])
 			end
 		end
 
@@ -4750,7 +4749,13 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 	elseif value == "car" then--для работ по перевозке ящиков
 
 		if vehicleid then
+			count2 = amount_inv_car_1_parameter(vehicleid, 0)
+
 			if not getVehicleOccupant ( vehicleid, 0 ) then
+				return
+
+			elseif count2 == 0 then
+				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
 				return
 
 			elseif id1 == 65 then
@@ -4780,40 +4785,35 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				elseif search_inv_player(playerid, 87, search_inv_player_2_parameter(playerid, 87)) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не работаете на скотобойне", red[1], red[2], red[3])
 					return
-				elseif not cow_farms(playerid, "load", symma_inv_car_1_parameter(vehicleid, 0), 0) then
+				elseif not cow_farms(playerid, "load", count2, 0) then
 					return
 				end
 			end
 
 			for i=0,max_inv do
 				if inv_car_empty(playerid, id1, id2) then
-					count2 = count2 + 1
 				end
 			end
 
-			if count2 ~= 0 then
-				local count = search_inv_car(vehicleid, id1, id2)
+			local count = search_inv_car(vehicleid, id1, id2)
 
-				sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				
-				if id1 == 24 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 65 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 73 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 75 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 78 then
-					sendPlayerMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				elseif id1 == 88 then
-					sendPlayerMessage(playerid, "[TIPS] Езжайте на мясокомбинат, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-				end
-
-				save_player_action(playername, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
-			else
-				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
+			if id1 == 24 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 65 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 73 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 75 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 78 then
+				sendPlayerMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 88 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте на мясокомбинат, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			end
+
+			save_player_action(playername, "[give_subject] "..playername.." [value - "..value..", count - "..count.."] ["..info_png[id1][1]..", "..id2.."]")
 		else
 			sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 		end
@@ -4845,17 +4845,17 @@ function delet_subject(playerid, id)--удаление предметов из �
 						return
 					end
 
-					if v["buyprod"] == 0 then
+					--[[if v["buyprod"] == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3])
 						return
-					end
+					end]]
 
-					if v["warehouse"] >= 100 then
+					if v["warehouse"] >= max_business then
 						sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
 						return
 					end
 
-					money = count*v["buyprod"]
+					money = count*sic2p
 
 					if v["money"] < money then
 						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
@@ -4877,7 +4877,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..v["buyprod"].."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
 
 					save_player_action(playername, "[delet_subject_business] "..playername.." [count - "..count.."], [+"..money.."$, "..array_player_2[playername][1].."$], "..info_bisiness(v["number"]))
 					return
@@ -4909,6 +4909,8 @@ function delet_subject(playerid, id)--удаление предметов из �
 					return
 				end
 			end
+		else
+			sendPlayerMessage(playerid, "[ERROR] Багажник пуст", red[1], red[2], red[3])
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
@@ -6387,14 +6389,14 @@ function (playerid, cmd, value, id)
 					for k,v in pairs(weapon) do
 						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
 						
-							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..v[1].." "..symma_inv_car_1_parameter(vehicleid, k).." шт "..symma_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
+							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..v[1].." "..amount_inv_car_1_parameter(vehicleid, k).." шт "..amount_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
 						end
 					end
 
 					for i,k in pairs(wanted_sub) do
 						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
 						
-							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..info_png[k][1].." "..symma_inv_car_1_parameter(vehicleid, k).." шт "..symma_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
+							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..info_png[k][1].." "..amount_inv_car_1_parameter(vehicleid, k).." шт "..amount_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
 						end
 					end
 				else
@@ -6421,14 +6423,14 @@ function (playerid, cmd, value, id)
 					for k,v in pairs(weapon) do
 						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then
 						
-							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..v[1].." "..symma_inv_house_1_parameter(id, k).." шт "..symma_inv_house_2_parameter(id, k).." "..info_png[k][2])
+							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..v[1].." "..amount_inv_house_1_parameter(id, k).." шт "..amount_inv_house_2_parameter(id, k).." "..info_png[k][2])
 						end
 					end
 
 					for i,k in pairs(wanted_sub) do
 						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then
 						
-							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..info_png[k][1].." "..symma_inv_house_1_parameter(id, k).." шт "..symma_inv_house_2_parameter(id, k).." "..info_png[k][2])
+							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..info_png[k][1].." "..amount_inv_house_1_parameter(id, k).." шт "..amount_inv_house_2_parameter(id, k).." "..info_png[k][2])
 						end
 					end
 				else
@@ -6669,7 +6671,7 @@ function (playerid, cmd, id)
 				createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 )
 				createPickup ( x, y, z, 3, business_icon, 10000 )
 
-				sqlite( "INSERT INTO business_db (number, type, price, buyprod, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
+				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
