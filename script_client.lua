@@ -867,19 +867,19 @@ function createText ()
 		for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
 			local x1,y1,z1 = getElementPosition(player)
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and drugs >= getElementData(player, "zakon_drugs") and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "*увеличенные зрочки*", 1, m2font_dx1 )
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(player, "zakon_drugs") and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "*увеличенные зрочки*", coords[1]-(dimensions/2), coords[2]-60, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-60, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and (alcohol/100) >= getElementData(player, "zakon_alcohol") and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "*пьян*", 1, m2font_dx1 )
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(player, "zakon_alcohol") and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "*пьян*", coords[1]-(dimensions/2), coords[2]-45, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-45, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
