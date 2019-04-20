@@ -132,7 +132,8 @@ local info_png = {
 	[85] = {"лицензия угонщика", "шт"},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
-	[88] = {"тушка коровы с фермы", "$ за штуку"},
+	[88] = {"тушка коровы", "$ за штуку"},
+	[89] = {"мешок с кормом", "$ за штуку"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -447,8 +448,8 @@ local text3 = "Выбросите бензопилу, чтобы получит�
 local text4 = "Выбросите кирку, чтобы получить руду"
 
 local text_3d = {--3d text
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку свиньи"},
-	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку свиньи, чтобы получить прибыль"},
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, "Нажмите E, чтобы взять тушку коровы"},
+	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите тушку коровы, чтобы получить прибыль"},
 
 	{260.4326171875,1409.2626953125,10.506074905396, 15, "Нефтезавод (Загрузить бочки - E)"},
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, "Порт ЛС (Разгрузить товар - E)"},
@@ -457,6 +458,8 @@ local text_3d = {--3d text
 	{2463.7587890625,-2716.375,1.1451852619648, 15, "Доки ЛС (Разгрузить рыбу - E)"},
 	{-1061.6103515625,-1195.5166015625,129.828125, 15, "Скотобойня (Загрузить тушки коров - E)"},
 	{966.951171875,2132.8623046875,10.8203125, 15, "Мясокомбинат (Разгрузить тушки коров - E)"},
+	{1461.939453125,974.8876953125,10.30264377594, 15, "Склад корма (Загрузить корм - E)"},--склад корма для коров
+	{-1079.947265625,-1195.580078125,129.79998779297, 15, "Склад скотобойни (Разгрузить корм - E)"},--скотобойня корм
 
 	{2131.9775390625,-1151.322265625,24.062105178833, 5, "Покупка т/с (Меню - X)"},
 	{1590.1689453125,1170.60546875,14.224066734314, 5, "Покупка вертолетов и самолетов (Меню - X)"},
@@ -806,9 +809,9 @@ function createText ()
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			else
-				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], 1, m2font_dx1 )
-				dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-				dxDrawText ( info_png[info1_png][1].." "..info2_png.." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], 1, m2font_dx1 )
+				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
 			end
 			
 			if debuginfo then
@@ -863,6 +866,22 @@ function createText ()
 	if hud then
 		for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
 			local x1,y1,z1 = getElementPosition(player)
+
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and drugs >= getElementData(player, "zakon_drugs") and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "*увеличенные зрочки*", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( "*увеличенные зрочки*", coords[1]-(dimensions/2), coords[2]-60, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
+			end
+
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and (alcohol/100) >= getElementData(player, "zakon_alcohol") and player ~= playerid then
+				local dimensions = dxGetTextWidth ( "*пьян*", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( "*пьян*", coords[1]-(dimensions/2), coords[2]-45, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
+			end
 
 			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
 				local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
