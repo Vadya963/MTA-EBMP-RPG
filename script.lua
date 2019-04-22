@@ -57,9 +57,11 @@ local max_cf = 1000
 local color_tips = {168,228,160}--бабушкины яблоки
 local yellow = {255,255,0}--желтый
 local red = {255,0,0}--красный
+local red_try = {200,0,0}--красный
 local blue = {0,150,255}--синий
 local white = {255,255,255}--белый
 local green = {0,255,0}--зеленый
+local green_try = {0,200,0}--зеленый
 local turquoise = {0,255,255}--бирюзовый
 local orange = {255,100,0}--оранжевый
 local orange_do = {255,150,0}--оранжевый do
@@ -124,6 +126,18 @@ function me_chat(playerid, text)
 	end
 end
 
+function me_chat_player(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			sendPlayerMessage(player, "[ME] "..text, pink[1], pink[2], pink[3])
+		end
+	end
+end
+
 function do_chat(playerid, text)
 	local x,y,z = getElementPosition(playerid)
 
@@ -132,6 +146,35 @@ function do_chat(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			sendPlayerMessage(player, text, orange_do[1], orange_do[2], orange_do[3])
+		end
+	end
+end
+
+function do_chat_player(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			sendPlayerMessage(player, "[DO] "..text, orange_do[1], orange_do[2], orange_do[3])
+		end
+	end
+end
+
+function try_chat_player(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+	local randomize = random(0,1)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			if randomize == 1 then
+				sendPlayerMessage(player, "[TRY] "..text.."[УДАЧНО]", green_try[1], green_try[2], green_try[3])
+			else
+				sendPlayerMessage(player, "[TRY] "..text.."[НЕУДАЧНО]", red_try[1], red_try[2], red_try[3])
+			end
 		end
 	end
 end
@@ -1475,7 +1518,7 @@ function job_timer2 ()
 								if isElement(playerid) then
 									setPedAnimation(playerid, nil, nil)
 								end
-							end, (5*1000), 1)
+							end, (10*1000), 1)
 
 							sqlite( "UPDATE cow_farms_db SET warehouse = warehouse + '1', prod = prod - '1', money = money - '"..randomize.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
 
@@ -6748,6 +6791,69 @@ function (playerid, cmd, id)
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
 	end
 
+end)
+
+addCommandHandler ( "me",
+function (playerid, cmd, ...)
+	local playername = getPlayerName ( playerid )
+	local text = ""
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	if text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	me_chat_player(playerid, playername.." "..text)
+end)
+
+addCommandHandler ( "do",
+function (playerid, cmd, ...)
+	local playername = getPlayerName ( playerid )
+	local text = ""
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	if text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	do_chat_player(playerid, playername.." "..text)
+end)
+
+addCommandHandler ( "try",
+function (playerid, cmd, ...)
+	local playername = getPlayerName ( playerid )
+	local text = ""
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	if text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	try_chat_player(playerid, playername.." "..text)
 end)
 
 addCommandHandler("idpng",
