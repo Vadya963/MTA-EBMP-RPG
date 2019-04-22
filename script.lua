@@ -1892,31 +1892,36 @@ function onChat(message, messageType)
 		return
 	end
 
-	local count = 0
-	local say = "(Всем) "..getPlayerName( playerid )..": " .. message
-	local say_10_r = "(10 метров) "..getPlayerName( playerid )..": " .. message
+	if messageType ~= 1 then
+		local count = 0
+		local say = "(Всем) "..getPlayerName( playerid )..": " .. message
+		local say_10_r = "(10 метров) "..getPlayerName( playerid )..": " .. message
 
-	for k,player in pairs(getElementsByType("player")) do
-		local x,y,z = getElementPosition(playerid)
-		local x1,y1,z1 = getElementPosition(player)
-		local player_name = getPlayerName(player)
+		for k,player in pairs(getElementsByType("player")) do
+			local x,y,z = getElementPosition(playerid)
+			local x1,y1,z1 = getElementPosition(player)
+			local player_name = getPlayerName(player)
 
-		if(logged[player_name] == 1 and isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) and player ~= playerid) then
-		
-			count = count + 1
+			if(logged[player_name] == 1 and isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) and player ~= playerid) then
+			
+				count = count + 1
+			end
 		end
-	end
-	
-	if (count == 0) then
-	
-		sendPlayerMessage( getRootElement(), say, white[1], white[2], white[3] )
+		
+		if (count == 0) then
+		
+			sendPlayerMessage( getRootElement(), say, white[1], white[2], white[3] )
 
-		print("[CHAT] "..say)
-	
+			print("[CHAT] "..say)
+		
+		else 
+		
+			ic_chat( playerid, say_10_r )
+			print("[CHAT] "..say_10_r)
+		end
+
 	else 
-	
-		ic_chat( playerid, say_10_r )
-		print("[CHAT] "..say_10_r)
+		me_chat_player(playerid, playername.." "..message)
 	end
 end
 addEventHandler("onPlayerChat", getRootElement(), onChat)
@@ -6791,27 +6796,6 @@ function (playerid, cmd, id)
 		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
 	end
 
-end)
-
-addCommandHandler ( "me",
-function (playerid, cmd, ...)
-	local playername = getPlayerName ( playerid )
-	local text = ""
-
-	if logged[playername] == 0 then
-		return
-	end
-
-	for k,v in ipairs(arg) do
-		text = text..v.." "
-	end
-
-	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
-		return
-	end
-
-	me_chat_player(playerid, playername.." "..text)
 end)
 
 addCommandHandler ( "do",
