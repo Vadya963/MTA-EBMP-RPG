@@ -171,11 +171,17 @@ function try_chat_player(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			if randomize == 1 then
-				sendPlayerMessage(player, "[TRY] "..text.."[УДАЧНО]", green_try[1], green_try[2], green_try[3])
+				sendPlayerMessage(player, "[TRY] "..text.." [УДАЧНО]", green_try[1], green_try[2], green_try[3])
 			else
-				sendPlayerMessage(player, "[TRY] "..text.."[НЕУДАЧНО]", red_try[1], red_try[2], red_try[3])
+				sendPlayerMessage(player, "[TRY] "..text.." [НЕУДАЧНО]", red_try[1], red_try[2], red_try[3])
 			end
 		end
+	end
+
+	if randomize == 1 then
+		return true
+	else
+		return false
 	end
 end
 
@@ -1080,8 +1086,6 @@ function debuginfo ()
 		setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
 		setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 		setElementData(playerid, "gps_device_data", gps_device[playername])
-		setElementData(playerid, "fuel_data", 0)
-		setElementData(playerid, "probeg_data", 0)
 		setElementData(playerid, "timeserver", hour..":"..minute)
 		setElementData(playerid, "earth", earth)
 		sqlite_load(playerid)
@@ -3615,9 +3619,10 @@ function()
 
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
-	setPlayerNametagColor ( playerid, white[1], white[2], white[3] )
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
+	setElementData(playerid, "fuel_data", 0)
+	setElementData(playerid, "probeg_data", 0)
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -7412,18 +7417,6 @@ function input_Console ( text )
 	if text == "z" then
 		--pay_nalog()
 
-		--print(random(0,22))
-		--[[for model=400,611 do
-			local hendling = getModelHandling(model)
-			setModelHandling(model, "engineAcceleration", hendling["engineAcceleration"]*2.5)
-		end
-		print("hendling true")]]
-
-		--[[local ta = {"Ivan_Logov","Ivan_logov", "Ivan_Logov3", "Paolo_Ricchi"}
-
-		for k,v in pairs(ta) do
-			print(string.find(v,"^%u%l+_%u%l+$"))
-		end]]
 	elseif text == "x" then
 		restartAllResources()
 	end
