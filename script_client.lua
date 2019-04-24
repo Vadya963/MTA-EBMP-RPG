@@ -36,6 +36,7 @@ local purple = {175,0,255}--фиолетовый
 local max_speed = 80--максимальная скорость в городе
 local time_game = 0--сколько минут играешь
 local afk = 0--сколько минут в афк
+local pos_timer = 0--задержка для евента
 
 local no_use_subject = {-1,0,1}
 
@@ -134,6 +135,7 @@ local info_png = {
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
 	[89] = {"мешок с кормом", "$ за штуку"},
+	[90] = {"колба с", "этм"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -224,6 +226,10 @@ end
 setTimer(function ()
 	time_game = time_game+1
 end, 60000, 0)
+
+setTimer(function ()
+	pos_timer = 1
+end, 5000, 1)
 
 setTimer(function ()
 	if isChatBoxInputActive() or isConsoleActive() then
@@ -399,48 +405,7 @@ local weapon = {
 	[49] = {info_png[49][1], 6, 50, 1},
 }
 
-local shop = {
-	[3] = {info_png[3][1], 20, 5},
-	[4] = {info_png[4][1], 1, 250},
-	[7] = {info_png[7][1], 20, 10},
-	[8] = {info_png[8][1], 20, 15},
-	[11] = {info_png[11][1], 1, 100},
-	[21] = {info_png[21][1], 1, 45},
-	[22] = {info_png[22][1], 1, 60},
-	[23] = {info_png[23][1], 1, 100},
-	[40] = {info_png[40][1], 10, 500},
-	[42] = {info_png[42][1], 1, 5000},
-	[46] = {info_png[46][1], 1, 100},
-	[52] = {info_png[52][1], 1, 1000},
-	[53] = {info_png[53][1], 1, 100},
-	[54] = {info_png[54][1], 1, 50},
-	[55] = {info_png[55][1], 100, 50},
-	[56] = {info_png[56][1], 100, 100},
-	[57] = {info_png[57][1], 1, 100},
-	[58] = {info_png[58][1], 1, 100},
-	[63] = {info_png[63][1], 1, 100},
-	[76] = {info_png[76][1], 1, 250},
-}
-
-local gas = {
-	[5] = {info_png[5][1].." 25 "..info_png[5][2], 25, 250},
-}
-
-local giuseppe = {
-	[83] = {info_png[83][1], 100, 1000},
-	[84] = {info_png[84][1], 10, 500},
-	[85] = {info_png[85][1], 1, 5000},
-}
-
 local skin = {"мужская одежда", 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 264, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 311, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
-
-local interior_business = {
-	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
-	{5, "Магазин одежды", 225.3310,-8.6169,1002.1977, 45},
-	{6, "Магазин 24/7", -26.7180,-55.9860,1003.5470, 50},--буду юзать это инт
-	{0, "Заправка", 0,0,0, 56},
-	{0, "Автомастерская", 0,0,0, 27},
-}
 
 local text1 = "Нажмите E, чтобы взять пустую коробку"
 local text2 = "Выбросите пустую коробку, чтобы получить коробку с продуктами"
@@ -751,43 +716,45 @@ function createText ()
 	end
 	
 
-	for k,v in pairs(house_pos) do
-		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
-			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
-				dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+	if pos_timer == 1 then
+		for k,v in pairs(house_pos) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+				if coords[1] and coords[2] then
+					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
+					dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-				local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, m2font_dx1 )
-				dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, m2font_dx1 )
+					dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
 			end
 		end
-	end
 
 
-	for k,v in pairs(business_pos) do
-		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then	
-			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
-				dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+		for k,v in pairs(business_pos) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then	
+				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+				if coords[1] and coords[2] then
+					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
+					dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-				local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, m2font_dx1 )
-				dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, m2font_dx1 )
+					dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
 			end
 		end
-	end
 
 
-	for k,v in pairs(job_pos) do
-		if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[5]) then				
-			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
-			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
-				dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+		for k,v in pairs(job_pos) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[5]) then				
+				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+				if coords[1] and coords[2] then
+					local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
+					dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-				local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[4]..")", 1, m2font_dx1 )
-				dxdrawtext ( "(Войти - ALT"..v[4]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[4]..")", 1, m2font_dx1 )
+					dxdrawtext ( "(Войти - ALT"..v[4]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
 			end
 		end
 	end
@@ -1118,26 +1085,6 @@ function shop_menu(number, value)--создание окна магазина
 	showCursor( true )
 
 	if value == "pd" then
-		local weapon_cops = {
-			[9] = {info_png[9][1], 16, 360, 5},
-			[12] = {info_png[12][1], 22, 240, 25},
-			[15] = {info_png[15][1], 31, 5400, 25},
-			[17] = {info_png[17][1], 29, 2400, 25},
-			[19] = {info_png[19][1], 17, 360, 5},
-			[34] = {info_png[34][1], 25, 720, 25},
-			[36] = {info_png[36][1], 3, 150, 1},
-			[41] = {info_png[41][1], 34, 6000, 25},
-			[47] = {info_png[47][1], 41, 50, 25},
-			[39] = {info_png[39][1], 39, 50, 1},
-
-			[10] = {info_png[10][1]},
-			[28] = {info_png[28][1]},
-			[29] = {info_png[29][1]},
-			[30] = {info_png[30][1]},
-			[31] = {info_png[31][1]},
-			[32] = {info_png[32][1]},
-		}
-
 		local width = 400+10
 		local height = 320.0+(16.0*1)+10
 		gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Склад полиции", false )
@@ -1145,7 +1092,11 @@ function shop_menu(number, value)--создание окна магазина
 		local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
 		guiGridListAddColumn(shoplist, "Товары", 0.9)
-		for k,v in pairs(weapon_cops) do
+		for k,v in pairs(getElementData ( playerid, "weapon_cops" )) do
+			guiGridListAddRow(shoplist, v[1])
+		end
+
+		for k,v in pairs(getElementData ( playerid, "sub_cops" )) do
 			guiGridListAddRow(shoplist, v[1])
 		end
 
@@ -1163,27 +1114,10 @@ function shop_menu(number, value)--создание окна магазина
 	elseif value == "mer" then
 		local column_width1 = 0.7
 		local column_width2 = 0.2
-		local day_nalog = 7
 
 		local zakon_nalog_car = getElementData ( playerid, "zakon_nalog_car_data" )
 		local zakon_nalog_house = getElementData ( playerid, "zakon_nalog_house_data" )
 		local zakon_nalog_business = getElementData ( playerid, "zakon_nalog_business_data" )
-
-		local mayoralty_shop = {
-			[2] = {info_png[2][1], 1, 1000},
-			[50] = {info_png[50][1], 1, 10000},
-			[64] = {info_png[64][1], 1, 5000},
-			[66] = {info_png[66][1], 1, 5000},
-			[72] = {info_png[72][1], 1, 5000},
-			[74] = {info_png[74][1], 1, 5000},
-			[77] = {info_png[77][1], 100, 100},
-			[79] = {info_png[79][1], 1, 5000},
-			[80] = {info_png[80][1], 1, 5000},
-			
-			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
-			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
-			[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
-		}
 
 		local width = 400+10
 		local height = 320.0+(16.0*1)+10
@@ -1193,7 +1127,7 @@ function shop_menu(number, value)--создание окна магазина
 
 		guiGridListAddColumn(shoplist, "Услуги", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(mayoralty_shop) do
+		for k,v in pairs(getElementData ( playerid, "mayoralty_shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1219,7 +1153,7 @@ function shop_menu(number, value)--создание окна магазина
 
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(giuseppe) do
+		for k,v in pairs(getElementData ( playerid, "giuseppe" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1237,7 +1171,7 @@ function shop_menu(number, value)--создание окна магазина
 
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..interior_business[value][2], false )
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..getElementData(playerid, "interior_business")[value][2], false )
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 	local column_width1 = 0.5
@@ -1268,14 +1202,14 @@ function shop_menu(number, value)--создание окна магазина
 	elseif value == 3 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(shop) do
+		for k,v in pairs(getElementData ( playerid, "shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
 	elseif value == 4 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(gas) do
+		for k,v in pairs(getElementData ( playerid, "gas" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 	end
@@ -1843,11 +1777,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Предмет", 0.2)
 		guiGridListAddColumn(shoplist, "Ресурсы", 1.0)
 
-		local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
-			{info_png[81][1].."(1 шт)", info_png[82][1].."(1 шт) + "..info_png[83][1].."(100 гр)", "82,83", "1,100", "81,1"},
-		}
-
-		for k,v in pairs(craft_table) do
+		for k,v in pairs(getElementData(playerid, "craft_table")) do
 			guiGridListAddRow(shoplist, v[1], v[2])
 		end
 

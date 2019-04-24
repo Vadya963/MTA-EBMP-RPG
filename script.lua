@@ -31,6 +31,7 @@ local time_nalog = 12--время когда будет взиматься на�
 local price_hotel = 100--цена в отеле
 local crimes_giuseppe = 25--//прес-ия для джузеппе
 local car_theft_time = 10--время для угона
+local day_nalog = 7
 --законы
 local zakon_alcohol = 1
 local zakon_alcohol_crimes = 1
@@ -378,6 +379,12 @@ local info_png = {
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
 	[89] = {"мешок с кормом", "$ за штуку"},
+	[90] = {"колба с", "этм"},
+}
+
+local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
+	{info_png[81][1].." 1 "..info_png[81][2].." ", info_png[82][1].." 1 "..info_png[82][2].." + "..info_png[83][1].." 100 "..info_png[83][2], "82,83", "1,100", "81,1"},
+	{info_png[20][1].." 1 "..info_png[20][2].." ", info_png[90][1].." 3 "..info_png[90][2].." + "..info_png[90][1].." 78 "..info_png[90][2], "90,90", "3,78", "20,1"},
 }
 
 local weapon = {
@@ -419,8 +426,6 @@ local shop = {
 	[54] = {info_png[54][1], 1, 50},
 	[55] = {info_png[55][1], 100, 50},
 	[56] = {info_png[56][1], 100, 100},
-	[57] = {info_png[57][1], 1, 100},
-	[58] = {info_png[58][1], 1, 100},
 	[63] = {info_png[63][1], 1, 100},
 	[76] = {info_png[76][1], 1, 250},
 }
@@ -433,6 +438,47 @@ local giuseppe = {
 	[83] = {info_png[83][1], 100, 1000},
 	[84] = {info_png[84][1], 10, 500},
 	[85] = {info_png[85][1], 1, 5000},
+	[90] = {info_png[90][1].." 78 "..info_png[90][2], 78, 1000},
+}
+
+local mayoralty_shop = {
+	[2] = {info_png[2][1], 1, 1000},
+	[50] = {info_png[50][1], 1, 10000},
+	[64] = {info_png[64][1], 1, 5000},
+	[66] = {info_png[66][1], 1, 5000},
+	[72] = {info_png[72][1], 1, 5000},
+	[74] = {info_png[74][1], 1, 5000},
+	[77] = {info_png[77][1], 100, 100},
+	[79] = {info_png[79][1], 1, 5000},
+	[80] = {info_png[80][1], 1, 5000},
+
+	[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
+	[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
+	[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
+}
+
+local weapon_cops = {
+	[9] = {info_png[9][1], 16, 360, 5},
+	[12] = {info_png[12][1], 22, 240, 25},
+	[15] = {info_png[15][1], 31, 5400, 25},
+	[17] = {info_png[17][1], 29, 2400, 25},
+	[19] = {info_png[19][1], 17, 360, 5},
+	[34] = {info_png[34][1], 25, 720, 25},
+	[36] = {info_png[36][1], 3, 150, 1},
+	[41] = {info_png[41][1], 34, 6000, 25},
+	[47] = {info_png[47][1], 41, 50, 25},
+	[39] = {info_png[39][1], 39, 50, 1},
+}
+
+local sub_cops = {
+	[10] = {info_png[10][1]},
+	[28] = {info_png[28][1]},
+	[29] = {info_png[29][1]},
+	[30] = {info_png[30][1]},
+	[31] = {info_png[31][1]},
+	[32] = {info_png[32][1]},
+	[57] = {info_png[57][1]},
+	[58] = {info_png[58][1]},
 }
 
 local deathReasons = {
@@ -1034,6 +1080,10 @@ local array_house_2 = {}
 
 -------------------пользовательские функции 2----------------------------------------------
 function debuginfo ()
+	local result_auc = sqlite( "SELECT * FROM auction" )
+	local result_car = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
+	local result_cow_farms = sqlite( "SELECT * FROM cow_farms_db" )
+
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 		local hour, minute = getTime()
@@ -1088,9 +1138,19 @@ function debuginfo ()
 		setElementData(playerid, "gps_device_data", gps_device[playername])
 		setElementData(playerid, "timeserver", hour..":"..minute)
 		setElementData(playerid, "earth", earth)
-		sqlite_load(playerid)
 		setElementData(playerid, "zakon_alcohol", zakon_alcohol)
 		setElementData(playerid, "zakon_drugs", zakon_drugs)
+		setElementData(playerid, "craft_table", craft_table)
+		setElementData(playerid, "shop", shop)
+		setElementData(playerid, "gas", gas)
+		setElementData(playerid, "giuseppe", giuseppe)
+		setElementData(playerid, "interior_business", interior_business)
+		setElementData(playerid, "auc", result_auc)
+		setElementData(playerid, "carparking_table", result_car)
+		setElementData(playerid, "cow_farms_table2", result_cow_farms)
+		setElementData(playerid, "mayoralty_shop", mayoralty_shop)
+		setElementData(playerid, "weapon_cops", weapon_cops)
+		setElementData(playerid, "sub_cops", sub_cops)
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
@@ -1098,6 +1158,8 @@ function debuginfo ()
 			setElementData(playerid, "fuel_data", fuel[plate])
 			setElementData(playerid, "probeg_data", probeg[plate])
 		end
+
+		sqlite_load(playerid)
 	end
 end
 
@@ -2157,6 +2219,7 @@ function random_sub (playerid, id)--выпадение предметов
 
 	local random_sub_array = {
 		{69, { {82,1,20} }},
+		{48, { {90,3,20} }},
 	}
 
 	local playername = getPlayerName ( playerid )
@@ -2427,12 +2490,6 @@ function house_bussiness_job_pos_load( playerid )
 end
 
 function sqlite_load(playerid)
-	local result = sqlite( "SELECT * FROM auction" )
-	setElementData(playerid, "auc", result)
-
-	local result = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
-	setElementData(playerid, "carparking_table", result)
-
 	local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
 	if result[1] then
 		local farms = {
@@ -2446,9 +2503,6 @@ function sqlite_load(playerid)
 		
 		setElementData(playerid, "cow_farms_table1", farms)
 	end
-
-	local result = sqlite( "SELECT * FROM cow_farms_db" )
-	setElementData(playerid, "cow_farms_table2", result)
 end
 
 function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа покупка вещей
@@ -2799,28 +2853,6 @@ function buy_subject_fun( playerid, text, number, value )
 			return
 		end
 
-		local weapon_cops = {
-			[9] = {info_png[9][1], 16, 360, 5},
-			[12] = {info_png[12][1], 22, 240, 25},
-			[15] = {info_png[15][1], 31, 5400, 25},
-			[17] = {info_png[17][1], 29, 2400, 25},
-			[19] = {info_png[19][1], 17, 360, 5},
-			[34] = {info_png[34][1], 25, 720, 25},
-			[36] = {info_png[36][1], 3, 150, 1},
-			[41] = {info_png[41][1], 34, 6000, 25},
-			[47] = {info_png[47][1], 41, 50, 25},
-			[39] = {info_png[39][1], 39, 50, 1},
-		}
-
-		local sub_cops = {
-			[10] = {info_png[10][1]},
-			[28] = {info_png[28][1]},
-			[29] = {info_png[29][1]},
-			[30] = {info_png[30][1]},
-			[31] = {info_png[31][1]},
-			[32] = {info_png[32][1]},
-		}
-
 		if text == weapon_cops[39][1] then
 			if inv_player_empty(playerid, 39, 1) then
 				sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
@@ -2864,26 +2896,6 @@ function buy_subject_fun( playerid, text, number, value )
 		return
 
 	elseif value == "mer" then
-		local day_nalog = 7
-
-		local mayoralty_shop = {
-			[2] = {info_png[2][1], 1, 1000},
-			[50] = {info_png[50][1], 1, 10000},
-			[64] = {info_png[64][1], 1, 5000},
-			[66] = {info_png[66][1], 1, 5000},
-			[72] = {info_png[72][1], 1, 5000},
-			[74] = {info_png[74][1], 1, 5000},
-			[77] = {info_png[77][1], 100, 100},
-			[79] = {info_png[79][1], 1, 5000},
-			[80] = {info_png[80][1], 1, 5000},
-		}
-
-		local mayoralty_nalog = {
-			[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
-			[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
-			[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
-		}
-
 		for k,v in pairs(mayoralty_shop) do
 			if v[1] == text then
 				if v[3] <= array_player_2[playername][1] then
@@ -2899,28 +2911,6 @@ function buy_subject_fun( playerid, text, number, value )
 				else
 					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
-
-				return
-			end
-		end
-
-		for k,v in pairs(mayoralty_nalog) do
-			if v[1] == text then
-				if v[3] <= array_player_2[playername][1] then
-					if inv_player_empty(playerid, k, v[2]) then
-						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
-
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
-
-						save_player_action(playername, "[mayoralty_menu_fun] [mayoralty_nalog - "..text.."], "..playername.." [-"..v[3].."$, "..array_player_2[playername][1].."$]")
-					else
-						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
-					end
-				else
-					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
-				end
-
-				return
 			end
 		end
 		
@@ -3118,10 +3108,6 @@ addEventHandler ( "event_till_fun", getRootElement(), till_fun )
 ----------------------------------крафт предметов -----------------------------------------------------------
 function craft_fun( playerid, text )
 	local playername = getPlayerName(playerid)
-
-	local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
-		{info_png[81][1].."(1 шт)", info_png[82][1].."(1 шт) + "..info_png[83][1].."(100 гр)", "82,83", "1,100", "81,1"},
-	}
 
 	if enter_house[playername] == 0 then
 		sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3])
@@ -6673,7 +6659,9 @@ function (playerid)
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 			
-			triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "house", house_bussiness_radius )
+			for k,playerid in pairs(getElementsByType("player")) do
+				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "house", house_bussiness_radius )
+			end
 
 			save_realtor_action(playerid, "[sellhouse] "..playername.." [house - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 		else
@@ -6742,7 +6730,9 @@ function (playerid, cmd, id)
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 				
-				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "biz", house_bussiness_radius )
+				for k,playerid in pairs(getElementsByType("player")) do
+					triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "biz", house_bussiness_radius )
+				end
 
 				save_realtor_action(playerid, "[sellbusiness] "..playername.." [business - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 			else
