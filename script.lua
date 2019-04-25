@@ -5056,7 +5056,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			
 -----------------------------------------------------нужды-------------------------------------------------------------
 		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
-			local satiety_minys = 5
+			local satiety_plus = 5
 
 			if getElementHealth(playerid) == max_heal then
 				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
@@ -5081,9 +5081,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
-			if satiety[playername]-satiety_minys >= 0 then
-				satiety[playername] = satiety[playername]-satiety_minys
-				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			if satiety[playername]+satiety_plus <= max_satiety then
+				satiety[playername] = satiety[playername]+satiety_plus
+				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 			end
 
 			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
@@ -5110,7 +5110,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." использовал(а) аптечку")
 
 		elseif id1 == 20 then--нарко
-			local satiety_minys = 10
+			local satiety_plus = 20
+			local sleep_plus = 20
 			local drugs_plus = 1
 
 			if getElementHealth(playerid) == max_heal then
@@ -5130,9 +5131,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			drugs[playername] = drugs[playername]+drugs_plus
 			sendPlayerMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
 
-			if satiety[playername]-satiety_minys >= 0 then
-				satiety[playername] = satiety[playername]-satiety_minys
-				sendPlayerMessage(playerid, "-"..satiety_minys.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			if satiety[playername]+satiety_plus <= max_satiety then
+				satiety[playername] = satiety[playername]+satiety_plus
+				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+			end
+
+			if sleep[playername]+sleep_plus <= max_sleep then
+				sleep[playername] = sleep[playername]+sleep_plus
+				sendPlayerMessage(playerid, "+"..sleep_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 			end
 
 			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
@@ -5867,7 +5873,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if job[playername] == 0 then
 				job[playername] = 7
 
-				me_chat(playerid, playername.." вышел(ла) на работу Забойщик скота")
+				me_chat(playerid, playername.." вышел(ла) на работу Забойщик скота на "..id2.." скотобойне")
 			else
 				job[playername] = 0
 
