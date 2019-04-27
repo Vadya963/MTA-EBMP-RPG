@@ -38,7 +38,9 @@ local time_game = 0--сколько минут играешь
 local afk = 0--сколько минут в афк
 local pos_timer = 0--задержка для евента
 
-local no_use_subject = {-1,0,1}
+local no_use_subject = {-1,0}--нельзя использовать
+local no_select_subject = {-1,0,1}--нельзя выделить
+local no_change_subject = {-1,1}--нельзя заменить
 
 --выделение картинки
 local gui_2dtext = false
@@ -1852,7 +1854,7 @@ function tablet_fun()--создание планшета
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
 			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "0", false, low_fon )
 			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local complete_button = m2gui_button( 150, height_fon-16, "Выполнить", false, low_fon )
+			local complete_button = m2gui_button( 100, height_fon-16, "Выполнить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
@@ -1891,7 +1893,7 @@ function tablet_fun()--создание планшета
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local complete_button = m2gui_button( 150, height_fon-16, "Устроиться", false, low_fon )
+			local complete_button = m2gui_button( 100, height_fon-16, "Устроиться", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
@@ -1991,7 +1993,7 @@ function inv_create ()--создание инв-ря
 			info2 = inv_slot_player[i][3]
 
 			if lmb == 0 then
-				for k,v in pairs(no_use_subject) do 
+				for k,v in pairs(no_select_subject) do 
 					if v == info1 then
 						return
 					end
@@ -2009,8 +2011,8 @@ function inv_create ()--создание инв-ря
 				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 				--if inv_slot_player[info3][2] ~= 0 then
 
-					local no_use_subject_1 = {-1,1}
-					for k,v in pairs(no_use_subject_1) do 
+					
+					for k,v in pairs(no_change_subject) do
 						if v == info1 then
 							return
 						end
@@ -2090,7 +2092,7 @@ function inv_create ()--создание инв-ря
 				info2 = inv_slot_car[i][3]
 
 				if lmb == 0 then
-					for k,v in pairs(no_use_subject) do 
+					for k,v in pairs(no_select_subject) do 
 						if v == info1 then
 							return
 						end
@@ -2108,8 +2110,8 @@ function inv_create ()--создание инв-ря
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					--if inv_slot_car[info3][2] ~= 0 then
 						
-						local no_use_subject_1 = {-1,1}
-						for k,v in pairs(no_use_subject_1) do 
+						
+						for k,v in pairs(no_change_subject) do 
 							if v == info1 then
 								return
 							end
@@ -2190,7 +2192,7 @@ function inv_create ()--создание инв-ря
 				info2 = inv_slot_house[i][3]
 
 				if lmb == 0 then
-					for k,v in pairs(no_use_subject) do 
+					for k,v in pairs(no_select_subject) do 
 						if v == info1 then
 							return
 						end
@@ -2208,8 +2210,8 @@ function inv_create ()--создание инв-ря
 					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
 					--if inv_slot_house[info3][2] ~= 0 then
 						
-						local no_use_subject_1 = {-1,1}
-						for k,v in pairs(no_use_subject_1) do 
+						
+						for k,v in pairs(no_change_subject) do 
 							if v == info1 then
 								return
 							end
@@ -2255,8 +2257,8 @@ function inv_create ()--создание инв-ря
 	for i=0,max_inv do
 		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
 			if button == "right" then
-				local no_use_subject_1 = {-1,0}
-				for k,v in pairs(no_use_subject_1) do 
+
+				for k,v in pairs(no_use_subject) do 
 					if v == info1 then
 						return
 					end
@@ -2279,12 +2281,6 @@ function inv_create ()--создание инв-ря
 
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
 		if lmb == 1 then
-			for k,v in pairs(no_use_subject) do
-				if v == info1 then
-					return
-				end
-			end
-
 			local x,y = guiGetPosition ( stats_window, false )
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then

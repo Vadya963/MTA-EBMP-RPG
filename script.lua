@@ -3614,6 +3614,8 @@ function()
 		setPedStat(playerid, stat, 1000)
 	end
 
+	sendPlayerMessage(playerid, "[TIPS] F1 - скрыть или показать курсор", color_tips[1], color_tips[2], color_tips[3])
+	sendPlayerMessage(playerid, "[TIPS] F2 - скрыть или показать худ", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] TAB - открыть инвентарь, ПКМ - использовать предмет, чтобы выкинуть переместите его за пределы инвентаря", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] X - крафт предметов", color_tips[1], color_tips[2], color_tips[3])
 	sendPlayerMessage(playerid, "[TIPS] Листать чат page up и page down", color_tips[1], color_tips[2], color_tips[3])
