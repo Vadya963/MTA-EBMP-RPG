@@ -31,7 +31,9 @@ local time_nalog = 12--время когда будет взиматься на�
 local price_hotel = 100--цена в отеле
 local crimes_giuseppe = 25--//прес-ия для джузеппе
 local car_theft_time = 10--время для угона
-local day_nalog = 7
+local day_nalog = 7--кол-во дней для оплаты налога
+local business_pos = {}--позиции бизнесов
+local house_pos = {}--позиции домов
 --законы
 local zakon_alcohol = 1
 local zakon_alcohol_crimes = 1
@@ -1151,6 +1153,12 @@ function debuginfo ()
 		setElementData(playerid, "mayoralty_shop", mayoralty_shop)
 		setElementData(playerid, "weapon_cops", weapon_cops)
 		setElementData(playerid, "sub_cops", sub_cops)
+
+		--позиции домов, бизнесов, зданий
+		setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
+		setElementData(playerid, "interior_job", interior_job)
+		setElementData(playerid, "house_pos", house_pos)
+		setElementData(playerid, "business_pos", business_pos)
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
@@ -2475,20 +2483,6 @@ function pickupUse( playerid )
 end
 addEventHandler( "onPickupUse", getRootElement(), pickupUse )
 
-function house_bussiness_job_pos_load( playerid )
-	for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, v["number"], v["x"], v["y"], v["z"], "house", house_bussiness_radius )
-	end
-
-	for h,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, v["number"], v["x"], v["y"], v["z"], "biz", house_bussiness_radius )
-	end
-
-	for h,v in pairs(interior_job) do 
-		triggerClientEvent( playerid, "event_bussines_house_fun", playerid, h, v[6], v[7], v[8], "job", house_bussiness_radius, v[11], v[12] )
-	end
-end
-
 function sqlite_load(playerid)
 	local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
 	if result[1] then
@@ -3444,6 +3438,8 @@ function displayLoadedRes ( res )--старт ресурсов
 			createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip )
 			createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )
 
+			house_pos[v["number"]] = {v["x"], v["y"], v["z"]}
+
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
@@ -3458,6 +3454,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
 			createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )
+
+			business_pos[v["number"]] = {v["x"], v["y"], v["z"]}
 
 			business_number = business_number+1
 		end
@@ -3633,6 +3631,27 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 	local x,y,z = getElementPosition(playerid)
 
 	if logged[playername] == 1 then
+		for k,v in pairs(sqlite("SELECT * FROM business_db")) do
+			if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_business[v["interior"]][1] and enter_business[playername] == 1 then
+				x,y,z = v["x"],v["y"],v["z"]
+				break
+			end
+		end
+
+		for k,v in pairs(sqlite("SELECT * FROM house_db")) do
+			if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] and enter_house[playername] == 1 then
+				x,y,z = v["x"],v["y"],v["z"]
+				break
+			end
+		end
+
+		for id,v in pairs(interior_job) do
+			if getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] and enter_job[playername] == 1 then
+				x,y,z = v[6],v[7],v[8]
+				break
+			end
+		end
+
 		local heal = getElementHealth( playerid )
 		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."', arrest = '"..arrest[playername].."', crimes = '"..crimes[playername].."', alcohol = '"..alcohol[playername].."', satiety = '"..satiety[playername].."', hygiene = '"..hygiene[playername].."', sleep = '"..sleep[playername].."', drugs = '"..drugs[playername].."' WHERE name = '"..playername.."'")
 
@@ -3832,8 +3851,6 @@ function reg_or_login(playerid)
 
 		save_player_action(playername, "[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 
-		house_bussiness_job_pos_load( playerid )
-
 	elseif result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
@@ -3870,8 +3887,6 @@ function reg_or_login(playerid)
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 
 		save_player_action(playername, "[log_fun] "..playername.." [ip - "..ip..", serial - "..serial.."]")
-
-		house_bussiness_job_pos_load( playerid )
 	end
 end
 
@@ -4715,7 +4730,7 @@ function left_alt_down (playerid, key, keyState)
 					setElementInterior(playerid, interior_business[id][1], interior_business[id][3], interior_business[id][4], interior_business[id][5])
 					return
 
-				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 and id ~= 5 then
+				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_business[id][1] and enter_business[playername] == 1 then
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
 
@@ -6663,13 +6678,11 @@ function (playerid)
 			createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 )
 			createPickup ( x, y, z, 3, house_icon, 10000 )
 
+			house_pos[dim] = {x, y, z}
+
 			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
-			
-			for k,playerid in pairs(getElementsByType("player")) do
-				triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "house", house_bussiness_radius )
-			end
 
 			save_realtor_action(playerid, "[sellhouse] "..playername.." [house - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 		else
@@ -6734,13 +6747,11 @@ function (playerid, cmd, id)
 				createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 )
 				createPickup ( x, y, z, 3, business_icon, 10000 )
 
+				business_pos[dim] = {x, y, z}
+
 				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
-				
-				for k,playerid in pairs(getElementsByType("player")) do
-					triggerClientEvent( playerid, "event_bussines_house_fun", playerid, dim, x, y, z, "biz", house_bussiness_radius )
-				end
 
 				save_realtor_action(playerid, "[sellbusiness] "..playername.." [business - "..dim..", x - "..x..", y - "..y..", z - "..z.."]")
 			else

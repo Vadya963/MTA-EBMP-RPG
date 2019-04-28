@@ -528,24 +528,6 @@ local weather_list = {
 	[22] = {"CLOUDY", 107,60},
 }
 
-local house_bussiness_radius = 0--радиус размещения бизнесов и домов
-local house_pos = {}
-local business_pos = {}
-local job_pos = {}
-function bussines_house_fun (i, x,y,z, value, radius, text, radius1)
-	if value == "biz" then
-		business_pos[i] = {x,y,z}
-	elseif value == "house" then
-		house_pos[i] = {x,y,z}
-	elseif value == "job" then
-		job_pos[i] = {x,y,z, text, radius1}
-	end
-
-	house_bussiness_radius = radius
-end
-addEvent( "event_bussines_house_fun", true )
-addEventHandler ( "event_bussines_house_fun", getRootElement(), bussines_house_fun )
-
 --перемещение картинки
 local lmb = 0--лкм
 local gui_selection = false
@@ -719,8 +701,8 @@ function createText ()
 	
 
 	if pos_timer == 1 then
-		for k,v in pairs(house_pos) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then
+		for k,v in pairs(getElementData(playerid, "house_pos")) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(playerid, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
@@ -733,8 +715,8 @@ function createText ()
 		end
 
 
-		for k,v in pairs(business_pos) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], house_bussiness_radius) then	
+		for k,v in pairs(getElementData(playerid, "business_pos")) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(playerid, "house_bussiness_radius")) then	
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
@@ -747,15 +729,15 @@ function createText ()
 		end
 
 
-		for k,v in pairs(job_pos) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[5]) then				
-				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
+		for k,v in pairs(getElementData(playerid, "interior_job")) do
+			if isPointInCircle3D(x,y,z, v[6],v[7],v[8], v[12]) then				
+				local coords = { getScreenFromWorldPosition( v[6],v[7],v[8]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
 					dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[4]..")", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT"..v[4]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[11]..")", 1, m2font_dx1 )
+					dxdrawtext ( "(Войти - ALT"..v[11]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 		end
