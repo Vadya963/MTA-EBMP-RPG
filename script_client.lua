@@ -1517,7 +1517,7 @@ function tablet_fun()--создание планшета
 	local browser = nil
 
 	gui_window = guiCreateStaticImage( pos_x, pos_Y, width, height, "comp/tablet-display.png", false )
-	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/fon.png", false, gui_window )
+	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/low_fon.png", false, gui_window )
 
 	local auction_menu = guiCreateStaticImage( 10, 10, 80, 60, "comp/auction.png", false, fon )
 	local youtube = guiCreateStaticImage( 100, 10, 85, 60, "comp/youtube.png", false, fon )
@@ -1525,6 +1525,7 @@ function tablet_fun()--создание планшета
 	local craft = guiCreateStaticImage( 270, 10, 55, 60, "comp/bookcraft.png", false, fon )
 	local carparking = guiCreateStaticImage( 340, 10, 60, 60, "comp/carparking.png", false, fon )
 	local shop = guiCreateStaticImage( 410, 10, 60, 60, "comp/shop.png", false, fon )
+	local handbook = guiCreateStaticImage( 480, 10, 60, 60, "comp/handbook.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -1906,6 +1907,26 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", job_ferm, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", shop, outputEditBox, false )
+
+
+	function outputEditBox( button, state, absoluteX, absoluteY )--список игроков
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		guiGridListAddColumn(shoplist, "№", 0.15)
+		guiGridListAddColumn(shoplist, "Имя", 0.8)
+		for k,v in pairs(getElementsByType("player")) do
+			guiGridListAddRow(shoplist, k, getPlayerName(v))
+		end
+	end
+	addEventHandler ( "onClientGUIClick", handbook, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

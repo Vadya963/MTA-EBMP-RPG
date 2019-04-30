@@ -35,7 +35,6 @@
 	<file src="speedometer/arrow_speed_v.png" />
 	<file src="speedometer/fuel_v.png" />
 
-	<file src="comp/fon.png" />
 	<file src="comp/tablet-display.png" />
 	<file src="comp/backbut.png" />
 	<file src="comp/forbut.png" />
@@ -55,6 +54,7 @@
 	<file src="comp/bookcraft.png" />
 	<file src="comp/carparking.png" />
 	<file src="comp/shop.png" />
+	<file src="comp/handbook.png" />
 	
 	<file src="0.png" />
 	<file src="1.png" />
