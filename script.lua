@@ -76,6 +76,7 @@ local lyme = {130,255,0}--лайм админский цвет
 local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 local purple = {175,0,255}--фиолетовый
+local gray = {150,150,150}--серый
 
 -------------------пользовательские функции----------------------------------------------
 function sendPlayerMessage(playerid, text, r, g, b)
@@ -164,6 +165,18 @@ function do_chat_player(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			sendPlayerMessage(player, "[DO] "..text, orange_do[1], orange_do[2], orange_do[3])
+		end
+	end
+end
+
+function b_chat_player(playerid, text)
+	local x,y,z = getElementPosition(playerid)
+
+	for k,player in pairs(getElementsByType("player")) do
+		local x1,y1,z1 = getElementPosition(player)
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
+			sendPlayerMessage(player, text, gray[1], gray[2], gray[3])
 		end
 	end
 end
@@ -1936,8 +1949,8 @@ function onChat(message, messageType)
 
 	if messageType ~= 1 then
 		local count = 0
-		local say = "(Всем) "..getPlayerName( playerid )..": " .. message
-		local say_10_r = "(10 метров) "..getPlayerName( playerid )..": " .. message
+		local say = "(Всем OOC) "..getPlayerName( playerid )..": " .. message
+		local say_10_r = "(Ближний IC) "..getPlayerName( playerid )..": " .. message
 
 		for k,player in pairs(getElementsByType("player")) do
 			local x,y,z = getElementPosition(playerid)
@@ -1952,7 +1965,7 @@ function onChat(message, messageType)
 		
 		if (count == 0) then
 		
-			sendPlayerMessage( getRootElement(), say, white[1], white[2], white[3] )
+			sendPlayerMessage( getRootElement(), say, gray[1], gray[2], gray[3] )
 
 			print("[CHAT] "..say)
 		
@@ -6674,6 +6687,27 @@ function (playerid, cmd, ...)
 	end
 
 	do_chat_player(playerid, playername.." "..text)
+end)
+
+addCommandHandler ( "b",
+function (playerid, cmd, ...)
+	local playername = getPlayerName ( playerid )
+	local text = ""
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	for k,v in ipairs(arg) do
+		text = text..v.." "
+	end
+
+	if text == "" then
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		return
+	end
+
+	b_chat_player(playerid, "(Ближний OOC) "..getPlayerName( playerid )..": "..text)
 end)
 
 addCommandHandler ( "try",
