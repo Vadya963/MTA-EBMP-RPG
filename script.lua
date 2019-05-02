@@ -6,7 +6,7 @@ function sqlite(text)
 	if string.find(text, "UPDATE") or string.find(text, "INSERT") or string.find(text, "DELETE") then
 		local time = getRealTime()
 		local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"].."] "
-		local hFile = fileOpen(":ebmp/save_sqlite.txt")
+		local hFile = fileOpen(":ebmp/save_sqlite.sql")
 		fileSetPos( hFile, fileGetSize( hFile ) )
 		fileWrite(hFile, client_time..text.."\n" )
 		fileClose(hFile)
