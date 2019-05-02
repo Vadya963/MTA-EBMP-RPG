@@ -3,7 +3,7 @@ local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
-local debuginfo = true
+local debuginfo = false
 local car_spawn_value = 0
 local hud = true
 local playerid = 0
@@ -365,7 +365,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	end
 	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
 
-	return text
+	return text,dimensions+sym+x
 end
 -----------------------------------------------------------------------------------------
 
@@ -1550,14 +1550,23 @@ function tablet_fun()--создание планшета
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local buy_subject = m2gui_button( 100, height_fon-16, "Купить", false, low_fon )
-			local return_subject = m2gui_button( 200, height_fon-16, "Вернуть", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local buy_subject,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Купить", false, low_fon )
+			local return_subject,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Вернуть", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 				destroyElement(low_fon)
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить меню аука
+				guiGridListClear(shoplist)
+				for k,v in pairs(getElementData(playerid, "auc")) do
+					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"])
+				end
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--купить предмет
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -1612,8 +1621,8 @@ function tablet_fun()--создание планшета
 			local text_money = m2gui_label ( 0, 115, 200, 15, "Введите стоимость предмета", false, low_fon )
 			local edit_money = guiCreateEdit ( 0, 135, 200, 25, "", false, low_fon )
 
-			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local sell_subject = m2gui_button( 100, height_fon-16, "Продать", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local sell_subject,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Продать", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 				destroyElement(low_fon)
@@ -1751,8 +1760,8 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
-		local create = m2gui_button( 150, height_fon-16, "Создать", false, low_fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local create,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Создать", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
@@ -1785,13 +1794,22 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
-		local return_car = m2gui_button( 150, height_fon-16, "Забрать т/с", false, low_fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local return_car,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Забрать т/с", false, low_fon )
+		local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			guiGridListClear(shoplist)
+			for k,v in pairs(getElementData(playerid, "carparking_table")) do
+				guiGridListAddRow(shoplist, v)
+			end
+		end
+		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуть тс
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -1836,13 +1854,22 @@ function tablet_fun()--создание планшета
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
 			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "0", false, low_fon )
-			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local complete_button = m2gui_button( 100, height_fon-16, "Выполнить", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Выполнить", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				guiGridListClear(shoplist)
+				for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+					guiGridListAddRow(shoplist, v[2], v[3])
+				end
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -1875,13 +1902,22 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
-			local home = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			local complete_button = m2gui_button( 100, height_fon-16, "Устроиться", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Устроиться", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				guiGridListClear(shoplist)
+				for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+					guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
+				end
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )

@@ -351,7 +351,7 @@ local info_png = {
 	[62] = {"коробка с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия таксиста", "шт"},
-	[65] = {"инкасаторская сумка", "$ в сумке"},
+	[65] = {"инкассаторская сумка", "$ в сумке"},
 	[66] = {"лицензия инкассатора", "шт"},
 	[67] = {"бензопила", "шт"},
 	[68] = {"дрова", "кг"},
@@ -640,7 +640,7 @@ local cash_car = {
 	--[423] = {"MRWHOOP", 29000},--грузовик мороженого
 	[424] = {"BFINJECT", 15000},
 	[426] = {"PREMIER", 25000},
-	[428] = {"SECURICA", 40000},--инкасаторский грузовик
+	[428] = {"SECURICA", 40000},--инкассаторский грузовик
 	[429] = {"BANSHEE", 45000},
 	--[431] = {"BUS", 15000},
 	--[432] = {"RHINO", 110000},--танк
@@ -1313,7 +1313,7 @@ function job_timer2 ()
 				end
 
 
-			elseif job[playername] == 3 then--работа инкасатора
+			elseif job[playername] == 3 then--работа инкассатора
 				if vehicleid then
 					if getElementModel(vehicleid) == down_car_subject[2][6] then
 						if getSpeed(vehicleid) < 1 then
@@ -3315,6 +3315,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		car_spawn_value = 1
 
 		setTime(0,0)
+		setGameType ( "discord.gg/000000" )--ссылка на дискорд
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(freez_car, 1000, 0)--заморозка авто и не только
@@ -4718,7 +4719,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			elseif id1 == 65 then
 				if search_inv_player(playerid, 66, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не инкасатор", red[1], red[2], red[3])
+					sendPlayerMessage(playerid, "[ERROR] Вы не инкассатор", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 24 or id1 == 73 then
@@ -5586,7 +5587,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 			return
 
-		elseif id1 == 65 then--инкасаторский сумка
+		elseif id1 == 65 then--инкассаторский сумка
 			local randomize = id2
 
 			id2 = 0
@@ -5601,7 +5602,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-		elseif id1 == 66 then--лиц. инкасатора
+		elseif id1 == 66 then--лиц. инкассатора
 			if crimes[playername] ~= 0 then
 				sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
 				return
@@ -5610,7 +5611,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if job[playername] == 0 then
 				job[playername] = 3
 
-				me_chat(playerid, playername.." вышел(ла) на работу Инкасатор")
+				me_chat(playerid, playername.." вышел(ла) на работу Инкассатор")
 			else
 				job[playername] = 0
 
@@ -5696,7 +5697,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			if (id2 ~= 0) then
 			
-				sendPlayerMessage(playerid, "[ERROR] Рядом нет инкасаторской машины", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] Рядом нет инкассаторской машины", red[1], red[2], red[3])
 				return
 			end
 
