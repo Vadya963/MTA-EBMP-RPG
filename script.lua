@@ -377,6 +377,7 @@ local info_png = {
 	[88] = {"тушка коровы", "$ за штуку"},
 	[89] = {"мешок с кормом", "$ за штуку"},
 	[90] = {"колба", "реагент"},
+	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -916,7 +917,6 @@ local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, ин
 local down_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6}
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 24, 456},--порт лс
 	{2308.81640625,-13.25,26.7421875, 15, 65, 428},--банк
-	{-1990.5732421875,-2384.921875,30.625, 15, 68, 455},--лесопилка
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 73, 456},--порт лс
 	{-1813.2890625,-1654.3330078125,22.398532867432, 15, 75, 408},--свалка
 	{2463.7587890625,-2716.375,1.1451852619648, 15, 78, 453},--доки лс
@@ -928,6 +928,7 @@ local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интер
 	{942.4775390625,2117.900390625,1011.0302734375, 5, 48, 1, 1},--мясокомбинат
 	{2564.779296875,-1293.0673828125,1044.125, 2, 62, 2, 6},--завод продуктов
 	{681.7744140625,823.8447265625,-26.840600967407, 5, 71, 0, 0},--рудник лв
+	{-488.2119140625,-176.8603515625,78.2109375, 5, 68, 0, 0},--склад бревен
 }
 
 local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пнг2 6, зп 7, анимация1 8, анимация2 9, интерьер 10, мир 11, время работы анимации 12} также нужно прописать ид пнг 
@@ -5701,7 +5702,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-		elseif id1 == 84 then
+		elseif id1 == 84 then--отмычка
 			if(vehicleid) then
 			
 				if(job[playername] == 6) then
@@ -5783,6 +5784,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				me_chat(playerid, playername.." закончил(а) работу")
 			end
 			return
+
+		elseif id1 == 91 then--ордер
+			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..info_png[id1][id2+2])
+			return
+
 		else
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
@@ -6328,10 +6334,17 @@ function (playerid, cmd, value, id)
 			local plate = getVehiclePlateText(vehicleid)
 
 			if (plate == id) then
+
+				if(search_inv_player(playerid, 91, 2) == 0) then
+					sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][2+2], red[1], red[2], red[3])
+					return
+				end
 			
 				if (isPointInCircle3D(x,y,z, x1,y1,z1, 10.0)) then
 				
 					me_chat(playerid, playername.." обыскал(а) т/с с номером "..id)
+
+					inv_player_delet(playerid, 91, 2)
 
 					for k,v in pairs(weapon) do
 						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
@@ -6362,10 +6375,17 @@ function (playerid, cmd, value, id)
 			local id = tonumber(id)
 
 			if (v["number"] == id) then
+
+				if(search_inv_player(playerid, 91, 3) == 0) then
+					sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][3+2], red[1], red[2], red[3])
+					return
+				end
 			
 				if (isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], 10.0)) then
 				
 					me_chat(playerid, playername.." обыскал(а) дом с номером "..id)
+
+					inv_player_delet(playerid, 91, 3)
 
 					for k,v in pairs(weapon) do
 						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then

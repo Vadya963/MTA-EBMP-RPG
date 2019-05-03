@@ -1,385 +1,386 @@
 <meta>
-	<info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server" />
+	<info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server"/>
 
-	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0" />
+	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 	
 	<script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client" cache="false"/>
 	<!--<script src="ignore_server.lua" type="server"/>-->
 
-	<map src="map/map_gta.map" />
+	<map src="map/map_gta.map"/>
 	<script src="map/mapEditorScriptingExtension_s.lua" type="server"></script>
 	<script src="map/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
 
-	<file src="parachute/body_hit_sound.mp3" />
+	<file src="parachute/body_hit_sound.mp3"/>
 
 	<!--худ-->
-	<file src="hud/alcohol.png" />
-	<file src="hud/health.png" />
-	<file src="hud/hygiene.png" />
-	<file src="hud/satiety.png" />
-	<file src="hud/sleep.png" />
-	<file src="hud/drugs.png" />
+	<file src="hud/alcohol.png"/>
+	<file src="hud/health.png"/>
+	<file src="hud/hygiene.png"/>
+	<file src="hud/satiety.png"/>
+	<file src="hud/sleep.png"/>
+	<file src="hud/drugs.png"/>
 
-	<file src="gui/m2font.ttf" />
-	<file src="gui/gui7.png" />
+	<file src="gui/m2font.ttf"/>
+	<file src="gui/gui7.png"/>
 
 	<!--мой сайт-->
-	<file src="wiki/comand.html" />
-	<file src="wiki/index.html" />
-	<file src="wiki/spisok.html" />
-	<file src="wiki/style.css" />
-	<file src="wiki/Mafia_2_2.jpg" />
+	<file src="wiki/comand.html"/>
+	<file src="wiki/index.html"/>
+	<file src="wiki/spisok.html"/>
+	<file src="wiki/style.css"/>
+	<file src="wiki/Mafia_2_2.jpg"/>
 
-	<file src="speedometer/speed_v.png" />
-	<file src="speedometer/arrow_speed_v.png" />
-	<file src="speedometer/fuel_v.png" />
+	<file src="speedometer/speed_v.png"/>
+	<file src="speedometer/arrow_speed_v.png"/>
+	<file src="speedometer/fuel_v.png"/>
 
-	<file src="comp/tablet-display.png" />
-	<file src="comp/backbut.png" />
-	<file src="comp/forbut.png" />
-	<file src="comp/homebut.png" />
-	<file src="comp/update.png" />
-	<file src="comp/auction.png" />
-	<file src="comp/low_fon.png" />
-	<file src="comp/low_fon1.png" />
-	<file src="comp/CLOUDY.png" />
-	<file src="comp/SUNNY.png" />
-	<file src="comp/FOGGY.png" />
-	<file src="comp/RAINY.png" />
-	<file src="comp/SANDSTORM.png" />
-	<file src="comp/connect.png" />
-	<file src="comp/wiki.png" />
-	<file src="comp/youtube.png" />
-	<file src="comp/bookcraft.png" />
-	<file src="comp/carparking.png" />
-	<file src="comp/shop.png" />
-	<file src="comp/handbook.png" />
+	<file src="comp/tablet-display.png"/>
+	<file src="comp/backbut.png"/>
+	<file src="comp/forbut.png"/>
+	<file src="comp/homebut.png"/>
+	<file src="comp/update.png"/>
+	<file src="comp/auction.png"/>
+	<file src="comp/low_fon.png"/>
+	<file src="comp/low_fon1.png"/>
+	<file src="comp/CLOUDY.png"/>
+	<file src="comp/SUNNY.png"/>
+	<file src="comp/FOGGY.png"/>
+	<file src="comp/RAINY.png"/>
+	<file src="comp/SANDSTORM.png"/>
+	<file src="comp/connect.png"/>
+	<file src="comp/wiki.png"/>
+	<file src="comp/youtube.png"/>
+	<file src="comp/bookcraft.png"/>
+	<file src="comp/carparking.png"/>
+	<file src="comp/shop.png"/>
+	<file src="comp/handbook.png"/>
 	
-	<file src="0.png" />
-	<file src="1.png" />
-	<file src="2.png" />
-	<file src="3.png" />
-	<file src="4.png" />
-	<file src="5.png" />
-	<file src="6.png" />
-	<file src="7.png" />
-	<file src="8.png" />
-	<file src="9.png" />
-	<file src="10.png" />
-	<file src="11.png" />
-	<file src="12.png" />
-	<file src="13.png" />
-	<file src="14.png" />
-	<file src="15.png" />
-	<file src="16.png" />
-	<file src="17.png" />
-	<file src="18.png" />
-	<file src="19.png" />
-	<file src="20.png" />
-	<file src="21.png" />
-	<file src="22.png" />
-	<file src="23.png" />
-	<file src="24.png" />
-	<file src="25.png" />
-	<file src="26.png" />
-	<file src="27.png" />
-	<file src="28.png" />
-	<file src="29.png" />
-	<file src="30.png" />
-	<file src="31.png" />
-	<file src="32.png" />
-	<file src="33.png" />
-	<file src="34.png" />
-	<file src="35.png" />
-	<file src="36.png" />
-	<file src="37.png" />
-	<file src="38.png" />
-	<file src="39.png" />
-	<file src="40.png" />
-	<file src="41.png" />
-	<file src="42.png" />
-	<file src="43.png" />
-	<file src="44.png" />
-	<file src="45.png" />
-	<file src="46.png" />
-	<file src="47.png" />
-	<file src="48.png" />
-	<file src="49.png" />
-	<file src="50.png" />
-	<file src="51.png" />
-	<file src="52.png" />
-	<file src="53.png" />
-	<file src="54.png" />
-	<file src="55.png" />
-	<file src="56.png" />
-	<file src="57.png" />
-	<file src="58.png" />
-	<file src="59.png" />
-	<file src="60.png" />
-	<file src="61.png" />
-	<file src="62.png" />
-	<file src="63.png" />
-	<file src="64.png" />
-	<file src="65.png" />
-	<file src="66.png" />
-	<file src="67.png" />
-	<file src="68.png" />
-	<file src="69.png" />
-	<file src="70.png" />
-	<file src="71.png" />
-	<file src="72.png" />
-	<file src="73.png" />
-	<file src="74.png" />
-	<file src="75.png" />
-	<file src="76.png" />
-	<file src="77.png" />
-	<file src="78.png" />
-	<file src="79.png" />
-	<file src="80.png" />
-	<file src="81.png" />
-	<file src="82.png" />
-	<file src="83.png" />
-	<file src="84.png" />
-	<file src="85.png" />
-	<file src="86.png" />
-	<file src="87.png" />
-	<file src="88.png" />
-	<file src="89.png" />
-	<file src="90.png" />
+	<file src="0.png"/>
+	<file src="1.png"/>
+	<file src="2.png"/>
+	<file src="3.png"/>
+	<file src="4.png"/>
+	<file src="5.png"/>
+	<file src="6.png"/>
+	<file src="7.png"/>
+	<file src="8.png"/>
+	<file src="9.png"/>
+	<file src="10.png"/>
+	<file src="11.png"/>
+	<file src="12.png"/>
+	<file src="13.png"/>
+	<file src="14.png"/>
+	<file src="15.png"/>
+	<file src="16.png"/>
+	<file src="17.png"/>
+	<file src="18.png"/>
+	<file src="19.png"/>
+	<file src="20.png"/>
+	<file src="21.png"/>
+	<file src="22.png"/>
+	<file src="23.png"/>
+	<file src="24.png"/>
+	<file src="25.png"/>
+	<file src="26.png"/>
+	<file src="27.png"/>
+	<file src="28.png"/>
+	<file src="29.png"/>
+	<file src="30.png"/>
+	<file src="31.png"/>
+	<file src="32.png"/>
+	<file src="33.png"/>
+	<file src="34.png"/>
+	<file src="35.png"/>
+	<file src="36.png"/>
+	<file src="37.png"/>
+	<file src="38.png"/>
+	<file src="39.png"/>
+	<file src="40.png"/>
+	<file src="41.png"/>
+	<file src="42.png"/>
+	<file src="43.png"/>
+	<file src="44.png"/>
+	<file src="45.png"/>
+	<file src="46.png"/>
+	<file src="47.png"/>
+	<file src="48.png"/>
+	<file src="49.png"/>
+	<file src="50.png"/>
+	<file src="51.png"/>
+	<file src="52.png"/>
+	<file src="53.png"/>
+	<file src="54.png"/>
+	<file src="55.png"/>
+	<file src="56.png"/>
+	<file src="57.png"/>
+	<file src="58.png"/>
+	<file src="59.png"/>
+	<file src="60.png"/>
+	<file src="61.png"/>
+	<file src="62.png"/>
+	<file src="63.png"/>
+	<file src="64.png"/>
+	<file src="65.png"/>
+	<file src="66.png"/>
+	<file src="67.png"/>
+	<file src="68.png"/>
+	<file src="69.png"/>
+	<file src="70.png"/>
+	<file src="71.png"/>
+	<file src="72.png"/>
+	<file src="73.png"/>
+	<file src="74.png"/>
+	<file src="75.png"/>
+	<file src="76.png"/>
+	<file src="77.png"/>
+	<file src="78.png"/>
+	<file src="79.png"/>
+	<file src="80.png"/>
+	<file src="81.png"/>
+	<file src="82.png"/>
+	<file src="83.png"/>
+	<file src="84.png"/>
+	<file src="85.png"/>
+	<file src="86.png"/>
+	<file src="87.png"/>
+	<file src="88.png"/>
+	<file src="89.png"/>
+	<file src="90.png"/>
+	<file src="91.png"/>
 	
-	<file src="upgrade/999_w_s.png" />
-	<file src="upgrade/1000_w_s.jpg" />
-	<file src="upgrade/1001_w_s.jpg" />
-	<file src="upgrade/1002_w_s.jpg" />
-	<file src="upgrade/1003_w_s.jpg" />
-	<file src="upgrade/1004_w_s.jpg" />
-	<file src="upgrade/1005_w_s.jpg" />
-	<file src="upgrade/1006_w_s.jpg" />
-	<file src="upgrade/1007_w_s.jpg" />
-	<file src="upgrade/1008_w_s.jpg" />
-	<file src="upgrade/1009_w_s.jpg" />
-	<file src="upgrade/1010_w_s.jpg" />
-	<file src="upgrade/1011_w_s.jpg" />
-	<file src="upgrade/1012_w_s.jpg" />
-	<file src="upgrade/1013_w_s.jpg" />
-	<file src="upgrade/1014_w_s.jpg" />
-	<file src="upgrade/1015_w_s.jpg" />
-	<file src="upgrade/1016_w_s.jpg" />
-	<file src="upgrade/1017_w_s.jpg" />
-	<file src="upgrade/1018_w_s.jpg" />
-	<file src="upgrade/1019_w_s.jpg" />
-	<file src="upgrade/1020_w_s.jpg" />
-	<file src="upgrade/1021_w_s.jpg" />
-	<file src="upgrade/1022_w_s.jpg" />
-	<file src="upgrade/1023_w_s.jpg" />
-	<file src="upgrade/1024_w_s.jpg" />
-	<file src="upgrade/1025_w_s.jpg" />
-	<file src="upgrade/1026_w_s.jpg" />
-	<file src="upgrade/1027_w_s.jpg" />
-	<file src="upgrade/1028_w_s.jpg" />
-	<file src="upgrade/1029_w_s.jpg" />
-	<file src="upgrade/1030_w_s.jpg" />
-	<file src="upgrade/1031_w_s.jpg" />
-	<file src="upgrade/1032_w_s.jpg" />
-	<file src="upgrade/1033_w_s.jpg" />
-	<file src="upgrade/1034_w_s.jpg" />
-	<file src="upgrade/1035_w_s.jpg" />
-	<file src="upgrade/1036_w_s.jpg" />
-	<file src="upgrade/1037_w_s.jpg" />
-	<file src="upgrade/1038_w_s.jpg" />
-	<file src="upgrade/1039_w_s.jpg" />
-	<file src="upgrade/1040_w_s.jpg" />
-	<file src="upgrade/1041_w_s.jpg" />
-	<file src="upgrade/1042_w_s.jpg" />
-	<file src="upgrade/1043_w_s.jpg" />
-	<file src="upgrade/1044_w_s.jpg" />
-	<file src="upgrade/1045_w_s.jpg" />
-	<file src="upgrade/1046_w_s.jpg" />
-	<file src="upgrade/1047_w_s.jpg" />
-	<file src="upgrade/1048_w_s.jpg" />
-	<file src="upgrade/1049_w_s.jpg" />
-	<file src="upgrade/1050_w_s.jpg" />
-	<file src="upgrade/1051_w_s.jpg" />
-	<file src="upgrade/1052_w_s.jpg" />
-	<file src="upgrade/1053_w_s.jpg" />
-	<file src="upgrade/1054_w_s.jpg" />
-	<file src="upgrade/1055_w_s.jpg" />
-	<file src="upgrade/1056_w_s.jpg" />
-	<file src="upgrade/1057_w_s.jpg" />
-	<file src="upgrade/1058_w_s.jpg" />
-	<file src="upgrade/1059_w_s.jpg" />
-	<file src="upgrade/1060_w_s.jpg" />
-	<file src="upgrade/1061_w_s.jpg" />
-	<file src="upgrade/1062_w_s.jpg" />
-	<file src="upgrade/1063_w_s.jpg" />
-	<file src="upgrade/1064_w_s.jpg" />
-	<file src="upgrade/1065_w_s.jpg" />
-	<file src="upgrade/1066_w_s.jpg" />
-	<file src="upgrade/1067_w_s.jpg" />
-	<file src="upgrade/1068_w_s.jpg" />
-	<file src="upgrade/1069_w_s.jpg" />
-	<file src="upgrade/1070_w_s.jpg" />
-	<file src="upgrade/1071_w_s.jpg" />
-	<file src="upgrade/1072_w_s.jpg" />
-	<file src="upgrade/1073_w_s.jpg" />
-	<file src="upgrade/1074_w_s.jpg" />
-	<file src="upgrade/1075_w_s.jpg" />
-	<file src="upgrade/1076_w_s.jpg" />
-	<file src="upgrade/1077_w_s.jpg" />
-	<file src="upgrade/1078_w_s.jpg" />
-	<file src="upgrade/1079_w_s.jpg" />
-	<file src="upgrade/1080_w_s.jpg" />
-	<file src="upgrade/1081_w_s.jpg" />
-	<file src="upgrade/1082_w_s.jpg" />
-	<file src="upgrade/1083_w_s.jpg" />
-	<file src="upgrade/1084_w_s.jpg" />
-	<file src="upgrade/1085_w_s.jpg" />
-	<file src="upgrade/1086_w_s.jpg" />
-	<file src="upgrade/1087_w_s.jpg" />
-	<file src="upgrade/1088_w_s.jpg" />
-	<file src="upgrade/1089_w_s.jpg" />
-	<file src="upgrade/1090_w_s.jpg" />
-	<file src="upgrade/1091_w_s.jpg" />
-	<file src="upgrade/1092_w_s.jpg" />
-	<file src="upgrade/1093_w_s.jpg" />
-	<file src="upgrade/1094_w_s.jpg" />
-	<file src="upgrade/1095_w_s.jpg" />
-	<file src="upgrade/1096_w_s.jpg" />
-	<file src="upgrade/1097_w_s.jpg" />
-	<file src="upgrade/1098_w_s.jpg" />
-	<file src="upgrade/1099_w_s.jpg" />
-	<file src="upgrade/1100_w_s.jpg" />
-	<file src="upgrade/1101_w_s.jpg" />
-	<file src="upgrade/1102_w_s.jpg" />
-	<file src="upgrade/1103_w_s.jpg" />
-	<file src="upgrade/1104_w_s.jpg" />
-	<file src="upgrade/1105_w_s.jpg" />
-	<file src="upgrade/1106_w_s.jpg" />
-	<file src="upgrade/1107_w_s.jpg" />
-	<file src="upgrade/1108_w_s.jpg" />
-	<file src="upgrade/1109_w_s.jpg" />
-	<file src="upgrade/1110_w_s.jpg" />
-	<file src="upgrade/1111_w_s.jpg" />
-	<file src="upgrade/1112_w_s.jpg" />
-	<file src="upgrade/1113_w_s.jpg" />
-	<file src="upgrade/1114_w_s.jpg" />
-	<file src="upgrade/1115_w_s.jpg" />
-	<file src="upgrade/1116_w_s.jpg" />
-	<file src="upgrade/1117_w_s.jpg" />
-	<file src="upgrade/1118_w_s.jpg" />
-	<file src="upgrade/1119_w_s.jpg" />
-	<file src="upgrade/1120_w_s.jpg" />
-	<file src="upgrade/1121_w_s.jpg" />
-	<file src="upgrade/1122_w_s.jpg" />
-	<file src="upgrade/1123_w_s.jpg" />
-	<file src="upgrade/1124_w_s.jpg" />
-	<file src="upgrade/1125_w_s.jpg" />
-	<file src="upgrade/1126_w_s.jpg" />
-	<file src="upgrade/1127_w_s.jpg" />
-	<file src="upgrade/1128_w_s.jpg" />
-	<file src="upgrade/1129_w_s.jpg" />
-	<file src="upgrade/1130_w_s.jpg" />
-	<file src="upgrade/1131_w_s.jpg" />
-	<file src="upgrade/1132_w_s.jpg" />
-	<file src="upgrade/1133_w_s.jpg" />
-	<file src="upgrade/1134_w_s.jpg" />
-	<file src="upgrade/1135_w_s.jpg" />
-	<file src="upgrade/1136_w_s.jpg" />
-	<file src="upgrade/1137_w_s.jpg" />
-	<file src="upgrade/1138_w_s.jpg" />
-	<file src="upgrade/1139_w_s.jpg" />
-	<file src="upgrade/1140_w_s.jpg" />
-	<file src="upgrade/1141_w_s.jpg" />
-	<file src="upgrade/1142_w_s.jpg" />
-	<file src="upgrade/1143_w_s.jpg" />
-	<file src="upgrade/1144_w_s.jpg" />
-	<file src="upgrade/1145_w_s.jpg" />
-	<file src="upgrade/1146_w_s.jpg" />
-	<file src="upgrade/1147_w_s.jpg" />
-	<file src="upgrade/1148_w_s.jpg" />
-	<file src="upgrade/1149_w_s.jpg" />
-	<file src="upgrade/1150_w_s.jpg" />
-	<file src="upgrade/1151_w_s.jpg" />
-	<file src="upgrade/1152_w_s.jpg" />
-	<file src="upgrade/1153_w_s.jpg" />
-	<file src="upgrade/1154_w_s.jpg" />
-	<file src="upgrade/1155_w_s.jpg" />
-	<file src="upgrade/1156_w_s.jpg" />
-	<file src="upgrade/1157_w_s.jpg" />
-	<file src="upgrade/1158_w_s.jpg" />
-	<file src="upgrade/1159_w_s.jpg" />
-	<file src="upgrade/1160_w_s.jpg" />
-	<file src="upgrade/1161_w_s.jpg" />
-	<file src="upgrade/1162_w_s.jpg" />
-	<file src="upgrade/1163_w_s.jpg" />
-	<file src="upgrade/1164_w_s.jpg" />
-	<file src="upgrade/1165_w_s.jpg" />
-	<file src="upgrade/1166_w_s.jpg" />
-	<file src="upgrade/1167_w_s.jpg" />
-	<file src="upgrade/1168_w_s.jpg" />
-	<file src="upgrade/1169_w_s.jpg" />
-	<file src="upgrade/1170_w_s.jpg" />
-	<file src="upgrade/1171_w_s.jpg" />
-	<file src="upgrade/1172_w_s.jpg" />
-	<file src="upgrade/1173_w_s.jpg" />
-	<file src="upgrade/1174_w_s.jpg" />
-	<file src="upgrade/1175_w_s.jpg" />
-	<file src="upgrade/1176_w_s.jpg" />
-	<file src="upgrade/1177_w_s.jpg" />
-	<file src="upgrade/1178_w_s.jpg" />
-	<file src="upgrade/1179_w_s.jpg" />
-	<file src="upgrade/1180_w_s.jpg" />
-	<file src="upgrade/1181_w_s.jpg" />
-	<file src="upgrade/1182_w_s.jpg" />
-	<file src="upgrade/1183_w_s.jpg" />
-	<file src="upgrade/1184_w_s.jpg" />
-	<file src="upgrade/1185_w_s.jpg" />
-	<file src="upgrade/1186_w_s.jpg" />
-	<file src="upgrade/1187_w_s.jpg" />
-	<file src="upgrade/1188_w_s.jpg" />
-	<file src="upgrade/1189_w_s.jpg" />
-	<file src="upgrade/1190_w_s.jpg" />
-	<file src="upgrade/1191_w_s.jpg" />
-	<file src="upgrade/1192_w_s.jpg" />
-	<file src="upgrade/1193_w_s.jpg" />
+	<file src="upgrade/999_w_s.png"/>
+	<file src="upgrade/1000_w_s.jpg"/>
+	<file src="upgrade/1001_w_s.jpg"/>
+	<file src="upgrade/1002_w_s.jpg"/>
+	<file src="upgrade/1003_w_s.jpg"/>
+	<file src="upgrade/1004_w_s.jpg"/>
+	<file src="upgrade/1005_w_s.jpg"/>
+	<file src="upgrade/1006_w_s.jpg"/>
+	<file src="upgrade/1007_w_s.jpg"/>
+	<file src="upgrade/1008_w_s.jpg"/>
+	<file src="upgrade/1009_w_s.jpg"/>
+	<file src="upgrade/1010_w_s.jpg"/>
+	<file src="upgrade/1011_w_s.jpg"/>
+	<file src="upgrade/1012_w_s.jpg"/>
+	<file src="upgrade/1013_w_s.jpg"/>
+	<file src="upgrade/1014_w_s.jpg"/>
+	<file src="upgrade/1015_w_s.jpg"/>
+	<file src="upgrade/1016_w_s.jpg"/>
+	<file src="upgrade/1017_w_s.jpg"/>
+	<file src="upgrade/1018_w_s.jpg"/>
+	<file src="upgrade/1019_w_s.jpg"/>
+	<file src="upgrade/1020_w_s.jpg"/>
+	<file src="upgrade/1021_w_s.jpg"/>
+	<file src="upgrade/1022_w_s.jpg"/>
+	<file src="upgrade/1023_w_s.jpg"/>
+	<file src="upgrade/1024_w_s.jpg"/>
+	<file src="upgrade/1025_w_s.jpg"/>
+	<file src="upgrade/1026_w_s.jpg"/>
+	<file src="upgrade/1027_w_s.jpg"/>
+	<file src="upgrade/1028_w_s.jpg"/>
+	<file src="upgrade/1029_w_s.jpg"/>
+	<file src="upgrade/1030_w_s.jpg"/>
+	<file src="upgrade/1031_w_s.jpg"/>
+	<file src="upgrade/1032_w_s.jpg"/>
+	<file src="upgrade/1033_w_s.jpg"/>
+	<file src="upgrade/1034_w_s.jpg"/>
+	<file src="upgrade/1035_w_s.jpg"/>
+	<file src="upgrade/1036_w_s.jpg"/>
+	<file src="upgrade/1037_w_s.jpg"/>
+	<file src="upgrade/1038_w_s.jpg"/>
+	<file src="upgrade/1039_w_s.jpg"/>
+	<file src="upgrade/1040_w_s.jpg"/>
+	<file src="upgrade/1041_w_s.jpg"/>
+	<file src="upgrade/1042_w_s.jpg"/>
+	<file src="upgrade/1043_w_s.jpg"/>
+	<file src="upgrade/1044_w_s.jpg"/>
+	<file src="upgrade/1045_w_s.jpg"/>
+	<file src="upgrade/1046_w_s.jpg"/>
+	<file src="upgrade/1047_w_s.jpg"/>
+	<file src="upgrade/1048_w_s.jpg"/>
+	<file src="upgrade/1049_w_s.jpg"/>
+	<file src="upgrade/1050_w_s.jpg"/>
+	<file src="upgrade/1051_w_s.jpg"/>
+	<file src="upgrade/1052_w_s.jpg"/>
+	<file src="upgrade/1053_w_s.jpg"/>
+	<file src="upgrade/1054_w_s.jpg"/>
+	<file src="upgrade/1055_w_s.jpg"/>
+	<file src="upgrade/1056_w_s.jpg"/>
+	<file src="upgrade/1057_w_s.jpg"/>
+	<file src="upgrade/1058_w_s.jpg"/>
+	<file src="upgrade/1059_w_s.jpg"/>
+	<file src="upgrade/1060_w_s.jpg"/>
+	<file src="upgrade/1061_w_s.jpg"/>
+	<file src="upgrade/1062_w_s.jpg"/>
+	<file src="upgrade/1063_w_s.jpg"/>
+	<file src="upgrade/1064_w_s.jpg"/>
+	<file src="upgrade/1065_w_s.jpg"/>
+	<file src="upgrade/1066_w_s.jpg"/>
+	<file src="upgrade/1067_w_s.jpg"/>
+	<file src="upgrade/1068_w_s.jpg"/>
+	<file src="upgrade/1069_w_s.jpg"/>
+	<file src="upgrade/1070_w_s.jpg"/>
+	<file src="upgrade/1071_w_s.jpg"/>
+	<file src="upgrade/1072_w_s.jpg"/>
+	<file src="upgrade/1073_w_s.jpg"/>
+	<file src="upgrade/1074_w_s.jpg"/>
+	<file src="upgrade/1075_w_s.jpg"/>
+	<file src="upgrade/1076_w_s.jpg"/>
+	<file src="upgrade/1077_w_s.jpg"/>
+	<file src="upgrade/1078_w_s.jpg"/>
+	<file src="upgrade/1079_w_s.jpg"/>
+	<file src="upgrade/1080_w_s.jpg"/>
+	<file src="upgrade/1081_w_s.jpg"/>
+	<file src="upgrade/1082_w_s.jpg"/>
+	<file src="upgrade/1083_w_s.jpg"/>
+	<file src="upgrade/1084_w_s.jpg"/>
+	<file src="upgrade/1085_w_s.jpg"/>
+	<file src="upgrade/1086_w_s.jpg"/>
+	<file src="upgrade/1087_w_s.jpg"/>
+	<file src="upgrade/1088_w_s.jpg"/>
+	<file src="upgrade/1089_w_s.jpg"/>
+	<file src="upgrade/1090_w_s.jpg"/>
+	<file src="upgrade/1091_w_s.jpg"/>
+	<file src="upgrade/1092_w_s.jpg"/>
+	<file src="upgrade/1093_w_s.jpg"/>
+	<file src="upgrade/1094_w_s.jpg"/>
+	<file src="upgrade/1095_w_s.jpg"/>
+	<file src="upgrade/1096_w_s.jpg"/>
+	<file src="upgrade/1097_w_s.jpg"/>
+	<file src="upgrade/1098_w_s.jpg"/>
+	<file src="upgrade/1099_w_s.jpg"/>
+	<file src="upgrade/1100_w_s.jpg"/>
+	<file src="upgrade/1101_w_s.jpg"/>
+	<file src="upgrade/1102_w_s.jpg"/>
+	<file src="upgrade/1103_w_s.jpg"/>
+	<file src="upgrade/1104_w_s.jpg"/>
+	<file src="upgrade/1105_w_s.jpg"/>
+	<file src="upgrade/1106_w_s.jpg"/>
+	<file src="upgrade/1107_w_s.jpg"/>
+	<file src="upgrade/1108_w_s.jpg"/>
+	<file src="upgrade/1109_w_s.jpg"/>
+	<file src="upgrade/1110_w_s.jpg"/>
+	<file src="upgrade/1111_w_s.jpg"/>
+	<file src="upgrade/1112_w_s.jpg"/>
+	<file src="upgrade/1113_w_s.jpg"/>
+	<file src="upgrade/1114_w_s.jpg"/>
+	<file src="upgrade/1115_w_s.jpg"/>
+	<file src="upgrade/1116_w_s.jpg"/>
+	<file src="upgrade/1117_w_s.jpg"/>
+	<file src="upgrade/1118_w_s.jpg"/>
+	<file src="upgrade/1119_w_s.jpg"/>
+	<file src="upgrade/1120_w_s.jpg"/>
+	<file src="upgrade/1121_w_s.jpg"/>
+	<file src="upgrade/1122_w_s.jpg"/>
+	<file src="upgrade/1123_w_s.jpg"/>
+	<file src="upgrade/1124_w_s.jpg"/>
+	<file src="upgrade/1125_w_s.jpg"/>
+	<file src="upgrade/1126_w_s.jpg"/>
+	<file src="upgrade/1127_w_s.jpg"/>
+	<file src="upgrade/1128_w_s.jpg"/>
+	<file src="upgrade/1129_w_s.jpg"/>
+	<file src="upgrade/1130_w_s.jpg"/>
+	<file src="upgrade/1131_w_s.jpg"/>
+	<file src="upgrade/1132_w_s.jpg"/>
+	<file src="upgrade/1133_w_s.jpg"/>
+	<file src="upgrade/1134_w_s.jpg"/>
+	<file src="upgrade/1135_w_s.jpg"/>
+	<file src="upgrade/1136_w_s.jpg"/>
+	<file src="upgrade/1137_w_s.jpg"/>
+	<file src="upgrade/1138_w_s.jpg"/>
+	<file src="upgrade/1139_w_s.jpg"/>
+	<file src="upgrade/1140_w_s.jpg"/>
+	<file src="upgrade/1141_w_s.jpg"/>
+	<file src="upgrade/1142_w_s.jpg"/>
+	<file src="upgrade/1143_w_s.jpg"/>
+	<file src="upgrade/1144_w_s.jpg"/>
+	<file src="upgrade/1145_w_s.jpg"/>
+	<file src="upgrade/1146_w_s.jpg"/>
+	<file src="upgrade/1147_w_s.jpg"/>
+	<file src="upgrade/1148_w_s.jpg"/>
+	<file src="upgrade/1149_w_s.jpg"/>
+	<file src="upgrade/1150_w_s.jpg"/>
+	<file src="upgrade/1151_w_s.jpg"/>
+	<file src="upgrade/1152_w_s.jpg"/>
+	<file src="upgrade/1153_w_s.jpg"/>
+	<file src="upgrade/1154_w_s.jpg"/>
+	<file src="upgrade/1155_w_s.jpg"/>
+	<file src="upgrade/1156_w_s.jpg"/>
+	<file src="upgrade/1157_w_s.jpg"/>
+	<file src="upgrade/1158_w_s.jpg"/>
+	<file src="upgrade/1159_w_s.jpg"/>
+	<file src="upgrade/1160_w_s.jpg"/>
+	<file src="upgrade/1161_w_s.jpg"/>
+	<file src="upgrade/1162_w_s.jpg"/>
+	<file src="upgrade/1163_w_s.jpg"/>
+	<file src="upgrade/1164_w_s.jpg"/>
+	<file src="upgrade/1165_w_s.jpg"/>
+	<file src="upgrade/1166_w_s.jpg"/>
+	<file src="upgrade/1167_w_s.jpg"/>
+	<file src="upgrade/1168_w_s.jpg"/>
+	<file src="upgrade/1169_w_s.jpg"/>
+	<file src="upgrade/1170_w_s.jpg"/>
+	<file src="upgrade/1171_w_s.jpg"/>
+	<file src="upgrade/1172_w_s.jpg"/>
+	<file src="upgrade/1173_w_s.jpg"/>
+	<file src="upgrade/1174_w_s.jpg"/>
+	<file src="upgrade/1175_w_s.jpg"/>
+	<file src="upgrade/1176_w_s.jpg"/>
+	<file src="upgrade/1177_w_s.jpg"/>
+	<file src="upgrade/1178_w_s.jpg"/>
+	<file src="upgrade/1179_w_s.jpg"/>
+	<file src="upgrade/1180_w_s.jpg"/>
+	<file src="upgrade/1181_w_s.jpg"/>
+	<file src="upgrade/1182_w_s.jpg"/>
+	<file src="upgrade/1183_w_s.jpg"/>
+	<file src="upgrade/1184_w_s.jpg"/>
+	<file src="upgrade/1185_w_s.jpg"/>
+	<file src="upgrade/1186_w_s.jpg"/>
+	<file src="upgrade/1187_w_s.jpg"/>
+	<file src="upgrade/1188_w_s.jpg"/>
+	<file src="upgrade/1189_w_s.jpg"/>
+	<file src="upgrade/1190_w_s.jpg"/>
+	<file src="upgrade/1191_w_s.jpg"/>
+	<file src="upgrade/1192_w_s.jpg"/>
+	<file src="upgrade/1193_w_s.jpg"/>
 	
-	<file src="paintjob/VehiclePaintjob_Blade_0.png" />
-	<file src="paintjob/VehiclePaintjob_Blade_1.png" />
-	<file src="paintjob/VehiclePaintjob_Blade_2.png" />
-	<file src="paintjob/VehiclePaintjob_Broadway_0.png" />
-	<file src="paintjob/VehiclePaintjob_Broadway_1.png" />
-	<file src="paintjob/VehiclePaintjob_Camper_0.png" />
-	<file src="paintjob/VehiclePaintjob_Elegy_0.png" />
-	<file src="paintjob/VehiclePaintjob_Elegy_1.png" />
-	<file src="paintjob/VehiclePaintjob_Elegy_2.png" />
-	<file src="paintjob/VehiclePaintjob_Flash_0.png" />
-	<file src="paintjob/VehiclePaintjob_Flash_1.png" />
-	<file src="paintjob/VehiclePaintjob_Flash_2.png" />
-	<file src="paintjob/VehiclePaintjob_Jester_0.png" />
-	<file src="paintjob/VehiclePaintjob_Jester_1.png" />
-	<file src="paintjob/VehiclePaintjob_Jester_2.png" />
-	<file src="paintjob/VehiclePaintjob_Remington_0.png" />
-	<file src="paintjob/VehiclePaintjob_Remington_1.png" />
-	<file src="paintjob/VehiclePaintjob_Remington_2.png" />
-	<file src="paintjob/VehiclePaintjob_Savanna_0.png" />
-	<file src="paintjob/VehiclePaintjob_Savanna_1.png" />
-	<file src="paintjob/VehiclePaintjob_Savanna_2.png" />
-	<file src="paintjob/VehiclePaintjob_Slamvan_0.png" />
-	<file src="paintjob/VehiclePaintjob_Slamvan_1.png" />
-	<file src="paintjob/VehiclePaintjob_Slamvan_2.png" />
-	<file src="paintjob/VehiclePaintjob_Stratum_0.png" />
-	<file src="paintjob/VehiclePaintjob_Stratum_1.png" />
-	<file src="paintjob/VehiclePaintjob_Stratum_2.png" />
-	<file src="paintjob/VehiclePaintjob_Sultan_0.png" />
-	<file src="paintjob/VehiclePaintjob_Sultan_1.png" />
-	<file src="paintjob/VehiclePaintjob_Sultan_2.png" />
-	<file src="paintjob/VehiclePaintjob_Tornado_0.png" />
-	<file src="paintjob/VehiclePaintjob_Tornado_1.png" />
-	<file src="paintjob/VehiclePaintjob_Tornado_2.png" />
-	<file src="paintjob/VehiclePaintjob_Uranus_0.png" />
-	<file src="paintjob/VehiclePaintjob_Uranus_1.png" />
-	<file src="paintjob/VehiclePaintjob_Uranus_2.png" />
+	<file src="paintjob/VehiclePaintjob_Blade_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Blade_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Blade_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Broadway_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Broadway_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Camper_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Elegy_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Elegy_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Elegy_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Flash_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Flash_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Flash_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Jester_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Jester_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Jester_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Remington_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Remington_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Remington_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Savanna_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Savanna_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Savanna_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Slamvan_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Slamvan_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Slamvan_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Stratum_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Stratum_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Stratum_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Sultan_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Sultan_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Sultan_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Tornado_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Tornado_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Tornado_2.png"/>
+	<file src="paintjob/VehiclePaintjob_Uranus_0.png"/>
+	<file src="paintjob/VehiclePaintjob_Uranus_1.png"/>
+	<file src="paintjob/VehiclePaintjob_Uranus_2.png"/>
 
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>
@@ -388,7 +389,7 @@
 	<script src="parachute/skydiving_cl.lua" type="client"/>
 	<script src="parachute/openChute.lua" type="client"/>
 	<script src="parachute/client_anim.lua" type="client"/>
-	<file src="parachute/parachuteopen.mp3" />
+	<file src="parachute/parachuteopen.mp3"/>
 
 	<export function="removeParachute" type="client"/>
 	<export function="stopSkyDiving" type="client"/>
@@ -397,35 +398,35 @@
 	<export function="isPlayerParachuting" type="client"/>
 
 	<!--прикрепление объектов к игроку-->
-	<script src="bone_attach/bone_attach.lua" />
-	<script src="bone_attach/bone_attach_c.lua" type="client" />
-	<script src="bone_attach/attach_func.lua" />
-	<script src="bone_attach/attach_func.lua" type="client" />
-	<script src="bone_attach/bone_pos_rot.lua" type="client" />
+	<script src="bone_attach/bone_attach.lua"/>
+	<script src="bone_attach/bone_attach_c.lua" type="client"/>
+	<script src="bone_attach/attach_func.lua"/>
+	<script src="bone_attach/attach_func.lua" type="client"/>
+	<script src="bone_attach/bone_pos_rot.lua" type="client"/>
 
-	<export function="attachElementToBone" type="server" />
-	<export function="attachElementToBone" type="client" />
-	<export function="detachElementFromBone" type="server" />
-	<export function="detachElementFromBone" type="client" />
-	<export function="isElementAttachedToBone" type="server" />
-	<export function="isElementAttachedToBone" type="client" />
-	<export function="getElementBoneAttachmentDetails" type="server" />
-	<export function="getElementBoneAttachmentDetails" type="client" />
-	<export function="setElementBonePositionOffset" type="server" />
-	<export function="setElementBonePositionOffset" type="client" />
-	<export function="setElementBoneRotationOffset" type="server" />
-	<export function="setElementBoneRotationOffset" type="client" />
-	<export function="getBonePositionAndRotation" type="client" />
+	<export function="attachElementToBone" type="server"/>
+	<export function="attachElementToBone" type="client"/>
+	<export function="detachElementFromBone" type="server"/>
+	<export function="detachElementFromBone" type="client"/>
+	<export function="isElementAttachedToBone" type="server"/>
+	<export function="isElementAttachedToBone" type="client"/>
+	<export function="getElementBoneAttachmentDetails" type="server"/>
+	<export function="getElementBoneAttachmentDetails" type="client"/>
+	<export function="setElementBonePositionOffset" type="server"/>
+	<export function="setElementBonePositionOffset" type="client"/>
+	<export function="setElementBoneRotationOffset" type="server"/>
+	<export function="setElementBoneRotationOffset" type="client"/>
+	<export function="getBonePositionAndRotation" type="client"/>
 
 	<!--убийство из авто-->
-	<script src="realdriveby/driveby_client.lua" type="client" />
-	<script src="realdriveby/exports_client.lua" type="client" />
-	<script src="realdriveby/driveby_server.lua" type="server" />
+	<script src="realdriveby/driveby_client.lua" type="client"/>
+	<script src="realdriveby/exports_client.lua" type="client"/>
+	<script src="realdriveby/driveby_server.lua" type="server"/>
 	
 	<!--utils-->
-	<script src="realdriveby/utils/textlib.lua" type="client" />
-	<script src="realdriveby/utils/client_anim.lua" type="client" />
-	<script src="realdriveby/utils/textlib_anim.lua" type="client" />
+	<script src="realdriveby/utils/textlib.lua" type="client"/>
+	<script src="realdriveby/utils/client_anim.lua" type="client"/>
+	<script src="realdriveby/utils/textlib_anim.lua" type="client"/>
 	
 	<settings>
 		<!--Weapon ids that the driver can use.  For no weapons just use "[[ ]]"-->
@@ -449,15 +450,15 @@
 		<!--Whether a weapon should be equiped as soon as you enter a vehicle. -->
 		<setting name="driveby_auto_equip" value="[false]"/>
 	</settings>
-	<export function="setDriverDrivebyAbility" type="client" />
-	<export function="setPassengerDrivebyAbility" type="client" />
-	<export function="getDriverDrivebyAbility" type="client" />
-	<export function="getPassengerDrivebyAbility" type="client" />
-	<export function="setWeaponShotDelay" type="client" />
-	<export function="getWeaponShotDelay" type="client" />
-	<export function="setDrivebySteeringAbility" type="client" />
-	<export function="getDrivebySteeringAbility" type="client" />
-	<export function="setDrivebyAutoEquip" type="client" />
-	<export function="getDrivebyAutoEquip" type="client" />
+	<export function="setDriverDrivebyAbility" type="client"/>
+	<export function="setPassengerDrivebyAbility" type="client"/>
+	<export function="getDriverDrivebyAbility" type="client"/>
+	<export function="getPassengerDrivebyAbility" type="client"/>
+	<export function="setWeaponShotDelay" type="client"/>
+	<export function="getWeaponShotDelay" type="client"/>
+	<export function="setDrivebySteeringAbility" type="client"/>
+	<export function="getDrivebySteeringAbility" type="client"/>
+	<export function="setDrivebyAutoEquip" type="client"/>
+	<export function="getDrivebyAutoEquip" type="client"/>
 	
 </meta>
