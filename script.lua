@@ -46,10 +46,10 @@ local zakon_kill_crimes = 1
 local zakon_robbery_crimes = 1
 local zakon_65_crimes = 1
 local zakon_car_theft_crimes = 1
---зп
 local zakon_nalog_car = 500
 local zakon_nalog_house = 1000
 local zakon_nalog_business = 2000
+--зп
 local zp_player_taxi = 1000
 local zp_player_plane = 2000
 local zp_car_75 = 150
@@ -1091,7 +1091,7 @@ function debuginfo ()
 		setElementData(playerid, "1", "state_inv_player[playername] "..state_inv_player[playername])
 		setElementData(playerid, "2", "state_gui_window[playername] "..state_gui_window[playername])
 		setElementData(playerid, "3", "logged[playername] "..logged[playername])
-		setElementData(playerid, "4", "enter_house[playername] "..enter_house[playername])
+		setElementData(playerid, "4", "enter_house[playername] "..enter_house[playername][1]..", "..enter_house[playername][2])
 		setElementData(playerid, "5", "enter_business[playername] "..enter_business[playername])
 		setElementData(playerid, "6", "enter_job[playername] "..enter_job[playername])
 		setElementData(playerid, "7", "speed_car_device[playername] "..speed_car_device[playername])
@@ -1860,7 +1860,7 @@ function prison_timer()--античит если не в тюрьме
 				triggerClientEvent( playerid, "event_gui_delet", playerid )
 				state_gui_window[playername] = 0
 
-				enter_house[playername] = 0
+				enter_house[playername] = {0,0}
 				enter_business[playername] = 0
 				enter_job[playername] = 0
 
@@ -3052,7 +3052,7 @@ addEventHandler ( "event_till_fun", getRootElement(), till_fun )
 function craft_fun( playerid, text )
 	local playername = getPlayerName(playerid)
 
-	if enter_house[playername] == 0 then
+	if enter_house[playername][1] == 0 then
 		sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3])
 		return
 	end
@@ -3472,7 +3472,7 @@ function()
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
 	logged[playername] = 0
-	enter_house[playername] = 0
+	enter_house[playername] = {0,0}
 	enter_business[playername] = 0
 	enter_job[playername] = 0
 	speed_car_device[playername] = 0
@@ -3563,7 +3563,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		end
 
 		for k,v in pairs(sqlite("SELECT * FROM house_db")) do
-			if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] and enter_house[playername] == 1 then
+			if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] and enter_house[playername][1] == 1 then
 				x,y,z = v["x"],v["y"],v["z"]
 				break
 			end
@@ -3585,6 +3585,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		robbery_kill( playername )
 
 		logged[playername] = 0
+		enter_house[playername] = {0,0}
 	else
 		
 	end
@@ -4257,14 +4258,29 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
-				for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
-					if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] and search_inv_player(playerid, 25, v["number"]) ~= 0 and enter_house[playername] == 1 then
-						for i=0,max_inv do
-							triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[v["number"]][i+1], array_house_2[v["number"]][i+1] )
-						end
+				if enter_house[playername][1] == 1 then
+					for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+						if getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[v["interior"]][1] then
+							local count = 0
+							for k,player in pairs(getElementsByType("player")) do
+								local playername2 = getPlayerName(player)
+								if enter_house[playername2][2] == v["number"] then
+									count = 1
+									break
+								end
+							end
 
-						triggerClientEvent( playerid, "event_tab_load", playerid, "house", v["number"] )
-						break
+							if count == 0 then
+								for i=0,max_inv do
+									triggerClientEvent( playerid, "event_inv_load", playerid, "house", i, array_house_1[v["number"]][i+1], array_house_2[v["number"]][i+1] )
+								end
+
+								enter_house[playername][2] = v["number"]
+
+								triggerClientEvent( playerid, "event_tab_load", playerid, "house", v["number"] )
+							end
+							break
+						end
 					end
 				end
 
@@ -4273,6 +4289,7 @@ local x,y,z = getElementPosition(playerid)
 			elseif state_inv_player[playername] == 1 then
 				triggerClientEvent( playerid, "event_inv_delet", playerid )
 				state_inv_player[playername] = 0
+				enter_house[playername][2] = 0
 			end
 		end
 	end
@@ -4327,8 +4344,9 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	local j = max_earth
 	earth[j] = {x,y,z,id1,id2}
 
-	if search_inv_player(playerid, 25, id2) ~= 0 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+	if enter_house[playername][2] == id2 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
+		enter_house[playername][2] = 0
 	end
 
 	if vehicleid then
@@ -4586,18 +4604,18 @@ function left_alt_down (playerid, key, keyState)
 						return
 					end
 
-					enter_house[playername] = 1
+					enter_house[playername][1] = 1
 					setElementDimension(playerid, v["world"])
 					setElementInterior(playerid, interior_house[id][1], interior_house[id][3], interior_house[id][4], interior_house[id][5])
 					return
 
-				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername] == 1 then
+				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername][1] == 1 then
 					if house_door == 0 then
 						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3])
 						return
 					end
 
-					enter_house[playername] = 0
+					enter_house[playername][1] = 0
 					setElementDimension(playerid, 0)
 					setElementInterior(playerid, 0, v["x"],v["y"],v["z"])
 
@@ -4842,7 +4860,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 					return
 				end
 			end
@@ -4865,7 +4883,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-						sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт ("..sic2p.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+						sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 					end
 					return
 				end
@@ -5153,7 +5171,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 
-				if enter_house[playername] == 1 then
+				if enter_house[playername][1] == 1 then
 					hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
 					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." помылся(ась)")
@@ -5184,7 +5202,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 
-				if enter_house[playername] == 1 then
+				if enter_house[playername][1] == 1 then
 					sleep[playername] = sleep[playername]+sleep_hygiene_plus
 					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." вздремнул(а)")
@@ -5482,10 +5500,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." надел(а) "..info_png[id1][1])
 
 		elseif id1 == 57 then--алкостестер
+			id2 = 0
 			local alcohol_test = alcohol[playername]/100
 			
 			me_chat(playerid, playername.." подул(а) в "..info_png[id1][1])
-			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле")
+			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле - "..playername)
 
 			if alcohol_test >= zakon_alcohol then
 				local crimes_plus = zakon_alcohol_crimes
@@ -5494,10 +5513,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 58 then--наркостестер
+			id2 = 0
 			local drugs_test = drugs[playername]
 			
 			me_chat(playerid, playername.." смочил(а) слюной палочку")
-			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости")
+			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости - "..playername)
 
 			if drugs_test >= zakon_drugs then
 				local crimes_plus = zakon_drugs_crimes
@@ -6707,7 +6727,7 @@ function (playerid, cmd, ...)
 		return
 	end
 
-	do_chat_player(playerid, playername.." "..text)
+	do_chat_player(playerid, text.."- "..playername)
 end)
 
 addCommandHandler ( "b",
