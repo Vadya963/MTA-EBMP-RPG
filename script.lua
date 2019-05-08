@@ -2339,10 +2339,6 @@ function inv_car_delet(playerid, id1, id2)--удаления предмета в
 			array_car_2[plate][i+1] = 0
 
 			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
-
-			if state_inv_player[playername] == 1 then
-				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, array_car_1[plate][i+1] )
-			end
 		end
 	end
 
