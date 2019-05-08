@@ -3487,7 +3487,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		local business_number = 0
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-			--createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
+			createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
 			createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )
 
 			business_pos[v["number"]] = {v["x"], v["y"], v["z"]}
