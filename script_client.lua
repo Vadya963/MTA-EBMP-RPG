@@ -2485,7 +2485,7 @@ end
 
 function showdebuginfo_b (key, keyState)
 	if keyState == "down" then
-		debuginfo = not debuginfo
+		--debuginfo = not debuginfo
 		hud = not hud
 	end
 end

@@ -49,12 +49,14 @@ local zakon_car_theft_crimes = 1
 local zakon_nalog_car = 500
 local zakon_nalog_house = 1000
 local zakon_nalog_business = 2000
+local zakon_price_house = 300000
+local zakon_price_business = 300000
 --зп
 local zp_player_taxi = 1000
 local zp_player_plane = 2000
-local zp_car_75 = 150
+local zp_car_75 = 200
 local zp_car_65 = 200
-local zp_car_78 = 250
+local zp_car_78 = 200
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -868,8 +870,8 @@ local interior_job = {--12
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, "", 5},
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
 	{3, "Мэрия ЛВ", 374.6708,173.8050,1008.3893, 2447.6826171875,2376.3037109375,12.163512229919, 19, 8, ", Меню - X", 5},
-	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, 2780.3994140625,-1812.2841796875,11.84375, 33, 9, "", 5},
-	{7, "Гонки на автомобилях", -1406.8232421875,-255.7607421875,1043.6507568359, 2695.05078125,-1707.8583984375,11.84375, 33, 10, "", 5},
+	{4, "Гонки на мотоциклах", -1435.8690,-662.2505,1052.4650, -2109.66796875,-444.0263671875,38.734375, 33, 9, "", 5},
+	{7, "Гонки на автомобилях", -1406.8232421875,-255.7607421875,1043.6507568359, 1097.6357421875,1597.7431640625,12.546875, 33, 10, "", 5},
 	{15, "Дерби арена", -1394.20,987.62,1023.96, 2794.310546875,-1723.8642578125,11.84375, 33, 11, "", 5},
 	{16, "Последний выживший", -1400,1250,1040, 2685.4638671875,-1802.6201171875,11.84375, 33, 12, "", 5},
 	{10, "Казино 4 Дракона", 2009.4140,1017.8990,994.4680, 2019.3134765625,1007.6728515625,10.8203125, 43, 13, "", 5},
@@ -892,14 +894,14 @@ local t_s_salon = {
 
 --места поднятия предметов
 local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, зп 7}
-	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 50},--склад продуктов
-	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 100},--нефтезавод
-	{-1061.6103515625,-1195.5166015625,129.828125, 15, 88, 456, 300},--скотобойня
+	{89.9423828125,-304.623046875,1.578125, 15, 24, 456, 100},--склад продуктов
+	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 200},--нефтезавод
+	{-1061.6103515625,-1195.5166015625,129.828125, 15, 88, 456, 200},--скотобойня
 	{1461.939453125,974.8876953125,10.30264377594, 15, 89, 456, 50},--склад корма для коров
 }
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 20, 1, 1, 0},--мясокомбинат
+	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 50, 1, 1, 0},--мясокомбинат
 	
 	{2559.1171875,-1287.2275390625,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2551.1318359375,-1287.2294921875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
@@ -976,27 +978,30 @@ local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пн
 }
 
 for k=1,10 do
-	anim_player_subject[k][7] = 40
+	anim_player_subject[k][7] = 100
+	anim_player_subject[k][12] = 10
 end
 
 for k=11,26 do
-	anim_player_subject[k][7] = 60
+	anim_player_subject[k][7] = 100
+	anim_player_subject[k][12] = 10
 end
 
 for k=27,36 do
-	anim_player_subject[k][7] = 80
+	anim_player_subject[k][7] = 100
+	anim_player_subject[k][12] = 10
 end
 
 --камеры полиции
 local prison_cell = {
-	{interior_job[2][1], interior_job[2][10], "кпз_лс",		263.84765625,	77.6044921875,	1001.0390625},
+	{interior_job[2][1], interior_job[2][10], "кпз_лс",		263.84765625,	77.6044921875,	1001.03906},
 	{interior_job[3][1], interior_job[3][10], "кпз_сф1",	227.5947265625,	110.0537109375,	999.015625},
 	{interior_job[3][1], interior_job[3][10], "кпз_сф2",	223.373046875,	110.0986328125,	999.015625},
 	{interior_job[3][1], interior_job[3][10], "кпз_сф3",	219.337890625,	110.4619140625,	999.015625},
-	{interior_job[3][1], interior_job[3][10], "кпз_сф4",	215.59375,	109.8916015625,	999.015625},
-	{interior_job[4][1], interior_job[4][10], "кпз_лв",		198.283203125,	162.1220703125,	1003.0299682617},
-	{interior_job[4][1], interior_job[4][10], "кпз_лв2",	198.0390625,	174.78125,	1003.0234375},
-	{interior_job[4][1], interior_job[4][10], "кпз_лв3",	193.6708984375,	176.7255859375,	1003.0234375},
+	{interior_job[3][1], interior_job[3][10], "кпз_сф4",	215.59375,		109.8916015625,	999.015625},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв",		198.283203125,	162.1220703125,	1003.02996},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв2",	198.0390625,	174.78125,		1003.02343},
+	{interior_job[4][1], interior_job[4][10], "кпз_лв3",	193.6708984375,	176.7255859375,	1003.02343},
 }
 
 --места спавна у госпиталя
@@ -1016,6 +1021,12 @@ local fish_pos = {}
 for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_fish'" )) do
 	local spl = split(v["pos"], ",")
 	fish_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+
+local roulette_pos = {}
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'roulette'" )) do
+	local spl = split(v["pos"], ",")
+	roulette_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
 end
 
 local plane_job = {
@@ -1269,7 +1280,7 @@ function job_timer2 ()
 
 			elseif job[playername] == 2 then--работа водителя мусоровоза
 				if vehicleid then
-					if getElementModel(vehicleid) == down_car_subject[5][6] then
+					if getElementModel(vehicleid) == down_car_subject[4][6] then
 						if getSpeed(vehicleid) < 1 then
 
 							if job_call[playername] == 0 then--старт работы
@@ -1284,20 +1295,20 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(1,zp_car_75)
+									local randomize_zp = random(zp_car_75/2,zp_car_75)
 
 									job_call[playername] = 2
 
 									give_subject( playerid, "car", 75, randomize_zp )
 
-									job_pos[playername] = {down_car_subject[5][1],down_car_subject[5][2],down_car_subject[5][3]-1}
+									job_pos[playername] = {down_car_subject[4][1],down_car_subject[4][2],down_car_subject[4][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
 
 							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[5][4]) then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[4][4]) then
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -1331,7 +1342,7 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(1,zp_car_65)
+									local randomize_zp = random(zp_car_65/2,zp_car_65)
 
 									job_call[playername] = 2
 
@@ -1362,7 +1373,7 @@ function job_timer2 ()
 
 			elseif job[playername] == 4 then--работа рыболова
 				if vehicleid then
-					if getElementModel(vehicleid) == down_car_subject[6][6] then
+					if getElementModel(vehicleid) == down_car_subject[5][6] then
 						if getSpeed(vehicleid) <= 5 then
 
 							if job_call[playername] == 0 then--старт работы
@@ -1377,20 +1388,20 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(1,zp_car_78)
+									local randomize_zp = random(zp_car_78/2,zp_car_78)
 
 									job_call[playername] = 2
 
 									give_subject( playerid, "car", 78, randomize_zp )
 
-									job_pos[playername] = {down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3]-1}
+									job_pos[playername] = {down_car_subject[5][1],down_car_subject[5][2],down_car_subject[5][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
 
 							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[6][4]) then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[5][4]) then
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -2324,13 +2335,21 @@ function inv_car_delet(playerid, id1, id2)--удаления предмета в
 
 	for i=0,max_inv do
 		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
-			inv_server_load( playerid, "car", i, 0, 0, plate )
+			array_car_1[plate][i+1] = 0
+			array_car_2[plate][i+1] = 0
 
-			return true
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+
+			if state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, array_car_1[plate][i+1] )
+			end
 		end
 	end
 
-	return false
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+	if (result[1]["COUNT()"] == 1) then
+		sqlite( "UPDATE car_db SET inventory = '"..save_inv(plate, "car").."' WHERE number = '"..plate.."'")
+	end
 end
 
 function inv_car_throw_earth(vehicleid, id1, id2)--выброс предмета из авто на землю
@@ -3242,14 +3261,11 @@ function cow_farms(playerid, value, val1, val2)
 
 		if not result[1] then
 			return true
-		elseif not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+		elseif not isPointInCircle3D(x,y,z, down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3], down_car_subject[6][4]) then
 			return false
 		end
 
-		for i=0,max_inv do
-			if inv_car_delet(playerid, 88, val2) then
-			end
-		end
+		inv_car_delet(playerid, 88, val2)
 
 		triggerClientEvent( playerid, "event_inv_delet", playerid )
 		state_inv_player[playername] = 0
@@ -3282,14 +3298,11 @@ function cow_farms(playerid, value, val1, val2)
 		elseif result[1]["prod"] >= max_cf then
 			sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
 			return true
-		elseif not isPointInCircle3D(x,y,z, down_car_subject[8][1],down_car_subject[8][2],down_car_subject[8][3], down_car_subject[8][4]) then
+		elseif not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
 			return false
 		end
 
-		for i=0,max_inv do
-			if inv_car_delet(playerid, 89, val2) then
-			end
-		end
+		inv_car_delet(playerid, 89, val2)
 
 		triggerClientEvent( playerid, "event_inv_delet", playerid )
 		state_inv_player[playername] = 0
@@ -4398,7 +4411,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					end
 				end
 
-				give_subject(playerid, "car", v[5], random(1,v[7]))
+				give_subject(playerid, "car", v[5], random(v[7]/2,v[7]))
 			end
 		end
 
@@ -4845,10 +4858,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 						return
 					end
 
-					for i=0,max_inv do
-						if inv_car_delet(playerid, id, sic2p) then
-						end
-					end
+					inv_car_delet(playerid, id, sic2p)
 
 					triggerClientEvent( playerid, "event_inv_delet", playerid )
 					state_inv_player[playername] = 0
@@ -4868,10 +4878,8 @@ function delet_subject(playerid, id)--удаление предметов из �
 			for k,v in pairs(down_car_subject) do
 				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
 					if not cow_farms(playerid, "unload", count, sic2p) and not cow_farms(playerid, "unload_prod", count, sic2p) then
-						for i=0,max_inv do
-							if inv_car_delet(playerid, id, sic2p) then
-							end
-						end
+
+						inv_car_delet(playerid, id, sic2p)
 
 						triggerClientEvent( playerid, "event_inv_delet", playerid )
 						state_inv_player[playername] = 0
@@ -5932,83 +5940,91 @@ function (playerid, cmd, id, cash)
 	end
 
 	if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
-		for k,v in pairs(roulette_game) do
-			if v == id then
-				roulette(playerid, randomize)
+		for _,j in pairs(roulette_pos) do
+			if isPointInCircle3D(x,y,z, j[1],j[2],j[3], 5) then
+				for k,v in pairs(roulette_game) do
+					if v == id then
+						roulette(playerid, randomize)
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				if id == "красное" then
-					for k,v in pairs(Red) do
-						if randomize == v then
+						if id == "красное" then
+							for k,v in pairs(Red) do
+								if randomize == v then
+									win_roulette(playerid, cash, 2)
+									return
+								end
+							end
+
+						elseif id == "черное" then
+							for k,v in pairs(Black) do
+								if randomize == v then
+									win_roulette(playerid, cash, 2)
+									return
+								end
+							end
+
+						elseif id == "четное" and randomize%2 == 0 then
 							win_roulette(playerid, cash, 2)
 							return
-						end
-					end
 
-				elseif id == "черное" then
-					for k,v in pairs(Black) do
-						if randomize == v then
+						elseif id == "нечетное" and randomize%2 == 1 then
 							win_roulette(playerid, cash, 2)
 							return
-						end
-					end
 
-				elseif id == "четное" and randomize%2 == 0 then
-					win_roulette(playerid, cash, 2)
-					return
+						elseif id == "1-18" and randomize >= 1 and randomize <= 18 then
+							win_roulette(playerid, cash, 2)
+							return
 
-				elseif id == "нечетное" and randomize%2 == 1 then
-					win_roulette(playerid, cash, 2)
-					return
+						elseif id == "19-36" and randomize >= 19 and randomize <= 36 then
+							win_roulette(playerid, cash, 2)
+							return
 
-				elseif id == "1-18" and randomize >= 1 and randomize <= 18 then
-					win_roulette(playerid, cash, 2)
-					return
-
-				elseif id == "19-36" and randomize >= 19 and randomize <= 36 then
-					win_roulette(playerid, cash, 2)
-					return
-
-				elseif id == "1-12" and randomize >= 1 and randomize <= 12 then
-					win_roulette(playerid, cash, 3)
-					return
-
-				elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
-					win_roulette(playerid, cash, 3)
-					return
-
-				elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
-					win_roulette(playerid, cash, 3)
-					return
-
-				elseif id == "3-1" then
-					for k,v in pairs(to1) do
-						if randomize == v then
+						elseif id == "1-12" and randomize >= 1 and randomize <= 12 then
 							win_roulette(playerid, cash, 3)
 							return
-						end
-					end
 
-				elseif id == "3-2" then
-					for k,v in pairs(to2) do
-						if randomize == v then
+						elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
 							win_roulette(playerid, cash, 3)
 							return
-						end
-					end
 
-				elseif id == "3-3" then
-					for k,v in pairs(to3) do
-						if randomize == v then
+						elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
 							win_roulette(playerid, cash, 3)
 							return
+
+						elseif id == "3-1" then
+							for k,v in pairs(to1) do
+								if randomize == v then
+									win_roulette(playerid, cash, 3)
+									return
+								end
+							end
+
+						elseif id == "3-2" then
+							for k,v in pairs(to2) do
+								if randomize == v then
+									win_roulette(playerid, cash, 3)
+									return
+								end
+							end
+
+						elseif id == "3-3" then
+							for k,v in pairs(to3) do
+								if randomize == v then
+									win_roulette(playerid, cash, 3)
+									return
+								end
+							end
 						end
+						return
 					end
 				end
+
 				return
 			end
 		end
+
+		sendPlayerMessage(playerid, "[ERROR] Вы не у стола", red[1], red[2], red[3])
 	else
 		sendPlayerMessage(playerid, "[ERROR] Вы не в казино", red[1], red[2], red[3])
 	end
@@ -6272,7 +6288,7 @@ function (playerid, cmd, id)
 				return
 			end
 
-			if cash > array_player_2[playername][1] then
+			if cash*crimes[id] > array_player_2[playername][1] then
 				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				return
 			end
@@ -6547,6 +6563,12 @@ function (playerid)
 		return
 	end
 
+	if(array_player_2[playername][1] < zakon_price_house) then
+	
+		sendPlayerMessage(playerid, "[ERROR] Стоимость домов составляет "..zakon_price_house.."$", red[1], red[2], red[3])
+		return
+	end
+
 	local result = sqlite( "SELECT COUNT() FROM house_db" )
 	local house_number = result[1]["COUNT()"]
 	for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
@@ -6586,6 +6608,8 @@ function (playerid)
 			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
+
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-zakon_price_house, playername )
 		else
 			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
@@ -6609,6 +6633,12 @@ function (playerid, cmd, id)
 
 	if id == nil then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", red[1], red[2], red[3])
+		return
+	end
+
+	if(array_player_2[playername][1] < zakon_price_business) then
+	
+		sendPlayerMessage(playerid, "[ERROR] Стоимость бизнеса составляет "..zakon_price_business.."$", red[1], red[2], red[3])
 		return
 	end
 
@@ -6653,6 +6683,8 @@ function (playerid, cmd, id)
 				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-zakon_price_business, playername )
 			else
 				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
