@@ -15,6 +15,7 @@ function ( startedRes )
 
 		bindKey ( "F1", "down", showcursor_b )
 		bindKey ( "F2", "down", showdebuginfo_b )
+		bindKey ( "F11", "down", showdebuginfo_b )
 	end
 end)
 
