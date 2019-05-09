@@ -1500,6 +1500,8 @@ function job_timer2 ()
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+
+									sendPlayerMessage(playerid, "Плывите в порт", yellow[1], yellow[2], yellow[3])
 								end
 
 							elseif job_call[playername] == 2 then--сдаем вызов
