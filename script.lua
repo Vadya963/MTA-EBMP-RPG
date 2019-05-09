@@ -352,28 +352,28 @@ local info_png = {
 	[61] = {"квитанция для оплаты т/с на", "дней"},
 	[62] = {"коробка с продуктами", "$ за штуку"},
 	[63] = {"GPS навигатор", "шт"},
-	[64] = {"лицензия таксиста", "шт"},
+	[64] = {"лицензия на работу", "вид работы"},
 	[65] = {"инкассаторская сумка", "$ в сумке"},
-	[66] = {"лицензия инкассатора", "шт"},
+	[66] = {"", ""},
 	[67] = {"бензопила", "шт"},
 	[68] = {"дрова", "кг"},
 	[69] = {"пустая коробка", "шт"},
 	[70] = {"кирка", "шт"},
 	[71] = {"руда", "кг"},
-	[72] = {"лицензия дальнобойщика", "шт"},
+	[72] = {"", ""},
 	[73] = {"бочка с нефтью", "$ за штуку"},
-	[74] = {"лицензия водителя мусоровоза", "шт"},
+	[74] = {"", ""},
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
-	[79] = {"лицензия рыболова", "шт"},
-	[80] = {"лицензия пилота", "шт"},
+	[79] = {"", ""},
+	[80] = {"", ""},
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
 	[84] = {"отмычка", "процентов"},
-	[85] = {"лицензия угонщика", "шт"},
+	[85] = {"", ""},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
@@ -435,26 +435,26 @@ local gas = {
 }
 
 local giuseppe = {
-	[83] = {info_png[83][1], 100, 1000},
-	[84] = {info_png[84][1], 10, 500},
-	[85] = {info_png[85][1], 1, 5000},
-	[90] = {info_png[90][1].." 78 "..info_png[90][2], 78, 1000},
+	{info_png[83][1], 100, 1000, 83},
+	{info_png[84][1], 10, 500, 84},
+	{info_png[64][1].." Угонщик", 6, 5000, 64},
+	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
 local mayoralty_shop = {
-	[2] = {info_png[2][1], 1, 1000},
-	[50] = {info_png[50][1], 1, 10000},
-	[64] = {info_png[64][1], 1, 5000},
-	[66] = {info_png[66][1], 1, 5000},
-	[72] = {info_png[72][1], 1, 5000},
-	[74] = {info_png[74][1], 1, 5000},
-	[77] = {info_png[77][1], 100, 100},
-	[79] = {info_png[79][1], 1, 5000},
-	[80] = {info_png[80][1], 1, 5000},
+	{info_png[2][1], 1, 1000, 2},
+	{info_png[50][1], 1, 10000, 50},
+	{info_png[64][1].." Таксист", 1, 5000, 64},
+	{info_png[64][1].." Мусоровозчик", 2, 5000, 64},
+	{info_png[64][1].." Инкассатор", 3, 5000, 64},
+	{info_png[64][1].." Рыболов", 4, 5000, 64},
+	{info_png[64][1].." Пилот", 5, 5000, 64},
+	{info_png[64][1].." Дальнобойщик", 7, 5000, 64},
+	{info_png[77][1], 100, 100, 77},
 
-	[59] = {"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog)},
-	[60] = {"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog)},
-	[61] = {"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog)},
+	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
+	{"квитанция для оплаты бизнеса на "..day_nalog.." дней", day_nalog, (zakon_nalog_business*day_nalog), 60},
+	{"квитанция для оплаты т/с на "..day_nalog.." дней", day_nalog, (zakon_nalog_car*day_nalog), 61},
 }
 
 local weapon_cops = {
@@ -1292,15 +1292,15 @@ function job_timer2 ()
 	}
 
 	for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
-		taxi_pos[#taxi_pos] = {v["x"],v["y"],v["z"]}
-	end
-
-	for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-		taxi_pos[#taxi_pos] = {v["x"],v["y"],v["z"]}
+		taxi_pos[#taxi_pos+1] = {v["x"],v["y"],v["z"]}
 	end
 
 	for k,v in pairs(interior_job) do
-		taxi_pos[#taxi_pos] = {v[6],v[7],v[8]}
+		taxi_pos[#taxi_pos+1] = {v[6],v[7],v[8]}
+	end
+
+	for k,v in pairs(original_business_pos) do
+		taxi_pos[#taxi_pos+1] = {v[1],v[2],v[3]}
 	end
 
 	for k,playerid in pairs(getElementsByType("player")) do
@@ -1357,7 +1357,7 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 2 then--сдаем вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = random(1,zp_player_taxi)
+									local randomize = random(zp_player_taxi/2,zp_player_taxi)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -1537,7 +1537,7 @@ function job_timer2 ()
 							elseif job_call[playername] == 1 then--лв
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 
-									local randomize = random(1,zp_player_plane)
+									local randomize = random(zp_player_plane/2,zp_player_plane)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -1557,7 +1557,7 @@ function job_timer2 ()
 							elseif job_call[playername] == 2 then--сф
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 
-									local randomize = random(1,zp_player_plane)
+									local randomize = random(zp_player_plane/2,zp_player_plane)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -1577,7 +1577,7 @@ function job_timer2 ()
 							elseif job_call[playername] == 3 then--лс
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 
-									local randomize = random(1,zp_player_plane)
+									local randomize = random(zp_player_plane/2,zp_player_plane)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2979,7 +2979,7 @@ function buy_subject_fun( playerid, text, number, value )
 		for k,v in pairs(mayoralty_shop) do
 			if v[1] == text then
 				if v[3] <= array_player_2[playername][1] then
-					if inv_player_empty(playerid, k, v[2]) then
+					if inv_player_empty(playerid, v[4], v[2]) then
 						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
@@ -2998,7 +2998,7 @@ function buy_subject_fun( playerid, text, number, value )
 		for k,v in pairs(giuseppe) do
 			if v[1] == text then
 				if v[3] <= array_player_2[playername][1] then
-					if inv_player_empty(playerid, k, v[2]) then
+					if inv_player_empty(playerid, v[4], v[2]) then
 						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
@@ -4848,27 +4848,27 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				return
 
 			elseif id1 == 65 then
-				if search_inv_player(playerid, 66, 1) == 0 then
+				if search_inv_player(playerid, 64, 3) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не инкассатор", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 24 or id1 == 73 then
-				if search_inv_player(playerid, 72, 1) == 0 then
+				if search_inv_player(playerid, 64, 7) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 75 then
-				if search_inv_player(playerid, 74, 1) == 0 then
+				if search_inv_player(playerid, 64, 2) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 78 then
-				if search_inv_player(playerid, 79, 1) == 0 then
+				if search_inv_player(playerid, 64, 4) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не рыболов", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 88 then
-				if search_inv_player(playerid, 72, 1) == 0 then
+				if search_inv_player(playerid, 64, 7) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				elseif search_inv_player(playerid, 87, search_inv_player_2_parameter(playerid, 87)) == 0 then
@@ -4878,7 +4878,7 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 					return
 				end
 			elseif id1 == 89 then
-				if search_inv_player(playerid, 72, 1) == 0 then
+				if search_inv_player(playerid, 64, 7) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				elseif search_inv_player(playerid, 87, search_inv_player_2_parameter(playerid, 87)) == 0 then
@@ -5700,18 +5700,92 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 			return
 
-		elseif id1 == 64 then--лиц. таксиста
-			if job[playername] == 0 then
-				job[playername] = 1
+		elseif id1 == 64 then--лицензии
+			if id2 == 1 then
+				if job[playername] == 0 then
+					job[playername] = 1
 
-				me_chat(playerid, playername.." вышел(ла) на работу Таксист")
-			else
-				job[playername] = 0
+					me_chat(playerid, playername.." вышел(ла) на работу Таксист")
+				else
+					job[playername] = 0
 
-				car_theft_fun(playername)
+					car_theft_fun(playername)
 
-				me_chat(playerid, playername.." закончил(а) работу")
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 2 then
+				if job[playername] == 0 then
+					job[playername] = 2
+
+					me_chat(playerid, playername.." вышел(ла) на работу Мусоровозчик")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 3 then
+				if crimes[playername] ~= 0 then
+					sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 3
+
+					me_chat(playerid, playername.." вышел(ла) на работу Инкассатор")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 4 then
+				if job[playername] == 0 then
+					job[playername] = 4
+
+					me_chat(playerid, playername.." вышел(ла) на работу Рыболов")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 5 then
+				if job[playername] == 0 then
+					job[playername] = 5
+
+					me_chat(playerid, playername.." вышел(ла) на работу Пилот")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 6 then
+				if (crimes[playername] < crimes_giuseppe) then
+			
+					sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 6
+
+					me_chat(playerid, playername.." вышел(ла) на работу Угонщик")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			end
+
 			return
 
 		elseif id1 == 65 then--инкассаторский сумка
@@ -5728,39 +5802,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
-
-		elseif id1 == 66 then--лиц. инкассатора
-			if crimes[playername] ~= 0 then
-				sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
-				return
-			end
-
-			if job[playername] == 0 then
-				job[playername] = 3
-
-				me_chat(playerid, playername.." вышел(ла) на работу Инкассатор")
-			else
-				job[playername] = 0
-
-				car_theft_fun(playername)
-
-				me_chat(playerid, playername.." закончил(а) работу")
-			end
-			return
-
-		elseif id1 == 74 then--лиц. вод мусоровоза
-			if job[playername] == 0 then
-				job[playername] = 2
-
-				me_chat(playerid, playername.." вышел(ла) на работу Мусоровозчик")
-			else
-				job[playername] = 0
-
-				car_theft_fun(playername)
-
-				me_chat(playerid, playername.." закончил(а) работу")
-			end
-			return
 
 		elseif id1 == 77 then--жетон
 			if vehicleid then
@@ -5781,34 +5822,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
 				return
 			end
-
-		elseif id1 == 79 then--лиц. рыболова
-			if job[playername] == 0 then
-				job[playername] = 4
-
-				me_chat(playerid, playername.." вышел(ла) на работу Рыболов")
-			else
-				job[playername] = 0
-
-				car_theft_fun(playername)
-
-				me_chat(playerid, playername.." закончил(а) работу")
-			end
-			return
-
-		elseif id1 == 80 then--лиц. пилота
-			if job[playername] == 0 then
-				job[playername] = 5
-
-				me_chat(playerid, playername.." вышел(ла) на работу Пилот")
-			else
-				job[playername] = 0
-
-				car_theft_fun(playername)
-
-				me_chat(playerid, playername.." закончил(а) работу")
-			end
-			return
 
 		elseif id1 == 81 then--динамит
 			for k,vehicleid in pairs(getElementsByType("vehicle")) do
@@ -5876,26 +5889,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 			end
-
-		elseif id1 == 85 then--лиц. угонщика
-			if (crimes[playername] < crimes_giuseppe) then
-			
-				sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
-				return
-			end
-
-			if job[playername] == 0 then
-				job[playername] = 6
-
-				me_chat(playerid, playername.." вышел(ла) на работу Угонщик")
-			else
-				job[playername] = 0
-
-				car_theft_fun(playername)
-
-				me_chat(playerid, playername.." закончил(а) работу")
-			end
-			return
 
 		elseif id1 == 87 then--лиц. забойщика
 			if job[playername] == 0 then
