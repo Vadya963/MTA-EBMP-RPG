@@ -360,7 +360,7 @@ local info_png = {
 	[69] = {"пустая коробка", "шт"},
 	[70] = {"кирка", "шт"},
 	[71] = {"руда", "кг"},
-	[72] = {"", ""},
+	[72] = {"виски", "шт"},
 	[73] = {"бочка с нефтью", "$ за штуку"},
 	[74] = {"", ""},
 	[75] = {"мусор", "кг"},
@@ -427,6 +427,7 @@ local shop = {
 	[55] = {info_png[55][1], 100, 50},
 	[56] = {info_png[56][1], 100, 100},
 	[63] = {info_png[63][1], 1, 100},
+	[72] = {info_png[72][0], 1, 500},
 	[76] = {info_png[76][1], 1, 250},
 }
 
@@ -5232,6 +5233,46 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
 
 			me_chat(playerid, playername.." выпил(а) пиво")
+
+		elseif id1 == 72 then--виски
+
+			if id1 == 72 then
+				local alcohol_plus = 100
+				local hygiene_minys = 10
+
+				if getElementHealth(playerid) == max_heal then
+					sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+					return
+				elseif alcohol[playername]+alcohol_plus > max_alcohol then
+					sendPlayerMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3])
+					return
+				end
+
+				id2 = id2 - 1
+
+				local satiety_plus = 10
+				local hp = max_heal*0.50
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+
+				if satiety[playername]+satiety_plus <= max_satiety then
+					satiety[playername] = satiety[playername]+satiety_plus
+					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				end
+
+				alcohol[playername] = alcohol[playername]+alcohol_plus
+				sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
+
+				if hygiene[playername]-hygiene_minys >= 0 then
+					hygiene[playername] = hygiene[playername]-hygiene_minys
+					sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+				end
+
+				object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+				setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
+
+				me_chat(playerid, playername.." выпил(а) виски")
+			end
 
 		elseif id1 == 53 or id1 == 54 then--бургер, пицца
 			id2 = id2 - 1
