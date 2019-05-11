@@ -2064,8 +2064,8 @@ function onChat(message, messageType)
 
 	if messageType ~= 1 then
 		local count = 0
-		local say = "(Всем OOC) "..getPlayerName( playerid )..": " .. message
-		local say_10_r = "(Ближний IC) "..getPlayerName( playerid )..": " .. message
+		local say = "(Всем OOC) "..getPlayerName( playerid ).." ["..getElementData(playerid, "player_id")[1].."]: " .. message
+		local say_10_r = "(Ближний IC) "..getPlayerName( playerid ).." ["..getElementData(playerid, "player_id")[1].."]: " .. message
 
 		for k,player in pairs(getElementsByType("player")) do
 			local x,y,z = getElementPosition(playerid)
@@ -6002,8 +6002,8 @@ function (playerid, cmd, id, ...)
 	id,player = getPlayerId(id)
 		
 	if id then
-		sendPlayerMessage(playerid, "[SMS TO] "..id..": "..text, yellow[1], yellow[2], yellow[3])
-		sendPlayerMessage(player, "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
+		sendPlayerMessage(playerid, "[SMS TO] "..id.." ["..getElementData(player, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
+		sendPlayerMessage(player, "[SMS FROM] "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -6883,7 +6883,7 @@ function (playerid, cmd, ...)
 		return
 	end
 
-	b_chat_player(playerid, "(Ближний OOC) "..getPlayerName( playerid )..": "..text)
+	b_chat_player(playerid, "(Ближний OOC) "..getPlayerName( playerid ).." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 end)
 
 addCommandHandler ( "try",
