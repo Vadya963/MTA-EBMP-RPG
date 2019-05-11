@@ -5995,7 +5995,7 @@ function (playerid, cmd, id, ...)
 	end
 
 	if not id or text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [текст]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [текст]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6310,7 +6310,7 @@ function (playerid, cmd, id, cash)
 	end
 
 	if not cash then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [сумма]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [сумма]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6353,7 +6353,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6404,7 +6404,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6450,7 +6450,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player или car] [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player или car] [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6580,7 +6580,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6613,7 +6613,7 @@ function (playerid, cmd, id, rang)
 	end
 
 	if not id or not rang then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [от 28 до 32]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [от 28 до 32]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7073,7 +7073,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ник соблюдая регистр | номер т/с | номер дома]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7130,7 +7130,7 @@ function (playerid, cmd, id, time, ...)
 	end
 
 	if not id or reason == "" or not time then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [время] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [время] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7164,7 +7164,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7199,7 +7199,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7234,7 +7234,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ник соблюдая регистр] [причина]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
 		return
 	end
 
