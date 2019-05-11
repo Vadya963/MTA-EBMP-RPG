@@ -6450,7 +6450,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player или car] [ИД игрока]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end
 
