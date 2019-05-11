@@ -17,7 +17,7 @@ end
 
 local earth = {}--слоты земли
 local max_earth = 0
-
+local count_player = 0--ид игроков
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
@@ -2342,6 +2342,16 @@ function random_sub (playerid, id)--выпадение предметов
 		end
 	end
 end
+
+function getPlayerId( id )--узнать имя игрока из ид
+	for k,player in pairs(getElementsByType("player")) do
+		if getElementData(player, "player_id")[1] == tonumber(id) then
+			return getPlayerName(player), player
+		end
+	end
+
+	return false
+end
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------авто-------------------------------------------------------------
@@ -3643,6 +3653,8 @@ function()
 	setPlayerHudComponentVisible ( playerid, "health", false )
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
+	setPlayerNametagShowing ( playerid, false )
+	count_player = count_player+1
 
 	for _, stat in pairs({ 22, 24, 225, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -3875,6 +3887,7 @@ function reg_or_login(playerid)
 
 		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 		setElementHealth( playerid, result[1]["heal"] )
+		setPlayerNametagColor(playerid, white[1],white[2],white[3])
 
 		sendPlayerMessage(playerid, "Вы удачно зарегистрировались!", turquoise[1], turquoise[2], turquoise[3])
 
@@ -3915,6 +3928,8 @@ function reg_or_login(playerid)
 
 		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 	end
+
+	setElementData( playerid, "player_id", { count_player, {getPlayerNametagColor(playerid)} } )
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -5984,16 +5999,11 @@ function (playerid, cmd, id, ...)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
-
-		if id == player_name then
-			sendPlayerMessage(playerid, "[SMS TO] "..id..": "..text, yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(player, "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
-		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
-		end
+	id,player = getPlayerId(id)
+		
+	if id then
+		sendPlayerMessage(playerid, "[SMS TO] "..id..": "..text, yellow[1], yellow[2], yellow[3])
+		sendPlayerMessage(player, "[SMS FROM] "..playername..": "..text, yellow[1], yellow[2], yellow[3])
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -6313,24 +6323,19 @@ function (playerid, cmd, id, cash)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
+	id,player = getPlayerId(id)
+		
+	if id then
+		local x1,y1,z1 = getElementPosition(player)
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-		if id == player_name then
-			local x1,y1,z1 = getElementPosition(player)
-			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+			inv_server_load( player, "player", 0, 1, array_player_2[id][1]+cash, id )
 
-				inv_server_load( player, "player", 0, 1, array_player_2[id][1]+cash, id )
+			me_chat(playerid, playername.." передал(а) "..id.." "..cash.."$")
 
-				me_chat(playerid, playername.." передал(а) "..id.." "..cash.."$")
-
-			else
-				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
-			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
@@ -6357,36 +6362,31 @@ function (playerid, cmd, id)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
+	id,player = getPlayerId(id)
+		
+	if id then
+		local x1,y1,z1 = getElementPosition(player)
 
-		if id == player_name then
-			local x1,y1,z1 = getElementPosition(player)
+		if arrest[id] == 1 then
+			sendPlayerMessage(playerid, "[ERROR] Игрок в тюрьме", red[1], red[2], red[3])
+			return
+		end
 
-			if arrest[id] == 1 then
-				sendPlayerMessage(playerid, "[ERROR] Игрок в тюрьме", red[1], red[2], red[3])
-				return
-			end
+		if crimes[id] == 0 then
+			sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3])
+			return
+		end
 
-			if crimes[id] == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3])
-				return
-			end
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+			me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]).." мин")
 
-			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]).." мин")
+			arrest[id] = 1
 
-				arrest[id] = 1
+			sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", green[1], green[2], green[3] )
 
-				sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", green[1], green[2], green[3] )
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id])), playername )
-			else
-				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
-			end
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id])), playername )
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
@@ -6408,36 +6408,31 @@ function (playerid, cmd, id)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
+	id,player = getPlayerId(id)
+		
+	if id then
+		local x1,y1,z1 = getElementPosition(player)
 
-		if id == player_name then
-			local x1,y1,z1 = getElementPosition(player)
+		if arrest[id] == 0 then
+			sendPlayerMessage(playerid, "[ERROR] Игрок не в тюрьме", red[1], red[2], red[3])
+			return
+		end
 
-			if arrest[id] == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Игрок не в тюрьме", red[1], red[2], red[3])
-				return
-			end
+		if cash*crimes[id] > array_player_2[playername][1] then
+			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+			return
+		end
 
-			if cash*crimes[id] > array_player_2[playername][1] then
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
-				return
-			end
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+			me_chat(playerid, playername.." заплатил(а) залог за "..id.." в размере "..(cash*(crimes[id])).."$")
 
-			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				me_chat(playerid, playername.." заплатил(а) залог за "..id.." в размере "..(cash*(crimes[id])).."$")
+			sendPlayerMessage(player, "Ждите освобождения", yellow[1], yellow[2], yellow[3])
 
-				sendPlayerMessage(player, "Ждите освобождения", yellow[1], yellow[2], yellow[3])
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*(crimes[id])), playername )
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*(crimes[id])), playername )
-
-				crimes[id] = 1
-			else
-				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
-			end
+			crimes[id] = 1
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
@@ -6465,32 +6460,27 @@ function (playerid, cmd, value, id)
 	end
 
 	if value == "player" then
-		local player = getPlayerFromName ( id )
-		if player then
-			local player_name = getPlayerName ( player )
+		id,player = getPlayerId(id)
+		
+		if id then
+			local x1,y1,z1 = getElementPosition(player)
 
-			if id == player_name then
-				local x1,y1,z1 = getElementPosition(player)
+			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+				me_chat(playerid, playername.." обыскал(а) "..id)
 
-				if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-					me_chat(playerid, playername.." обыскал(а) "..id)
-
-					for k,v in pairs(weapon) do
-						if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
-							me_chat(playerid, playername.." нашел(ла) у "..id.." "..v[1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
-						end
+				for k,v in pairs(weapon) do
+					if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
+						me_chat(playerid, playername.." нашел(ла) у "..id.." "..v[1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
 					end
+				end
 
-					for i,k in pairs(wanted_sub) do
-						if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
-							me_chat(playerid, playername.." нашел(ла) у "..id.." "..info_png[k][1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
-						end
+				for i,k in pairs(wanted_sub) do
+					if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
+						me_chat(playerid, playername.." нашел(ла) у "..id.." "..info_png[k][1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
 					end
-				else
-					sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 			end
 		else
 			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
@@ -6599,30 +6589,16 @@ function (playerid, cmd, id)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
-
-		if id == player_name then
-			if inv_player_delet(player, 10, 1) then
-				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow[1], yellow[2], yellow[3])
-			else
-				sendPlayerMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
-			end
-		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
-		end
-	else
-		--[[local s_sql = select_sqlite(10, 1)
-		if id == s_sql[1] then
-			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1].." "..id, yellow[1], yellow[2], yellow[3])
-
-			sqlite( "UPDATE account SET slot_"..s_sql[2].."_1 = '0', slot_"..s_sql[2].."_2 = '0' WHERE name = '"..s_sql[1].."'")
+	id,player = getPlayerId(id)
+		
+	if id then
+		if inv_player_delet(player, 10, 1) then
+			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow[1], yellow[2], yellow[3])
 		else
 			sendPlayerMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
-		end]]
-
+		end
+	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
@@ -6647,19 +6623,14 @@ function (playerid, cmd, id, rang)
 	end
 
 	if rang >= 28 and rang <= 32 then
-		local player = getPlayerFromName ( id )
-		if player then
-			local player_name = getPlayerName ( player )
+		id,player = getPlayerId(id)
 
-			if id == player_name then
-				if inv_player_delet(player, rang, 1) then
-					sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
-					sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
-				else
-					sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
-				end
+		if id then
+			if inv_player_delet(player, rang, 1) then
+				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
 			else
-				sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+				sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
 			end
 		else
 			--[[local s_sql = select_sqlite(rang, 1)
@@ -7167,18 +7138,13 @@ function (playerid, cmd, id, time, ...)
 		return
 	end
 
-	local player = getPlayerFromName ( id )
-	if player then
-		local player_name = getPlayerName ( player )
+	id,player = getPlayerId(id)
+		
+	if id then
+		sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
-		if id == player_name then
-			sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
-
-			arrest[id] = 1
-			crimes[id] = time
-		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
-		end
+		arrest[id] = 1
+		crimes[id] = time
 	else
 		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
@@ -7215,7 +7181,7 @@ function ( playerid, cmd, id, ... )
 
 		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
-		local player = getPlayerFromName ( id )
+		local id,player = getPlayerId ( id )
 		if player then
 			kickPlayer(player, "banplayer reason: "..reason)
 		end
@@ -7286,7 +7252,7 @@ function ( playerid, cmd, id, ... )
 
 		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
-		local player = getPlayerFromName ( id )
+		local id,player = getPlayerId ( id )
 		if player then
 			kickPlayer(player, "banserial reason: "..reason)
 		end

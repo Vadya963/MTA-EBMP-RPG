@@ -833,7 +833,7 @@ function createText ()
 				local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-60, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*8, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
@@ -841,7 +841,7 @@ function createText ()
 				local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-45, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*7, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
@@ -849,7 +849,7 @@ function createText ()
 				local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-30, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*6, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
@@ -857,7 +857,7 @@ function createText ()
 				local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*5, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 			end
 
@@ -865,7 +865,15 @@ function createText ()
 				local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
 				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
 				if coords[1] and coords[2] then
-					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15*5, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+				end
+			end
+
+			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and player ~= playerid then
+				local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", 1, m2font_dx1 )
+				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
+				if coords[1] and coords[2] then
+					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( getElementData(player, "player_id")[2][1], getElementData(player, "player_id")[2][2], getElementData(player, "player_id")[2][3], 255 ), 1, m2font_dx1 )
 				end
 			end
 		end
