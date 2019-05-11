@@ -261,7 +261,7 @@ end, 60000, 0)
 
 local image = {}--загрузка картинок для отображения на земле
 for i=0,#info_png do
-	image[i] = dxCreateTexture(i..".png")
+	image[i] = dxCreateTexture("image_inventory/"..i..".png")
 end
 
 local info_tab = nil --положение картинки в табе
@@ -2005,33 +2005,33 @@ function inv_create ()--создание инв-ря
 
 	showCursor( true )
 
-	inv_slot_player[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_player[0][2]..".png", false, tab_player )
-	inv_slot_player[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_player[1][2]..".png", false, tab_player )
-	inv_slot_player[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_player[2][2]..".png", false, tab_player )
-	inv_slot_player[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_player[3][2]..".png", false, tab_player )
-	inv_slot_player[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_player[4][2]..".png", false, tab_player )
-	inv_slot_player[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_player[5][2]..".png", false, tab_player )
+	inv_slot_player[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[0][2]..".png", false, tab_player )
+	inv_slot_player[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[1][2]..".png", false, tab_player )
+	inv_slot_player[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[2][2]..".png", false, tab_player )
+	inv_slot_player[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[3][2]..".png", false, tab_player )
+	inv_slot_player[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[4][2]..".png", false, tab_player )
+	inv_slot_player[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_player[5][2]..".png", false, tab_player )
 
-	inv_slot_player[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_player[6][2]..".png", false, tab_player )
-	inv_slot_player[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_player[7][2]..".png", false, tab_player )
-	inv_slot_player[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_player[8][2]..".png", false, tab_player )
-	inv_slot_player[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_player[9][2]..".png", false, tab_player )
-	inv_slot_player[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_player[10][2]..".png", false, tab_player )
-	inv_slot_player[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_player[11][2]..".png", false, tab_player )
+	inv_slot_player[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[6][2]..".png", false, tab_player )
+	inv_slot_player[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[7][2]..".png", false, tab_player )
+	inv_slot_player[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[8][2]..".png", false, tab_player )
+	inv_slot_player[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[9][2]..".png", false, tab_player )
+	inv_slot_player[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[10][2]..".png", false, tab_player )
+	inv_slot_player[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_player[11][2]..".png", false, tab_player )
 
-	inv_slot_player[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_player[12][2]..".png", false, tab_player )
-	inv_slot_player[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_player[13][2]..".png", false, tab_player )
-	inv_slot_player[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_player[14][2]..".png", false, tab_player )
-	inv_slot_player[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_player[15][2]..".png", false, tab_player )
-	inv_slot_player[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_player[16][2]..".png", false, tab_player )
-	inv_slot_player[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_player[17][2]..".png", false, tab_player )
+	inv_slot_player[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[12][2]..".png", false, tab_player )
+	inv_slot_player[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[13][2]..".png", false, tab_player )
+	inv_slot_player[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[14][2]..".png", false, tab_player )
+	inv_slot_player[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[15][2]..".png", false, tab_player )
+	inv_slot_player[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[16][2]..".png", false, tab_player )
+	inv_slot_player[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_player[17][2]..".png", false, tab_player )
 
-	inv_slot_player[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_player[18][2]..".png", false, tab_player )
-	inv_slot_player[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_player[19][2]..".png", false, tab_player )
-	inv_slot_player[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_player[20][2]..".png", false, tab_player )
-	inv_slot_player[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_player[21][2]..".png", false, tab_player )
-	inv_slot_player[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_player[22][2]..".png", false, tab_player )
-	inv_slot_player[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_player[23][2]..".png", false, tab_player )
+	inv_slot_player[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[18][2]..".png", false, tab_player )
+	inv_slot_player[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[19][2]..".png", false, tab_player )
+	inv_slot_player[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[20][2]..".png", false, tab_player )
+	inv_slot_player[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[21][2]..".png", false, tab_player )
+	inv_slot_player[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[22][2]..".png", false, tab_player )
+	inv_slot_player[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_player[23][2]..".png", false, tab_player )
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
@@ -2104,33 +2104,33 @@ function inv_create ()--создание инв-ря
 
 	if plate ~= "" then
 		tab_car = guiCreateTab( "Т/С "..plate, tabPanel )
-		inv_slot_car[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_car[0][2]..".png", false, tab_car )
-		inv_slot_car[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_car[1][2]..".png", false, tab_car )
-		inv_slot_car[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_car[2][2]..".png", false, tab_car )
-		inv_slot_car[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_car[3][2]..".png", false, tab_car )
-		inv_slot_car[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_car[4][2]..".png", false, tab_car )
-		inv_slot_car[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_car[5][2]..".png", false, tab_car )
+		inv_slot_car[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[0][2]..".png", false, tab_car )
+		inv_slot_car[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[1][2]..".png", false, tab_car )
+		inv_slot_car[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[2][2]..".png", false, tab_car )
+		inv_slot_car[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[3][2]..".png", false, tab_car )
+		inv_slot_car[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[4][2]..".png", false, tab_car )
+		inv_slot_car[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_car[5][2]..".png", false, tab_car )
 
-		inv_slot_car[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_car[6][2]..".png", false, tab_car )
-		inv_slot_car[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_car[7][2]..".png", false, tab_car )
-		inv_slot_car[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_car[8][2]..".png", false, tab_car )
-		inv_slot_car[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_car[9][2]..".png", false, tab_car )
-		inv_slot_car[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_car[10][2]..".png", false, tab_car )
-		inv_slot_car[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_car[11][2]..".png", false, tab_car )
+		inv_slot_car[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[6][2]..".png", false, tab_car )
+		inv_slot_car[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[7][2]..".png", false, tab_car )
+		inv_slot_car[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[8][2]..".png", false, tab_car )
+		inv_slot_car[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[9][2]..".png", false, tab_car )
+		inv_slot_car[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[10][2]..".png", false, tab_car )
+		inv_slot_car[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_car[11][2]..".png", false, tab_car )
 
-		inv_slot_car[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_car[12][2]..".png", false, tab_car )
-		inv_slot_car[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_car[13][2]..".png", false, tab_car )
-		inv_slot_car[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_car[14][2]..".png", false, tab_car )
-		inv_slot_car[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_car[15][2]..".png", false, tab_car )
-		inv_slot_car[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_car[16][2]..".png", false, tab_car )
-		inv_slot_car[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_car[17][2]..".png", false, tab_car )
+		inv_slot_car[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[12][2]..".png", false, tab_car )
+		inv_slot_car[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[13][2]..".png", false, tab_car )
+		inv_slot_car[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[14][2]..".png", false, tab_car )
+		inv_slot_car[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[15][2]..".png", false, tab_car )
+		inv_slot_car[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[16][2]..".png", false, tab_car )
+		inv_slot_car[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_car[17][2]..".png", false, tab_car )
 
-		inv_slot_car[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_car[18][2]..".png", false, tab_car )
-		inv_slot_car[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_car[19][2]..".png", false, tab_car )
-		inv_slot_car[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_car[20][2]..".png", false, tab_car )
-		inv_slot_car[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_car[21][2]..".png", false, tab_car )
-		inv_slot_car[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_car[22][2]..".png", false, tab_car )
-		inv_slot_car[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_car[23][2]..".png", false, tab_car )
+		inv_slot_car[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[18][2]..".png", false, tab_car )
+		inv_slot_car[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[19][2]..".png", false, tab_car )
+		inv_slot_car[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[20][2]..".png", false, tab_car )
+		inv_slot_car[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[21][2]..".png", false, tab_car )
+		inv_slot_car[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[22][2]..".png", false, tab_car )
+		inv_slot_car[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[23][2]..".png", false, tab_car )
 
 		for i=0,max_inv do
 			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
@@ -2204,33 +2204,33 @@ function inv_create ()--создание инв-ря
 
 	if house ~= "" then
 		tab_house = guiCreateTab( "Дом "..house, tabPanel )
-		inv_slot_house[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, inv_slot_house[0][2]..".png", false, tab_house )
-		inv_slot_house[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, inv_slot_house[1][2]..".png", false, tab_house )
-		inv_slot_house[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, inv_slot_house[2][2]..".png", false, tab_house )
-		inv_slot_house[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, inv_slot_house[3][2]..".png", false, tab_house )
-		inv_slot_house[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, inv_slot_house[4][2]..".png", false, tab_house )
-		inv_slot_house[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, inv_slot_house[5][2]..".png", false, tab_house )
+		inv_slot_house[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[0][2]..".png", false, tab_house )
+		inv_slot_house[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[1][2]..".png", false, tab_house )
+		inv_slot_house[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[2][2]..".png", false, tab_house )
+		inv_slot_house[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[3][2]..".png", false, tab_house )
+		inv_slot_house[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[4][2]..".png", false, tab_house )
+		inv_slot_house[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_house[5][2]..".png", false, tab_house )
 
-		inv_slot_house[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, inv_slot_house[6][2]..".png", false, tab_house )
-		inv_slot_house[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, inv_slot_house[7][2]..".png", false, tab_house )
-		inv_slot_house[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, inv_slot_house[8][2]..".png", false, tab_house )
-		inv_slot_house[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, inv_slot_house[9][2]..".png", false, tab_house )
-		inv_slot_house[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, inv_slot_house[10][2]..".png", false, tab_house )
-		inv_slot_house[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, inv_slot_house[11][2]..".png", false, tab_house )
+		inv_slot_house[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[6][2]..".png", false, tab_house )
+		inv_slot_house[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[7][2]..".png", false, tab_house )
+		inv_slot_house[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[8][2]..".png", false, tab_house )
+		inv_slot_house[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[9][2]..".png", false, tab_house )
+		inv_slot_house[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[10][2]..".png", false, tab_house )
+		inv_slot_house[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_house[11][2]..".png", false, tab_house )
 
-		inv_slot_house[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, inv_slot_house[12][2]..".png", false, tab_house )
-		inv_slot_house[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, inv_slot_house[13][2]..".png", false, tab_house )
-		inv_slot_house[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, inv_slot_house[14][2]..".png", false, tab_house )
-		inv_slot_house[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, inv_slot_house[15][2]..".png", false, tab_house )
-		inv_slot_house[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, inv_slot_house[16][2]..".png", false, tab_house )
-		inv_slot_house[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, inv_slot_house[17][2]..".png", false, tab_house )
+		inv_slot_house[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[12][2]..".png", false, tab_house )
+		inv_slot_house[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[13][2]..".png", false, tab_house )
+		inv_slot_house[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[14][2]..".png", false, tab_house )
+		inv_slot_house[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[15][2]..".png", false, tab_house )
+		inv_slot_house[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[16][2]..".png", false, tab_house )
+		inv_slot_house[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_house[17][2]..".png", false, tab_house )
 
-		inv_slot_house[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, inv_slot_house[18][2]..".png", false, tab_house )
-		inv_slot_house[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, inv_slot_house[19][2]..".png", false, tab_house )
-		inv_slot_house[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, inv_slot_house[20][2]..".png", false, tab_house )
-		inv_slot_house[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, inv_slot_house[21][2]..".png", false, tab_house )
-		inv_slot_house[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, inv_slot_house[22][2]..".png", false, tab_house )
-		inv_slot_house[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, inv_slot_house[23][2]..".png", false, tab_house )
+		inv_slot_house[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[18][2]..".png", false, tab_house )
+		inv_slot_house[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[19][2]..".png", false, tab_house )
+		inv_slot_house[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[20][2]..".png", false, tab_house )
+		inv_slot_house[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[21][2]..".png", false, tab_house )
+		inv_slot_house[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[22][2]..".png", false, tab_house )
+		inv_slot_house[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_house[23][2]..".png", false, tab_house )
 
 		for i=0,max_inv do
 			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
@@ -2467,11 +2467,11 @@ addEventHandler ( "event_tab_load", getRootElement(), tab_load )
 
 function change_image (value, id3, filename)--замена картинок в инв-ре
 	if value == "player" then
-		guiStaticImageLoadImage ( inv_slot_player[id3][1], filename..".png" )
+		guiStaticImageLoadImage ( inv_slot_player[id3][1], "image_inventory/"..filename..".png" )
 	elseif value == "car" then
-		guiStaticImageLoadImage ( inv_slot_car[id3][1], filename..".png" )
+		guiStaticImageLoadImage ( inv_slot_car[id3][1], "image_inventory/"..filename..".png" )
 	elseif value == "house" then
-		guiStaticImageLoadImage ( inv_slot_house[id3][1], filename..".png" )
+		guiStaticImageLoadImage ( inv_slot_house[id3][1], "image_inventory/"..filename..".png" )
 	end
 end
 addEvent( "event_change_image", true )
