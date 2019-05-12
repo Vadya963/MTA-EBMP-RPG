@@ -114,7 +114,7 @@ local info_png = {
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия на работу", "вид работы"},
 	[65] = {"инкассаторская сумка", "$ в сумке"},
-	[66] = {"", ""},
+	[66] = {"ящик с оружием", "$ за штуку"},
 	[67] = {"бензопила", "шт"},
 	[68] = {"дрова", "кг"},
 	[69] = {"пустая коробка", "шт"},
@@ -434,6 +434,7 @@ local text_3d = {--3d text
 	{260.4326171875,1409.2626953125,10.506074905396, 15, "Нефтезавод (Загрузить бочки - E)"},
 	{-1061.6103515625,-1195.5166015625,129.828125, 15, "Скотобойня (Загрузить тушки коров - E)"},
 	{1461.939453125,974.8876953125,10.30264377594, 15, "Склад корма (Загрузить корм - E)"},--склад корма для коров
+	{2492.3974609375,2773.46484375,10.803514480591, 15, "KACC (Загрузить ящики - E)"},--kacc
 
 	--down_car_subject
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, "Порт ЛС (Разгрузить товар - E)"},
@@ -1959,17 +1960,26 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-		local home = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
-		guiGridListAddColumn(shoplist, "№", 0.15)
-		guiGridListAddColumn(shoplist, "Имя", 0.8)
+		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			guiGridListClear(shoplist)
+			for k,v in pairs(getElementsByType("player")) do
+				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v))
+			end
+		end
+		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+		guiGridListAddColumn(shoplist, "ИД", 0.15)
+		guiGridListAddColumn(shoplist, "Ник", 0.8)
 		for k,v in pairs(getElementsByType("player")) do
-			guiGridListAddRow(shoplist, k, getPlayerName(v))
+			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v))
 		end
 	end
 	addEventHandler ( "onClientGUIClick", handbook, outputEditBox, false )

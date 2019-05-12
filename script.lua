@@ -45,6 +45,7 @@ local zakon_drugs_crimes = 1
 local zakon_kill_crimes = 1
 local zakon_robbery_crimes = 1
 local zakon_65_crimes = 1
+local zakon_66_crimes = 1
 local zakon_car_theft_crimes = 1
 local zakon_nalog_car = 500
 local zakon_nalog_house = 1000
@@ -354,7 +355,7 @@ local info_png = {
 	[63] = {"GPS навигатор", "шт"},
 	[64] = {"лицензия на работу", "вид работы"},
 	[65] = {"инкассаторская сумка", "$ в сумке"},
-	[66] = {"", ""},
+	[66] = {"ящик с оружием", "$ за штуку"},
 	[67] = {"бензопила", "шт"},
 	[68] = {"дрова", "кг"},
 	[69] = {"пустая коробка", "шт"},
@@ -451,6 +452,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Рыболов", 4, 5000, 64},
 	{info_png[64][1].." Пилот", 5, 5000, 64},
 	{info_png[64][1].." Дальнобойщик", 7, 5000, 64},
+	{info_png[64][1].." Перевозчик оружия", 8, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -899,6 +901,7 @@ local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, з
 	{260.4326171875,1409.2626953125,10.506074905396, 15, 73, 456, 200},--нефтезавод
 	{-1061.6103515625,-1195.5166015625,129.828125, 15, 88, 456, 200},--скотобойня
 	{1461.939453125,974.8876953125,10.30264377594, 15, 89, 456, 50},--склад корма для коров
+	{2492.3974609375,2773.46484375,10.803514480591, 15, 66, 428, 200},--kacc
 }
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
@@ -1147,7 +1150,21 @@ local original_business_pos = {
 	{ 2334.055664, 61.541301, 26.484687},
 }
 
-local korovi_pos ={}
+local gans_pos = {
+	{-2626.432128, 209.431488, 4.601754},
+	{2400.531738, -1980.582885, 13.546875},
+	{778.146789, 1871.564575, 4.907619},
+	{-314.774688, 829.901977, 14.242187},
+	{241.099655, -178.363815, 1.578125},
+	{2334.055664, 61.541301, 26.484687},
+	{2538.900878, 2084.042968, 10.820312},
+	{-1508.861572, 2609.611572, 55.835937},
+	{2158.767333, 943.083129, 10.820312},
+	{-2093.248046, -2464.454589, 30.625000},
+	{1368.388671, -1279.795898, 13.546875},
+}
+
+local korovi_pos = {}
 
 --инв-рь игрока
 local array_player_1 = {}
@@ -1710,6 +1727,60 @@ function job_timer2 ()
 					job_marker[playername] = 0
 					job_pos[playername] = 0
 					job_call[playername] = 0
+				end
+
+			elseif job[playername] == 8 then--работа перевозчика оружия
+				if vehicleid then
+					if getElementModel(vehicleid) == up_car_subject[5][6] then
+						if getSpeed(vehicleid) < 1 then
+
+							if job_call[playername] == 0 then--старт работы
+
+								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = 1
+								job_pos[playername] = {up_car_subject[5][1],up_car_subject[5][2],up_car_subject[5][3]-1}
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+								if(amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5]) ~= 0) then
+									job_pos[playername] = {x,y,z}
+								end
+
+							elseif job_call[playername] == 1 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = random(1,#gans_pos)
+
+									job_call[playername] = 2
+
+									job_pos[playername] = {gans_pos[randomize][1],gans_pos[randomize][2],gans_pos[randomize][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								end
+
+							elseif job_call[playername] == 2 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = search_inv_car_2_parameter(vehicleid, up_car_subject[5][5])*amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5])
+
+									inv_car_delet(playerid, up_car_subject[5][5], search_inv_car_2_parameter(vehicleid, up_car_subject[5][5]))
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
 				end
 
 			elseif job[playername] == 0 then--нету рыботы
@@ -3957,6 +4028,11 @@ function explode_car()
 			local sic2p = search_inv_car_2_parameter(vehicleid, 65)
 			inv_car_throw_earth(vehicleid, 65, sic2p)
 		end
+
+		for i=0,max_inv do
+			local sic2p = search_inv_car_2_parameter(vehicleid, 66)
+			inv_car_throw_earth(vehicleid, 66, sic2p)
+		end
 	end
 end
 addEventHandler("onVehicleExplode", getRootElement(), explode_car)
@@ -4873,6 +4949,11 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				end
+			elseif id1 == 66 then
+				if search_inv_player(playerid, 64, 8) == 0 then
+					sendPlayerMessage(playerid, "[ERROR] Вы не перевозчик оружия", red[1], red[2], red[3])
+					return
+				end
 			elseif id1 == 75 then
 				if search_inv_player(playerid, 64, 2) == 0 then
 					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
@@ -4913,6 +4994,8 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 65 then
 				sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+			elseif id1 == 66 then
+				sendPlayerMessage(playerid, "[TIPS] Езжайте в аммунацию, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 73 then
 				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 75 then
@@ -5840,6 +5923,23 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
+			elseif id2 == 8 then
+				if crimes[playername] ~= 0 then
+					sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 8
+
+					me_chat(playerid, playername.." вышел(ла) на работу Перевозчик оружия")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			end
 
 			return
@@ -5858,6 +5958,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+		elseif id1 == 66 then--ящик с оружием
+			local array_weapon = {9,12,13,14,15,16,17,18,19,26,34,41}
+
+			local randomize = random(1,#array_weapon)
+
+			me_chat(playerid, playername.." открыл(а) "..info_png[id1][1])
+
+			inv_player_delet(playerid, id1, id2)
+			inv_player_empty(playerid, array_weapon[randomize], 25)
+
+			local crimes_plus = zakon_66_crimes
+			crimes[playername] = crimes[playername]+crimes_plus
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+
+			return
 
 		elseif id1 == 77 then--жетон
 			if vehicleid then
@@ -5999,7 +6115,7 @@ function (playerid, cmd, id, ...)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		sendPlayerMessage(playerid, "[SMS TO] "..id.." ["..getElementData(player, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
@@ -6192,17 +6308,17 @@ function (playerid, cmd, ...)
 
 	if search_inv_player(playerid, 10, 1) ~= 0 then
 		if search_inv_player(playerid, 28, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Офицер "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Офицер "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 29, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Детектив "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Детектив "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 30, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Сержант "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Сержант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 31, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Лейтенант "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Лейтенант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 32, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Капитан "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Капитан "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 33, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Шеф полиции "..playername..": "..text)
+			police_chat(playerid, "[РАЦИЯ] Шеф полиции "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		end
 	else
 		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
@@ -6323,7 +6439,7 @@ function (playerid, cmd, id, cash)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
@@ -6362,7 +6478,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
@@ -6408,7 +6524,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
@@ -6460,7 +6576,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if value == "player" then
-		id,player = getPlayerId(id)
+		local id,player = getPlayerId(id)
 		
 		if id then
 			local x1,y1,z1 = getElementPosition(player)
@@ -6589,7 +6705,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		if inv_player_delet(player, 10, 1) then
@@ -6623,7 +6739,7 @@ function (playerid, cmd, id, rang)
 	end
 
 	if rang >= 28 and rang <= 32 then
-		id,player = getPlayerId(id)
+		local id,player = getPlayerId(id)
 
 		if id then
 			if inv_player_delet(player, rang, 1) then
@@ -7138,7 +7254,7 @@ function (playerid, cmd, id, time, ...)
 		return
 	end
 
-	id,player = getPlayerId(id)
+	local id,player = getPlayerId(id)
 		
 	if id then
 		sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
