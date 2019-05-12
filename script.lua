@@ -5514,6 +5514,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						me_chat(playerid, playername.." заправил(а) т/с из канистры")
 						id2 = 0
 
+						sqlite( "UPDATE car_db SET fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
+
+						local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+						if result[1]["COUNT()"] == 1 then
+							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+							if result[1]["nalog"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and getVehicleOccupant(vehicleid, 0) then
+								setVehicleEngineState(vehicleid, true)
+							end
+						end
+
 					else
 						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
