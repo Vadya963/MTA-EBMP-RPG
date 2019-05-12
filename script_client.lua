@@ -827,54 +827,39 @@ function createText ()
 
 
 	if hud then
-		for k,player in pairs(getElementsByType("player")) do--отображение пнг в розыске
+		for k,player in pairs(getElementsByType("player")) do
 			local x1,y1,z1 = getElementPosition(player)
+			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(player, "zakon_drugs") and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*8, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			if player ~= playerid and coords[1] and coords[2] then
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(player, "zakon_drugs") then
+					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
+					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
-			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(player, "zakon_alcohol") and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*7, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(player, "zakon_alcohol") then
+					local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
+					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
-			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*6, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) --[[and getElementData(player, "is_chat_open") == 1]] then
+					local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
+					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
-			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 and player ~= playerid then
-				local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*5, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and getElementData(player, "afk") then
+					local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
+					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
 				end
-			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and player ~= playerid and getElementData(player, "afk") then
-				local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15*5, 0.0, 0.0, tocolor ( purple[1], purple[2], purple[3], 255 ), 1, m2font_dx1 )
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 then
+					local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
 				end
-			end
 
-			if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and player ~= playerid then
-				local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", 1, m2font_dx1 )
-				local coords = { getScreenFromWorldPosition( x1,y1,z1+0.32, 0, false ) }
-				if coords[1] and coords[2] then
-					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( getElementData(player, "player_id")[2][1], getElementData(player, "player_id")[2][2], getElementData(player, "player_id")[2][3], 255 ), 1, m2font_dx1 )
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) then
+					local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", 1, m2font_dx1 )
+					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( getElementData(player, "player_id")[2][1], getElementData(player, "player_id")[2][2], getElementData(player, "player_id")[2][3], 255 ), 1, m2font_dx1 )
 				end
 			end
 		end

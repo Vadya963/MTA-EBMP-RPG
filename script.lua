@@ -16,8 +16,8 @@ function sqlite(text)
 end
 
 local earth = {}--слоты земли
-local max_earth = 0
-local count_player = 0--ид игроков
+local max_earth = 0--мак-ое кол-во выброшенных предметов на землю
+local count_player = 0--кол-во подключенных игроков
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
@@ -1948,13 +1948,18 @@ function need()--нужды
 
 
 			if drugs[playername] == 100 then
-				setElementHealth( playerid, getElementHealth(playerid)-100 )
-				sendPlayerMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
+				setElementHealth( playerid, getElementHealth(playerid)-200 )
+				sendPlayerMessage(playerid, "-200 хп", yellow[1], yellow[2], yellow[3])
 			end
 
 
 			if alcohol[playername] ~= 0 then
 				alcohol[playername] = alcohol[playername]-10
+			end
+
+
+			if drugs[playername] ~= 0 then
+				drugs[playername] = drugs[playername]-0.1
 			end
 
 
