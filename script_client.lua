@@ -831,7 +831,7 @@ function createText ()
 			local x1,y1,z1 = getElementPosition(player)
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
 
-			if player ~= playerid and coords[1] and coords[2] then
+			if player ~= playerid and coords[1] and coords[2] and isLineOfSightClear(x, y, z, x1,y1,z1) then
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(player, "zakon_drugs") then
 					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
 					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
