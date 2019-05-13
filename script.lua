@@ -1958,8 +1958,10 @@ function need()--нужды
 			end
 
 
-			if drugs[playername] ~= 0 then
+			if drugs[playername]-0.1 >= 0 then
 				drugs[playername] = drugs[playername]-0.1
+			else
+				drugs[playername] = 0
 			end
 
 
