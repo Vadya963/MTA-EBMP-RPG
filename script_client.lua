@@ -842,7 +842,7 @@ function createText ()
 					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 
-				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) --[[and getElementData(player, "is_chat_open") == 1]] then
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 then
 					local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
 					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end

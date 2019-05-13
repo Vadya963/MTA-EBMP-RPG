@@ -1763,7 +1763,7 @@ function job_timer2 ()
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = search_inv_car_2_parameter(vehicleid, up_car_subject[5][5])*amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5])
 
-									inv_car_delet(playerid, up_car_subject[5][5], search_inv_car_2_parameter(vehicleid, up_car_subject[5][5]))
+									inv_car_delet(playerid, up_car_subject[5][5], search_inv_car_2_parameter(vehicleid, up_car_subject[5][5]), true)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2294,8 +2294,13 @@ function inv_player_empty(playerid, id1, id2)--выдача предмета и�
 	return false
 end
 
-function inv_player_delet(playerid, id1, id2)--удаления предмета игрока
+function inv_player_delet(playerid, id1, id2, delet_inv)--удаления предмета игрока
 	local playername = getPlayerName ( playerid )
+
+	if delet_inv then
+		triggerClientEvent( playerid, "event_inv_delet", playerid )
+		state_inv_player[playername] = 0
+	end
 
 	for i=0,max_inv do
 		if array_player_1[playername][i+1] == id1 and array_player_2[playername][i+1] == id2 then
@@ -2517,10 +2522,15 @@ function inv_car_empty(playerid, id1, id2)--выдача предмета в а�
 	return count
 end
 
-function inv_car_delet(playerid, id1, id2)--удаления предмета в авто
+function inv_car_delet(playerid, id1, id2, delet_inv)--удаления предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
 	local plate = getVehiclePlateText ( vehicleid )
+
+	if delet_inv then
+		triggerClientEvent( playerid, "event_inv_delet", playerid )
+		state_inv_player[playername] = 0
+	end
 
 	for i=0,max_inv do
 		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
@@ -3444,19 +3454,15 @@ function cow_farms(playerid, value, val1, val2)
 	elseif value == "unload" then
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
-		if not result[1] then
-			return true
-		elseif not isPointInCircle3D(x,y,z, down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3], down_car_subject[6][4]) then
+		if not isPointInCircle3D(x,y,z, down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3], down_car_subject[6][4]) then
 			return false
 		end
 
-		inv_car_delet(playerid, 88, val2)
+		if not result[1] then
+			return true
+		end
 
-		triggerClientEvent( playerid, "event_inv_delet", playerid )
-		state_inv_player[playername] = 0
-
-		triggerClientEvent( playerid, "event_gui_delet", playerid )
-		state_gui_window[playername] = 0
+		inv_car_delet(playerid, 88, val2, true)
 
 		local money = val1*val2
 
@@ -3475,6 +3481,10 @@ function cow_farms(playerid, value, val1, val2)
 		local money = val1*val2
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
+		if not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+			return false
+		end
+
 		if not result[1] then
 			return true
 		elseif result[1]["money"] < money then
@@ -3483,17 +3493,9 @@ function cow_farms(playerid, value, val1, val2)
 		elseif result[1]["prod"] >= max_cf then
 			sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
 			return true
-		elseif not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
-			return false
 		end
 
-		inv_car_delet(playerid, 89, val2)
-
-		triggerClientEvent( playerid, "event_inv_delet", playerid )
-		state_inv_player[playername] = 0
-
-		triggerClientEvent( playerid, "event_gui_delet", playerid )
-		state_gui_window[playername] = 0
+		inv_car_delet(playerid, 89, val2, true)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
@@ -4524,7 +4526,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] and not vehicleid then--обработка предметов
 				local randomize = random(1,v[7])
 
-				inv_player_delet( playerid, id1, id2 )
+				inv_player_delet( playerid, id1, id2, true )
 				inv_player_empty( playerid, v[6], randomize )
 
 				sendPlayerMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
@@ -4893,7 +4895,7 @@ function left_alt_down (playerid, key, keyState)
 
 				elseif getElementInterior(playerid) == interior_job[id][1] and getElementDimension(playerid) == v[10] and enter_job[playername] == 1 then
 					if id == 9 or id == 10 or id == 11 or id == 12 then
-						inv_player_delet(playerid, 6, 0)
+						inv_player_delet(playerid, 6, 0, true)
 					end
 
 					triggerClientEvent( playerid, "event_gui_delet", playerid )
@@ -5060,13 +5062,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 						return
 					end
 
-					inv_car_delet(playerid, id, sic2p)
-
-					triggerClientEvent( playerid, "event_inv_delet", playerid )
-					state_inv_player[playername] = 0
-
-					triggerClientEvent( playerid, "event_gui_delet", playerid )
-					state_gui_window[playername] = 0
+					inv_car_delet(playerid, id, sic2p, true)
 
 					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
 
@@ -5081,13 +5077,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
 					if not cow_farms(playerid, "unload", count, sic2p) and not cow_farms(playerid, "unload_prod", count, sic2p) then
 
-						inv_car_delet(playerid, id, sic2p)
-
-						triggerClientEvent( playerid, "event_inv_delet", playerid )
-						state_inv_player[playername] = 0
-
-						triggerClientEvent( playerid, "event_gui_delet", playerid )
-						state_gui_window[playername] = 0
+						inv_car_delet(playerid, id, sic2p, true)
 
 						money = count*sic2p
 
@@ -6633,7 +6623,7 @@ function (playerid, cmd, value, id)
 				
 					me_chat(playerid, playername.." обыскал(а) т/с с номером "..id)
 
-					inv_player_delet(playerid, 91, 2)
+					inv_player_delet(playerid, 91, 2, true)
 
 					for k,v in pairs(weapon) do
 						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
@@ -6674,7 +6664,7 @@ function (playerid, cmd, value, id)
 				
 					me_chat(playerid, playername.." обыскал(а) дом с номером "..id)
 
-					inv_player_delet(playerid, 91, 3)
+					inv_player_delet(playerid, 91, 3, true)
 
 					for k,v in pairs(weapon) do
 						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then
@@ -6723,7 +6713,7 @@ function (playerid, cmd, id)
 	local id,player = getPlayerId(id)
 		
 	if id then
-		if inv_player_delet(player, 10, 1) then
+		if inv_player_delet(player, 10, 1, true) then
 			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow[1], yellow[2], yellow[3])
 			sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow[1], yellow[2], yellow[3])
 		else
@@ -6757,7 +6747,7 @@ function (playerid, cmd, id, rang)
 		local id,player = getPlayerId(id)
 
 		if id then
-			if inv_player_delet(player, rang, 1) then
+			if inv_player_delet(player, rang, 1, true) then
 				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
 				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
 			else
