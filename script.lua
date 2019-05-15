@@ -3853,7 +3853,6 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		robbery_kill( playername )
 
 		logged[playername] = 0
-		enter_house[playername] = {0,0}
 	else
 		
 	end
