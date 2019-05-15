@@ -55,6 +55,7 @@ local zakon_price_business = 300000
 --зп
 local zp_player_taxi = 1000
 local zp_player_plane = 2000
+local zp_player_busdriver = 12000
 local zp_car_75 = 200
 local zp_car_65 = 200
 local zp_car_78 = 200
@@ -363,7 +364,7 @@ local info_png = {
 	[71] = {"руда", "кг"},
 	[72] = {"виски", "шт"},
 	[73] = {"бочка с нефтью", "$ за штуку"},
-	[74] = {"", ""},
+	[74] = {"маршрутный лист", "из 4 ост."},
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
@@ -453,6 +454,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Пилот", 5, 5000, 64},
 	{info_png[64][1].." Дальнобойщик", 7, 5000, 64},
 	{info_png[64][1].." Перевозчик оружия", 8, 5000, 64},
+	{info_png[64][1].." Водитель автобуса", 9, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -653,7 +655,7 @@ local cash_car = {
 	--[433] = {"BARRACKS", 10000},--военный грузовик
 	[434] = {"HOTKNIFE", 35000},
 	[436] = {"PREVION", 9000},
-	--[437] = {"COACH", 20000},--автобус
+	[437] = {"COACH", 20000},--автобус
 	--[438] = {"CABBIE", 10000},--такси
 	[439] = {"STALLION", 19000},
 	[440] = {"RUMPO", 26000},--грузовик развозчика в сампрп
@@ -915,8 +917,8 @@ local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, ин
 	{2559.0185546875,-1300.0927734375,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 
 	{-491.4609375,-194.43359375,78.394332885742, 5, 67, 1, 0, 0, 27},--лесоповал
-
 	{576.8212890625,846.5732421875,-42.264389038086, 5, 70, 1, 0, 0, 260},--рудник лв
+	{1743.0302734375,-1864.4560546875,13.573830604553, 5, 74, 1, 0, 0, 253},--автобусник
 }
 
 --места сброса предметов
@@ -1162,6 +1164,13 @@ local gans_pos = {
 	{2158.767333, 943.083129, 10.820312},
 	{-2093.248046, -2464.454589, 30.625000},
 	{1368.388671, -1279.795898, 13.546875},
+}
+
+local busdriver_pos = {
+	{1776.921875,-1897.3623046875,13.520164489746},
+	{2832.11328125,1291.9189453125,10.908647537231},
+	{-1993.9208984375,144.396484375,27.685970306396},
+	{1743.0302734375,-1864.4560546875,13.573830604553},
 }
 
 local korovi_pos = {}
@@ -1768,6 +1777,60 @@ function job_timer2 ()
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
 									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+
+			elseif job[playername] == 9 then--работа автобусник
+				if vehicleid then
+					if getElementModel(vehicleid) == 437 then
+						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, 74) ~= 0 then
+
+							if job_call[playername] == 0 then--старт работы
+
+								sendPlayerMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = search_inv_player_2_parameter(playerid, 74)
+								job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
+
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 15.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername] >= 1 and job_call[playername] <= 3 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
+
+									inv_player_delet(playerid, 74, job_call[playername], true)
+
+									job_call[playername] = job_call[playername]+1
+
+									inv_player_empty(playerid, 74, job_call[playername])
+
+									job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								end
+
+							elseif job_call[playername] == 4 then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
+									local randomize = random(zp_player_busdriver/2,zp_player_busdriver)
+
+									inv_player_delet(playerid, 74, job_call[playername], true)
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendPlayerMessage(playerid, "Вы получили за маршрут "..randomize.."$", green[1], green[2], green[3])
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -3604,6 +3667,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		createBlip ( -491.4609375,-194.43359375,78.394332885742, 51, 0, 0,0,0,0, 0, max_blip )--лесоповал
 		createBlip ( 576.8212890625,846.5732421875,-42.264389038086, 51, 0, 0,0,0,0, 0, max_blip )--рудник лв
+		createBlip ( 1743.0302734375,-1864.4560546875,13.573830604553, 51, 0, 0,0,0,0, 0, max_blip )--лс автобусник
 
 		for k,v in pairs(up_car_subject) do
 			createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
@@ -4645,7 +4709,15 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 10 )
 
 			if area then
-				if (v[4] == 48 or v[4] == 67 or v[4] == 69 or v[4] == 70) and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
+				local count = false
+				for k,v1 in pairs(up_player_subject) do
+					if v[4] == v1[5] then
+						count = true
+						break
+					end
+				end
+
+				if count and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
 					sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 					return
 				end
@@ -5940,6 +6012,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 8
 
 					me_chat(playerid, playername.." вышел(ла) на работу Перевозчик оружия")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 9 then
+				if job[playername] == 0 then
+					job[playername] = 9
+
+					me_chat(playerid, playername.." вышел(ла) на работу Водитель автобуса")
 				else
 					job[playername] = 0
 
