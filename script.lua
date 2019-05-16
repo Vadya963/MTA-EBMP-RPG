@@ -291,7 +291,7 @@ end
 
 local info_png = {
 	[0] = {"", ""},
-	[1] = {"деньги", "$"},
+	[1] = {"чековая книжка", "$ в банке"},
 	[2] = {"права", "шт"},
 	[3] = {"сигареты Big Break Red", "сигарет"},
 	[4] = {"аптечка", "шт"},
@@ -369,7 +369,7 @@ local info_png = {
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
-	[79] = {"", ""},
+	[79] = {"банковский чек на", "$"},
 	[80] = {"", ""},
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
@@ -1682,7 +1682,7 @@ function job_timer2 ()
 
 							local crimes_plus = zakon_car_theft_crimes
 							crimes[playername] = crimes[playername]+crimes_plus
-							sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+							sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 							car_theft_fun(playername)
 
@@ -2389,7 +2389,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 
 			if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 				sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
 
@@ -2771,7 +2771,7 @@ function sqlite_load(playerid)
 	end
 end
 
-function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа покупка вещей
+function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--продажа покупка вещей
 	local playername = getPlayerName ( playerid )
 	local randomize = random(1,99999)
 	local count = 0
@@ -2789,7 +2789,7 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 
 			sendPlayerMessage(playerid, "Вы выставили на аукцион "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." за "..money.."$", green[1], green[2], green[3])
 
-			sqlite( "INSERT INTO auction (i, name_sell, id1, id2, money) VALUES ('"..randomize.."', '"..playername.."', '"..id1.."', '"..id2.."', '"..money.."')" )
+			sqlite( "INSERT INTO auction (i, name_sell, id1, id2, money, name_buy) VALUES ('"..randomize.."', '"..playername.."', '"..id1.."', '"..id2.."', '"..money.."', '"..name_buy.."')" )
 		else
 			sendPlayerMessage(playerid, "[ERROR] У вас нет такого предмета", red[1], red[2], red[3])
 		end
@@ -2799,6 +2799,12 @@ function auction_buy_sell(playerid, value, i, id1, id2, money)--продажа �
 
 		if result[1]["COUNT()"] == 1 then
 			local result = sqlite( "SELECT * FROM auction WHERE i = '"..i.."'" )
+
+			if (result[1]["name_buy"] ~= playername and result[1]["name_buy"] ~= "all") then
+			
+				sendPlayerMessage(playerid, "[ERROR] Вы не можете купить этот предмет", red[1], red[2], red[3])
+				return
+			end
 
 			if array_player_2[playername][1] >= result[1]["money"] then
 
@@ -3899,7 +3905,7 @@ function(ammo, attacker, weapon, bodypart)
 			if search_inv_player(attacker, 10, 1) == 0 then
 				local crimes_plus = zakon_kill_crimes
 				crimes[playername_a] = crimes[playername_a]+crimes_plus
-				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
 			else
 				if crimes[playername] ~= 0 then
 					arrest[playername] = 1
@@ -3920,7 +3926,7 @@ function(ammo, attacker, weapon, bodypart)
 					if search_inv_player(player_id, 10, 1) == 0 then
 						local crimes_plus = zakon_kill_crimes
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], yellow[1], yellow[2], yellow[3])
+						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
 					else
 						if crimes[playername] ~= 0 then
 							arrest[playername] = 1
@@ -5248,10 +5254,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
-
-		elseif id1 == 1 then--показать бумажник
-			me_chat(playerid, playername.." показал(а) свой бумажник в котором находится "..split(id2,".")[1].."$")
-			return
 			
 -----------------------------------------------------нужды-------------------------------------------------------------
 		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
@@ -5398,7 +5400,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 			setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
 
-			me_chat(playerid, playername.." выпил(а) пиво")
+			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 
 		elseif id1 == 72 then--виски
 
@@ -5437,7 +5439,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
 				setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
 
-				me_chat(playerid, playername.." выпил(а) виски")
+				me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 			end
 
 		elseif id1 == 53 or id1 == 54 then--бургер, пицца
@@ -5832,7 +5834,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if alcohol_test >= zakon_alcohol then
 				local crimes_plus = zakon_alcohol_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 			end
 
 		elseif id1 == 58 then--наркостестер
@@ -5845,7 +5847,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if drugs_test >= zakon_drugs then
 				local crimes_plus = zakon_drugs_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 			end
 
 		elseif id1 == 59 then--налог дома
@@ -6045,7 +6047,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			local crimes_plus = zakon_65_crimes
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -6061,7 +6063,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			local crimes_plus = zakon_66_crimes
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], yellow[1], yellow[2], yellow[3])
+			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 			return
 
@@ -6084,6 +6086,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
 				return
 			end
+
+		elseif id1 == 79 then--чек
+
+			if (not isPointInCircle3D(x,y,z, down_car_subject[2][1],down_car_subject[2][2],down_car_subject[2][3], interior_job[2][4])) then
+			
+				sendPlayerMessage(playerid, "[ERROR] Вы не около банка", red[1], red[2], red[3])
+				return
+			end
+
+			local randomize = id2
+
+			id2 = 0
+
+			me_chat(playerid, playername.." обналичил(а) "..info_png[id1][1].." "..randomize.." "..info_png[id1][2])
+
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
 		elseif id1 == 81 then--динамит
 			for k,vehicleid in pairs(getElementsByType("vehicle")) do
@@ -6171,6 +6189,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		else
+			if id1 == 1 then
+				return
+			end
+
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 			return
 		end
@@ -6501,26 +6523,18 @@ function (playerid, cmd, id)
 	end
 end)
 
-addCommandHandler("pay",--передача денег
-function (playerid, cmd, id, cash)
+addCommandHandler("writecheck",--выдача чека
+function (playerid, cmd, cash)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local cash = tonumber(cash)
 
-	if logged[playername] == 0 then
-		return
-	end
-
-	if arrest[playername] == 1 then
-		return
-	end
-
 	if not cash then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [сумма]", red[1], red[2], red[3])
+		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [сумма]", red[1], red[2], red[3])
 		return
 	end
 
-	if cash < 1 then
+	if logged[playername] == 0 or cash < 1 or arrest[playername] == 1 then
 		return
 	end
 
@@ -6529,22 +6543,15 @@ function (playerid, cmd, id, cash)
 		return
 	end
 
-	local id,player = getPlayerId(id)
-		
-	if id then
-		local x1,y1,z1 = getElementPosition(player)
-		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	if(inv_player_empty(playerid, 79, cash)) then
+	
+		me_chat(playerid, playername.." выписал(а) "..info_png[79][1].." "..cash.." "..info_png[79][2])
 
-			inv_server_load( player, "player", 0, 1, array_player_2[id][1]+cash, id )
-
-			me_chat(playerid, playername.." передал(а) "..id.." "..cash.."$")
-
-		else
-			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
-		end
+		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+	
+		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
@@ -6655,7 +6662,7 @@ function (playerid, cmd, value, id)
 		return
 	end
 
-	if not id then
+	if not id or not value then
 		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end

@@ -49,7 +49,7 @@ local gui_pos_x = 0 --положение картинки x
 local gui_pos_y = 0 --положение картинки y
 local info_png = {
 	[0] = {"", ""},
-	[1] = {"деньги", "$"},
+	[1] = {"чековая книжка", "$ в банке"},
 	[2] = {"права", "шт"},
 	[3] = {"сигареты Big Break Red", "сигарет"},
 	[4] = {"аптечка", "шт"},
@@ -127,7 +127,7 @@ local info_png = {
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
-	[79] = {"", ""},
+	[79] = {"банковский чек на", "$"},
 	[80] = {"", ""},
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
@@ -805,13 +805,16 @@ function createText ()
 
 	for i,v in pairs(getElementData(playerid, "earth")) do--отображение предметов на земле
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
+		local area2 = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 10 )
 
 		if area then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
 			if coords[1] and coords[2] then
 				dxDrawImage ( coords[1]-(57/2), coords[2], 57, 57, image[ v[4] ] )
 			end
+		end
 
+		if area2 then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
 				local dimensions = dxGetTextWidth ( "Нажмите E", 1, m2font_dx1 )
@@ -1560,7 +1563,7 @@ function tablet_fun()--создание планшета
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить меню аука
 				guiGridListClear(shoplist)
 				for k,v in pairs(getElementData(playerid, "auc")) do
-					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"])
+					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
 				end
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -1592,10 +1595,11 @@ function tablet_fun()--создание планшета
 			if getElementData(playerid, "auc") then
 				guiGridListAddColumn(shoplist, "№", 0.1)
 				guiGridListAddColumn(shoplist, "Продавец", 0.20)
-				guiGridListAddColumn(shoplist, "Товар", 0.50)
+				guiGridListAddColumn(shoplist, "Товар", 0.30)
 				guiGridListAddColumn(shoplist, "Стоимость", 0.15)
+				guiGridListAddColumn(shoplist, "Покупатель", 0.2)
 				for k,v in pairs(getElementData(playerid, "auc")) do
-					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"])
+					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
 				end
 			end
 		end
@@ -1617,6 +1621,8 @@ function tablet_fun()--создание планшета
 			local edit_id2 = guiCreateEdit ( 0, 85, 200, 25, "", false, low_fon )
 			local text_money = m2gui_label ( 0, 115, 200, 15, "Введите стоимость предмета", false, low_fon )
 			local edit_money = guiCreateEdit ( 0, 135, 200, 25, "", false, low_fon )
+			local text_id4 = m2gui_label ( 0, 165, 200, 15, "Имя покупателя, если есть", false, low_fon )
+			local edit_text_id4 = guiCreateEdit ( 0, 185, 200, 25, "all", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local sell_subject,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Продать", false, low_fon )
@@ -1627,7 +1633,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
-				local id1, id2, money = 0, tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money ))
+				local id1, id2, money, name_buy = 0, tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money )), guiGetText ( edit_text_id4 )
 
 				for k,v in pairs(info_png) do
 					if v[1] == guiComboBoxGetItemText(edit_id1, guiComboBoxGetSelected(edit_id1)) then
@@ -1637,7 +1643,7 @@ function tablet_fun()--создание планшета
 				end
 
 				if id1 >= 2 and id1 <= #info_png and id2 and money > 0 then
-					triggerServerEvent("event_auction_buy_sell", getRootElement(), playerid, "sell", 0, id1, id2, money )
+					triggerServerEvent("event_auction_buy_sell", getRootElement(), playerid, "sell", 0, id1, id2, money, name_buy)
 				end
 			end
 			addEventHandler ( "onClientGUIClick", sell_subject, outputEditBox, false )
