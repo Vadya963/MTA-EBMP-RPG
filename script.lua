@@ -2305,6 +2305,16 @@ function search_inv_player( playerid, id1, id2 )--цикл по поиску п�
 	return val
 end
 
+function search_inv_player_police( playerid, id )--цикл по выводу предметов
+	local playername = getPlayerName ( playerid )
+
+	for i=1,max_inv do
+		if array_player_1[id][i+1] ~= 0 then
+			do_chat(playerid, info_png[ array_player_1[id][i+1] ][1].." "..array_player_2[id][i+1].." "..info_png[ array_player_1[id][i+1] ][2].." - "..playername)
+		end
+	end
+end
+
 function search_inv_player_2_parameter(playerid, id1)--вывод 2 параметра предмета в инв-ре игрока
 	local playername = getPlayerName ( playerid )
 
@@ -2514,6 +2524,16 @@ function search_inv_car( vehicleid, id1, id2 )--цикл по поиску пр�
 	return val
 end
 
+function search_inv_car_police( playerid, id )--цикл по выводу предметов
+	local playername = getPlayerName ( playerid )
+
+	for i=0,max_inv do
+		if array_car_1[id][i+1] ~= 0 then
+			do_chat(playerid, info_png[ array_car_1[id][i+1] ][1].." "..array_car_2[id][i+1].." "..info_png[ array_car_1[id][i+1] ][2].." - "..playername)
+		end
+	end
+end
+
 function search_inv_car_2_parameter(vehicleid, id1)--вывод 2 параметра предмета в авто
 	local plate = getVehiclePlateText ( vehicleid )
 
@@ -2650,6 +2670,16 @@ function search_inv_house( house, id1, id2 )--цикл по поиску пре�
 	end
 
 	return val
+end
+
+function search_inv_house_police( playerid, id )--цикл по выводу предметов
+	local playername = getPlayerName ( playerid )
+
+	for i=0,max_inv do
+		if array_house_1[id][i+1] ~= 0 then
+			do_chat(playerid, info_png[ array_house_1[id][i+1] ][1].." "..array_house_2[id][i+1].." "..info_png[ array_house_1[id][i+1] ][2].." - "..playername)
+		end
+	end
 end
 
 function search_inv_house_2_parameter(house, id1)--вывод 2 параметра предмета
@@ -3801,6 +3831,8 @@ function()
 	setCameraTarget(playerid, playerid)
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
+	setPlayerHudComponentVisible ( playerid, "area_name", false )
+	setPlayerHudComponentVisible ( playerid, "vehicle_name", false )
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
 	setPlayerNametagShowing ( playerid, false )
@@ -6681,17 +6713,7 @@ function (playerid, cmd, value, id)
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 				me_chat(playerid, playername.." обыскал(а) "..id)
 
-				for k,v in pairs(weapon) do
-					if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
-						me_chat(playerid, playername.." нашел(ла) у "..id.." "..v[1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
-					end
-				end
-
-				for i,k in pairs(wanted_sub) do
-					if (search_inv_player(player, k, search_inv_player_2_parameter(player, k)) ~= 0) then
-						me_chat(playerid, playername.." нашел(ла) у "..id.." "..info_png[k][1].." "..symma_inv_player_1_parameter(player, k).." шт "..symma_inv_player_2_parameter(player, k).." "..info_png[k][2])
-					end
-				end
+				search_inv_player_police( playerid, id )
 			else
 				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 			end
@@ -6717,19 +6739,7 @@ function (playerid, cmd, value, id)
 
 					inv_player_delet(playerid, 91, 2, true)
 
-					for k,v in pairs(weapon) do
-						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
-						
-							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..v[1].." "..amount_inv_car_1_parameter(vehicleid, k).." шт "..amount_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
-						end
-					end
-
-					for i,k in pairs(wanted_sub) do
-						if (search_inv_car(vehicleid, k, search_inv_car_2_parameter(vehicleid, k)) ~= 0) then
-						
-							me_chat(playerid, playername.." нашел(ла) в т/с с номером "..id.." "..info_png[k][1].." "..amount_inv_car_1_parameter(vehicleid, k).." шт "..amount_inv_car_2_parameter(vehicleid, k).." "..info_png[k][2])
-						end
-					end
+					search_inv_car_police( playerid, id )
 				else
 				
 					sendPlayerMessage(playerid, "[ERROR] Т/с далеко", red[1], red[2], red[3])
@@ -6758,19 +6768,7 @@ function (playerid, cmd, value, id)
 
 					inv_player_delet(playerid, 91, 3, true)
 
-					for k,v in pairs(weapon) do
-						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then
-						
-							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..v[1].." "..amount_inv_house_1_parameter(id, k).." шт "..amount_inv_house_2_parameter(id, k).." "..info_png[k][2])
-						end
-					end
-
-					for i,k in pairs(wanted_sub) do
-						if (search_inv_house(id, k, search_inv_house_2_parameter(id, k)) ~= 0) then
-						
-							me_chat(playerid, playername.." нашел(ла) в доме с номером "..id.." "..info_png[k][1].." "..amount_inv_house_1_parameter(id, k).." шт "..amount_inv_house_2_parameter(id, k).." "..info_png[k][2])
-						end
-					end
+					search_inv_house_police( playerid, id )
 				else
 				
 					sendPlayerMessage(playerid, "[ERROR] Дом далеко", red[1], red[2], red[3])
@@ -7133,6 +7131,17 @@ function (playerid)
 	for i=1,#info_png do
 		sendPlayerMessage(playerid, "["..i.."] "..info_png[i][1].." 0 "..info_png[i][2], white[1], white[2], white[3])
 	end
+end)
+
+addCommandHandler("cc",--clear chat
+function (playerid)
+
+	local playername = getPlayerName ( playerid )
+	if (logged[playername] == 0) then
+		return
+	end
+
+	clearChatBox(playerid)
 end)
 
 --------------------------------------------админские команды----------------------------

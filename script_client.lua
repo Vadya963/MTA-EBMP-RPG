@@ -2498,5 +2498,12 @@ function showdebuginfo_b (key, keyState)
 	if keyState == "down" then
 		--debuginfo = not debuginfo
 		hud = not hud
+		setPlayerHudComponentVisible ( "ammo", hud )
+		setPlayerHudComponentVisible ( "armour", hud )
+		setPlayerHudComponentVisible ( "breath", hud )
+		setPlayerHudComponentVisible ( "clock", hud )
+		setPlayerHudComponentVisible ( "radar", hud )
+		setPlayerHudComponentVisible ( "weapon", hud )
+		showChat(hud)
 	end
 end
