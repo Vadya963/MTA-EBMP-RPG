@@ -1770,9 +1770,9 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 2 then--сдаем вызов
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = search_inv_car_2_parameter(vehicleid, up_car_subject[5][5])*amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5])
+									local randomize = amount_inv_car_2_parameter(vehicleid, up_car_subject[5][5])
 
-									inv_car_delet(playerid, up_car_subject[5][5], search_inv_car_2_parameter(vehicleid, up_car_subject[5][5]), true)
+									inv_car_delet_1_parameter(playerid, up_car_subject[5][5], true)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2341,7 +2341,7 @@ function symma_inv_player_1_parameter(playerid, id1)--выводит коли-в
 	return val
 end
 
-function symma_inv_player_2_parameter(playerid, id1)--выводит сумму 2 параметра предмета
+function symma_inv_player_2_parameter(playerid, id1)--выводит сумму всех 2-ых параметров предмета
 	local playername = getPlayerName ( playerid )
 	local val = 0
 
@@ -2560,7 +2560,7 @@ function amount_inv_car_1_parameter(vehicleid, id1)--выводит коли-в�
 	return val
 end
 
-function amount_inv_car_2_parameter(vehicleid, id1)--выводит сумму 2 параметра предмета
+function amount_inv_car_2_parameter(vehicleid, id1)--выводит сумму всех 2-ых параметров предмета
 
 	local plate = getVehiclePlateText ( vehicleid )
 	local val = 0
@@ -2619,6 +2619,31 @@ function inv_car_delet(playerid, id1, id2, delet_inv)--удаления пред
 
 	for i=0,max_inv do
 		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
+			array_car_1[plate][i+1] = 0
+			array_car_2[plate][i+1] = 0
+
+			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+		end
+	end
+
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+	if (result[1]["COUNT()"] == 1) then
+		sqlite( "UPDATE car_db SET inventory = '"..save_inv(plate, "car").."' WHERE number = '"..plate.."'")
+	end
+end
+
+function inv_car_delet_1_parameter(playerid, id1, delet_inv)--удаление всех предметов по ид
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+	local plate = getVehiclePlateText ( vehicleid )
+
+	if delet_inv then
+		triggerClientEvent( playerid, "event_inv_delet", playerid )
+		state_inv_player[playername] = 0
+	end
+
+	for i=0,max_inv do
+		if array_car_1[plate][i+1] == id1 then
 			array_car_1[plate][i+1] = 0
 			array_car_2[plate][i+1] = 0
 
@@ -2706,7 +2731,7 @@ function amount_inv_house_1_parameter(house, id1)--выводит коли-во 
 	return val
 end
 
-function amount_inv_house_2_parameter(house, id1)--выводит сумму 2 параметра предмета
+function amount_inv_house_2_parameter(house, id1)--выводит сумму всех 2-ых параметров предмета
 
 	local val = 0
 
