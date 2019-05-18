@@ -6580,7 +6580,7 @@ function (playerid, cmd, id)
 	end
 end)
 
-addCommandHandler("writecheck",--выдача чека
+addCommandHandler("wc",--выдача чека
 function (playerid, cmd, cash)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
