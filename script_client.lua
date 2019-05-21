@@ -1871,8 +1871,10 @@ function tablet_fun()--создание планшета
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
-					guiGridListAddRow(shoplist, v[2], v[3])
+				if getElementData(playerid, "cow_farms_table1") then
+					for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+						guiGridListAddRow(shoplist, v[2], v[3])
+					end
 				end
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -1895,7 +1897,7 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
-			if getElementData(playerid, "cow_farms_table1")[1] then
+			if getElementData(playerid, "cow_farms_table1") then
 				guiGridListAddColumn(shoplist, "Ферма "..getElementData(playerid, "cow_farms_table1")[1][1], 0.5)
 				guiGridListAddColumn(shoplist, "", 0.4)
 				for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
