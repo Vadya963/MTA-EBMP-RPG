@@ -299,6 +299,23 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 		destroyElement(objPick)
 	end, time, 1)
 end
+
+--[[function string.split(input, separator)
+	
+	if type(input) ~= "string" then error("type mismatch in argument #1", 3) end
+	if (separator and type(separator) ~= "string") then error("type mismatch in argument #2", 3) end
+
+	if not separator then
+		separator = "%s"
+	end
+	local t = {}
+	local i = 1
+	for str in string.gmatch(input, "([^"..separator.."]+)") do
+		t[i] = str
+		i = i + 1
+	end
+	return t
+end]]
 -----------------------------------------------------------------------------------------
 
 local info_png = {
