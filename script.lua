@@ -37,6 +37,7 @@ local car_theft_time = 10--время для угона
 local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
 local house_pos = {}--позиции домов
+local police_chanel = 1--канал копов
 --законы
 local zakon_alcohol = 1
 local zakon_alcohol_crimes = 1
@@ -81,9 +82,10 @@ local svetlo_zolotoy = {255,255,130}--светло-золотой
 local crimson = {220,20,60}--малиновый
 local purple = {175,0,255}--фиолетовый
 local gray = {150,150,150}--серый
+local green_rc = {115,180,97}--темно зеленый
 
 -------------------пользовательские функции----------------------------------------------
-function sendPlayerMessage(playerid, text, r, g, b)
+function sendMessage(playerid, text, r, g, b)
 	local time = getRealTime()
 
 	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, playerid, r, g, b)
@@ -132,7 +134,7 @@ function me_chat(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, text, pink[1], pink[2], pink[3])
+			sendMessage(player, text, pink[1], pink[2], pink[3])
 		end
 	end
 end
@@ -144,7 +146,7 @@ function me_chat_player(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, "[ME] "..text, pink[1], pink[2], pink[3])
+			sendMessage(player, "[ME] "..text, pink[1], pink[2], pink[3])
 		end
 	end
 end
@@ -156,7 +158,7 @@ function do_chat(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, text, orange_do[1], orange_do[2], orange_do[3])
+			sendMessage(player, text, orange_do[1], orange_do[2], orange_do[3])
 		end
 	end
 end
@@ -168,7 +170,7 @@ function do_chat_player(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, "[DO] "..text, orange_do[1], orange_do[2], orange_do[3])
+			sendMessage(player, "[DO] "..text, orange_do[1], orange_do[2], orange_do[3])
 		end
 	end
 end
@@ -180,7 +182,7 @@ function b_chat_player(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, text, gray[1], gray[2], gray[3])
+			sendMessage(player, text, gray[1], gray[2], gray[3])
 		end
 	end
 end
@@ -194,9 +196,9 @@ function try_chat_player(playerid, text)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
 			if randomize == 1 then
-				sendPlayerMessage(player, "[TRY] "..text.." [УДАЧНО]", green_try[1], green_try[2], green_try[3])
+				sendMessage(player, "[TRY] "..text.." [УДАЧНО]", green_try[1], green_try[2], green_try[3])
 			else
-				sendPlayerMessage(player, "[TRY] "..text.." [НЕУДАЧНО]", red_try[1], red_try[2], red_try[3])
+				sendMessage(player, "[TRY] "..text.." [НЕУДАЧНО]", red_try[1], red_try[2], red_try[3])
 			end
 		end
 	end
@@ -215,7 +217,7 @@ function ic_chat(playerid, text)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, me_radius ) then
-			sendPlayerMessage(player, text, white[1], white[2], white[3])
+			sendMessage(player, text, white[1], white[2], white[3])
 		end
 	end
 end
@@ -224,8 +226,18 @@ function police_chat(playerid, text)
 	for k,player in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(player)
 
-		if search_inv_player(player, 10, 1) ~= 0 then
-			sendPlayerMessage(player, text, blue[1], blue[2], blue[3])
+		if search_inv_player(player, 10, 1) ~= 0 and search_inv_player(player, 80, police_chanel) ~= 0 then
+			sendMessage(player, text, blue[1], blue[2], blue[3])
+		end
+	end
+end
+
+function radio_chat(playerid, text, color)
+	for k,player in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(player)
+
+		if search_inv_player(player, 80, search_inv_player_2_parameter(playerid, 80)) ~= 0 then
+			sendMessage(player, text, color[1], color[2], color[3])
 		end
 	end
 end
@@ -370,7 +382,7 @@ local info_png = {
 	[77] = {"проездной билет", "шт"},
 	[78] = {"рыба", "кг"},
 	[79] = {"банковский чек на", "$"},
-	[80] = {"", ""},
+	[80] = {"рация", "канал"},
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
@@ -431,6 +443,7 @@ local shop = {
 	[63] = {info_png[63][1], 1, 100},
 	[72] = {info_png[72][1], 1, 500},
 	[76] = {info_png[76][1], 1, 250},
+	[80] = {info_png[80][1], 10, 500},
 }
 
 local gas = {
@@ -1344,7 +1357,7 @@ function job_timer2 ()
 							if job_call[playername] == 0 then--нету вызова
 								local randomize = random(1,#taxi_pos)
 
-								sendPlayerMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
@@ -1364,7 +1377,7 @@ function job_timer2 ()
 										end
 									end
 
-									sendPlayerMessage(playerid, "Отвезите клиента", yellow[1], yellow[2], yellow[3])
+									sendMessage(playerid, "Отвезите клиента", yellow[1], yellow[2], yellow[3])
 
 									job_call[playername] = 2
 									job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
@@ -1388,7 +1401,7 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 									destroyElement(job_ped[playername])
 									destroyElement(job_blip[playername])
@@ -1415,7 +1428,7 @@ function job_timer2 ()
 							if job_call[playername] == 0 then--старт работы
 								local randomize = random(1,#taxi_pos)
 
-								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
@@ -1462,7 +1475,7 @@ function job_timer2 ()
 							if job_call[playername] == 0 then--старт работы
 								local randomize = random(1,#original_business_pos)
 
-								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {original_business_pos[randomize][1],original_business_pos[randomize][2],original_business_pos[randomize][3]-1}
@@ -1508,7 +1521,7 @@ function job_timer2 ()
 							if job_call[playername] == 0 then--старт работы
 								local randomize = random(1,#fish_pos)
 
-								sendPlayerMessage(playerid, "Плывите на место ловли", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Плывите на место ловли", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
@@ -1555,7 +1568,7 @@ function job_timer2 ()
 								job_call[playername] = 1
 								local randomize = job_call[playername]
 
-								sendPlayerMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
 
 								job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
@@ -1568,12 +1581,12 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 									job_call[playername] = 2
 									local randomize = job_call[playername]
 
-									sendPlayerMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
+									sendMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
 
 									job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
 
@@ -1588,12 +1601,12 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 									job_call[playername] = 3
 									local randomize = job_call[playername]
 
-									sendPlayerMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
+									sendMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
 
 									job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
 
@@ -1608,12 +1621,12 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 									job_call[playername] = 1
 									local randomize = job_call[playername]
 
-									sendPlayerMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
+									sendMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow[1], yellow[2], yellow[3])
 
 									job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
 
@@ -1640,7 +1653,7 @@ function job_timer2 ()
 					job_vehicleid[playername] = {vehicleid,pos[1],pos[2],pos[3],rot[3]}
 					job_timer[playername] = setTimer(car_theft_fun, (car_theft_time*60000), 1, playername)
 
-					sendPlayerMessage(playerid, "Угоните т/с гос.номер "..getVehiclePlateText(job_vehicleid[playername][1])..", у вас есть "..car_theft_time.." мин", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Угоните т/с гос.номер "..getVehiclePlateText(job_vehicleid[playername][1])..", у вас есть "..car_theft_time.." мин", yellow[1], yellow[2], yellow[3])
 
 					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 					job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1], yellow[2], yellow[3], 255, playerid )
@@ -1655,7 +1668,7 @@ function job_timer2 ()
 
 						local randomize = random(1,#sell_car_theft)
 
-						sendPlayerMessage(playerid, "Езжайте в отстойник", yellow[1], yellow[2], yellow[3])
+						sendMessage(playerid, "Езжайте в отстойник", yellow[1], yellow[2], yellow[3])
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
@@ -1675,14 +1688,14 @@ function job_timer2 ()
 
 							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-							sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+							sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 							job_pos[playername] = 0
 							job_call[playername] = 3
 
 							local crimes_plus = zakon_car_theft_crimes
 							crimes[playername] = crimes[playername]+crimes_plus
-							sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+							sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 							car_theft_fun(playername)
 
@@ -1697,7 +1710,7 @@ function job_timer2 ()
 					job_call[playername] = 1
 					local randomize = random(1,#korovi_pos)
 
-					sendPlayerMessage(playerid, "Убейте корову", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Убейте корову", yellow[1], yellow[2], yellow[3])
 
 					job_pos[playername] = {korovi_pos[randomize][1],korovi_pos[randomize][2],korovi_pos[randomize][3]-1}
 					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
@@ -1724,7 +1737,7 @@ function job_timer2 ()
 
 							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-							sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+							sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 						end
 					end
 
@@ -1745,7 +1758,7 @@ function job_timer2 ()
 
 							if job_call[playername] == 0 then--старт работы
 
-								sendPlayerMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {up_car_subject[5][1],up_car_subject[5][2],up_car_subject[5][3]-1}
@@ -1776,7 +1789,7 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -1799,7 +1812,7 @@ function job_timer2 ()
 
 							if job_call[playername] == 0 then--старт работы
 
-								sendPlayerMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = search_inv_player_2_parameter(playerid, 74)
 								job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
@@ -1830,7 +1843,7 @@ function job_timer2 ()
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-									sendPlayerMessage(playerid, "Вы получили за маршрут "..randomize.."$", green[1], green[2], green[3])
+									sendMessage(playerid, "Вы получили за маршрут "..randomize.."$", green[1], green[2], green[3])
 
 									destroyElement(job_blip[playername])
 									destroyElement(job_marker[playername])
@@ -1997,11 +2010,11 @@ function need()--нужды
 
 				setElementHealth( playerid, getElementHealth(playerid)-100 )
 
-				sendPlayerMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "-100 хп", yellow[1], yellow[2], yellow[3])
 
 				if hygiene[playername]-hygiene_minys >= 0 then
 					hygiene[playername] = hygiene[playername]-hygiene_minys
-					sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 				end
 
 				me_chat(playerid, playername.." стошнило")
@@ -2012,7 +2025,7 @@ function need()--нужды
 
 			if drugs[playername] == 100 then
 				setElementHealth( playerid, getElementHealth(playerid)-200 )
-				sendPlayerMessage(playerid, "-200 хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "-200 хп", yellow[1], yellow[2], yellow[3])
 			end
 
 
@@ -2088,7 +2101,7 @@ function timer_earth_clear()--очистка земли
 		max_earth = 0
 
 		for k,playerid in pairs(getElementsByType("player")) do
-			sendPlayerMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
+			sendMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green[1], green[2], green[3])
 		end
 	end
 end
@@ -2146,12 +2159,12 @@ function prison()--таймер заключения
 				setElementDimension(playerid, 0)
 				setElementInterior(playerid, 0, interior_job[randomize][6], interior_job[randomize][7], interior_job[randomize][8])
 
-				sendPlayerMessage(playerid, "Вы свободны, больше не нарушайте", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Вы свободны, больше не нарушайте", yellow[1], yellow[2], yellow[3])
 
 			elseif crimes[playername] > 1 then
 				crimes[playername] = crimes[playername]-1
 
-				sendPlayerMessage(playerid, "Вам сидеть ещё "..(crimes[playername]).." мин", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Вам сидеть ещё "..(crimes[playername]).." мин", yellow[1], yellow[2], yellow[3])
 			end
 		end
 	end
@@ -2221,7 +2234,7 @@ function onChat(message, messageType)
 		
 		if (count == 0) then
 		
-			sendPlayerMessage( getRootElement(), say, gray[1], gray[2], gray[3] )
+			sendMessage( getRootElement(), say, gray[1], gray[2], gray[3] )
 
 			print("[CHAT] "..say)
 		
@@ -2327,7 +2340,7 @@ function search_inv_player_2_parameter(playerid, id1)--вывод 2 параме
 	return 0
 end
 
-function symma_inv_player_1_parameter(playerid, id1)--выводит коли-во предметов
+function amount_inv_player_1_parameter(playerid, id1)--выводит коли-во предметов
 	local playername = getPlayerName ( playerid )
 	local val = 0
 
@@ -2341,7 +2354,7 @@ function symma_inv_player_1_parameter(playerid, id1)--выводит коли-в
 	return val
 end
 
-function symma_inv_player_2_parameter(playerid, id1)--выводит сумму всех 2-ых параметров предмета
+function amount_inv_player_2_parameter(playerid, id1)--выводит сумму всех 2-ых параметров предмета
 	local playername = getPlayerName ( playerid )
 	local val = 0
 
@@ -2399,13 +2412,13 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 
 			if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
-				sendPlayerMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
+				sendMessage(playerid, "Вы унесли "..cash.."$", green[1], green[2], green[3] )
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы покинули место ограбления", red[1], red[2], red[3])
 			end
 
 			robbery_kill( playername )
@@ -2448,17 +2461,17 @@ function player_hotel (playerid, id)
 		if (id == 55) then
 
 			hygiene[playername] = sleep_hygiene_plus
-			sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 			me_chat(playerid, playername.." помылся(ась)")
 
 		elseif (id == 56) then
 
 			sleep[playername] = sleep_hygiene_plus
-			sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 			me_chat(playerid, playername.." вздремнул(а)")
 		end
 
-		sendPlayerMessage(playerid, "Вы заплатили "..(price_hotel).."$", orange[1], orange[2], orange[3] )
+		sendMessage(playerid, "Вы заплатили "..(price_hotel).."$", orange[1], orange[2], orange[3] )
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(price_hotel), playerid )
 					
@@ -2466,7 +2479,7 @@ function player_hotel (playerid, id)
 
 	else 
 
-		sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		return false
 	end
 end
@@ -2491,7 +2504,7 @@ function random_sub (playerid, id)--выпадение предметов
 				local id2 = v[2][randomize1][2]
 				if (inv_player_empty(playerid, id1, id2)) then
 				
-					sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+					sendMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				end
 			end
 			break
@@ -2757,23 +2770,23 @@ function pickupUse( playerid )
 	if getElementModel(pickup) == business_icon then
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
 			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
-				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
 				local s_sql = select_sqlite(43, v["number"])
 				if s_sql then
-					sendPlayerMessage(playerid, "Владелец бизнеса "..s_sql, yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Владелец бизнеса "..s_sql, yellow[1], yellow[2], yellow[3])
 				else
-					sendPlayerMessage(playerid, "Владелец бизнеса нету", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Владелец бизнеса нету", yellow[1], yellow[2], yellow[3])
 				end
 
-				sendPlayerMessage(playerid, "Тип "..v["type"], yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green[1], green[2], green[3])
-				--sendPlayerMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green[1], green[2], green[3])
+				sendMessage(playerid, "Тип "..v["type"], yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green[1], green[2], green[3])
+				--sendMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green[1], green[2], green[3])
 
 				if search_inv_player(playerid, 43, v["number"]) ~= 0 then
-					sendPlayerMessage(playerid, "Состояние кассы "..split(v["money"],".")[1].."$", green[1], green[2], green[3])
-					sendPlayerMessage(playerid, "Налог бизнеса оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Состояние кассы "..split(v["money"],".")[1].."$", green[1], green[2], green[3])
+					sendMessage(playerid, "Налог бизнеса оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 				return
 			end
@@ -2782,17 +2795,17 @@ function pickupUse( playerid )
 	elseif getElementModel(pickup) == house_icon then
 		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
-				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
 
 				local s_sql = select_sqlite(25, v["number"])
 				if s_sql then
-					sendPlayerMessage(playerid, "Владелец дома "..s_sql, yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Владелец дома "..s_sql, yellow[1], yellow[2], yellow[3])
 				else
-					sendPlayerMessage(playerid, "Владелец дома нету", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Владелец дома нету", yellow[1], yellow[2], yellow[3])
 				end
 
 				if search_inv_player(playerid, 25, v["number"]) ~= 0 then
-					sendPlayerMessage(playerid, "Налог дома оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Налог дома оплачен на "..v["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 				return
 			end
@@ -2801,8 +2814,8 @@ function pickupUse( playerid )
 	elseif getElementModel(pickup) == job_icon then
 		for k,v in pairs(interior_job) do 
 			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, v[12]) then
-				sendPlayerMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, " ", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, v[2], yellow[1], yellow[2], yellow[3])
 				return
 			end
 		end
@@ -2842,11 +2855,11 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 				end
 			end
 
-			sendPlayerMessage(playerid, "Вы выставили на аукцион "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." за "..money.."$", green[1], green[2], green[3])
+			sendMessage(playerid, "Вы выставили на аукцион "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." за "..money.."$", green[1], green[2], green[3])
 
 			sqlite( "INSERT INTO auction (i, name_sell, id1, id2, money, name_buy) VALUES ('"..randomize.."', '"..playername.."', '"..id1.."', '"..id2.."', '"..money.."', '"..name_buy.."')" )
 		else
-			sendPlayerMessage(playerid, "[ERROR] У вас нет такого предмета", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У вас нет такого предмета", red[1], red[2], red[3])
 		end
 
 	elseif value == "buy" then
@@ -2857,21 +2870,21 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 
 			if (result[1]["name_buy"] ~= playername and result[1]["name_buy"] ~= "all") then
 			
-				sendPlayerMessage(playerid, "[ERROR] Вы не можете купить этот предмет", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не можете купить этот предмет", red[1], red[2], red[3])
 				return
 			end
 
 			if array_player_2[playername][1] >= result[1]["money"] then
 
 				if inv_player_empty(playerid, result[1]["id1"], result[1]["id2"]) then
-					sendPlayerMessage(playerid, "Вы купили у "..result[1]["name_sell"].." "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2].." за "..result[1]["money"].."$", orange[1], orange[2], orange[3])
+					sendMessage(playerid, "Вы купили у "..result[1]["name_sell"].." "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2].." за "..result[1]["money"].."$", orange[1], orange[2], orange[3])
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-result[1]["money"], playername )
 
 					for i,playerid in pairs(getElementsByType("player")) do
 						local playername_sell = getPlayerName(playerid)
 						if playername_sell == result[1]["name_sell"] then
-							sendPlayerMessage(playerid, playername.." купил у вас "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2].." за "..result[1]["money"].."$", green[1], green[2], green[3])
+							sendMessage(playerid, playername.." купил у вас "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2].." за "..result[1]["money"].."$", green[1], green[2], green[3])
 							inv_server_load( playerid, "player", 0, 1, array_player_2[playername_sell][1]+result[1]["money"], playername_sell )
 							count = count+1
 							break
@@ -2895,13 +2908,13 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 
 					sqlite( "DELETE FROM auction WHERE i = '"..i.."'" )
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
 		end
 
 	elseif value == "return" then
@@ -2913,17 +2926,17 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 			if playername == result[1]["name_sell"] then
 
 				if inv_player_empty(playerid, result[1]["id1"], result[1]["id2"]) then
-					sendPlayerMessage(playerid, "Вы забрали "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2], orange[1], orange[2], orange[3])
+					sendMessage(playerid, "Вы забрали "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2], orange[1], orange[2], orange[3])
 
 					sqlite( "DELETE FROM auction WHERE i = '"..i.."'" )
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Имена не совпадают", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Имена не совпадают", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Лот не найден", red[1], red[2], red[3])
 		end
 	end
 end
@@ -2945,7 +2958,7 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 		if prod <= result[1]["warehouse"] then
 			if cash == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
 				return
 			end
 
@@ -2957,7 +2970,7 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 					text = text..v..","
 				end
 
-				sendPlayerMessage(playerid, "Вы установили апгрейд за "..cash.."$", orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы установили апгрейд за "..cash.."$", orange[1], orange[2], orange[3])
 
 				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
@@ -2968,10 +2981,10 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 		end
 	end
 end
@@ -2990,7 +3003,7 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 		if prod <= result[1]["warehouse"] then
 			if cash == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
 				return
 			end
 
@@ -3006,7 +3019,7 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 					text = "0"
 				end
 
-				sendPlayerMessage(playerid, "Вы удалили апгрейд за "..cash.."$", orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы удалили апгрейд за "..cash.."$", orange[1], orange[2], orange[3])
 
 				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
@@ -3017,10 +3030,10 @@ function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 		end
 	end
 end
@@ -3039,7 +3052,7 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 
 		if prod <= result[1]["warehouse"] then
 			if cash == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
 				return
 			end
 
@@ -3047,7 +3060,7 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 
 				setVehiclePaintjob ( vehicleid, value )
 
-				sendPlayerMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange[1], orange[2], orange[3])
 
 				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
@@ -3058,10 +3071,10 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 					sqlite( "UPDATE car_db SET paintjob = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 		end
 	end
 end
@@ -3080,7 +3093,7 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
 		if prod <= result[1]["warehouse"] then
 			if cash == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
 				return
 			end
 
@@ -3088,7 +3101,7 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
 				setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
 
-				sendPlayerMessage(playerid, "Вы перекрасили т/с за "..cash.."$", orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы перекрасили т/с за "..cash.."$", orange[1], orange[2], orange[3])
 
 				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
@@ -3099,10 +3112,10 @@ function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 					sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 		end
 	end
 end
@@ -3121,7 +3134,7 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 
 		if prod <= result[1]["warehouse"] then
 			if cash == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
 				return
 			end
 
@@ -3129,7 +3142,7 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 
 				setVehicleHeadLightColor ( vehicleid, r, g, b )
 
-				sendPlayerMessage(playerid, "Вы поменяли цвет фар т/с за "..cash.."$", orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы поменяли цвет фар т/с за "..cash.."$", orange[1], orange[2], orange[3])
 
 				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
@@ -3140,10 +3153,10 @@ function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, num
 					sqlite( "UPDATE car_db SET headlight_rgb = '"..text.."' WHERE number = '"..plate.."'")
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 		end
 	end
 end
@@ -3158,15 +3171,15 @@ function buy_subject_fun( playerid, text, number, value )
 
 	if value == "pd" then
 		if search_inv_player(playerid, 50, 1) == 0 then
-			sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
 			return
 		end
 
 		if text == weapon_cops[39][1] then
 			if inv_player_empty(playerid, 39, 1) then
-				sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
 			return
 		end
@@ -3174,9 +3187,9 @@ function buy_subject_fun( playerid, text, number, value )
 		for k,v in pairs(weapon_cops) do
 			if v[1] == text then
 				if inv_player_empty(playerid, k, v[4]) then
-					sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+					sendMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 			end
 		end
@@ -3184,14 +3197,14 @@ function buy_subject_fun( playerid, text, number, value )
 		for k,v in pairs(sub_cops) do
 			if v[1] == text then
 				if search_inv_player(playerid, 33, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
 
 				if inv_player_empty(playerid, k, 1) then
-					sendPlayerMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
+					sendMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 			end
 		end
@@ -3203,14 +3216,14 @@ function buy_subject_fun( playerid, text, number, value )
 			if v[1] == text then
 				if v[3] <= array_player_2[playername][1] then
 					if inv_player_empty(playerid, v[4], v[2]) then
-						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+						sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
 					else
-						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
 			end
 		end
@@ -3222,14 +3235,14 @@ function buy_subject_fun( playerid, text, number, value )
 			if v[1] == text then
 				if v[3] <= array_player_2[playername][1] then
 					if inv_player_empty(playerid, v[4], v[2]) then
-						sendPlayerMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
+						sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange[1], orange[2], orange[3])
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
 					else
-						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
 
 				return
@@ -3245,13 +3258,13 @@ function buy_subject_fun( playerid, text, number, value )
 
 	if prod <= result[1]["warehouse"] then
 		if cash == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Не установлена стоимость товара (надбавка в N раз)", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Не установлена стоимость товара (надбавка в N раз)", red[1], red[2], red[3])
 			return
 		end
 
 			if value == 1 then
 				if search_inv_player(playerid, 50, 1) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red[1], red[2], red[3])
 					return
 				end
 
@@ -3259,16 +3272,16 @@ function buy_subject_fun( playerid, text, number, value )
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
 							if inv_player_empty(playerid, k, v[4]) then
-								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
+								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 							else
-								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
 					end
 				end
@@ -3280,16 +3293,16 @@ function buy_subject_fun( playerid, text, number, value )
 
 				if cash <= array_player_2[playername][1] then
 					if inv_player_empty(playerid, 27, text) then
-						sendPlayerMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", orange[1], orange[2], orange[3])
+						sendMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", orange[1], orange[2], orange[3])
 
 						sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 					else
-						sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
 
 			elseif value == 3 then
@@ -3297,16 +3310,16 @@ function buy_subject_fun( playerid, text, number, value )
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
 							if inv_player_empty(playerid, k, v[2]) then
-								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
+								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 							else
-								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
 					end
 				end
@@ -3316,16 +3329,16 @@ function buy_subject_fun( playerid, text, number, value )
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
 							if inv_player_empty(playerid, k, v[2]) then
-								sendPlayerMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
+								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange[1], orange[2], orange[3])
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 							else
-								sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 						end
 					end
 				end
@@ -3333,7 +3346,7 @@ function buy_subject_fun( playerid, text, number, value )
 			end
 
 	else
-		sendPlayerMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
 	end	
 end
 addEvent( "event_buy_subject_fun", true )
@@ -3352,9 +3365,9 @@ function till_fun( playerid, number, money, value )
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-			sendPlayerMessage(playerid, "Вы забрали из кассы "..money.."$", green[1], green[2], green[3])
+			sendMessage(playerid, "Вы забрали из кассы "..money.."$", green[1], green[2], green[3])
 		else
-			sendPlayerMessage(playerid, "[ERROR] В кассе недостаточно средств", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] В кассе недостаточно средств", red[1], red[2], red[3])
 		end
 
 	elseif value == "deposit" then
@@ -3364,9 +3377,9 @@ function till_fun( playerid, number, money, value )
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-money, playername )
 
-			sendPlayerMessage(playerid, "Вы положили в кассу "..money.."$", orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы положили в кассу "..money.."$", orange[1], orange[2], orange[3])
 		else
-			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		end
 
 	elseif value == "price" then
@@ -3374,14 +3387,14 @@ function till_fun( playerid, number, money, value )
 
 		sqlite( "UPDATE business_db SET price = '"..money.."' WHERE number = '"..number.."'")
 
-		sendPlayerMessage(playerid, "Вы установили стоимость товара "..money.."$", yellow[1], yellow[2], yellow[3])
+		sendMessage(playerid, "Вы установили стоимость товара "..money.."$", yellow[1], yellow[2], yellow[3])
 
 	--[[elseif value == "buyprod" then
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
 
 		sqlite( "UPDATE business_db SET buyprod = '"..money.."' WHERE number = '"..number.."'")
 
-		sendPlayerMessage(playerid, "Вы установили цену закупки товара "..money.."$", yellow[1], yellow[2], yellow[3])]]
+		sendMessage(playerid, "Вы установили цену закупки товара "..money.."$", yellow[1], yellow[2], yellow[3])]]
 	end
 end
 addEvent( "event_till_fun", true )
@@ -3393,7 +3406,7 @@ function craft_fun( playerid, text )
 	local playername = getPlayerName(playerid)
 
 	if enter_house[playername][1] == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не в доме", red[1], red[2], red[3])
 		return
 	end
 
@@ -3422,12 +3435,12 @@ function craft_fun( playerid, text )
 								end
 							end
 
-							sendPlayerMessage(playerid, "Вы создали "..v[1], orange[1], orange[2], orange[3])
+							sendMessage(playerid, "Вы создали "..v[1], orange[1], orange[2], orange[3])
 						else
-							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 						end
 					else
-						sendPlayerMessage(playerid, "[ERROR] Недостаточно ресурсов", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Недостаточно ресурсов", red[1], red[2], red[3])
 					end
 				end
 			end
@@ -3436,7 +3449,7 @@ function craft_fun( playerid, text )
 		end
 	end
 
-	sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
+	sendMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
 end
 addEvent( "event_craft_fun", true )
 addEventHandler ( "event_craft_fun", getRootElement(), craft_fun )
@@ -3455,7 +3468,7 @@ function cow_farms(playerid, value, val1, val2)
 		local result = sqlite( "SELECT COUNT() FROM cow_farms_db" )
 		result = result[1]["COUNT()"]+1
 		if cash*result > array_player_2[playername][1] then
-			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств, необходимо "..cash*result.."$", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств, необходимо "..cash*result.."$", red[1], red[2], red[3])
 			return
 		end
 
@@ -3464,11 +3477,11 @@ function cow_farms(playerid, value, val1, val2)
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash*result, playername )
 
-			sendPlayerMessage(playerid, "Вы купили скотобойню за "..cash*result.."$", orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы купили скотобойню за "..cash*result.."$", orange[1], orange[2], orange[3])
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[doc][1].." "..result.." "..info_png[doc][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendMessage(playerid, "Вы получили "..info_png[doc][1].." "..result.." "..info_png[doc][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
 
 	elseif value == "menu" then
@@ -3486,7 +3499,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sqlite( "UPDATE cow_farms_db SET price = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-			sendPlayerMessage(playerid, "Вы установили зарплату "..val2.."$", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Вы установили зарплату "..val2.."$", yellow[1], yellow[2], yellow[3])
 
 		elseif val1 == "Доход от продаж" then
 			if val2 < 1 or val2 > 100 then
@@ -3501,7 +3514,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sqlite( "UPDATE cow_farms_db SET coef = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-			sendPlayerMessage(playerid, "Вы установили доход от продаж "..val2.." процентов", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Вы установили доход от продаж "..val2.." процентов", yellow[1], yellow[2], yellow[3])
 
 		elseif val1 == "Баланс" then
 			if val2 == 0 then
@@ -3520,9 +3533,9 @@ function cow_farms(playerid, value, val1, val2)
 
 					sqlite( "UPDATE cow_farms_db SET money = money - '"..(val2*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-					sendPlayerMessage(playerid, "Вы забрали из кассы "..(val2*-1).."$", green[1], green[2], green[3])
+					sendMessage(playerid, "Вы забрали из кассы "..(val2*-1).."$", green[1], green[2], green[3])
 				else
-					sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 				end
 			else
 				if val2 <= array_player_2[playername][1] then
@@ -3536,9 +3549,9 @@ function cow_farms(playerid, value, val1, val2)
 
 					sqlite( "UPDATE cow_farms_db SET money = money + '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-					sendPlayerMessage(playerid, "Вы положили в кассу "..val2.."$", orange[1], orange[2], orange[3])
+					sendMessage(playerid, "Вы положили в кассу "..val2.."$", orange[1], orange[2], orange[3])
 				else
-					sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				end
 			end
 
@@ -3553,10 +3566,10 @@ function cow_farms(playerid, value, val1, val2)
 				if inv_player_delet(playerid, 60, 7) then
 					sqlite( "UPDATE cow_farms_db SET nalog = nalog + '7' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
-					sendPlayerMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, doc).." скотобойни", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, doc).." скотобойни", yellow[1], yellow[2], yellow[3])
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[60][1].." 7 "..info_png[60][2], red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас нет "..info_png[60][1].." 7 "..info_png[60][2], red[1], red[2], red[3])
 			end
 		end
 
@@ -3569,7 +3582,7 @@ function cow_farms(playerid, value, val1, val2)
 		if not result[1] then
 			return false
 		elseif result[1]["warehouse"]-val1 < 0 then
-			sendPlayerMessage(playerid, "[ERROR] Склад пуст", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Склад пуст", red[1], red[2], red[3])
 			return false
 		end
 
@@ -3597,7 +3610,7 @@ function cow_farms(playerid, value, val1, val2)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
 
-		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..cash.."$", green[1], green[2], green[3])
+		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..cash.."$", green[1], green[2], green[3])
 
 		sqlite( "UPDATE cow_farms_db SET money = money + '"..cash2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
@@ -3614,10 +3627,10 @@ function cow_farms(playerid, value, val1, val2)
 		if not result[1] then
 			return true
 		elseif result[1]["money"] < money then
-			sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 			return true
 		elseif result[1]["prod"] >= max_cf then
-			sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
 			return true
 		end
 
@@ -3625,7 +3638,7 @@ function cow_farms(playerid, value, val1, val2)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-		sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[89][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[89][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
 
 		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
@@ -3868,15 +3881,15 @@ function()
 		setPedStat(playerid, stat, 1000)
 	end
 
-	sendPlayerMessage(playerid, "[TIPS] F1 - скрыть или показать курсор", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] F2 - скрыть или показать худ", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] TAB - открыть инвентарь, ПКМ - использовать предмет, чтобы выкинуть переместите его за пределы инвентаря", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] X - крафт предметов", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Листать чат page up и page down", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Команды сервера находятся в WIKI в планшете", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Первоначальная работа находится в ЛВ мясокомбинат", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips[1], color_tips[2], color_tips[3])
-	sendPlayerMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] F1 - скрыть или показать курсор", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] F2 - скрыть или показать худ", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] TAB - открыть инвентарь, ПКМ - использовать предмет, чтобы выкинуть переместите его за пределы инвентаря", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] X - крафт предметов", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] Листать чат page up и page down", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] Команды сервера находятся в WIKI в планшете", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] Первоначальная работа находится в ЛВ мясокомбинат", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips[1], color_tips[2], color_tips[3])
+	sendMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips[1], color_tips[2], color_tips[3])
 
 	reg_or_login(playerid)
 end)
@@ -3963,12 +3976,12 @@ function(ammo, attacker, weapon, bodypart)
 			if search_inv_player(attacker, 10, 1) == 0 then
 				local crimes_plus = zakon_kill_crimes
 				crimes[playername_a] = crimes[playername_a]+crimes_plus
-				sendPlayerMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
+				sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
 			else
 				if crimes[playername] ~= 0 then
 					arrest[playername] = 1
 
-					sendPlayerMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
+					sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
 					inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 				end
@@ -3984,12 +3997,12 @@ function(ammo, attacker, weapon, bodypart)
 					if search_inv_player(player_id, 10, 1) == 0 then
 						local crimes_plus = zakon_kill_crimes
 						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendPlayerMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
+						sendMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
 					else
 						if crimes[playername] ~= 0 then
 							arrest[playername] = 1
 
-							sendPlayerMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
+							sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
 							inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 						end
@@ -4008,9 +4021,9 @@ function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, playerid )
 
 	if not playername_a then
-		sendPlayerMessage(getRootElement(), "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
+		sendMessage(getRootElement(), "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
 	else
-		sendPlayerMessage(getRootElement(), "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
+		sendMessage(getRootElement(), "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
 	end
 
 	print("[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
@@ -4020,7 +4033,7 @@ function frozen_false_fun( playerid )
 	if isElement ( playerid ) then
 		if isElementFrozen(playerid) then
 			setElementFrozen( playerid, false )
-			sendPlayerMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Вы можете двигаться", yellow[1], yellow[2], yellow[3])
 		end
 	end
 end
@@ -4096,7 +4109,7 @@ function reg_or_login(playerid)
 		setElementHealth( playerid, result[1]["heal"] )
 		setPlayerNametagColor(playerid, white[1],white[2],white[3])
 
-		sendPlayerMessage(playerid, "Вы удачно зарегистрировались!", turquoise[1], turquoise[2], turquoise[3])
+		sendMessage(playerid, "Вы удачно зарегистрировались!", turquoise[1], turquoise[2], turquoise[3])
 
 		print("[ACCOUNT REGISTER] "..playername.." [ip - "..ip..", serial - "..serial.."]")
 
@@ -4133,7 +4146,7 @@ function reg_or_login(playerid)
 			setPlayerNametagColor(playerid, white[1],white[2],white[3])
 		end
 
-		sendPlayerMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
+		sendMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 	end
 
 	setElementData( playerid, "player_id", { count_player, {getPlayerNametagColor(playerid)} } )
@@ -4291,7 +4304,7 @@ function spawn_carparking( playerid, plate )
 	end
 
 	if count == 1 or result[1]["COUNT()"] == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Т/с в городе", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Т/с в городе", red[1], red[2], red[3])
 		return
 	end
 
@@ -4300,10 +4313,10 @@ function spawn_carparking( playerid, plate )
 			sqlite( "UPDATE car_db SET nalog = '7' WHERE number = '"..plate.."'")
 			car_spawn(plate)
 
-			sendPlayerMessage(playerid, "Вы забрали т/с с номером "..plate, yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Вы забрали т/с с номером "..plate, yellow[1], yellow[2], yellow[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[61][1].." 7 "..info_png[61][2], red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] У вас нет "..info_png[61][1].." 7 "..info_png[61][2], red[1], red[2], red[3])
 	end
 end
 addEvent( "event_spawn_carparking", true )
@@ -4326,7 +4339,7 @@ function buycar ( playerid, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -4337,95 +4350,95 @@ function buycar ( playerid, id )
 
 		if isPointInCircle3D(t_s_salon[1][1],t_s_salon[1][2],t_s_salon[1][3], x1,y1,z1, 5) then
 			if cash_car[id] == nil then
-				sendPlayerMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
 				return
 			end
 
 			for k,v in pairs(police_car) do
 				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
-					sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
 			end
 
 			if cash_car[id][2] > array_player_2[playername][1] then
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				return
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
 			end
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_car[id][2], playername )
 
-			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_car[id][2].."$", orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы купили транспортное средство за "..cash_car[id][2].."$", orange[1], orange[2], orange[3])
 
 			x,y,z,rot = 2120.8515625,-1136.013671875,25.287223815918,0
 
 		elseif isPointInCircle3D(t_s_salon[2][1],t_s_salon[2][2],t_s_salon[2][3], x1,y1,z1, 5) then
 			if cash_helicopters[id] == nil then
-				sendPlayerMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
 				return
 			end
 
 			for k,v in pairs(police_helicopters) do
 				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
-					sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
 			end
 
 			if cash_helicopters[id][2] > array_player_2[playername][1] then
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				return
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
 			end
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_helicopters[id][2], playername )
 
-			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_helicopters[id][2].."$", orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы купили транспортное средство за "..cash_helicopters[id][2].."$", orange[1], orange[2], orange[3])
 
 			x,y,z,rot = 1582.072265625,1197.61328125,12.73429775238,0
 
 		elseif isPointInCircle3D(t_s_salon[3][1],t_s_salon[3][2],t_s_salon[3][3], x1,y1,z1, 5) then
 			if cash_boats[id] == nil then
-				sendPlayerMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Этот т/с недоступен", red[1], red[2], red[3])
 				return
 			end
 
 			for k,v in pairs(police_boats) do
 				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
-					sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
 			end
 
 			if cash_boats[id][2] > array_player_2[playername][1] then
-				sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 				return
 			end
 
 			if inv_player_empty(playerid, val1, val2) then
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				return
 			end
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_boats[id][2], playername )
 
-			sendPlayerMessage(playerid, "Вы купили транспортное средство за "..cash_boats[id][2].."$", orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы купили транспортное средство за "..cash_boats[id][2].."$", orange[1], orange[2], orange[3])
 
 			x,y,z,rot = -2244.6,2408.7,1.8,315
 		else
-			sendPlayerMessage(playerid, "[ERROR] Найдите место продажи т/с", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Найдите место продажи т/с", red[1], red[2], red[3])
 			return
 		end
 
@@ -4451,11 +4464,11 @@ function buycar ( playerid, id )
 		fuel[plate] = max_fuel
 		probeg[plate] = 0
 
-		sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
+		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
 
 		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, probeg, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end
 end
 addEvent( "event_buycar", true )
@@ -4479,7 +4492,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["nalog"] <= 0 then
-					sendPlayerMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 					setVehicleEngineState(vehicleid, false)
 					return
 				end
@@ -4489,7 +4502,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
 					local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-					sendPlayerMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней", yellow[1], yellow[2], yellow[3])
 				end
 
 				if tonumber(plate) ~= 0 then
@@ -4497,12 +4510,12 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				end
 
 				if fuel[plate] <= 0 then
-					sendPlayerMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Бак пуст", red[1], red[2], red[3])
 					setVehicleEngineState(vehicleid, false)
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права (можно купить в Мэрии)", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права (можно купить в Мэрии)", red[1], red[2], red[3])
 				setVehicleEngineState(vehicleid, false)
 			end
 		end
@@ -4645,7 +4658,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 				inv_player_delet( playerid, id1, id2 )
 				inv_server_load( playerid, value, 0, 1, array_player_2[playername][1]+id2, tabpanel )
 
-				sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 
 				return
 			end
@@ -4658,7 +4671,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 				inv_player_delet( playerid, id1, id2, true )
 				inv_player_empty( playerid, v[6], randomize )
 
-				sendPlayerMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+				sendMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
 				if id1 == 67 then--предмет для работы
 					object_attach(playerid, 341, 12, 0,0,0, 0,-90,0, (v[12]*1000))
@@ -4699,7 +4712,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	inv_server_load( playerid, value, id3, 0, 0, tabpanel )
 
 	me_chat(playerid, playername.." выбросил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
-	--sendPlayerMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
+	--sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 end
 addEvent( "event_throw_earth_server", true )
 addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_server )
@@ -4719,7 +4732,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= v[6] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
 						return
 					end
 				end
@@ -4732,7 +4745,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= v[6] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", red[1], red[2], red[3])
 						return
 					end
 				end
@@ -4745,7 +4758,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if v[9] ~= 0 then
 					if getElementModel(playerid) ~= v[9] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в одежде "..v[9], red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..v[9], red[1], red[2], red[3])
 						return
 					end
 				end
@@ -4758,7 +4771,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], house_bussiness_radius) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= down_car_subject[1][6] then
-						sendPlayerMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", red[1], red[2], red[3])
 						return
 					end
 				end
@@ -4781,18 +4794,18 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 				end
 
 				if count and search_inv_player(playerid, v[4], search_inv_player_2_parameter(playerid, v[4])) >= 1 then
-					sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 					return
 				end
 
 				if inv_player_empty(playerid, v[4], v[5]) then
 					
 					me_chat(playerid, playername.." поднял(а) "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2])
-					--sendPlayerMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+					--sendMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
 					earth[i] = nil
 				else
-					sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 				end
 
 				return
@@ -4832,7 +4845,7 @@ local x,y,z = getElementPosition(playerid)
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[4][2] then--заправка
 
 						if v["nalog"] <= 0 then
-							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 							return
 						end
 
@@ -4843,7 +4856,7 @@ local x,y,z = getElementPosition(playerid)
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) and v["type"] == interior_business[5][2] then--тюнинг
 
 						if v["nalog"] <= 0 then
-							sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 							return
 						end
 
@@ -4868,7 +4881,7 @@ local x,y,z = getElementPosition(playerid)
 					for k,v in pairs(police_station) do
 						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
 							if search_inv_player(playerid, 10, 1) == 0 then
-								sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 								return
 							end
 
@@ -4891,7 +4904,7 @@ local x,y,z = getElementPosition(playerid)
 					for k,v in pairs(black_auc) do
 						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
 							if crimes[playername] < crimes_giuseppe then
-								sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
 								return
 							end
 
@@ -4942,12 +4955,12 @@ function left_alt_down (playerid, key, keyState)
 
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 					if house_door == 0 then
-						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3])
 						return
 					end
 
 					if v["nalog"] <= 0 then
-						sendPlayerMessage(playerid, "[ERROR] Дом арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Дом арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 						return
 					end
 
@@ -4958,7 +4971,7 @@ function left_alt_down (playerid, key, keyState)
 
 				elseif getElementDimension(playerid) == v["world"] and getElementInterior(playerid) == interior_house[id][1] and enter_house[playername][1] == 1 then
 					if house_door == 0 then
-						sendPlayerMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Дверь закрыта", red[1], red[2], red[3])
 						return
 					end
 
@@ -4985,7 +4998,7 @@ function left_alt_down (playerid, key, keyState)
 					end
 
 					if v["nalog"] <= 0 then
-						sendPlayerMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
 						return
 					end
 					
@@ -5017,7 +5030,7 @@ function left_alt_down (playerid, key, keyState)
 					if id == 9 or id == 10 or id == 11 or id == 12 then
 						if inv_player_empty(playerid, 6, 0) then
 						else
-							sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 							return
 						end
 					end
@@ -5058,17 +5071,17 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 	if value == "player" then
 
 		if search_inv_player(playerid, id1, search_inv_player_2_parameter(playerid, id1)) >= 1 then
-			sendPlayerMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Можно переносить только один предмет", red[1], red[2], red[3])
 			return
 		end
 
 		if inv_player_empty(playerid, id1, id2) then
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendMessage(playerid, "Вы получили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 
 			random_sub (playerid, id1)
 		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
 
 	elseif value == "car" then--для работ по перевозке ящиков
@@ -5080,50 +5093,50 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				return
 
 			elseif count2 == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Багажник заполнен", red[1], red[2], red[3])
 				return
 
 			elseif id1 == 65 then
 				if search_inv_player(playerid, 64, 3) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не инкассатор", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не инкассатор", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 24 or id1 == 73 then
 				if search_inv_player(playerid, 64, 7) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 66 then
 				if search_inv_player(playerid, 64, 8) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не перевозчик оружия", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не перевозчик оружия", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 75 then
 				if search_inv_player(playerid, 64, 2) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не водитель мусоровоза", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 78 then
 				if search_inv_player(playerid, 64, 4) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не рыболов", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не рыболов", red[1], red[2], red[3])
 					return
 				end
 			elseif id1 == 88 then
 				if search_inv_player(playerid, 64, 7) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				elseif search_inv_player(playerid, 87, search_inv_player_2_parameter(playerid, 87)) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не работаете на скотобойне", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не работаете на скотобойне", red[1], red[2], red[3])
 					return
 				elseif not cow_farms(playerid, "load", count2, 0) then
 					return
 				end
 			elseif id1 == 89 then
 				if search_inv_player(playerid, 64, 7) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не дальнобойщик", red[1], red[2], red[3])
 					return
 				elseif search_inv_player(playerid, 87, search_inv_player_2_parameter(playerid, 87)) == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Вы не работаете на скотобойне", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не работаете на скотобойне", red[1], red[2], red[3])
 					return
 				end
 			end
@@ -5132,27 +5145,27 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 
 			local count = search_inv_car(vehicleid, id1, id2)
 
-			sendPlayerMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				
 			if id1 == 24 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 65 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 66 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте в аммунацию, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте в аммунацию, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 73 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 75 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 78 then
-				sendPlayerMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 88 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте на мясокомбинат, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте на мясокомбинат, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 89 then
-				sendPlayerMessage(playerid, "[TIPS] Езжайте на скотобойню, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
+				sendMessage(playerid, "[TIPS] Езжайте на скотобойню, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 		end
 	end
 
@@ -5178,24 +5191,24 @@ function delet_subject(playerid, id)--удаление предметов из �
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
 
 					if id ~= 24 then
-						sendPlayerMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red[1], red[2], red[3])
 						return
 					end
 
 					--[[if v["buyprod"] == 0 then
-						sendPlayerMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Цена покупки не указана", red[1], red[2], red[3])
 						return
 					end]]
 
 					if v["warehouse"] >= max_business then
-						sendPlayerMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Склад полон", red[1], red[2], red[3])
 						return
 					end
 
 					money = count*sic2p
 
 					if v["money"] < money then
-						sendPlayerMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", red[1], red[2], red[3])
 						return
 					end
 
@@ -5205,7 +5218,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-					sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
+					sendMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 					return
 				end
 			end
@@ -5220,16 +5233,16 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-						sendPlayerMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
+						sendMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", green[1], green[2], green[3])
 					end
 					return
 				end
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Багажник пуст", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Багажник пуст", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 	end
 end
 
@@ -5318,7 +5331,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local satiety_plus = 5
 
 			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
 				return
 			end
 
@@ -5327,22 +5340,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if id1 == 3 then
 				local hp = max_heal*0.05
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			elseif id1 == 7 then
 				local hp = max_heal*0.10
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			elseif id1 == 8 then
 				local hp = max_heal*0.15
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 			end
 
 			if satiety[playername]+satiety_plus <= max_satiety then
 				satiety[playername] = satiety[playername]+satiety_plus
-				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 			end
 
 			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
@@ -5357,14 +5370,14 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
 				return
 			end
 
 			id2 = id2 - 1
 
 			setElementHealth(playerid, max_heal)
-			sendPlayerMessage(playerid, "+"..max_heal.." хп", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..max_heal.." хп", yellow[1], yellow[2], yellow[3])
 
 			me_chat(playerid, playername.." использовал(а) аптечку")
 
@@ -5374,10 +5387,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local drugs_plus = 1
 
 			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
 				return
 			elseif drugs[playername]+drugs_plus > max_drugs then
-				sendPlayerMessage(playerid, "[ERROR] У вас сильная наркозависимость", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас сильная наркозависимость", red[1], red[2], red[3])
 				return
 			end
 
@@ -5385,19 +5398,19 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			local hp = max_heal*0.50
 			setElementHealth(playerid, getElementHealth(playerid)+hp)
-			sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 			drugs[playername] = drugs[playername]+drugs_plus
-			sendPlayerMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..drugs_plus.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
 
 			if satiety[playername]+satiety_plus <= max_satiety then
 				satiety[playername] = satiety[playername]+satiety_plus
-				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 			end
 
 			if sleep[playername]+sleep_plus <= max_sleep then
 				sleep[playername] = sleep[playername]+sleep_plus
-				sendPlayerMessage(playerid, "+"..sleep_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..sleep_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 			end
 
 			object_attach(playerid, 1485, 12, -0.1,0,0.04, 0,0,10, 3500)
@@ -5415,10 +5428,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local hygiene_minys = 5
 
 			if getElementHealth(playerid) == max_heal then
-				sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
 				return
 			elseif alcohol[playername]+alcohol_plus > max_alcohol then
-				sendPlayerMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3])
 				return
 			end
 
@@ -5428,31 +5441,31 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local satiety_plus = 10
 				local hp = max_heal*0.20
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 				if satiety[playername]+satiety_plus <= max_satiety then
 					satiety[playername] = satiety[playername]+satiety_plus
-					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				end
 
 			elseif id1 == 22 then
 				local satiety_plus = 5
 				local hp = max_heal*0.25
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 				if satiety[playername]+satiety_plus <= max_satiety then
 					satiety[playername] = satiety[playername]+satiety_plus
-					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				end
 			end
 
 			alcohol[playername] = alcohol[playername]+alcohol_plus
-			sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
 			if hygiene[playername]-hygiene_minys >= 0 then
 				hygiene[playername] = hygiene[playername]-hygiene_minys
-				sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 			end
 
 			object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
@@ -5467,10 +5480,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local hygiene_minys = 10
 
 				if getElementHealth(playerid) == max_heal then
-					sendPlayerMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас полное здоровье", red[1], red[2], red[3])
 					return
 				elseif alcohol[playername]+alcohol_plus > max_alcohol then
-					sendPlayerMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы сильно пьяны", red[1], red[2], red[3])
 					return
 				end
 
@@ -5479,19 +5492,19 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local satiety_plus = 10
 				local hp = max_heal*0.50
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
-				sendPlayerMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..hp.." хп", yellow[1], yellow[2], yellow[3])
 
 				if satiety[playername]+satiety_plus <= max_satiety then
 					satiety[playername] = satiety[playername]+satiety_plus
-					sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				end
 
 				alcohol[playername] = alcohol[playername]+alcohol_plus
-				sendPlayerMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow[1], yellow[2], yellow[3])
 
 				if hygiene[playername]-hygiene_minys >= 0 then
 					hygiene[playername] = hygiene[playername]-hygiene_minys
-					sendPlayerMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 				end
 
 				object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
@@ -5507,12 +5520,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local satiety_plus = 50
 
 				if satiety[playername]+satiety_plus > max_satiety then
-					sendPlayerMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3])
 					return
 				end
 
 				satiety[playername] = satiety[playername]+satiety_plus
-				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 
 				object_attach(playerid, 2703, 12, 0.02,0.05,0.04, 0,130,0, 5000)
@@ -5522,12 +5535,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local satiety_plus = 25
 
 				if satiety[playername]+satiety_plus > max_satiety then
-					sendPlayerMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не голодны", red[1], red[2], red[3])
 					return
 				end
 
 				satiety[playername] = satiety[playername]+satiety_plus
-				sendPlayerMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow[1], yellow[2], yellow[3])
 				me_chat(playerid, playername.." съел(а) "..info_png[id1][1])
 
 				object_attach(playerid, 2702, 12, 0,0.1,0.05, 0,270,0, 5000)
@@ -5540,13 +5553,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local sleep_hygiene_plus = 50
 
 				if hygiene[playername]+sleep_hygiene_plus > max_hygiene then
-					sendPlayerMessage(playerid, "[ERROR] Вы чисты", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы чисты", red[1], red[2], red[3])
 					return
 				end
 
 				if enter_house[playername][1] == 1 then
 					hygiene[playername] = hygiene[playername]+sleep_hygiene_plus
-					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "+"..sleep_hygiene_plus.." ед. чистоплотности", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." помылся(ась)")
 					id2 = id2 - 1
 
@@ -5563,7 +5576,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				
 				else 
 				
-					sendPlayerMessage(playerid, "[ERROR] Вы не в доме и не в отеле", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не в доме и не в отеле", red[1], red[2], red[3])
 					return
 				end
 
@@ -5571,13 +5584,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local sleep_hygiene_plus = 50
 
 				if sleep[playername]+sleep_hygiene_plus > max_sleep then
-					sendPlayerMessage(playerid, "[ERROR] Вы бодры", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы бодры", red[1], red[2], red[3])
 					return
 				end
 
 				if enter_house[playername][1] == 1 then
 					sleep[playername] = sleep[playername]+sleep_hygiene_plus
-					sendPlayerMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
+					sendMessage(playerid, "+"..sleep_hygiene_plus.." ед. сна", yellow[1], yellow[2], yellow[3])
 					me_chat(playerid, playername.." вздремнул(а)")
 					id2 = id2 - 1
 
@@ -5592,7 +5605,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				
 				else 
 				
-					sendPlayerMessage(playerid, "[ERROR] Вы не в доме и не в отеле", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не в доме и не в отеле", red[1], red[2], red[3])
 					return
 				end
 			end
@@ -5603,12 +5616,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local drugs_minys = 10
 
 			if drugs[playername]-drugs_minys < 0 then
-				sendPlayerMessage(playerid, "[ERROR] У вас нет наркозависимости", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У вас нет наркозависимости", red[1], red[2], red[3])
 				return
 			end
 
 			drugs[playername] = drugs[playername]-drugs_minys
-			sendPlayerMessage(playerid, "-"..drugs_minys.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "-"..drugs_minys.." ед. наркозависимости", yellow[1], yellow[2], yellow[3])
 			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 
 		elseif id1 == 76 then--антипохмелин
@@ -5617,12 +5630,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local alcohol_minys = 50
 
 			if alcohol[playername]-alcohol_minys < 0 then
-				sendPlayerMessage(playerid, "[ERROR] Вы не пьяны", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не пьяны", red[1], red[2], red[3])
 				return
 			end
 
 			alcohol[playername] = alcohol[playername]-alcohol_minys
-			sendPlayerMessage(playerid, "-"..(alcohol_minys/100).." промилле", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "-"..(alcohol_minys/100).." промилле", yellow[1], yellow[2], yellow[3])
 			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -5648,15 +5661,15 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						end
 
 					else
-						sendPlayerMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Максимальная вместимость бака "..max_fuel.." литров", red[1], red[2], red[3])
 						return
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -5676,7 +5689,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, "Шеф полиции "..playername.." показал(а) "..info_png[id1][1])
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 			end
 			return
 
@@ -5698,12 +5711,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
 				if getSpeed(vehicleid) > 5 then
-					sendPlayerMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Остановите т/с", red[1], red[2], red[3])
 					return
 				end
 
 				if getElementHealth(vehicleid) == 1000 then
-					sendPlayerMessage(playerid, "[ERROR] Т/с не нуждается в ремонте", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Т/с не нуждается в ремонте", red[1], red[2], red[3])
 					return
 				end
 
@@ -5713,7 +5726,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." починил(а) т/с")
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -5756,7 +5769,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 39 then--броник
 			if getPedArmor(playerid) ~= 0 then
-				sendPlayerMessage(playerid, "[ERROR] На вас надет бронежилет", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] На вас надет бронежилет", red[1], red[2], red[3])
 				return
 			end
 
@@ -5772,7 +5785,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local x1,y1 = player_position( playerid )
 
 			if vehicleid then
-				sendPlayerMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -5789,8 +5802,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						me_chat(playerid, playername.." взломал(а) дверь")
 
-						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
-						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
+						sendMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+						sendMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." дома, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
@@ -5812,8 +5825,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						me_chat(playerid, playername.." взломал(а) дверь")
 
-						sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
-						sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
+						sendMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+						sendMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
 						police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление "..v["number"].." бизнеса, GPS координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
@@ -5834,8 +5847,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					me_chat(playerid, playername.." взломал(а) сейф")
 
-					sendPlayerMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
-					sendPlayerMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
+					sendMessage(playerid, "Вы начали взлом", yellow[1], yellow[2], yellow[3] )
+					sendMessage(playerid, "[TIPS] Не покидайте место ограбления "..time_rob.." мин", color_tips[1], color_tips[2], color_tips[3])
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
@@ -5843,11 +5856,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				if count == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Нужно быть около дома, бизнеса или в хранилище казино калигула; Вы уже начали ограбление", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Нужно быть около дома, бизнеса или в хранилище казино калигула; Вы уже начали ограбление", red[1], red[2], red[3])
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Ограбление доступно с 0 до 6 часов игрового времени", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Ограбление доступно с 0 до 6 часов игрового времени", red[1], red[2], red[3])
 				return
 			end
 
@@ -5892,7 +5905,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if alcohol_test >= zakon_alcohol then
 				local crimes_plus = zakon_alcohol_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 			end
 
 		elseif id1 == 58 then--наркостестер
@@ -5905,7 +5918,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if drugs_test >= zakon_drugs then
 				local crimes_plus = zakon_drugs_crimes
 				crimes[playername] = crimes[playername]+crimes_plus
-				sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 			end
 
 		elseif id1 == 59 then--налог дома
@@ -5923,7 +5936,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			if count == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около дома", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы должны быть около дома", red[1], red[2], red[3])
 				return
 			end
 
@@ -5942,7 +5955,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			if count == 0 then
-				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около бизнеса", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы должны быть около бизнеса", red[1], red[2], red[3])
 				return
 			end
 		
@@ -5957,11 +5970,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					id2 = 0
 				else
-					sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
 					return
 				end
 			else
-				sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -6004,7 +6017,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 			elseif id2 == 3 then
 				if crimes[playername] ~= 0 then
-					sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
 					return
 				end
 
@@ -6046,7 +6059,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			elseif id2 == 6 then
 				if (crimes[playername] < crimes_giuseppe) then
 			
-					sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_giuseppe.." преступлений", red[1], red[2], red[3])
 					return
 				end
 
@@ -6063,7 +6076,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 			elseif id2 == 8 then
 				if crimes[playername] ~= 0 then
-					sendPlayerMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
 					return
 				end
 
@@ -6101,11 +6114,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." открыл(а) "..info_png[id1][1])
 
-			sendPlayerMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+			sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
 			local crimes_plus = zakon_65_crimes
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -6121,13 +6134,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			local crimes_plus = zakon_66_crimes
 			crimes[playername] = crimes[playername]+crimes_plus
-			sendPlayerMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
 			return
 
 		elseif id1 == 77 then--жетон
 			if vehicleid then
-				sendPlayerMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы в т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -6141,7 +6154,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setElementPosition(playerid, station[1][1],station[1][2],station[1][3])
 				id2 = id2 - 1
 			else 
-				sendPlayerMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы должны быть около вокзала", red[1], red[2], red[3])
 				return
 			end
 
@@ -6149,7 +6162,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			if (not isPointInCircle3D(x,y,z, 2308.81640625,-13.25,26.7421875, 5)) then
 			
-				sendPlayerMessage(playerid, "[ERROR] Вы не около банка", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Вы не около банка", red[1], red[2], red[3])
 				return
 			end
 
@@ -6175,7 +6188,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			if (id2 ~= 0) then
 			
-				sendPlayerMessage(playerid, "[ERROR] Рядом нет инкассаторской машины", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Рядом нет инкассаторской машины", red[1], red[2], red[3])
 				return
 			end
 
@@ -6194,13 +6207,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					
 					else
 					
-						sendPlayerMessage(playerid, "[ERROR] Это не тот т/с", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] Это не тот т/с", red[1], red[2], red[3])
 						return
 					end
 				
 				else
 				
-					sendPlayerMessage(playerid, "[ERROR] Вы не Угонщик", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Вы не Угонщик", red[1], red[2], red[3])
 					return
 				end
 			
@@ -6223,7 +6236,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				if count == 0 then
-					sendPlayerMessage(playerid, "[ERROR] Рядом нет нужного т/с", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Рядом нет нужного т/с", red[1], red[2], red[3])
 					return
 				end
 			end
@@ -6281,17 +6294,17 @@ function (playerid, cmd, id, ...)
 	end
 
 	if not id or text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [текст]", red[1], red[2], red[3])
 		return
 	end
 
 	local id,player = getPlayerId(id)
 		
 	if id then
-		sendPlayerMessage(playerid, "[SMS TO] "..id.." ["..getElementData(player, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
-		sendPlayerMessage(player, "[SMS FROM] "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
+		sendMessage(playerid, "[SMS TO] "..id.." ["..getElementData(player, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
+		sendMessage(player, "[SMS FROM] "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text, yellow[1], yellow[2], yellow[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -6305,23 +6318,23 @@ local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
 function roulette(playerid, randomize)
 	for k,v in pairs(Red) do
 		if randomize == v then
-			sendPlayerMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Выпало "..randomize.." красное", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Выпало "..randomize.." красное", yellow[1], yellow[2], yellow[3])
 			return
 		end
 	end
 
 	for k,v in pairs(Black) do
 		if randomize == v then
-			sendPlayerMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(playerid, "Выпало "..randomize.." черное", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Выпало "..randomize.." черное", yellow[1], yellow[2], yellow[3])
 			return
 		end
 	end
 
 	if randomize == 0 then
-		sendPlayerMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
-		sendPlayerMessage(playerid, "Выпало ZERO", yellow[1], yellow[2], yellow[3])
+		sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow[1], yellow[2], yellow[3])
+		sendMessage(playerid, "Выпало ZERO", yellow[1], yellow[2], yellow[3])
 		return
 	end
 end
@@ -6330,7 +6343,7 @@ function win_roulette( playerid, cash, ratio )
 	local playername = getPlayerName ( playerid )
 	local money = cash*ratio
 
-	sendPlayerMessage(playerid, "Вы заработали "..money.."$ X"..ratio, green[1], green[2], green[3])
+	sendMessage(playerid, "Вы заработали "..money.."$ X"..ratio, green[1], green[2], green[3])
 
 	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 end
@@ -6354,7 +6367,7 @@ function (playerid, cmd, id, cash)
 			text = text..v..", "
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [режим игры ("..text..")] [сумма]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [режим игры ("..text..")] [сумма]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6363,7 +6376,7 @@ function (playerid, cmd, id, cash)
 	end
 
 	if cash > array_player_2[playername][1] then
-		sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		return
 	end
 
@@ -6452,18 +6465,48 @@ function (playerid, cmd, id, cash)
 			end
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] Вы не у стола", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не у стола", red[1], red[2], red[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Вы не в казино", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не в казино", red[1], red[2], red[3])
 	end
 end)
 
-addCommandHandler ( "pr",--пол-ая волна
+addCommandHandler( "setchanel",--//сменить канал в рации
+function( playerid, cmd, id )
+
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if not id then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [канал]", red[1], red[2], red[3])
+		return
+	
+	elseif (logged[playername] == 0 or id <= 0) then
+	
+		return
+	
+	elseif (amount_inv_player_1_parameter(playerid, 80) == 0) then
+	
+		sendMessage(playerid, "[ERROR] У вас нет рации", red[1], red[2], red[3])
+		return
+	end
+
+	inv_player_delet(playerid, 80, search_inv_player_2_parameter(playerid, 80), true)
+
+	inv_player_empty(playerid, 80, id)
+
+	me_chat(playerid, playername.." сменил(а) канал в рации на "..id)
+end)
+
+addCommandHandler ( "r",--рация
 function (playerid, cmd, ...)
 	local playername = getPlayerName ( playerid )
 	local text = ""
 
 	if logged[playername] == 0 then
+		return
+	elseif (amount_inv_player_1_parameter(playerid, 80) == 0) then
+		sendMessage(playerid, "[ERROR] У вас нет рации", red[1], red[2], red[3])
 		return
 	end
 
@@ -6472,26 +6515,28 @@ function (playerid, cmd, ...)
 	end
 
 	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
 		return
 	end
 
-	if search_inv_player(playerid, 10, 1) ~= 0 then
+	local radio_chanel = search_inv_player_2_parameter(playerid, 80)
+
+	if(radio_chanel == police_chanel) then
 		if search_inv_player(playerid, 28, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Офицер "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Офицер "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 29, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Детектив "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Детектив "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 30, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Сержант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Сержант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 31, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Лейтенант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Лейтенант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 32, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Капитан "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Капитан "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 33, 1) ~= 0 then
-			police_chat(playerid, "[РАЦИЯ] Шеф полиции "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Шеф полиции "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+		radio_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text, green_rc)
 	end
 end)
 
@@ -6511,7 +6556,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6529,14 +6574,14 @@ function (playerid, cmd, id)
 						
 						if v["frozen"] == 0 then
 							if v["evacuate"] == 1 then
-								sendPlayerMessage(playerid, "[ERROR] Т/с на эвакуаторе", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] Т/с на эвакуаторе", red[1], red[2], red[3])
 								return
 							end
 
 							if search_inv_player(playerid, 6, id) ~= 0 then
 								if (player_in_car_theft(tostring(id)) ~= 0) then
 								
-									sendPlayerMessage(playerid, "[ERROR] Т/с угнали", red[1], red[2], red[3])
+									sendMessage(playerid, "[ERROR] Т/с угнали", red[1], red[2], red[3])
 									return
 								end
 
@@ -6558,26 +6603,26 @@ function (playerid, cmd, id)
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-								sendPlayerMessage(playerid, "Вы эвакуировали т/с за "..cash.."$", orange[1], orange[2], orange[3])
+								sendMessage(playerid, "Вы эвакуировали т/с за "..cash.."$", orange[1], orange[2], orange[3])
 
 							else
-								sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от этого т/с", red[1], red[2], red[3])
+								sendMessage(playerid, "[ERROR] У вас нет ключа от этого т/с", red[1], red[2], red[3])
 							end
 						else
-							sendPlayerMessage(playerid, "[ERROR] Т/с на штрафстоянке", red[1], red[2], red[3])
+							sendMessage(playerid, "[ERROR] Т/с на штрафстоянке", red[1], red[2], red[3])
 						end
 					end
 				else
-					sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
 				end
 
 				return
 			end
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Нужно иметь "..cash.."$", red[1], red[2], red[3])
 	end
 end)
 
@@ -6588,7 +6633,7 @@ function (playerid, cmd, cash)
 	local cash = tonumber(cash)
 
 	if not cash then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [сумма]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [сумма]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6597,7 +6642,7 @@ function (playerid, cmd, cash)
 	end
 
 	if cash > array_player_2[playername][1] then
-		sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 		return
 	end
 
@@ -6609,7 +6654,7 @@ function (playerid, cmd, cash)
 	
 	else
 	
-		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
@@ -6624,12 +6669,12 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
 	if search_inv_player(playerid, 10, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 		return
 	end
 
@@ -6639,12 +6684,12 @@ function (playerid, cmd, id)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if arrest[id] == 1 then
-			sendPlayerMessage(playerid, "[ERROR] Игрок в тюрьме", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок в тюрьме", red[1], red[2], red[3])
 			return
 		end
 
 		if crimes[id] == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Гражданин чист перед законом", red[1], red[2], red[3])
 			return
 		end
 
@@ -6653,14 +6698,14 @@ function (playerid, cmd, id)
 
 			arrest[id] = 1
 
-			sendPlayerMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", green[1], green[2], green[3] )
+			sendMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", green[1], green[2], green[3] )
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id])), playername )
 		else
-			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -6675,7 +6720,7 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -6685,28 +6730,28 @@ function (playerid, cmd, id)
 		local x1,y1,z1 = getElementPosition(player)
 
 		if arrest[id] == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Игрок не в тюрьме", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок не в тюрьме", red[1], red[2], red[3])
 			return
 		end
 
 		if cash*crimes[id] > array_player_2[playername][1] then
-			sendPlayerMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
 			return
 		end
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 			me_chat(playerid, playername.." заплатил(а) залог за "..id.." в размере "..(cash*(crimes[id])).."$")
 
-			sendPlayerMessage(player, "Ждите освобождения", yellow[1], yellow[2], yellow[3])
+			sendMessage(player, "Ждите освобождения", yellow[1], yellow[2], yellow[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*(crimes[id])), playername )
 
 			crimes[id] = 1
 		else
-			sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -6721,12 +6766,12 @@ function (playerid, cmd, value, id)
 	end
 
 	if not id or not value then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end
 
 	if search_inv_player(playerid, 10, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 		return
 	end
 
@@ -6741,10 +6786,10 @@ function (playerid, cmd, value, id)
 
 				search_inv_player_police( playerid, id )
 			else
-				sendPlayerMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Игрок далеко", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
 
 	elseif value == "car" then
@@ -6755,7 +6800,7 @@ function (playerid, cmd, value, id)
 			if (plate == id) then
 
 				if(search_inv_player(playerid, 91, 2) == 0) then
-					sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][2+2], red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][2+2], red[1], red[2], red[3])
 					return
 				end
 			
@@ -6768,14 +6813,14 @@ function (playerid, cmd, value, id)
 					search_inv_car_police( playerid, id )
 				else
 				
-					sendPlayerMessage(playerid, "[ERROR] Т/с далеко", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Т/с далеко", red[1], red[2], red[3])
 				end
 
 				return
 			end
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Т/с не найдено", red[1], red[2], red[3])
 
 	elseif value == "house" then
 		for i,v in pairs(sqlite( "SELECT * FROM house_db" )) do
@@ -6784,7 +6829,7 @@ function (playerid, cmd, value, id)
 			if (v["number"] == id) then
 
 				if(search_inv_player(playerid, 91, 3) == 0) then
-					sendPlayerMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][3+2], red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][3+2], red[1], red[2], red[3])
 					return
 				end
 			
@@ -6797,14 +6842,14 @@ function (playerid, cmd, value, id)
 					search_inv_house_police( playerid, id )
 				else
 				
-					sendPlayerMessage(playerid, "[ERROR] Дом далеко", red[1], red[2], red[3])
+					sendMessage(playerid, "[ERROR] Дом далеко", red[1], red[2], red[3])
 				end
 
 				return
 			end
 		end
 
-		sendPlayerMessage(playerid, "[ERROR] Дом не найден", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Дом не найден", red[1], red[2], red[3])
 	end
 end)
 
@@ -6817,12 +6862,12 @@ function (playerid, cmd, id)
 	end
 
 	if not id then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
 	if search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 		return
 	end
 
@@ -6830,13 +6875,13 @@ function (playerid, cmd, id)
 		
 	if id then
 		if inv_player_delet(player, 10, 1, true) then
-			sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow[1], yellow[2], yellow[3])
-			sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow[1], yellow[2], yellow[3])
+			sendMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow[1], yellow[2], yellow[3])
 		else
-			sendPlayerMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] У игрока нет жетона", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -6850,12 +6895,12 @@ function (playerid, cmd, id, rang)
 	end
 
 	if not id or not rang then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [от 28 до 32]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [от 28 до 32]", red[1], red[2], red[3])
 		return
 	end
 
 	if search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 		return
 	end
 
@@ -6864,25 +6909,25 @@ function (playerid, cmd, id, rang)
 
 		if id then
 			if inv_player_delet(player, rang, 1, true) then
-				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
-				sendPlayerMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+				sendMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
 			else
-				sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
 			end
 		else
 			--[[local s_sql = select_sqlite(rang, 1)
 			if id == s_sql[1] then
-				sendPlayerMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
+				sendMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow[1], yellow[2], yellow[3])
 
 				sqlite( "UPDATE account SET slot_"..s_sql[2].."_1 = '0', slot_"..s_sql[2].."_2 = '0' WHERE name = '"..s_sql[1].."'")
 			else
-				sendPlayerMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] У игрока нет шеврона", red[1], red[2], red[3])
 			end]]
 
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 28 до 32", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 28 до 32", red[1], red[2], red[3])
 	end
 end)
 
@@ -6899,13 +6944,13 @@ function (playerid)
 	end
 
 	if search_inv_player(playerid, 45, 1) == 0 then
-		sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3])
 		return
 	end
 
 	if(array_player_2[playername][1] < zakon_price_house) then
 	
-		sendPlayerMessage(playerid, "[ERROR] Стоимость домов составляет "..zakon_price_house.."$", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Стоимость домов составляет "..zakon_price_house.."$", red[1], red[2], red[3])
 		return
 	end
 
@@ -6947,14 +6992,14 @@ function (playerid)
 
 			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
-			sendPlayerMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
+			sendMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange[1], orange[2], orange[3])
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-zakon_price_house, playername )
 		else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3])
 	end
 end)
 
@@ -6972,19 +7017,19 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", red[1], red[2], red[3])
 		return
 	end
 
 	if(array_player_2[playername][1] < zakon_price_business) then
 	
-		sendPlayerMessage(playerid, "[ERROR] Стоимость бизнеса составляет "..zakon_price_business.."$", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Стоимость бизнеса составляет "..zakon_price_business.."$", red[1], red[2], red[3])
 		return
 	end
 
 	if id >= 1 and id <= #interior_business then
 		if search_inv_player(playerid, 45, 1) == 0 then
-			sendPlayerMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Вы не риэлтор", red[1], red[2], red[3])
 			return
 		end
 
@@ -7022,17 +7067,17 @@ function (playerid, cmd, id)
 
 				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
-				sendPlayerMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
+				sendMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], orange[1], orange[2], orange[3])
 
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-zakon_price_business, playername )
 			else
-				sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+				sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 			end
 		else
-			sendPlayerMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Рядом есть бизнес, дом или гос. здание", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до "..#interior_business, red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 1 до "..#interior_business, red[1], red[2], red[3])
 	end
 end)
 
@@ -7049,7 +7094,7 @@ function (playerid, cmd, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..max_interior_house.."]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..max_interior_house.."]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7062,21 +7107,21 @@ function (playerid, cmd, id)
 
 						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*id), playername )
 
-						sendPlayerMessage(playerid, "Вы изменили интерьер на "..id.." за "..(cash*id).."$", orange[1], orange[2], orange[3])
+						sendMessage(playerid, "Вы изменили интерьер на "..id.." за "..(cash*id).."$", orange[1], orange[2], orange[3])
 					else
-						sendPlayerMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
+						sendMessage(playerid, "[ERROR] У вас нет ключа от дома", red[1], red[2], red[3])
 					end
 
 					return
 				end
 			end
 
-			sendPlayerMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Нужно находиться около дома", red[1], red[2], red[3])
 		else
-			sendPlayerMessage(playerid, "[ERROR] Нужно иметь "..(cash*id).."$", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Нужно иметь "..(cash*id).."$", red[1], red[2], red[3])
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 1 до "..max_interior_house, red[1], red[2], red[3])
 	end
 
 end)
@@ -7095,7 +7140,7 @@ function (playerid, cmd, ...)
 	end
 
 	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7116,7 +7161,7 @@ function (playerid, cmd, ...)
 	end
 
 	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7137,7 +7182,7 @@ function (playerid, cmd, ...)
 	end
 
 	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7152,10 +7197,10 @@ function (playerid)
 		return
 	end
 
-	sendPlayerMessage(playerid, "====[ ПРЕДМЕТЫ ]====", white[1], white[2], white[3])
+	sendMessage(playerid, "====[ ПРЕДМЕТЫ ]====", white[1], white[2], white[3])
 
 	for i=1,#info_png do
-		sendPlayerMessage(playerid, "["..i.."] "..info_png[i][1].." 0 "..info_png[i][2], white[1], white[2], white[3])
+		sendMessage(playerid, "["..i.."] "..info_png[i][1].." 0 "..info_png[i][2], white[1], white[2], white[3])
 	end
 end)
 
@@ -7181,19 +7226,19 @@ function (playerid, cmd, id1, id2 )
 	end
 
 	if not val1 or not val2  then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendPlayerMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
 		return
 	end
 
 	if inv_player_empty(playerid, val1, val2) then
-		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+		sendMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
@@ -7208,24 +7253,24 @@ function (playerid, cmd, id1, id2 )
 	end
 
 	if not val1 or not val2  then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendPlayerMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
 		return
 	end
 
 	if not vehicleid then
-		sendPlayerMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 		return
 	end
 
 	if inv_car_empty(playerid, val1, val2) then
-		sendPlayerMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+		sendMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 	end
 end)
 
@@ -7240,7 +7285,7 @@ function ( playerid, cmd, x, y, z )
 	end
 
 	if x == nil or y == nil or z == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [и 3 координаты]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [и 3 координаты]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7267,7 +7312,7 @@ function ( playerid, cmd, ... )
 	end
 
 	local result = sqlite( "INSERT INTO position (description, pos) VALUES ('"..text.."', '"..x..","..y..","..z.."')" )
-	sendPlayerMessage(playerid, "save pos "..text, lyme[1], lyme[2], lyme[3])
+	sendMessage(playerid, "save pos "..text, lyme[1], lyme[2], lyme[3])
 end)
 
 addCommandHandler ( "global",
@@ -7285,11 +7330,11 @@ function ( playerid, cmd, ... )
 	end
 
 	if text == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [текст]", red[1], red[2], red[3])
 		return
 	end
 
-	sendPlayerMessage(getRootElement(), "[ADMIN] "..playername..": "..text, lyme[1], lyme[2], lyme[3])
+	sendMessage(getRootElement(), "[ADMIN] "..playername..": "..text, lyme[1], lyme[2], lyme[3])
 end)
 
 addCommandHandler ( "stime",
@@ -7303,7 +7348,7 @@ function ( playerid, cmd, id1, id2 )
 	end
 
 	if house == nil or min == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [час] [минуты]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [час] [минуты]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7321,7 +7366,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7334,7 +7379,7 @@ function (playerid, cmd, value, id)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 		end
 
 	elseif value == "car" then
@@ -7346,7 +7391,7 @@ function (playerid, cmd, value, id)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого т/с нет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Такого т/с нет", red[1], red[2], red[3])
 		end
 
 	elseif value == "house" then
@@ -7358,7 +7403,7 @@ function (playerid, cmd, value, id)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
-			sendPlayerMessage(playerid, "[ERROR] Такого дома нет", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Такого дома нет", red[1], red[2], red[3])
 		end
 	end
 end)
@@ -7378,7 +7423,7 @@ function (playerid, cmd, id, time, ...)
 	end
 
 	if not id or reason == "" or not time then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [время] [причина]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [время] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7389,12 +7434,12 @@ function (playerid, cmd, id, time, ...)
 	local id,player = getPlayerId(id)
 		
 	if id then
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
+		sendMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 		arrest[id] = 1
 		crimes[id] = time
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -7412,7 +7457,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7421,20 +7466,20 @@ function ( playerid, cmd, id, ... )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		if result[1]["ban"] == "1" then
-			sendPlayerMessage(playerid, "[ERROR] Игрок уже забанен", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок уже забанен", red[1], red[2], red[3])
 			return
 		end
 
 		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
 
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme[1], lyme[2], lyme[3])
+		sendMessage( getRootElement(), "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 		local id,player = getPlayerId ( id )
 		if player then
 			kickPlayer(player, "banplayer reason: "..reason)
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -7447,7 +7492,7 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7456,15 +7501,15 @@ function ( playerid, cmd, id )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		if result[1]["ban"] == "0" then
-			sendPlayerMessage(playerid, "[ERROR] Игрок не забанен", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Игрок не забанен", red[1], red[2], red[3])
 			return
 		end
 
 		sqlite( "UPDATE account SET ban = '0', reason = '0' WHERE name = '"..id.."'")
 
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." разбанил "..id, lyme[1], lyme[2], lyme[3])
+		sendMessage( getRootElement(), "Администратор "..playername.." разбанил "..id, lyme[1], lyme[2], lyme[3])
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)
 
@@ -7482,7 +7527,7 @@ function ( playerid, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [причина]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7491,21 +7536,21 @@ function ( playerid, cmd, id, ... )
 
 		local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE name = '"..id.."'" )
 		if result[1]["COUNT()"] == 1 then
-			sendPlayerMessage(playerid, "[ERROR] Серийник игрока уже забанен", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Серийник игрока уже забанен", red[1], red[2], red[3])
 			return
 		end
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		local result = sqlite( "INSERT INTO banserial_list (name, serial, reason) VALUES ('"..id.."', '"..result[1]["reg_serial"].."', '"..reason.."')" )
 
-		sendPlayerMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme[1], lyme[2], lyme[3])
+		sendMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme[1], lyme[2], lyme[3])
 
 		local id,player = getPlayerId ( id )
 		if player then
 			kickPlayer(player, "banserial reason: "..reason)
 		end
 	else
-		sendPlayerMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red[1], red[2], red[3])
 	end
 end)]]
 
@@ -7519,14 +7564,14 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера]", red[1], red[2], red[3])
 		return
 	end
 
 	if interior[id] ~= nil then
 		setElementInterior(playerid, 0)
 		setElementInterior(playerid, interior[id][1], interior[id][3], interior[id][4], interior[id][5])
-		sendPlayerMessage(playerid, "setElementInterior "..interior[id][2], lyme[1], lyme[2], lyme[3])
+		sendMessage(playerid, "setElementInterior "..interior[id][2], lyme[1], lyme[2], lyme[3])
 	else
 		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
 	end
@@ -7542,12 +7587,12 @@ function ( playerid, cmd, id )
 	end
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [номер виртуального мира]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер виртуального мира]", red[1], red[2], red[3])
 		return
 	end
 
 	setElementDimension ( playerid, id )
-	sendPlayerMessage(playerid, "setElementDimension "..id, lyme[1], lyme[2], lyme[3])
+	sendMessage(playerid, "setElementDimension "..id, lyme[1], lyme[2], lyme[3])
 end)
 
 addCommandHandler ( "attach",
@@ -7569,11 +7614,11 @@ function ( playerid )
 					if not isElementAttached ( vehicle ) then
 						local car_attach = attachElements ( vehicle, vehicleid, 0, 0, -4 )
 						if car_attach then
-							sendPlayerMessage(playerid, "т/с прикреплен", lyme[1], lyme[2], lyme[3])
+							sendMessage(playerid, "т/с прикреплен", lyme[1], lyme[2], lyme[3])
 						end
 					else
 						detachElements  ( vehicle, vehicleid )
-						sendPlayerMessage(playerid, "т/с откреплен", lyme[1], lyme[2], lyme[3])
+						sendMessage(playerid, "т/с откреплен", lyme[1], lyme[2], lyme[3])
 					end
 
 					return
@@ -7594,7 +7639,7 @@ function ( playerid, cmd, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendPlayerMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ид т/с]", red[1], red[2], red[3])
 		return
 	end
 
@@ -7618,12 +7663,12 @@ function ( playerid, cmd, id )
 
 			--setVehicleDamageProof(vehicleid, true)
 
-			--sendPlayerMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
+			--sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 		--[[else
-			sendPlayerMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
+			sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
 		end]]
 	else
-		sendPlayerMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end
 end)
 -----------------------------------------------------------------------------------------
