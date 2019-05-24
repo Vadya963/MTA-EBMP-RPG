@@ -4714,10 +4714,10 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	local j = max_earth
 	earth[j] = {x,y,z,id1,id2}
 
-	if enter_house[playername][2] == id2 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+	--[[if enter_house[playername][2] == id2 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки(выкл из-за фичи)
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 		enter_house[playername][2] = 0
-	end
+	end]]
 
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
