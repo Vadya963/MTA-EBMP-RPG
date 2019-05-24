@@ -307,10 +307,11 @@ function getPlayerVehicle( playerid )
 end
 
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	local hash = createColSphere ( x, y, z, radius )
-	local area = isInsideColShape( hash, x1, y1, z1 )
-	destroyElement(hash)
-	return area
+	if getDistanceBetweenPoints3D(x, y, z, x1, y1, z1) <= radius then
+		return true
+	else
+		return false
+	end
 end
 
 function getSpeed(vehicle)

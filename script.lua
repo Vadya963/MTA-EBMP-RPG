@@ -104,10 +104,11 @@ local ls_airport = createColRectangle( 1364.041015625,-2766.3720703125, 789, 581
 local lv_airport = createColRectangle( 1258.2685546875,1143.7607421875, 473, 719 )
 local sf_airport = createColRectangle( -1734.609375,-695.794921875, 680, 1156 )
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
-	local hash = createColSphere ( x, y, z, radius )
-	local area = isInsideColShape( hash, x1, y1, z1 )
-	destroyElement(hash)
-	return area
+	if getDistanceBetweenPoints3D(x, y, z, x1, y1, z1) <= radius then
+		return true
+	else
+		return false
+	end
 end
 
 function getPlayerVehicle( playerid )
@@ -4037,11 +4038,11 @@ function(ammo, attacker, weapon, bodypart)
 	
 	setTimer( player_Spawn, 5000, 1, playerid )
 
-	if not playername_a then
+	--[[if not playername_a then
 		sendMessage(getRootElement(), "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
 	else
 		sendMessage(getRootElement(), "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green[1], green[2], green[3] )
-	end
+	end]]
 
 	print("[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
 end)
