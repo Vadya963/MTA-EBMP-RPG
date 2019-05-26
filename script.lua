@@ -15,6 +15,14 @@ function sqlite(text)
 	return result
 end
 
+local upgrades_car_table = {}
+local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
+for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
+	local spl = split(v, ",")
+	upgrades_car_table[tonumber(spl[1])] = spl[3]
+end
+fileClose(uc_txt)
+
 local earth = {}--слоты земли
 local max_earth = 0--мак-ое кол-во выброшенных предметов на землю
 local count_player = 0--кол-во подключенных игроков
@@ -1263,7 +1271,7 @@ function debuginfo ()
 		local hour, minute = getTime()
 
 		--элементдата
-		setElementData(playerid, "0", "max_earth "..max_earth)
+		--[[setElementData(playerid, "0", "max_earth "..max_earth)
 		setElementData(playerid, "1", "state_inv_player[playername] "..state_inv_player[playername])
 		setElementData(playerid, "2", "state_gui_window[playername] "..state_gui_window[playername])
 		setElementData(playerid, "3", "logged[playername] "..logged[playername])
@@ -1295,7 +1303,7 @@ function debuginfo ()
 			setElementData(playerid, "19", "job_vehicleid[playername] "..job_vehicleid[playername])
 		end
 
-		setElementData(playerid, "20", "job_timer[playername] "..tostring(job_timer[playername]))
+		setElementData(playerid, "20", "job_timer[playername] "..tostring(job_timer[playername]))]]
 
 
 		setElementData(playerid, "crimes_data", crimes[playername])
@@ -1305,29 +1313,15 @@ function debuginfo ()
 		setElementData(playerid, "sleep_data", sleep[playername])
 		setElementData(playerid, "drugs_data", drugs[playername])
 		setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
-		setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
-		setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
-		setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
 		setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 		setElementData(playerid, "gps_device_data", gps_device[playername])
 		setElementData(playerid, "timeserver", hour..":"..minute)
 		setElementData(playerid, "earth", earth)
-		setElementData(playerid, "zakon_alcohol", zakon_alcohol)
-		setElementData(playerid, "zakon_drugs", zakon_drugs)
-		setElementData(playerid, "craft_table", craft_table)
-		setElementData(playerid, "shop", shop)
-		setElementData(playerid, "gas", gas)
-		setElementData(playerid, "giuseppe", giuseppe)
-		setElementData(playerid, "interior_business", interior_business)
 		setElementData(playerid, "auc", result_auc)
 		setElementData(playerid, "carparking_table", result_car)
 		setElementData(playerid, "cow_farms_table2", result_cow_farms)
-		setElementData(playerid, "mayoralty_shop", mayoralty_shop)
-		setElementData(playerid, "weapon_cops", weapon_cops)
-		setElementData(playerid, "sub_cops", sub_cops)
 
 		--позиции домов, бизнесов, зданий
-		setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
 		setElementData(playerid, "interior_job", interior_job)
 		setElementData(playerid, "house_pos", house_pos)
 		setElementData(playerid, "business_pos", business_pos)
@@ -2984,6 +2978,8 @@ function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
 
 				addVehicleUpgrade ( vehicleid, value )
 
+				setElementData(playerid, "car_upgrades_save", getVehicleUpgrades(vehicleid))
+
 				for k,v in pairs(getVehicleUpgrades(vehicleid)) do
 					text = text..v..","
 				end
@@ -3077,6 +3073,8 @@ function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
 			if cash <= array_player_2[playername][1] then
 
 				setVehiclePaintjob ( vehicleid, value )
+
+				setElementData(playerid, "car_upgrades_save", getVehiclePaintjob(vehicleid))
 
 				sendMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange[1], orange[2], orange[3])
 
@@ -3889,9 +3887,24 @@ function()
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
 	setPlayerHudComponentVisible ( playerid, "area_name", false )
-	setPlayerHudComponentVisible ( playerid, "vehicle_name", false )
+	setPlayerHudComponentVisible ( playerid, "vehicle_name", true )
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
+	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
+	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
+	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
+	setElementData(playerid, "zakon_alcohol", zakon_alcohol)
+	setElementData(playerid, "zakon_drugs", zakon_drugs)
+	setElementData(playerid, "craft_table", craft_table)
+	setElementData(playerid, "shop", shop)
+	setElementData(playerid, "gas", gas)
+	setElementData(playerid, "giuseppe", giuseppe)
+	setElementData(playerid, "interior_business", interior_business)
+	setElementData(playerid, "mayoralty_shop", mayoralty_shop)
+	setElementData(playerid, "weapon_cops", weapon_cops)
+	setElementData(playerid, "sub_cops", sub_cops)
+	setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
+	setElementData(playerid, "upgrades_car_table", upgrades_car_table)
 	setPlayerNametagShowing ( playerid, false )
 	count_player = count_player+1
 
@@ -4835,6 +4848,7 @@ end
 function x_down (playerid, key, keyState)
 local playername = getPlayerName ( playerid )
 local x,y,z = getElementPosition(playerid)
+local vehicleid = getPlayerVehicle(playerid)
 
 	if logged[playername] == 0 then
 		return
@@ -4875,6 +4889,9 @@ local x,y,z = getElementPosition(playerid)
 
 						if v["nalog"] <= 0 then
 							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red[1], red[2], red[3])
+							return
+						elseif not vehicleid then
+							sendMessage(playerid, "[ERROR] Вы не в т/с", red[1], red[2], red[3])
 							return
 						end
 

@@ -150,7 +150,7 @@ local info2_png = -1 --значение картинки
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
-		sendPlayerMessage("Кислород пополнился", yellow[1], yellow[2], yellow[3] )
+		sendMessage("Кислород пополнился", yellow[1], yellow[2], yellow[3] )
 	end, 38000, 8)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
@@ -195,7 +195,7 @@ function save_logplayer()
 			fileWrite(newFile, logplayer[i].."\n")
 		end
 
-		sendPlayerMessage("лог "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
+		sendMessage("лог "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
 		fileClose(newFile)
 
 		logplayer = {}
@@ -220,7 +220,7 @@ function save_invplayer()
 	if (newFile) then
 		fileWrite(newFile, invplayer.."\n")
 
-		sendPlayerMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
+		sendMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
 		fileClose(newFile)
 
 		invplayer = {}
@@ -295,7 +295,7 @@ for i=0,max_inv do
 	inv_slot_house[i] = {0,0,0}
 end
 
-function sendPlayerMessage(text, r, g, b)
+function sendMessage(text, r, g, b)
 	local time = getRealTime()
 
 	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, r, g, b)
@@ -345,10 +345,14 @@ function m2gui_radiobutton( x,y, width, height, text, bool_r, parent )
 	return text
 end
 
-function m2gui_window( x,y, width, height, text, bool_r )
+function m2gui_window( x,y, width, height, text, bool_r, movable )
 	local m2gui_win = guiCreateWindow( x, y, width, height, text, bool_r )
 	guiWindowSetMovable ( m2gui_win, false )
 	guiWindowSetSizable ( m2gui_win, false )
+
+	if movable then
+		guiWindowSetMovable ( m2gui_win, true )
+	end
 	return m2gui_win
 end
 
@@ -629,9 +633,9 @@ function createText ()
 			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
 
-		for i=0,20 do--setdata
+		--[[for i=0,20 do--setdata
 			dxdrawtext ( getElementData(playerid, tostring(i)), 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		end
+		end]]
 
 		dxdrawtext ( heal_player[1], screenWidth-width_need-30-30, height_need, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( (alcohol/100), screenWidth-width_need-30-30, height_need+(20+7.5)*1, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -657,7 +661,7 @@ function createText ()
 				speed_car = getSpeed(vehicle)*1.125+43
 			end
 
-			local speed_vehicle = "plate "..plate.." | vehicle speed "..speed_table[1].." km/h | heal vehicle "..heal_vehicle[1].." | fuel "..fuel.." | kilometrage "..getElementData ( playerid, "probeg_data" )
+			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | fuel "..fuel_table[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
@@ -876,53 +880,69 @@ end
 addEventHandler ( "onClientRender", getRootElement(), createText )
 
 local number_business = 0
+local int_upgrades = 0
+local int_paint = -1
 function tune_window_create (number)--создание окна тюнинга
 	number_business = number
+	local vehicleid = getPlayerVehicle(playerid)
 
-	local dimensions = dxGetTextWidth ( "Введите ИД", 1, m2font_dx )
+	if not vehicleid then
+		return
+	end
+
+	setElementData(playerid, "car_upgrades_save", getVehicleUpgrades(vehicleid))
+	setElementData(playerid, "car_paint_save", getVehiclePaintjob ( vehicleid ))	
+
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, m2font_dx )
-	local width = 300+50+10
+	local width = 355+50
 	local height = 200.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Автомастерская", false )
-	local tune_text = m2gui_label ( 180, 25, dimensions+10, 20, "Введите ИД детали", false, gui_window )
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), 20, width, height, number_business.." бизнес, Автомастерская", false, false )
+
+	local upgrades_table = guiCreateComboBox ( 180, 25, 215, 200, "Апгрейды", false, gui_window )
+	for k,v in pairs(getVehicleCompatibleUpgrades ( vehicleid )) do
+		guiComboBoxAddItem( upgrades_table, getElementData(playerid, "upgrades_car_table")[v].."#"..v )
+	end
+
+	local paint_job = guiCreateComboBox ( 180, 55, 215, 200, "Покраска", false, gui_window )
+	for i=1,4 do
+		guiComboBoxAddItem( paint_job, i)
+	end
+
+	addEventHandler ( "onClientGUIComboBoxAccepted", upgrades_table,
+	function ( comboBox )
+		local item = guiComboBoxGetItemText(upgrades_table, guiComboBoxGetSelected(upgrades_table))
+		for k,v in pairs(getElementData(playerid, "upgrades_car_table")) do
+			if item == v.."#"..k then
+				int_upgrades = k
+				addVehicleUpgrade ( vehicleid, int_upgrades )
+				break
+			end
+		end
+	end)
+
+	addEventHandler ( "onClientGUIComboBoxAccepted", paint_job,
+	function ( comboBox )
+		local item = guiComboBoxGetItemText(paint_job, guiComboBoxGetSelected(paint_job))
+		int_paint = tonumber(item)-1
+		setVehiclePaintjob ( vehicleid, int_paint )
+	end)
+
+	local tune_text = m2gui_label ( 180, 85, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
 	guiSetFont( tune_text, m2font )
-	local tune_text_edit = guiCreateEdit ( 180, 50, 170, 20, "", false, gui_window )
-	local tune_text = m2gui_label ( 180, 75, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
-	guiSetFont( tune_text, m2font )
-	local tune_r_edit = guiCreateEdit ( 180, 100, 50, 20, "", false, gui_window )
-	local tune_g_edit = guiCreateEdit ( 240, 100, 50, 20, "", false, gui_window )
-	local tune_b_edit = guiCreateEdit ( 300, 100, 50, 20, "", false, gui_window )
-	local tune_radio_button1 = m2gui_radiobutton ( 180, 125, 60, 15, "Авто", false, gui_window )
-	local tune_radio_button2 = m2gui_radiobutton ( 240, 125, 60, 15, "Фары", false, gui_window )
-	local tune_search_button = m2gui_button( 180, 150, "Найти", false, gui_window )
-	local tune_install_button = m2gui_button( 180, 175, "Установить", false, gui_window )
-	local tune_delet_button = m2gui_button( 180, 200, "Удалить", false, gui_window )
+	local tune_r_edit = guiCreateEdit ( 180, 110, 65, 20, "", false, gui_window )
+	local tune_g_edit = guiCreateEdit ( 255, 110, 65, 20, "", false, gui_window )
+	local tune_b_edit = guiCreateEdit ( 330, 110, 65, 20, "", false, gui_window )
+	local tune_radio_button1 = m2gui_radiobutton ( 180, 135, 60, 15, "Авто", false, gui_window )
+	local tune_radio_button2 = m2gui_radiobutton ( 240, 135, 60, 15, "Фары", false, gui_window )
+	local tune_search_button = m2gui_button( 180, 160, "Посмотреть цвет", false, gui_window )
+	local tune_install_button = m2gui_button( 180, 185, "Установить", false, gui_window )
 	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
 
 	showCursor( true )
 
 	function tune_img_load ( button, state, absoluteX, absoluteY )--поиск тюнинга
-		local text = guiGetText ( tune_text_edit )
 		local r1,g1,b1 = guiGetText ( tune_r_edit ), guiGetText ( tune_g_edit ), guiGetText ( tune_b_edit )
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
-
-		if text ~= "" then
-			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
-				tune_color_2d = false
-				guiStaticImageLoadImage ( tune_img, "upgrade/"..text.."_w_s.jpg" )
-			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
-				local vehicleid = getPlayerVehicle(playerid)
-
-				if vehicleid then
-					local model = getElementModel ( vehicleid )
-
-					if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
-						tune_color_2d = false
-						guiStaticImageLoadImage ( tune_img, "paintjob/"..paint[model][tonumber(text)+1]..".png" )
-					end
-				end
-			end
-		end
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" then
 			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
@@ -936,31 +956,41 @@ function tune_window_create (number)--создание окна тюнинга
 	addEventHandler ( "onClientGUIClick", tune_search_button, tune_img_load, false )
 
 	function tune_upgrade ( button, state, absoluteX, absoluteY )--установка тюнинга
-		local text = guiGetText ( tune_text_edit )
-		local vehicleid = getPlayerVehicle(playerid)
+		local text = int_upgrades
 		local r1,g1,b1 = guiGetText ( tune_r_edit ), guiGetText ( tune_g_edit ), guiGetText ( tune_b_edit )
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
 
-		if text ~= "" and vehicleid then
+		if text ~= 0 then
 			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
 				local upgrades = getVehicleCompatibleUpgrades ( vehicleid )
 
 				for v, upgrade in pairs ( upgrades ) do
 					if upgrade == tonumber(text) then
+						int_upgrades = 0
+
+						for k,v in pairs(getVehicleUpgrades(vehicleid)) do
+							removeVehicleUpgrade(vehicleid, v)
+						end
+
+						for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
+							addVehicleUpgrade(vehicleid, v)
+						end
+
 						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", playerid, number_business )
 						return
 					end
 				end
 
-				sendPlayerMessage("[ERROR] Эту деталь нельзя установить", red[1], red[2], red[3])
-				
-			elseif tonumber(text) >= 0 and tonumber(text) <= 2 then
-				local model = getElementModel ( vehicleid )
-
-				if paint[model] ~= nil and paint[model][tonumber(text)+1] ~= nil then
-					triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, tonumber(text), "save", playerid, number_business )
-				end
+				sendMessage("[ERROR] Эту деталь нельзя установить", red[1], red[2], red[3])
 			end
+
+		elseif int_paint ~= -1 then
+			local model = getElementModel ( vehicleid )
+			if paint[model] ~= nil then
+				triggerServerEvent( "event_setVehiclePaintjob", getRootElement(), vehicleid, int_paint, "save", playerid, number_business )
+			end
+
+			int_paint = -1
 		end
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
@@ -976,50 +1006,18 @@ function tune_window_create (number)--создание окна тюнинга
 	end
 	addEventHandler ( "onClientGUIClick", tune_install_button, tune_upgrade, false )
 
-	function tune_delet ( button, state, absoluteX, absoluteY )--удаление тюнинга
-		local text = guiGetText ( tune_text_edit )
-		local vehicleid = getPlayerVehicle(playerid)
-
-		if text ~= "" and vehicleid then
-			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
-				local upgrades = getVehicleUpgrades ( vehicleid )
-
-				for v, upgrade in pairs ( upgrades ) do
-					if upgrade == tonumber(text) then
-						triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", playerid, number_business )
-						return
-					end
-				end
-
-				sendPlayerMessage("[ERROR] Данная деталь не установленна", red[1], red[2], red[3])
-			end
-		end
-	end
-	addEventHandler ( "onClientGUIClick", tune_delet_button, tune_delet, false )
-
-	function tune_text_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
-		guiSetText ( tune_text_edit, "" )
-		guiSetText ( tune_r_edit, "" )
-		guiSetText ( tune_g_edit, "" )
-		guiSetText ( tune_b_edit, "" )
-	end
-	addEventHandler ( "onClientGUIClick", tune_text_edit, tune_text_edit_fun, false )
-
 	function tune_r_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_r_edit, "" )
-		guiSetText ( tune_text_edit, "" )
 	end
 	addEventHandler ( "onClientGUIClick", tune_r_edit, tune_r_edit_fun, false )
 
 	function tune_g_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_g_edit, "" )
-		guiSetText ( tune_text_edit, "" )
 	end
 	addEventHandler ( "onClientGUIClick", tune_g_edit, tune_g_edit_fun, false )
 
 	function tune_b_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_b_edit, "" )
-		guiSetText ( tune_text_edit, "" )
 	end
 	addEventHandler ( "onClientGUIClick", tune_b_edit, tune_b_edit_fun, false )
 
@@ -1391,7 +1389,7 @@ function avto_bikes_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
 			return
 		end
 
@@ -1440,7 +1438,7 @@ function boats_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
 			return
 		end
 
@@ -1489,7 +1487,7 @@ function helicopters_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
 			return
 		end
 
@@ -1576,7 +1574,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
 					return
 				end
 				
@@ -1588,7 +1586,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
 					return
 				end
 
@@ -1696,7 +1694,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendPlayerMessage("[ERROR] URL пуст", red[1], red[2], red[3])
+						sendMessage("[ERROR] URL пуст", red[1], red[2], red[3])
 					end
 
 				elseif source == home then
@@ -1749,7 +1747,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendPlayerMessage("[ERROR] URL пуст", red[1], red[2], red[3])
+						sendMessage("[ERROR] URL пуст", red[1], red[2], red[3])
 					end
 
 				elseif source == home then
@@ -1786,7 +1784,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendPlayerMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+				sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
 				return
 			end
 
@@ -1822,7 +1820,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendPlayerMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+				sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
 				return
 			end
 
@@ -1885,12 +1883,12 @@ function tablet_fun()--создание планшета
 				local text2 = tonumber(guiGetText ( edit ))
 				
 				if text == "" then
-					sendPlayerMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
 					return
 				end
 
 				if not text2 then
-					sendPlayerMessage("[ERROR] Введите число в белое поле", red[1], red[2], red[3])
+					sendMessage("[ERROR] Введите число в белое поле", red[1], red[2], red[3])
 					return
 				end
 
@@ -1932,7 +1930,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendPlayerMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
 					return
 				end
 
@@ -2093,7 +2091,7 @@ function inv_create ()--создание инв-ря
 				lmb = 0
 			end
 
-			--sendPlayerMessage(info3.." "..info1.." "..info2)
+			--sendMessage(info3.." "..info1.." "..info2)
 		end
 		addEventHandler ( "onClientGUIClick", inv_slot_player[i][1], outputEditBox, false )
 	end
@@ -2192,7 +2190,7 @@ function inv_create ()--создание инв-ря
 					lmb = 0
 				end
 
-				--sendPlayerMessage(info3.." "..info1.." "..info2)
+				--sendMessage(info3.." "..info1.." "..info2)
 			end
 			addEventHandler ( "onClientGUIClick", inv_slot_car[i][1], outputEditBox, false )
 		end
@@ -2292,7 +2290,7 @@ function inv_create ()--создание инв-ря
 					lmb = 0
 				end
 
-				--sendPlayerMessage(info3.." "..info1.." "..info2)
+				--sendMessage(info3.." "..info1.." "..info2)
 			end
 			addEventHandler ( "onClientGUIClick", inv_slot_house[i][1], outputEditBox, false )
 		end
@@ -2413,12 +2411,31 @@ addEvent( "event_inv_delet", true )
 addEventHandler ( "event_inv_delet", getRootElement(), inv_delet )
 
 function tune_close ( button, state, absoluteX, absoluteY )--закрытие окна
+local vehicleid = getPlayerVehicle(playerid)
+
 	if gui_window then
 		destroyElement(gui_window)
 
 		tune_color_2d = false
 		gui_window = nil
 		showCursor( false )
+
+		if int_upgrades ~= 0 and vehicleid then
+			int_upgrades = 0
+			
+			for k,v in pairs(getVehicleUpgrades(vehicleid)) do
+				removeVehicleUpgrade(vehicleid, v)
+			end
+
+			for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
+				addVehicleUpgrade(vehicleid, v)
+			end
+		end
+
+		if int_paint ~= -1 then
+			setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
+			int_paint = -1
+		end
 	end
 end
 addEvent( "event_gui_delet", true )
