@@ -2542,7 +2542,7 @@ function ( cmd, x,y )
 			sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red[1], red[2], red[3])
 		else
 			destroyElement(addCommandHandler_marker)
-			addCommandHandler_marker=0
+			addCommandHandler_marker = 0
 		end
 		return
 	end
