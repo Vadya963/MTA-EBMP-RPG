@@ -838,7 +838,7 @@ function createText ()
 	end
 
 
-	if hud then
+	if pos_timer == 1 then
 		for k,player in pairs(getElementsByType("player")) do
 			local x1,y1,z1 = getElementPosition(player)
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
