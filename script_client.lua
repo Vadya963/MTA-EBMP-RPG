@@ -2530,3 +2530,22 @@ function showdebuginfo_b (key, keyState)
 		showChat(hud)
 	end
 end
+
+local addCommandHandler_marker = 0
+addCommandHandler ( "marker",
+function ( cmd, x,y )
+	local playername = getPlayerName ( playerid )
+	local x,y = tonumber(x),tonumber(y)
+
+	if not x or not y then
+		if addCommandHandler_marker == 0 then
+			sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red[1], red[2], red[3])
+		else
+			destroyElement(addCommandHandler_marker)
+			addCommandHandler_marker=0
+		end
+		return
+	end
+
+	addCommandHandler_marker = createBlip ( x,y,0, 41, 4, blue[1], blue[2], blue[3], 255, 0, 16383.0 )
+end)
