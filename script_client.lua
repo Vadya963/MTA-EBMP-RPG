@@ -135,7 +135,7 @@ local info_png = {
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
 	[84] = {"отмычка", "процентов"},
-	[85] = {"", ""},
+	[85] = {"повязка", ""},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
@@ -616,6 +616,15 @@ function createText ()
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*5, 30, 30, "hud/sleep.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*5, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+
+		local spl_gz = getElementData(playerid, "guns_zone2")
+		local name_mafia = getElementData(playerid, "name_mafia")
+		if spl_gz and spl_gz[1][1] == 1 then
+			dxDrawRectangle( 0.0, screenHeight-16.0*6, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
+			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6, 0.0, 0.0, tocolor( white[1], white[2], white[3] ), 1, m2font_dx1 )
+			dxdrawtext ( "Атака "..name_mafia[spl_gz[1][3]][1]..": "..spl_gz[1][4].." очки", 2.0, screenHeight-16*5, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
+			dxdrawtext ( "Защита "..name_mafia[spl_gz[1][5]][1]..": "..spl_gz[1][6].." очки", 2.0, screenHeight-16*4, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
+		end
 	end
 
 	local x,y,z = getElementPosition(playerid)
@@ -661,7 +670,7 @@ function createText ()
 				speed_car = getSpeed(vehicle)*1.125+43
 			end
 
-			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | fuel "..fuel_table[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
+			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
@@ -1129,8 +1138,8 @@ function shop_menu(number, value)--создание окна магазина
 		return
 
 	elseif value == "giuseppe" then
-		local column_width1 = 0.5
-		local column_width2 = 0.4
+		local column_width1 = 0.7
+		local column_width2 = 0.2
 		local width = 400+10
 		local height = 320.0+(16.0*1)+10
 		gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "Черный рынок", false )
@@ -1160,8 +1169,8 @@ function shop_menu(number, value)--создание окна магазина
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..getElementData(playerid, "interior_business")[value][2], false )
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
-	local column_width1 = 0.5
-	local column_width2 = 0.4
+	local column_width1 = 0.7
+	local column_width2 = 0.2
 
 	local buy_subject = m2gui_button( 5, 320, "Купить", false, gui_window )
 

@@ -46,6 +46,7 @@ local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
 local house_pos = {}--позиции домов
 local police_chanel = 1--канал копов
+
 --законы
 local zakon_alcohol = 1
 local zakon_alcohol_crimes = 1
@@ -91,6 +92,25 @@ local crimson = {220,20,60}--малиновый
 local purple = {175,0,255}--фиолетовый
 local gray = {150,150,150}--серый
 local green_rc = {115,180,97}--темно зеленый
+
+--капты-----------------------------------------------------------------------------------------------------------
+local money_guns_zone = 5000
+local money_guns_zone_business = 1000
+local point_guns_zone = {0,0, 0,0, 0,0}--1-идет ли захват, 2-номер зоны, 3-атакующие, 4-очки захвата, 5-защищающие, 6-очки захвата
+local time_gz = 1*60
+local time_guns_zone = time_gz
+local name_mafia = {
+	[0] = {"no", {255,255,255}},
+	[1] = {"Grove Street Familes", {0,255,0}},
+	[2] = {"Vagos", {255,255,0}},
+	[3] = {"Ballas", {175,0,255}},
+	[4] = {"Rifa", {0,0,255}},
+	[5] = {"Varrios Los Aztecas", {0,255,255}},
+	[6] = {"Triads", {50,50,50}},
+	[7] = {"Da Nang Boys", {255,0,0}},
+}
+local guns_zone = {}
+------------------------------------------------------------------------------------------------------------------
 
 -------------------пользовательские функции----------------------------------------------
 function sendMessage(playerid, text, r, g, b)
@@ -413,7 +433,7 @@ local info_png = {
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
 	[84] = {"отмычка", "процентов"},
-	[85] = {"", ""},
+	[85] = {"повязка", ""},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
@@ -909,7 +929,7 @@ local interior_job = {--12
 	{1, "Мясокомбинат", 963.6078,2108.3970,1011.0300, 966.2333984375,2160.5166015625,10.8203125, 51, 1, "", 5},
 	{6, "Лос Сантос ПД", 246.4510,65.5860,1003.6410, 1555.494140625,-1675.5419921875,16.1953125, 30, 2, ", Меню - X", 5},
 	{10, "Сан Фиерро ПД", 246.4410,112.1640,1003.2190, -1605.7109375,710.28515625,13.8671875, 30, 3, ", Меню - X", 5},
-	{3, "Лас Вентурас ПД", 289.7703,171.7460,1007.1790, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
+	{3, "Лас Вентурас ПД", 238.384765625,140.4052734375,1003.0234375, 2287.1005859375,2432.3642578125,10.8203125, 30, 4, ", Меню - X", 5},
 	{3, "Мэрия ЛС", 374.6708,173.8050,1008.3893, 1481.0576171875,-1772.3115234375,18.795755386353, 19, 5, ", Меню - X", 5},
 	{2, "Завод продуктов", 2570.33,-1302.31,1044.12, -86.208984375,-299.36328125,2.7646157741547, 51, 6, "", 5},
 	{3, "Мэрия СФ", 374.6708,173.8050,1008.3893, -2766.55078125,375.60546875,6.3346824645996, 19, 7, ", Меню - X", 5},
@@ -1266,9 +1286,53 @@ function debuginfo ()
 	local result_car = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
 	local result_cow_farms = sqlite( "SELECT * FROM cow_farms_db" )
 
+	if(point_guns_zone[1] == 1) then
+	
+		time_guns_zone = time_guns_zone-1
+
+		if(time_guns_zone == 0) then
+		
+			time_guns_zone = time_gz
+
+			if(point_guns_zone[4] > point_guns_zone[6]) then
+			
+				guns_zone[point_guns_zone[2]][2] = point_guns_zone[3]
+
+				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[3]][2][1], name_mafia[point_guns_zone[3]][2][2], name_mafia[point_guns_zone[3]][2][3], 100 )
+
+				sendMessage(getRootElement(), "[НОВОСТИ] "..name_mafia[point_guns_zone[3]][1].." захватила территорию", green[1], green[2], green[3])
+
+				sqlite( "UPDATE guns_zone SET mafia = '"..point_guns_zone[3].."' WHERE number = '"..point_guns_zone[2].."'")
+			
+			else
+			
+				guns_zone[point_guns_zone[2]][2] = point_guns_zone[5]
+
+				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[5]][2][1], name_mafia[point_guns_zone[5]][2][2], name_mafia[point_guns_zone[5]][2][3], 100 )
+
+				sendMessage(getRootElement(), "[НОВОСТИ] "..name_mafia[point_guns_zone[5]][1].." удержала территорию", green[1], green[2], green[3])
+			end
+
+			setRadarAreaFlashing ( guns_zone[point_guns_zone[2]][1], false )
+
+			point_guns_zone[1] = 0
+			point_guns_zone[2] = 0--gz
+
+			point_guns_zone[3] = 0--mafia A
+			point_guns_zone[4] = 0--points
+
+			point_guns_zone[5] = 0--mafia D
+			point_guns_zone[6] = 0--points
+		end
+	end
+
 	for k,playerid in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(playerid)
 		local hour, minute = getTime()
+
+		if(point_guns_zone[1] == 1) then
+			points_add_in_gz(playerid, 1)
+		end
 
 		--элементдата
 		--[[setElementData(playerid, "0", "max_earth "..max_earth)
@@ -1331,6 +1395,12 @@ function debuginfo ()
 			local plate = getVehiclePlateText(vehicleid)
 			setElementData(playerid, "fuel_data", fuel[plate])
 			setElementData(playerid, "probeg_data", probeg[plate])
+		end
+
+		if search_inv_player_2_parameter(playerid, 85) ~= 0 then
+			setElementData(playerid, "guns_zone2", {point_guns_zone, time_guns_zone})
+		else
+			setElementData(playerid, "guns_zone2", false)
 		end
 
 		sqlite_load(playerid)
@@ -2532,6 +2602,25 @@ function getPlayerId( id )--узнать имя игрока из ид
 	end
 
 	return false
+end
+
+function points_add_in_gz(playerid, value) 
+
+	local x,y,z = getElementPosition(playerid)
+
+	for k,v in pairs(guns_zone) do
+		if(isInsideRadarArea (v[1], x,y) and k == point_guns_zone[2]) then
+		
+			if (search_inv_player_2_parameter(playerid, 85) ~= 0 and search_inv_player_2_parameter(playerid, 85) == point_guns_zone[3]) then
+			
+				point_guns_zone[4] = point_guns_zone[4]+1*value
+			
+			elseif(search_inv_player_2_parameter(playerid, 85) ~= 0 and search_inv_player_2_parameter(playerid, 85) == point_guns_zone[5]) then
+			
+				point_guns_zone[6] = point_guns_zone[6]+1*value
+			end
+		end
+	end
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -3749,6 +3838,11 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("")
 
 
+		for k,v in pairs(sqlite( "SELECT * FROM guns_zone" )) do
+			guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x1"]*-1+v["x2"], v["y1"]-v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
+		end
+
+
 		--создание блипов
 		for k,v in pairs(interior_job) do 
 			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, max_blip )
@@ -3969,6 +4063,7 @@ addEventHandler( "onPlayerWasted", getRootElement(),--смерть игрока
 function(ammo, attacker, weapon, bodypart)
 	local playerid = source
 	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
 	local playername_a = nil
 	local reason = weapon
 	local cash = 100
@@ -3998,6 +4093,19 @@ function(ammo, attacker, weapon, bodypart)
 					sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
 					inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+				end
+			end
+
+			if(point_guns_zone[1] == 1 and search_inv_player_2_parameter(playerid, 85) ~= 0 and search_inv_player_2_parameter(attacker, 85) ~= 0) then
+			
+				for k,v in pairs(guns_zone) do
+					if(isInsideRadarArea(v[1], x,y) and k == point_guns_zone[2]) then
+					
+						if(search_inv_player_2_parameter(playerid, 85) == point_guns_zone[5] and search_inv_player_2_parameter(attacker, 85) ~= point_guns_zone[5]) then
+						
+							points_add_in_gz(attacker, 2)
+						end
+					end
 				end
 			end
 
@@ -4181,6 +4289,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "sub_cops", sub_cops)
 	setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
 	setElementData(playerid, "upgrades_car_table", upgrades_car_table)
+	setElementData(playerid, "name_mafia", name_mafia)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -6276,6 +6385,32 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 			end
 
+		elseif(id1 == 85)then--повязка
+			local count = 0
+			local count2 = 0
+			do_chat(playerid, "на шее "..info_png[id1][1].." "..name_mafia[id2][1].." - "..playername)
+
+			sendMessage(playerid, "====[ ПОД КОНТРОЛЕМ "..name_mafia[id2][1].." ]====", yellow[1], yellow[2], yellow[3])
+
+			for k,v in pairs(guns_zone) do
+				if(v[2] == id2) then
+				
+					count = count+1
+
+					for k1,v1 in pairs(sqlite( "SELECT * FROM business_db" )) do
+					
+						if(isInsideRadarArea(v[1], v1["x"],v1["y"])) then
+						
+							count2 = count2+1
+						end
+					end
+				end
+			end
+
+			sendMessage(playerid, "Территорий: "..count..", Доход: "..(count*money_guns_zone).."$", yellow[1], yellow[2], yellow[3])
+			sendMessage(playerid, "Бизнесов: "..count2..", Доход: "..(count2*money_guns_zone_business).."$", yellow[1], yellow[2], yellow[3])
+			return
+
 		elseif id1 == 87 then--лиц. забойщика
 			if job[playername] == 0 then
 				job[playername] = 7
@@ -7224,6 +7359,46 @@ function (playerid, cmd, ...)
 	try_chat_player(playerid, playername.." "..text)
 end)
 
+addCommandHandler("capture",--захват территории
+function (playerid)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if (logged[playername] == 0) then
+	
+		return
+	
+	elseif(search_inv_player_2_parameter(playerid, 85) == 0) then
+	
+		sendMessage(playerid, "[ERROR] Вы не состоите в мафии", red[1], red[2], red[3])
+		return
+	
+	elseif(point_guns_zone[1] == 1) then
+	
+		sendMessage(playerid, "[ERROR] Идет захват территории", red[1], red[2], red[3])
+		return
+	end
+
+	for k,v in pairs(guns_zone) do
+		if (isInsideRadarArea(v[1], x,y) and search_inv_player_2_parameter(playerid, 85) ~= v[2]) then
+		
+			point_guns_zone[1] = 1
+			point_guns_zone[2] = k
+
+			point_guns_zone[3] = search_inv_player_2_parameter(playerid, 85)
+			point_guns_zone[4] = 0
+
+			point_guns_zone[5] = v[2]
+			point_guns_zone[6] = 0
+
+			setRadarAreaFlashing ( v[1], true )
+
+			sendMessage(getRootElement(), "[НОВОСТИ] "..playername.." из "..name_mafia[search_inv_player_2_parameter(playerid, 85)][1].." захватывает территорию - "..name_mafia[v[2]][1], green[1], green[2], green[3])
+			return
+		end
+	end
+end)
+
 addCommandHandler("idpng",
 function (playerid)
 
@@ -7726,6 +7901,7 @@ function input_Console ( text )
 	if text == "z" then
 		--pay_nalog()
 		--print(string.find("UPDATE", "UPDATE"))
+		
 	elseif text == "x" then
 		restartAllResources()
 	end
