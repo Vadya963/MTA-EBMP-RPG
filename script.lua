@@ -4264,6 +4264,8 @@ function reg_or_login(playerid)
 			setPlayerNametagColor(playerid, green[1],green[2],green[3])
 		elseif (search_inv_player(playerid, 10, 1) ~= 0) then
 			setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
+		elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
+			setPlayerNametagColor(playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][2][1],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][2],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][3])
 		else 
 			setPlayerNametagColor(playerid, white[1],white[2],white[3])
 		end
