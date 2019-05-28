@@ -929,13 +929,6 @@ function tune_window_create (number)--создание окна тюнинга
 		end
 	end)
 
-	addEventHandler ( "onClientGUIComboBoxAccepted", paint_job,
-	function ( comboBox )
-		local item = guiComboBoxGetItemText(paint_job, guiComboBoxGetSelected(paint_job))
-		int_paint = tonumber(item)-1
-		setVehiclePaintjob ( vehicleid, int_paint )
-	end)
-
 	local tune_text = m2gui_label ( 180, 85, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
 	guiSetFont( tune_text, m2font )
 	local tune_r_edit = guiCreateEdit ( 180, 110, 65, 20, "", false, gui_window )
@@ -949,12 +942,22 @@ function tune_window_create (number)--создание окна тюнинга
 
 	showCursor( true )
 
+	addEventHandler ( "onClientGUIComboBoxAccepted", paint_job,
+	function ( comboBox )
+		local item = guiComboBoxGetItemText(paint_job, guiComboBoxGetSelected(paint_job))
+		int_paint = tonumber(item)-1
+		setVehiclePaintjob ( vehicleid, int_paint )
+		guiSetText ( tune_r_edit, "" )
+		guiSetText ( tune_g_edit, "" )
+		guiSetText ( tune_b_edit, "" )
+	end)
+
 	function tune_img_load ( button, state, absoluteX, absoluteY )--поиск тюнинга
 		local r1,g1,b1 = guiGetText ( tune_r_edit ), guiGetText ( tune_g_edit ), guiGetText ( tune_b_edit )
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" then
-			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
+			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and not r and not g and not b then
 				tune_color_2d = true
 				tune_color_r = r
 				tune_color_g = g
@@ -1003,7 +1006,7 @@ function tune_window_create (number)--создание окна тюнинга
 		end
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
-			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 then
+			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and not r and not g and not b then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
 					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save", playerid, number_business )
 
