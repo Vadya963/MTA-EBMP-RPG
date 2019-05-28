@@ -2784,8 +2784,7 @@ function inv_car_throw_earth(vehicleid, id1, id2)--выброс предмета
 			count = count+1
 
 			max_earth = max_earth+1
-			local j = max_earth
-			earth[j] = {x,y,z,id1,id2}
+			earth[max_earth] = {x,y,z,id1,id2}
 		end
 	end
 
@@ -4835,8 +4834,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	end
 
 	max_earth = max_earth+1
-	local j = max_earth
-	earth[j] = {x,y,z,id1,id2}
+	earth[max_earth] = {x,y,z,id1,id2}
 
 	--[[if enter_house[playername][2] == id2 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки(выкл из-за фичи)
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
@@ -7486,6 +7484,34 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
+addCommandHandler ( "subearth",--выдача предметов с числом
+function (playerid, cmd, id1, id2, count )
+	local val1, val2, count = tonumber(id1), tonumber(id2), tonumber(count)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
+		return
+	end
+
+	if not val1 or not val2  then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red[1], red[2], red[3])
+		return
+	end
+
+	if val1 > #info_png or val1 < 2 then
+		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, red[1], red[2], red[3])
+		return
+	end
+
+	for i=1,count do
+		max_earth = max_earth+1
+		earth[max_earth] = {x,y,z,val1,val2}
+	end
+
+	sendMessage(playerid, "Вы создали на земле "..info_png[val1][1].." "..val2.." "..info_png[val1][2].." "..count.." шт", lyme[1], lyme[2], lyme[3])
+end)
+
 addCommandHandler ( "go",
 function ( playerid, cmd, x, y, z )
 	local playername = getPlayerName ( playerid )
@@ -7560,12 +7586,14 @@ function ( playerid, cmd, id1, id2 )
 	end
 
 	if house == nil or min == nil then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [час] [минуты]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [часов] [минут]", red[1], red[2], red[3])
 		return
 	end
 
 	if house >= 0 and house <= 23 and min >= 0 and min <= 59 then
 		setTime (house, min)
+
+		sendMessage(playerid, "stime "..house..":"..min, lyme[1], lyme[2], lyme[3])
 	end
 end)
 
