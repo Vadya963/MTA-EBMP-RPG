@@ -957,7 +957,7 @@ function tune_window_create (number)--создание окна тюнинга
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" then
-			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and not r and not g and not b then
+			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and r and g and b then
 				tune_color_2d = true
 				tune_color_r = r
 				tune_color_g = g
@@ -1006,7 +1006,7 @@ function tune_window_create (number)--создание окна тюнинга
 		end
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid then
-			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and not r and not g and not b then
+			if r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 and r and g and b then
 				if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
 					triggerServerEvent( "event_setVehicleColor", getRootElement(), vehicleid, r, g, b, "save", playerid, number_business )
 
