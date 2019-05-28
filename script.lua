@@ -3764,7 +3764,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(freez_car, 1000, 0)--заморозка авто и не только
 		setTimer(need, 60000, 0)--уменьшение потребностей
-		setTimer(need_1, 5000, 0)--смена скина на бомжа
+		setTimer(need_1, 10000, 0)--смена скина на бомжа
 		setTimer(fuel_down, 1000, 0)--система топлива
 		setTimer(set_weather, 1000, 0)--погода сервера
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
