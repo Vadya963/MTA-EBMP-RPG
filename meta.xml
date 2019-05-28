@@ -149,44 +149,7 @@
 	<file src="image_inventory/90.png"/>
 	<file src="image_inventory/91.png"/>
 	
-	<file src="upgrade/999_w_s.png"/>
-	
-	<file src="paintjob/VehiclePaintjob_Blade_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Blade_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Blade_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Broadway_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Broadway_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Camper_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Elegy_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Elegy_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Elegy_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Flash_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Flash_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Flash_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Jester_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Jester_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Jester_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Remington_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Remington_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Remington_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Savanna_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Savanna_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Savanna_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Slamvan_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Slamvan_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Slamvan_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Stratum_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Stratum_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Stratum_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Sultan_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Sultan_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Sultan_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Tornado_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Tornado_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Tornado_2.png"/>
-	<file src="paintjob/VehiclePaintjob_Uranus_0.png"/>
-	<file src="paintjob/VehiclePaintjob_Uranus_1.png"/>
-	<file src="paintjob/VehiclePaintjob_Uranus_2.png"/>
+	<file src="upgrade/999_w_s.png"/>	
 
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>
