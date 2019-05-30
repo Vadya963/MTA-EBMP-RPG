@@ -10,71 +10,43 @@ local menu_m2_table_text = {
 	["назад к т/с"] = {"фары", "двигатель", "вертолет", "двери"},
 
 	--triggerEvent
-	["завести"] = "event_client_car_engine_true",
-	["заглушить"] = "event_client_car_engine_false",
+	["завести"] = {"event", "event_client_car_engine", "true"},
+	["заглушить"] = {"event", "event_client_car_engine", "false"},
 
-	["открыть"] = "event_client_car_door_false",
-	["закрыть"] = "event_client_car_door_true",
+	["открыть"] = {"event", "event_client_car_door", "false"},
+	["закрыть"] = {"event", "event_client_car_door", "true"},
 
-	["включить"] = "event_client_car_light_true",
-	["выключить"] = "event_client_car_light_false",
+	["включить"] = {"event", "event_client_car_light", "true"},
+	["выключить"] = {"event", "event_client_car_light", "false"},
 
-	["прицепить"] = "event_client_attach_true",
-	["отцепить"] = "event_client_attach_false",
+	["прицепить"] = {"event", "event_client_attach", "true"},
+	["отцепить"] = {"event", "event_client_attach", "false"},
 }
 
 --triggerEvent---------------------------------------------------------------------------
---attach
-function outputEditBox()
-	triggerServerEvent( "event_server_attach", getRootElement(), localPlayer, true )
+function outputEditBox(value)
+	triggerServerEvent( "event_server_attach", getRootElement(), localPlayer, value )
 end
-addEvent( "event_client_attach_true", true )
-addEventHandler ( "event_client_attach_true", getRootElement(), outputEditBox )
+addEvent( "event_client_attach", true )
+addEventHandler ( "event_client_attach", getRootElement(), outputEditBox )
 
-function outputEditBox()
-	triggerServerEvent( "event_server_attach", getRootElement(), localPlayer, false )
+function outputEditBox(value)
+	triggerServerEvent( "event_server_car_engine", getRootElement(), localPlayer, value )
 end
-addEvent( "event_client_attach_false", true )
-addEventHandler ( "event_client_attach_false", getRootElement(), outputEditBox )
+addEvent( "event_client_car_engine", true )
+addEventHandler ( "event_client_car_engine", getRootElement(), outputEditBox )
 
---engine
-function outputEditBox()
-	triggerServerEvent( "event_server_car_engine", getRootElement(), localPlayer, true )
+function outputEditBox(value)
+	triggerServerEvent( "event_server_car_door", getRootElement(), localPlayer, value )
 end
-addEvent( "event_client_car_engine_true", true )
-addEventHandler ( "event_client_car_engine_true", getRootElement(), outputEditBox )
+addEvent( "event_client_car_door", true )
+addEventHandler ( "event_client_car_door", getRootElement(), outputEditBox )
 
-function outputEditBox()
-	triggerServerEvent( "event_server_car_engine", getRootElement(), localPlayer, false )
+function outputEditBox(value)
+	triggerServerEvent( "event_server_car_light", getRootElement(), localPlayer, value )
 end
-addEvent( "event_client_car_engine_false", true )
-addEventHandler ( "event_client_car_engine_false", getRootElement(), outputEditBox )
-
---door
-function outputEditBox()
-	triggerServerEvent( "event_server_car_door", getRootElement(), localPlayer, false )
-end
-addEvent( "event_client_car_door_false", true )
-addEventHandler ( "event_client_car_door_false", getRootElement(), outputEditBox )
-
-function outputEditBox()
-	triggerServerEvent( "event_server_car_door", getRootElement(), localPlayer, true )
-end
-addEvent( "event_client_car_door_true", true )
-addEventHandler ( "event_client_car_door_true", getRootElement(), outputEditBox )
-
---light
-function outputEditBox()
-	triggerServerEvent( "event_server_car_light", getRootElement(), localPlayer, false )
-end
-addEvent( "event_client_car_light_false", true )
-addEventHandler ( "event_client_car_light_false", getRootElement(), outputEditBox )
-
-function outputEditBox()
-	triggerServerEvent( "event_server_car_light", getRootElement(), localPlayer, true )
-end
-addEvent( "event_client_car_light_true", true )
-addEventHandler ( "event_client_car_light_true", getRootElement(), outputEditBox )
+addEvent( "event_client_car_light", true )
+addEventHandler ( "event_client_car_light", getRootElement(), outputEditBox )
 -----------------------------------------------------------------------------------------
 
 --menu from mafia 2
@@ -157,7 +129,7 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 
 			for k1,v1 in pairs(menu_m2_table_text) do
 				if text == k1 then
-					if v1[1] then
+					if v1[1] ~= "event" then
 						for k2,v2 in pairs(menu_m2_table_text[k1]) do
 							local dimensions = dxGetTextWidth ( v2, 1, "default-bold" )
 							dimensions = dimensions+10
@@ -174,7 +146,7 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 							end
 						end
 					else
-						triggerEvent ( v1, getRootElement() )
+						triggerEvent ( v1[2], getRootElement(), v1[3] )
 					end
 				end
 			end

@@ -7912,12 +7912,12 @@ function ( playerid, state )
 				local x1,y1,z1 = getElementPosition(vehicle)
 				if isPointInCircle3D(x1,y1,z1, x,y,z, 10) then
 
-					if not isElementAttached ( vehicle ) and state then
+					if not isElementAttached ( vehicle ) and state == "true" then
 						local car_attach = attachElements ( vehicle, vehicleid, 0, 0, -4 )
 						if car_attach then
 							sendMessage(playerid, "т/с прикреплен", yellow[1], yellow[2], yellow[3])
 						end
-					elseif isElementAttached ( vehicle ) and not state then
+					elseif isElementAttached ( vehicle ) and state == "false" then
 						detachElements  ( vehicle, vehicleid )
 						sendMessage(playerid, "т/с откреплен", yellow[1], yellow[2], yellow[3])
 					end
@@ -7940,7 +7940,7 @@ function ( playerid, state )
 		local plate = getVehiclePlateText ( vehicle )
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
-			if state then
+			if state == "true" then
 				setVehicleLocked ( vehicle, true )
 				me_chat(playerid, playername.." закрыл(а) двери")
 			else
@@ -7963,7 +7963,7 @@ function ( playerid, state )
 		local plate = getVehiclePlateText ( vehicle )
 
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
-			if state then
+			if state == "true" then
 				setVehicleOverrideLights ( vehicle, 2 )
 			else
 				setVehicleOverrideLights ( vehicle, 1 )
@@ -7988,7 +7988,7 @@ function ( playerid, state )
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["nalog"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and fuel[plate] > 0 then
-					if state then
+					if state == "true" then
 						setVehicleEngineState(vehicleid, true)
 						me_chat(playerid, playername.." завел(а) двигатель")
 					else
