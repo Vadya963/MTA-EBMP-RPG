@@ -5,6 +5,7 @@
 	
 	<script src="script.lua" type="server"/>
 	<script src="script_client.lua" type="client" cache="false"/>
+	<script src="menu_m2.lua" type="client" cache="false"/>
 	<!--<script src="ignore_server.lua" type="server"/>-->
 
 	<map src="map/map_gta.map"/>
@@ -23,6 +24,15 @@
 
 	<file src="gui/m2font.ttf"/>
 	<file src="gui/gui7.png"/>
+	<file src="gui/window-arrow-off-down.png"/>
+	<file src="gui/window-arrow-on-down.png"/>
+	<file src="gui/window-arrow-off-left.png"/>
+	<file src="gui/window-arrow-on-left.png"/>
+	<file src="gui/window-arrow-off-right.png"/>
+	<file src="gui/window-arrow-on-right.png"/>
+	<file src="gui/window-arrow-off-up.png"/>
+	<file src="gui/window-arrow-on-up.png"/>
+	<file src="gui/window-m2.png"/>
 
 	<!--мой сайт-->
 	<file src="wiki/comand.html"/>

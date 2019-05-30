@@ -15,6 +15,7 @@ function ( startedRes )
 
 		bindKey ( "F1", "down", showcursor_b )
 		bindKey ( "F2", "down", showdebuginfo_b )
+		bindKey ( "F3", "down", menu_mafia_2 )
 		bindKey ( "F11", "down", showdebuginfo_b )
 	end
 end)
@@ -585,8 +586,6 @@ function createText ()
 	local width_need = (screenWidth/5.04)--ширина нужд 271
 	local height_need = (screenHeight/5.68)--высота нужд 135
 
-	setCameraShakeLevel ( (alcohol/2) )
-
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
@@ -722,6 +721,8 @@ function createText ()
 	
 
 	if pos_timer == 1 then
+		setCameraShakeLevel ( (alcohol/2) )
+
 		for k,v in pairs(getElementData(playerid, "house_pos")) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(playerid, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }

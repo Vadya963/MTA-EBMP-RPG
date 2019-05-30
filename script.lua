@@ -5446,32 +5446,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 	if value == "player" then
 
-		if id1 == 6 then--ключ авто
-			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..id2.."'" )
-			if result[1]["COUNT()"] == 1 then
-
-				for k,vehicle in pairs(getElementsByType("vehicle")) do
-					local x1,y1,z1 = getElementPosition(vehicle)
-					local plate = getVehiclePlateText ( vehicle )
-
-					if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and tonumber(plate) == id2 then
-						if isVehicleLocked ( vehicle ) then
-							setVehicleLocked ( vehicle, false )
-							me_chat(playerid, playername.." открыл(а) двери т/с")
-						else
-							setVehicleLocked ( vehicle, true )
-							me_chat(playerid, playername.." закрыл(а) двери т/с")
-						end
-						return
-					end
-				end
-			end
-
-			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
-			return
-			
 -----------------------------------------------------нужды-------------------------------------------------------------
-		elseif id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
+		if id1 == 3 or id1 == 7 or id1 == 8 then--сигареты
 			local satiety_plus = 5
 
 			if getElementHealth(playerid) == max_heal then
@@ -7835,39 +7811,6 @@ function ( playerid, cmd, id )
 	sendMessage(playerid, "setElementDimension "..id, lyme[1], lyme[2], lyme[3])
 end)
 
-addCommandHandler ( "attach",
-function ( playerid )
-	local playername = getPlayerName ( playerid )
-	local vehicleid = getPlayerVehicle(playerid)
-
-	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
-		return
-	end
-
-	if vehicleid then
-		local x,y,z = getElementPosition(vehicleid)
-		if getElementModel(vehicleid) == 548 then
-			for k,vehicle in pairs(getElementsByType("vehicle")) do
-				local x1,y1,z1 = getElementPosition(vehicle)
-				if isPointInCircle3D(x1,y1,z1, x,y,z, 10) then
-
-					if not isElementAttached ( vehicle ) then
-						local car_attach = attachElements ( vehicle, vehicleid, 0, 0, -4 )
-						if car_attach then
-							sendMessage(playerid, "т/с прикреплен", lyme[1], lyme[2], lyme[3])
-						end
-					else
-						detachElements  ( vehicle, vehicleid )
-						sendMessage(playerid, "т/с откреплен", lyme[1], lyme[2], lyme[3])
-					end
-
-					return
-				end
-			end
-		end
-	end
-end)
-
 addCommandHandler ( "v",--спавн авто для админов
 function ( playerid, cmd, id )
 	local playername = getPlayerName ( playerid )
@@ -7955,3 +7898,107 @@ addCommandHandler ("opos",
 function (playerid, cmd, id1, id2, id3)
 	setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
 end)]]
+
+addEvent("event_server_attach", true)
+addEventHandler ( "event_server_attach", getRootElement(),
+function ( playerid, state )
+	local playername = getPlayerName ( playerid )
+	local vehicleid = getPlayerVehicle(playerid)
+
+	if vehicleid then
+		local x,y,z = getElementPosition(vehicleid)
+		if getElementModel(vehicleid) == 548 then
+			for k,vehicle in pairs(getElementsByType("vehicle")) do
+				local x1,y1,z1 = getElementPosition(vehicle)
+				if isPointInCircle3D(x1,y1,z1, x,y,z, 10) then
+
+					if not isElementAttached ( vehicle ) and state then
+						local car_attach = attachElements ( vehicle, vehicleid, 0, 0, -4 )
+						if car_attach then
+							sendMessage(playerid, "т/с прикреплен", yellow[1], yellow[2], yellow[3])
+						end
+					elseif isElementAttached ( vehicle ) and not state then
+						detachElements  ( vehicle, vehicleid )
+						sendMessage(playerid, "т/с откреплен", yellow[1], yellow[2], yellow[3])
+					end
+
+					return
+				end
+			end
+		end
+	end
+end)
+
+addEvent("event_server_car_door", true)
+addEventHandler("event_server_car_door", getRootElement(),
+function ( playerid, state )
+	local x,y,z = getElementPosition(playerid)
+	local playername = getPlayerName ( playerid )
+
+	for k,vehicle in pairs(getElementsByType("vehicle")) do
+		local x1,y1,z1 = getElementPosition(vehicle)
+		local plate = getVehiclePlateText ( vehicle )
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
+			if state then
+				setVehicleLocked ( vehicle, true )
+				me_chat(playerid, playername.." закрыл(а) двери")
+			else
+				setVehicleLocked ( vehicle, false )
+				me_chat(playerid, playername.." открыл(а) двери")
+			end
+			return
+		end
+	end
+end)
+
+addEvent("event_server_car_light", true)
+addEventHandler("event_server_car_light", getRootElement(),
+function ( playerid, state )
+	local x,y,z = getElementPosition(playerid)
+	local playername = getPlayerName ( playerid )
+
+	for k,vehicle in pairs(getElementsByType("vehicle")) do
+		local x1,y1,z1 = getElementPosition(vehicle)
+		local plate = getVehiclePlateText ( vehicle )
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 then
+			if state then
+				setVehicleOverrideLights ( vehicle, 2 )
+			else
+				setVehicleOverrideLights ( vehicle, 1 )
+			end
+			return
+		end
+	end
+end)
+
+addEvent("event_server_car_engine", true)
+addEventHandler ( "event_server_car_engine", getRootElement(),
+function ( playerid, state )
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	
+	for k,vehicleid in pairs(getElementsByType("vehicle")) do
+		local x1,y1,z1 = getElementPosition(vehicleid)
+		local plate = getVehiclePlateText ( vehicleid )
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+			if result[1]["COUNT()"] == 1 then
+				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+				if result[1]["nalog"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and fuel[plate] > 0 then
+					if state then
+						setVehicleEngineState(vehicleid, true)
+						me_chat(playerid, playername.." завел(а) двигатель")
+					else
+						setVehicleEngineState(vehicleid, false)
+						me_chat(playerid, playername.." заглушил(а) двигатель")
+					end
+				end
+			end
+
+			return
+		end
+	end
+end)
