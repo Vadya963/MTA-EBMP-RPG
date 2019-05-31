@@ -91,7 +91,7 @@ function menu_mafia_2( key, keyState )
 
 			for k,v in pairs(menu_m2_table) do
 				local dimensions = dxGetTextWidth ( v, 1, "default-bold" )
-				dimensions = dimensions+5
+				dimensions = dimensions+10
 				guiSetText(arrow_m2[k][2], v)
 
 				local px1,py1 = guiGetPosition(arrow_m2[k][2], false)
@@ -102,6 +102,8 @@ function menu_mafia_2( key, keyState )
 					guiSetPosition(arrow_m2[k][2], px-dimensions-5, py1, false)
 				elseif k == 3 then
 					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2), py1, false)
+				elseif k == 4 then
+					guiSetPosition(arrow_m2[k][2], px+sx+5+7, py1, false)
 				end
 			end
 
@@ -143,6 +145,8 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 								guiSetPosition(arrow_m2[k2][2], px-dimensions-5, py1, false)
 							elseif k2 == 3 then
 								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2), py1, false)
+							elseif k == 4 then
+								guiSetPosition(arrow_m2[k2][2], px+sx+5+7, py1, false)
 							end
 						end
 					else
