@@ -46,6 +46,7 @@ local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
 local house_pos = {}--позиции домов
 local police_chanel = 1--канал копов
+local car_stage_coef = 0.33--коэф-нт прокачки двигла
 
 --законы
 local zakon_alcohol = 1
@@ -3185,6 +3186,47 @@ end
 addEvent( "event_setVehiclePaintjob", true )
 addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
 
+function setVehicleStage_fun( vehicleid, value, value1, playerid, number )
+
+	if value1 == "save" then
+		local playername = getPlayerName(playerid)
+		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
+		local plate = getVehiclePlateText ( vehicleid )
+		local text = value
+		local prod = 1
+		local cash = result[1]["price"]*text
+
+		if prod <= result[1]["warehouse"] then
+			if cash == 0 then
+				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red[1], red[2], red[3])
+				return
+			end
+
+			if cash <= array_player_2[playername][1] then
+
+				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
+
+				sendMessage(playerid, "Вы установили stage "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
+
+				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+				if result[1]["COUNT()"] == 1 then
+					sqlite( "UPDATE car_db SET stage = '"..text.."' WHERE number = '"..plate.."'")
+				end
+			else
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red[1], red[2], red[3])
+			end
+		else
+			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red[1], red[2], red[3])
+		end
+	end
+end
+addEvent( "event_setVehicleStage_fun", true )
+addEventHandler ( "event_setVehicleStage_fun", getRootElement(), setVehicleStage_fun )
+
 function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
 
 	if value1 == "save" then
@@ -3774,7 +3816,6 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setWeather(tomorrow_weather)
 		setGlitchEnabled ( "quickreload", true )
-		setModelHandling(453, "engineAcceleration", 1.0)
 
 
 		local result = sqlite( "SELECT COUNT() FROM account" )
@@ -4423,6 +4464,8 @@ function car_spawn(number)
 
 			setVehiclePaintjob ( vehicleid, result[1]["paintjob"] )
 
+			setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
+
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
@@ -4607,7 +4650,7 @@ function buycar ( playerid, id )
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange[1], orange[2], orange[3])
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, probeg, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	else
 		sendMessage(playerid, "[ERROR] от 400 до 611", red[1], red[2], red[3])
 	end

@@ -892,6 +892,7 @@ addEventHandler ( "onClientRender", getRootElement(), createText )
 local number_business = 0
 local int_upgrades = 0
 local int_paint = -1
+local int_stage = 0
 function tune_window_create (number)--создание окна тюнинга
 	number_business = number
 	local vehicleid = getPlayerVehicle(playerid)
@@ -905,7 +906,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, m2font_dx )
 	local width = 355+50
-	local height = 200.0+(16.0*1)+10
+	local height = 235.0+(16.0*1)+10
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), 20, width, height, number_business.." бизнес, Автомастерская", false, false )
 
 	local upgrades_table = guiCreateComboBox ( 180, 25, 215, 200, "Апгрейды", false, gui_window )
@@ -918,6 +919,24 @@ function tune_window_create (number)--создание окна тюнинга
 		guiComboBoxAddItem( paint_job, i)
 	end
 
+	local car_stage = guiCreateComboBox ( 180, 85, 215, 200, "Stage", false, gui_window )
+	for i=1,3 do
+		guiComboBoxAddItem( car_stage, i)
+	end
+
+	local tune_text = m2gui_label ( 180, 115, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
+	guiSetFont( tune_text, m2font )
+	local tune_r_edit = guiCreateEdit ( 180, 145, 65, 20, "", false, gui_window )
+	local tune_g_edit = guiCreateEdit ( 255, 145, 65, 20, "", false, gui_window )
+	local tune_b_edit = guiCreateEdit ( 330, 145, 65, 20, "", false, gui_window )
+	local tune_radio_button1 = m2gui_radiobutton ( 180, 175, 60, 15, "Авто", false, gui_window )
+	local tune_radio_button2 = m2gui_radiobutton ( 240, 175, 60, 15, "Фары", false, gui_window )
+	local tune_search_button = m2gui_button( 180, 205, "Посмотреть цвет", false, gui_window )
+	local tune_install_button = m2gui_button( 180, 235, "Установить", false, gui_window )
+	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
+
+	showCursor( true )
+
 	addEventHandler ( "onClientGUIComboBoxAccepted", upgrades_table,
 	function ( comboBox )
 		local item = guiComboBoxGetItemText(upgrades_table, guiComboBoxGetSelected(upgrades_table))
@@ -925,23 +944,15 @@ function tune_window_create (number)--создание окна тюнинга
 			if item == v.."#"..k then
 				int_upgrades = k
 				addVehicleUpgrade ( vehicleid, int_upgrades )
+				guiSetText ( tune_r_edit, "" )
+				guiSetText ( tune_g_edit, "" )
+				guiSetText ( tune_b_edit, "" )
+				int_paint = -1
+				int_stage = 0
 				break
 			end
 		end
 	end)
-
-	local tune_text = m2gui_label ( 180, 85, dimensions1+15, 20, "Введите цвет в RGB", false, gui_window )
-	guiSetFont( tune_text, m2font )
-	local tune_r_edit = guiCreateEdit ( 180, 110, 65, 20, "", false, gui_window )
-	local tune_g_edit = guiCreateEdit ( 255, 110, 65, 20, "", false, gui_window )
-	local tune_b_edit = guiCreateEdit ( 330, 110, 65, 20, "", false, gui_window )
-	local tune_radio_button1 = m2gui_radiobutton ( 180, 135, 60, 15, "Авто", false, gui_window )
-	local tune_radio_button2 = m2gui_radiobutton ( 240, 135, 60, 15, "Фары", false, gui_window )
-	local tune_search_button = m2gui_button( 180, 160, "Посмотреть цвет", false, gui_window )
-	local tune_install_button = m2gui_button( 180, 185, "Установить", false, gui_window )
-	local tune_img = guiCreateStaticImage( 10, 25, 160, 160, "upgrade/999_w_s.png", false, gui_window )
-
-	showCursor( true )
 
 	addEventHandler ( "onClientGUIComboBoxAccepted", paint_job,
 	function ( comboBox )
@@ -951,6 +962,19 @@ function tune_window_create (number)--создание окна тюнинга
 		guiSetText ( tune_r_edit, "" )
 		guiSetText ( tune_g_edit, "" )
 		guiSetText ( tune_b_edit, "" )
+		int_upgrades = 0
+		int_stage = 0
+	end)
+
+	addEventHandler ( "onClientGUIComboBoxAccepted", car_stage,
+	function ( comboBox )
+		local item = guiComboBoxGetItemText(car_stage, guiComboBoxGetSelected(car_stage))
+		int_stage = tonumber(item)
+		guiSetText ( tune_r_edit, "" )
+		guiSetText ( tune_g_edit, "" )
+		guiSetText ( tune_b_edit, "" )
+		int_upgrades = 0
+		int_paint = -1
 	end)
 
 	function tune_img_load ( button, state, absoluteX, absoluteY )--поиск тюнинга
@@ -969,16 +993,15 @@ function tune_window_create (number)--создание окна тюнинга
 	addEventHandler ( "onClientGUIClick", tune_search_button, tune_img_load, false )
 
 	function tune_upgrade ( button, state, absoluteX, absoluteY )--установка тюнинга
-		local text = int_upgrades
 		local r1,g1,b1 = guiGetText ( tune_r_edit ), guiGetText ( tune_g_edit ), guiGetText ( tune_b_edit )
 		local r,g,b = tonumber(r1), tonumber(g1), tonumber(b1)
 
-		if text ~= 0 then
-			if tonumber(text) >= 1000 and tonumber(text) <= 1193 then
+		if int_upgrades ~= 0 then
+			if tonumber(int_upgrades) >= 1000 and tonumber(int_upgrades) <= 1193 then
 				local upgrades = getVehicleCompatibleUpgrades ( vehicleid )
 
 				for v, upgrade in pairs ( upgrades ) do
-					if upgrade == tonumber(text) then
+					if upgrade == tonumber(int_upgrades) then
 						int_upgrades = 0
 
 						for k,v in pairs(getVehicleUpgrades(vehicleid)) do
@@ -989,7 +1012,7 @@ function tune_window_create (number)--создание окна тюнинга
 							addVehicleUpgrade(vehicleid, v)
 						end
 
-						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(text), "save", playerid, number_business )
+						triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, tonumber(int_upgrades), "save", playerid, number_business )
 						return
 					end
 				end
@@ -1004,6 +1027,10 @@ function tune_window_create (number)--создание окна тюнинга
 			end
 
 			int_paint = -1
+
+		elseif int_stage ~= 0 then
+			triggerServerEvent( "event_setVehicleStage_fun", getRootElement(), vehicleid, int_stage, "save", playerid, number_business )
+			int_stage = 0
 		end
 
 		if r1 ~= "" and g1 ~= "" and b1 ~= "" and vehicleid and r and g and b then
@@ -1021,16 +1048,25 @@ function tune_window_create (number)--создание окна тюнинга
 
 	function tune_r_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_r_edit, "" )
+		int_upgrades = 0
+		int_paint = -1
+		int_stage = 0
 	end
 	addEventHandler ( "onClientGUIClick", tune_r_edit, tune_r_edit_fun, false )
 
 	function tune_g_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_g_edit, "" )
+		int_upgrades = 0
+		int_paint = -1
+		int_stage = 0
 	end
 	addEventHandler ( "onClientGUIClick", tune_g_edit, tune_g_edit_fun, false )
 
 	function tune_b_edit_fun ( button, state, absoluteX, absoluteY )--удаление текста в гуи edit
 		guiSetText ( tune_b_edit, "" )
+		int_upgrades = 0
+		int_paint = -1
+		int_stage = 0
 	end
 	addEventHandler ( "onClientGUIClick", tune_b_edit, tune_b_edit_fun, false )
 
@@ -2449,6 +2485,8 @@ local vehicleid = getPlayerVehicle(playerid)
 			setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
 			int_paint = -1
 		end
+
+		int_stage = 0
 	end
 end
 addEvent( "event_gui_delet", true )
