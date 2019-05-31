@@ -67,6 +67,7 @@ local zakon_price_business = 300000
 local zp_player_taxi = 1000
 local zp_player_plane = 2000
 local zp_player_busdriver = 12000
+local zp_player_medic = 5000
 local zp_car_75 = 200
 local zp_car_65 = 200
 local zp_car_78 = 200
@@ -515,6 +516,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Дальнобойщик", 7, 5000, 64},
 	{info_png[64][1].." Перевозчик оружия", 8, 5000, 64},
 	{info_png[64][1].." Водитель автобуса", 9, 5000, 64},
+	--{info_png[64][1].." Парамедик", 10, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -699,7 +701,7 @@ local cash_car = {
 	[413] = {"PONY", 20000},--грузовик с колонками
 	--[414] = {"MULE", 22000},--грузовик развозчика
 	[415] = {"CHEETAH", 105000},
-	--[416] = {"AMBULAN", 10000},--скорая
+	[416] = {"AMBULAN", 10000},--скорая
 	[418] = {"MOONBEAM", 16000},
 	[419] = {"ESPERANT", 19000},
 	[420] = {"TAXI", 20000},
@@ -1075,6 +1077,7 @@ local hospital_spawn = {
 	{1607.423828125,1815.244140625,10.8203125},
 	{-2654.4873046875,640.1650390625,14.454549789429},
 	{1172.0771484375,-1323.28125,15.402851104736},
+	{2027.0,-1412.3037109375,16.9921875},
 }
 
 local station = {
@@ -1387,7 +1390,6 @@ function debuginfo ()
 		setElementData(playerid, "cow_farms_table2", result_cow_farms)
 
 		--позиции домов, бизнесов, зданий
-		setElementData(playerid, "interior_job", interior_job)
 		setElementData(playerid, "house_pos", house_pos)
 		setElementData(playerid, "business_pos", business_pos)
 
@@ -1502,7 +1504,6 @@ function job_timer2 ()
 					end
 				end
 
-
 			elseif job[playername] == 2 then--работа водителя мусоровоза
 				if vehicleid then
 					if getElementModel(vehicleid) == down_car_subject[4][6] then
@@ -1548,7 +1549,6 @@ function job_timer2 ()
 						end
 					end
 				end
-
 
 			elseif job[playername] == 3 then--работа инкассатора
 				if vehicleid then
@@ -1935,6 +1935,75 @@ function job_timer2 ()
 									job_marker[playername] = 0
 									job_pos[playername] = 0
 									job_call[playername] = 0
+								end
+							end
+
+						end
+					end
+				end
+
+			elseif job[playername] == 10 then--работа парамедик
+				if vehicleid then
+					if getElementModel(vehicleid) == 416 then
+						if getSpeed(vehicleid) < 1 then
+
+							if job_call[playername] == 0 then--нету вызова
+								local randomize = random(1,#taxi_pos)
+
+								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = 1
+								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername] == 1 then--есть вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+									local randomize = random(1,#taxi_pos)
+									local randomize_skin = 1
+
+									for k,v in pairs(getValidPedModels()) do
+										local random = random(2,312)
+										if v == random then
+											randomize_skin = random
+											break
+										end
+									end
+
+									sendMessage(playerid, "Отвезите пациента в ближайшую больницу", yellow[1], yellow[2], yellow[3])
+
+									job_call[playername] = 2
+									job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+								
+									if not getVehicleOccupant ( vehicleid, 1 ) then
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 1 )
+									elseif not getVehicleOccupant ( vehicleid, 2 ) then
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 2 )
+									elseif not getVehicleOccupant ( vehicleid, 3 ) then
+										warpPedIntoVehicle ( job_ped[playername], vehicleid, 3 )
+									end
+								end
+
+							elseif job_call[playername] == 2 then--сдаем вызов
+								for k,v in pairs(hospital_spawn) do
+									if isPointInCircle3D(x,y,z, v[1],v[2],v[3], 40) then
+										local randomize = random(zp_player_medic/2,zp_player_medic)
+
+										inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+										sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+										destroyElement(job_ped[playername])
+
+										job_ped[playername] = 0
+										job_pos[playername] = 0
+										job_call[playername] = 0
+									end
 								end
 							end
 
@@ -3910,6 +3979,10 @@ function displayLoadedRes ( res )--старт ресурсов
 			createBlip ( v[1], v[2], v[3], 42, 0, 0,0,0,0, 0, max_blip )--вокзалы
 		end
 
+		for k,v in pairs(hospital_spawn) do
+			createBlip ( v[1], v[2], v[3], 22, 0, 0,0,0,0, 0, max_blip )--больницы
+		end
+
 
 		--создание маркеров
 		for k,v in pairs(up_car_subject) do 
@@ -4239,6 +4312,11 @@ function nickChangeHandler(oldNick, newNick)
 end
 addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
 
+function onStealthKill(targetPlayer)
+	cancelEvent() -- Aborts the stealth-kill.
+end
+addEventHandler("onPlayerStealthKill", getRootElement(), onStealthKill) -- Adds a handler for the stealth kill event.
+
 ----------------------------------Регистрация-Авторизация--------------------------------------------
 function reg_or_login(playerid)
 	local playername = getPlayerName ( playerid )
@@ -4332,6 +4410,10 @@ function reg_or_login(playerid)
 	setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
 	setElementData(playerid, "upgrades_car_table", upgrades_car_table)
 	setElementData(playerid, "name_mafia", name_mafia)
+	setElementData(playerid, "interior_job", interior_job)
+	setElementData(playerid, "cash_car", cash_car)
+	setElementData(playerid, "cash_boats", cash_boats)
+	setElementData(playerid, "cash_helicopters", cash_helicopters)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -6259,6 +6341,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 9
 
 					me_chat(playerid, playername.." вышел(ла) на работу Водитель автобуса")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 10 then
+				if job[playername] == 0 then
+					job[playername] = 10
+
+					me_chat(playerid, playername.." вышел(ла) на работу Парамедик")
 				else
 					job[playername] = 0
 
