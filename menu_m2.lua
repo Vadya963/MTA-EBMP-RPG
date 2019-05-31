@@ -72,7 +72,7 @@ for i=1,4 do
 	addEventHandler( "onClientMouseEnter", arrow_m2[i][2], select_button_menu, false )
 end
 for i=1,4 do
-	function select_button_menu2 ( absoluteX, absoluteY, gui )--наведение на меню
+	function select_button_menu2 ( absoluteX, absoluteY, gui )--покидание меню
 		guiLabelSetColor ( arrow_m2[i][2], 255, 255, 255 )
 		guiStaticImageLoadImage(arrow_m2[i][1], "gui/window-arrow-off-"..arrow_m2[i][3]..".png")
 	end
