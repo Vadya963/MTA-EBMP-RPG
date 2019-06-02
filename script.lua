@@ -66,8 +66,9 @@ local zakon_price_business = 300000
 --зп
 local zp_player_taxi = 1000
 local zp_player_plane = 2000
-local zp_player_busdriver = 12000
+local zp_player_sas = 200
 local zp_player_medic = 5000
+local zp_player_busdriver = 12000
 local zp_car_75 = 200
 local zp_car_65 = 200
 local zp_car_78 = 200
@@ -424,7 +425,7 @@ local info_png = {
 	[71] = {"руда", "кг"},
 	[72] = {"виски", "шт"},
 	[73] = {"бочка с нефтью", "$ за штуку"},
-	[74] = {"маршрутный лист", "из 4 ост."},
+	[74] = {"#1 маршрутный лист", "ост."},
 	[75] = {"мусор", "кг"},
 	[76] = {"антипохмелин", "шт"},
 	[77] = {"проездной билет", "шт"},
@@ -516,7 +517,8 @@ local mayoralty_shop = {
 	{info_png[64][1].." Дальнобойщик", 7, 5000, 64},
 	{info_png[64][1].." Перевозчик оружия", 8, 5000, 64},
 	{info_png[64][1].." Водитель автобуса", 9, 5000, 64},
-	--{info_png[64][1].." Парамедик", 10, 5000, 64},
+	{info_png[64][1].." Парамедик", 10, 5000, 64},
+	{info_png[64][1].." Санитар СА", 11, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -1078,6 +1080,8 @@ local hospital_spawn = {
 	{-2654.4873046875,640.1650390625,14.454549789429},
 	{1172.0771484375,-1323.28125,15.402851104736},
 	{2027.0,-1412.3037109375,16.9921875},
+	{-320.17578125,1048.234375,20.340259552002},
+	{-1514.671875,2518.9306640625,56.0703125},
 }
 
 local station = {
@@ -1096,6 +1100,36 @@ local roulette_pos = {}
 for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'roulette'" )) do
 	local spl = split(v["pos"], ",")
 	roulette_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+
+local clear_street_pos = {
+	["Los Santos"] = { [1] = {}, [2] = {} },
+	["San Fierro"] = { [1] = {}, [2] = {} },
+	["Las Venturas"] = { [1] = {}, [2] = {} },
+}
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["Los Santos"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street2'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["Los Santos"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street3'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["San Fierro"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street4'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["San Fierro"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street5'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["Las Venturas"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
+end
+for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street6'" )) do
+	local spl = split(v["pos"], ",")
+	clear_street_pos["Las Venturas"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
 end
 
 local plane_job = {
@@ -1980,9 +2014,7 @@ function job_timer2 ()
 									job_blip[playername] = 0
 									job_marker[playername] = 0
 								
-									if not getVehicleOccupant ( vehicleid, 1 ) then
-										warpPedIntoVehicle ( job_ped[playername], vehicleid, 1 )
-									elseif not getVehicleOccupant ( vehicleid, 2 ) then
+									if not getVehicleOccupant ( vehicleid, 2 ) then
 										warpPedIntoVehicle ( job_ped[playername], vehicleid, 2 )
 									elseif not getVehicleOccupant ( vehicleid, 3 ) then
 										warpPedIntoVehicle ( job_ped[playername], vehicleid, 3 )
@@ -2004,6 +2036,54 @@ function job_timer2 ()
 										job_pos[playername] = 0
 										job_call[playername] = 0
 									end
+								end
+							end
+
+						end
+					end
+				end
+
+			elseif job[playername] == 11 then--работа sas
+				if vehicleid then
+					if getElementModel(vehicleid) == 574 then
+						if getSpeed(vehicleid) < 61 then
+
+							if job_call[playername] == 0 then--старт работы
+
+								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
+
+								job_call[playername] = {getElementZoneName ( playerid, true ), random(1,2), 1}
+								job_pos[playername] = {clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][1],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][2],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][3]-1}
+
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+							elseif job_call[playername][3] >= 1 and job_call[playername][3] <= #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ]-1 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+
+									job_call[playername][3] = job_call[playername][3]+1
+
+									job_pos[playername] = {clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][1],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][2],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								end
+
+							elseif job_call[playername][3] == #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ] then--сдаем вызов
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+									local randomize = random(zp_player_sas*job_call[playername][3]/2,zp_player_sas*job_call[playername][3])
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendMessage(playerid, "Вы получили за маршрут "..randomize.."$", green[1], green[2], green[3])
+
+									destroyElement(job_blip[playername])
+									destroyElement(job_marker[playername])
+
+									job_blip[playername] = 0
+									job_marker[playername] = 0
+									job_pos[playername] = 0
+									job_call[playername] = 0
 								end
 							end
 
@@ -5211,7 +5291,7 @@ function left_alt_down (playerid, key, keyState)
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
 
-	if logged[playername] == 0 then
+	if logged[playername] == 0 or getElementData(playerid, "is_chat_open") == 1 then
 		return
 	end
 
@@ -6353,6 +6433,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 10
 
 					me_chat(playerid, playername.." вышел(ла) на работу Парамедик")
+				else
+					job[playername] = 0
+
+					car_theft_fun(playername)
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 11 then
+				if job[playername] == 0 then
+					job[playername] = 11
+
+					me_chat(playerid, playername.." вышел(ла) на работу Санитар СА")
 				else
 					job[playername] = 0
 
@@ -8011,6 +8103,17 @@ function input_Console ( text )
 	if text == "z" then
 		--pay_nalog()
 		--print(string.find("UPDATE", "UPDATE"))
+
+		--[[timer = setTimer(function (  )
+			for k,v in pairs(getElementsByType("player")) do
+				local x,y,z = getElementPosition(v)
+				local result = sqlite( "INSERT INTO position (description, pos) VALUES ('job_clear_street6', '"..x..","..y..","..z.."')" )
+				sendMessage(getRootElement(), "save pos "..text, lyme[1], lyme[2], lyme[3])
+			end
+		end, 5000, 0)
+
+	elseif text == "c" then
+		killTimer(timer)]]
 		
 	elseif text == "x" then
 		restartAllResources()
