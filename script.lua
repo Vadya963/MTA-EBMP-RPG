@@ -703,7 +703,7 @@ local cash_car = {
 	[413] = {"PONY", 20000},--грузовик с колонками
 	--[414] = {"MULE", 22000},--грузовик развозчика
 	[415] = {"CHEETAH", 105000},
-	[416] = {"AMBULAN", 10000},--скорая
+	[416] = {"AMBULAN", 30000},--скорая
 	[418] = {"MOONBEAM", 16000},
 	[419] = {"ESPERANT", 19000},
 	[420] = {"TAXI", 20000},
@@ -806,7 +806,7 @@ local cash_car = {
 	--[571] = {"KART", 15000},
 	--[572] = {"MOWER", 15000},--газонокосилка
 	[573] = {"DUNE", 40000},
-	--[574] = {"SWEEPER", 15000},--очистка улиц
+	[574] = {"SWEEPER", 15000},--очистка улиц
 	[575] = {"BROADWAY", 19000},
 	[576] = {"TORNADO", 19000},
 	--[578] = {"DFT30", 5000},--3 колесная тачка
@@ -888,6 +888,57 @@ local cash_airplanes = {
 	[476] = {"RUSTLER", 45000},--самолет с пушками
 	[460] = {"Skimmer", 30000},--самолет садится на воду
 }
+
+local car_cash_coef = 10
+local car_cash_no = {456,428,420,574,416,408,437,453,519}
+for k,v in pairs(cash_car) do
+	local count = 0
+	for _,v1 in pairs(car_cash_no) do
+		if k ~= v1 then
+			count = count+1
+		end
+	end
+
+	if count == #car_cash_no then
+		cash_car[k] = v[2]*car_cash_coef
+	end
+end
+for k,v in pairs(cash_boats) do
+	local count = 0
+	for _,v1 in pairs(car_cash_no) do
+		if k ~= v1 then
+			count = count+1
+		end
+	end
+
+	if count == #car_cash_no then
+		cash_boats[k] = v[2]*car_cash_coef
+	end
+end
+for k,v in pairs(cash_helicopters) do
+	local count = 0
+	for _,v1 in pairs(car_cash_no) do
+		if k ~= v1 then
+			count = count+1
+		end
+	end
+
+	if count == #car_cash_no then
+		cash_helicopters[k] = v[2]*car_cash_coef
+	end
+end
+for k,v in pairs(cash_airplanes) do
+	local count = 0
+	for _,v1 in pairs(car_cash_no) do
+		if k ~= v1 then
+			count = count+1
+		end
+	end
+
+	if count == #car_cash_no then
+		cash_airplanes[k] = v[2]*car_cash_coef
+	end
+end
 
 local interior_business = {
 	{1, "Магазин оружия", 285.7870,-41.7190,1001.5160, 6},
