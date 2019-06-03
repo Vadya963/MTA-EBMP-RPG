@@ -148,6 +148,11 @@ local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
 -----------эвенты------------------------------------------------------------------------
+function random(min, max)
+	--math.randomseed(getTickCount())
+	return math.random(min, max)
+end
+
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
@@ -157,8 +162,11 @@ end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
 
-function createFire_fun (x,y,z, size)--создание огня
-	createFire(x,y,z, size)
+function createFire_fun (x,y,z, size, radius, count)--создание огня
+	local r1,r2 = random(radius*-1,radius),random(radius*-1,radius)
+	for i=1,count do
+		createFire(x+r1, y+r2, z, size)
+	end
 end
 addEvent( "event_createFire", true )
 addEventHandler ( "event_createFire", getRootElement(), createFire_fun )
@@ -2405,14 +2413,14 @@ function ( cmd, x,y )
 	local x,y = tonumber(x),tonumber(y)
 
 	if not x or not y then
-		if addCommandHandler_marker == 0 then
-			sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red[1], red[2], red[3])
-		else
-			destroyElement(addCommandHandler_marker)
-			addCommandHandler_marker = 0
-		end
+		sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red[1], red[2], red[3])
 		return
 	end
 
-	addCommandHandler_marker = createBlip ( x,y,0, 41, 4, blue[1], blue[2], blue[3], 255, 0, 16383.0 )
+	if addCommandHandler_marker == 0 then
+		addCommandHandler_marker = createBlip ( x,y,0, 41, 4, blue[1], blue[2], blue[3], 255, 0, 16383.0 )
+	else
+		destroyElement(addCommandHandler_marker)
+		addCommandHandler_marker = 0
+	end
 end)
