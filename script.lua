@@ -118,8 +118,23 @@ local guns_zone = {}
 -------------------пользовательские функции----------------------------------------------
 function sendMessage(playerid, text, r, g, b)
 	local time = getRealTime()
+	local hour = time["hour"]
+	local minute = time["minute"]
+	local second = time["second"]
 
-	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, playerid, r, g, b)
+	if time["hour"] < 10 then
+		hour = "0"..hour
+	end
+
+	if time["minute"] < 10 then
+		minute = "0"..minute
+	end
+
+	if time["second"] < 10 then
+		second = "0"..second
+	end
+
+	outputChatBox("["..hour..":"..minute..":"..second.."] "..text, playerid, r, g, b)
 end
 
 function player_position( playerid )
@@ -900,7 +915,7 @@ for k,v in pairs(cash_car) do
 	end
 
 	if count == #car_cash_no then
-		cash_car[k] = v[2]*car_cash_coef
+		cash_car[k][2] = v[2]*car_cash_coef
 	end
 end
 for k,v in pairs(cash_boats) do
@@ -912,7 +927,7 @@ for k,v in pairs(cash_boats) do
 	end
 
 	if count == #car_cash_no then
-		cash_boats[k] = v[2]*car_cash_coef
+		cash_boats[k][2] = v[2]*car_cash_coef
 	end
 end
 for k,v in pairs(cash_helicopters) do
@@ -924,7 +939,7 @@ for k,v in pairs(cash_helicopters) do
 	end
 
 	if count == #car_cash_no then
-		cash_helicopters[k] = v[2]*car_cash_coef
+		cash_helicopters[k][2] = v[2]*car_cash_coef
 	end
 end
 for k,v in pairs(cash_airplanes) do
@@ -936,7 +951,7 @@ for k,v in pairs(cash_airplanes) do
 	end
 
 	if count == #car_cash_no then
-		cash_airplanes[k] = v[2]*car_cash_coef
+		cash_airplanes[k][2] = v[2]*car_cash_coef
 	end
 end
 
