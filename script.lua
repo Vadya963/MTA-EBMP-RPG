@@ -534,7 +534,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Перевозчик оружия", 8, 5000, 64},
 	{info_png[64][1].." Водитель автобуса", 9, 5000, 64},
 	{info_png[64][1].." Парамедик", 10, 5000, 64},
-	{info_png[64][1].." Санитар СА", 11, 5000, 64},
+	{info_png[64][1].." Уборщик СА", 11, 5000, 64},
 	{info_png[64][1].." Пожарный СА", 12, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
@@ -6579,7 +6579,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if job[playername] == 0 then
 					job[playername] = 11
 
-					me_chat(playerid, playername.." вышел(ла) на работу Санитар СА")
+					me_chat(playerid, playername.." вышел(ла) на работу Уборщик СА")
 				else
 					job[playername] = 0
 
