@@ -68,7 +68,7 @@ local zp_player_taxi = 1000
 local zp_player_plane = 2000
 local zp_player_sas = 200
 local zp_player_medic = 5000
-local zp_player_fire = 1250
+local zp_player_fire = 5000
 local zp_player_busdriver = 12000
 local zp_car_75 = 200
 local zp_car_65 = 200
@@ -907,7 +907,7 @@ local cash_airplanes = {
 }
 
 local car_cash_coef = 10
-local car_cash_no = {456,428,420,574,416,408,437,453,519}
+local car_cash_no = {456,428,420,574,416,408,437,453,519,407}
 for k,v in pairs(cash_car) do
 	local count = 0
 	for _,v1 in pairs(car_cash_no) do
@@ -4593,7 +4593,7 @@ function reg_or_login(playerid)
 		sendMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 	end
 
-	setElementData( playerid, "player_id", { count_player, {getPlayerNametagColor(playerid)} } )
+	setElementData(playerid, "player_id", { count_player, {getPlayerNametagColor(playerid)} })
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
 	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
@@ -6446,8 +6446,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 2 then
@@ -6457,8 +6455,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вышел(ла) на работу Мусоровозчик")
 				else
 					job[playername] = 0
-
-					car_theft_fun(playername)
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
@@ -6475,8 +6471,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 4 then
@@ -6486,8 +6480,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вышел(ла) на работу Рыболов")
 				else
 					job[playername] = 0
-
-					car_theft_fun(playername)
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
@@ -6503,8 +6495,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вышел(ла) на работу Пилот")
 				else
 					job[playername] = 0
-
-					car_theft_fun(playername)
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
@@ -6522,8 +6512,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 8 then
@@ -6539,8 +6527,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 9 then
@@ -6550,8 +6536,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вышел(ла) на работу Водитель автобуса")
 				else
 					job[playername] = 0
-
-					car_theft_fun(playername)
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
@@ -6571,8 +6555,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 11 then
@@ -6582,8 +6564,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вышел(ла) на работу Уборщик СА")
 				else
 					job[playername] = 0
-
-					car_theft_fun(playername)
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
@@ -6603,10 +6583,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				else
 					job[playername] = 0
 
-					car_theft_fun(playername)
-
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
+			end
+
+			if job[playername] == 0 then
+				car_theft_fun(playername)
 			end
 
 			return
