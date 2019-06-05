@@ -3213,6 +3213,15 @@ function inv_car_throw_earth(vehicleid, id1, id2)--выброс предмета
 		end
 	end
 end
+
+function setVehicleDoorOpenRatio_fun(playerid, value)--открывает багажник
+	local vehicleid = getPlayerVehicle(playerid)
+	if vehicleid then
+		setVehicleDoorOpenRatio ( vehicleid, 1, value )
+	end
+end
+addEvent("event_setVehicleDoorOpenRatio_fun", true)
+addEventHandler("event_setVehicleDoorOpenRatio_fun", getRootElement(), setVehicleDoorOpenRatio_fun)
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------дом-------------------------------------------------------------

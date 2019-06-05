@@ -2039,6 +2039,13 @@ function inv_create ()--создание инв-ря
 		inv_slot_car[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[22][2]..".png", false, tab_car )
 		inv_slot_car[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_car[23][2]..".png", false, tab_car )
 
+		function car_trunk( tab )
+			if tab == tab_car then
+				triggerServerEvent("event_setVehicleDoorOpenRatio_fun", getRootElement(), playerid, 1)
+			end
+		end
+		addEventHandler( "onClientGUITabSwitched", tab_car, car_trunk, false )
+
 		for i=0,max_inv do
 			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
 				local x,y = guiGetPosition ( inv_slot_car[i][1], false )
@@ -2304,6 +2311,8 @@ function inv_delet ()--удаление инв-ря
 		lmb = 0
 
 		destroyElement(stats_window)
+
+		triggerServerEvent("event_setVehicleDoorOpenRatio_fun", getRootElement(), playerid, 0)
 
 		stats_window = nil
 	end
