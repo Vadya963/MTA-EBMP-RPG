@@ -153,6 +153,16 @@ function random(min, max)
 	return math.random(min, max)
 end
 
+function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
+	local ped = source
+	local reason = weapon
+
+	if getElementData(localPlayer, "ped_police_damage") == ped then
+		cancelEvent()
+	end
+end
+addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )
+
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
@@ -161,6 +171,24 @@ function setPedOxygenLevel_fun ()--кислородный балон
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
+
+function setPedAimTarget_fun (ped, x,y,z)--аим педа
+	setPedAimTarget ( ped, x, y, z )
+end
+addEvent( "event_setPedAimTarget_fun", true )
+addEventHandler ( "event_setPedAimTarget_fun", getRootElement(), setPedAimTarget_fun )
+
+function setPedControlState_fun (ped, control, state)--контроль педа
+	setPedControlState ( ped, control, state )
+end
+addEvent( "event_setPedControlState_fun", true )
+addEventHandler ( "event_setPedControlState_fun", getRootElement(), setPedControlState_fun )
+
+function givePedWeapon_fun (ped, weapon, ammo, setAsCurrent)--выдать оружие педу
+	givePedWeapon ( ped, weapon, ammo, setAsCurrent )
+end
+addEvent( "event_givePedWeapon_fun", true )
+addEventHandler ( "event_givePedWeapon_fun", getRootElement(), givePedWeapon_fun )
 
 function createFire_fun (x,y,z, size, radius, count)--создание огня
 	local r1,r2 = random(radius*-1,radius),random(radius*-1,radius)
