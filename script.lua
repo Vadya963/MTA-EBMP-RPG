@@ -2216,132 +2216,69 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 13 then--работа патрульный
-				
-					if (getElementModel(playerid) == 280 or getElementModel(playerid) == 281 or getElementModel(playerid) == 282) then
-						
+				if (getElementModel(playerid) == 280 or getElementModel(playerid) == 281 or getElementModel(playerid) == 282) then
+					if job_call[playername] == 0 then--старт работы
+						local randomize = random(1,#fire_pos)
 
-							if job_call[playername] == 0 then--старт работы
-								local randomize = random(1,#fire_pos)
+						--[[while true do
+							if getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "Los Santos" and "Los Santos" == getZoneName ( x,y,z, true ) then
+								break
+							elseif getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "San Fierro" and "San Fierro" == getZoneName ( x,y,z, true ) then
+								break
+							elseif getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "Las Venturas" and "Las Venturas" == getZoneName ( x,y,z, true ) then
+								break
+							else
+								randomize = random(1,#fire_pos)
+							end
+						end]]
 
-								--[[while true do
-									if getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "Los Santos" and "Los Santos" == getZoneName ( x,y,z, true ) then
+						sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
+
+						job_call[playername] = {1,0,random(5,30)--[[n секунд чтобы преступник подумал]]}
+						job_pos[playername] = {fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3]-1}
+
+						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+
+					elseif job_call[playername][1] >= 1 and job_call[playername][1] <= job_call[playername][3] then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+
+							if job_call[playername][1] == 1 then
+								local randomize_skin = 1
+
+								for k,v in pairs(getValidPedModels()) do
+									local random = random(2,312)
+									if v == random then
+										randomize_skin = random
 										break
-									elseif getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "San Fierro" and "San Fierro" == getZoneName ( x,y,z, true ) then
-										break
-									elseif getZoneName ( fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3], true ) == "Las Venturas" and "Las Venturas" == getZoneName ( x,y,z, true ) then
-										break
-									else
-										randomize = random(1,#fire_pos)
-									end
-								end]]
-
-								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
-
-								job_call[playername] = {1,0,random(5,30)--[[n секунд чтобы преступник подумал]]}
-								job_pos[playername] = {fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3]-1}
-
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
-
-							elseif job_call[playername][1] >= 1 and job_call[playername][1] <= job_call[playername][3] then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-
-									if job_call[playername][1] == 1 then
-										local randomize_skin = 1
-
-										for k,v in pairs(getValidPedModels()) do
-											local random = random(2,312)
-											if v == random then
-												randomize_skin = random
-												break
-											end
-										end
-
-										job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
-
-										setElementData(playerid, "ped_police_damage", job_ped[playername])
-
-										me_chat(playerid, playername.." взял мегафон")
-										do_chat(playerid, "говорит в мегафон - "..playername)
-										ic_chat(playerid, "Это полиция, положите оружие на землю и поднимите руки вверх")
-									end
-
-									job_call[playername][1] = job_call[playername][1]+1
-								end
-
-							elseif job_call[playername][1] == job_call[playername][3]+1 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = random(1,2)
-
-									triggerClientEvent(playerid, "event_givePedWeapon_fun", playerid, job_ped[playername], weapon[18][2], 1000, true)
-
-									if randomize == 1 then
-										sendMessage(playerid, "Преступник сдается", yellow[1], yellow[2], yellow[3])
-
-										--setPedAnimation(job_ped[playername], "rob_bank", "shp_handsup_scr", -1, false, false, false, true)
-
-										if isPedDead ( job_ped[playername] ) then
-											local randomize = random(zp_player_police/2,zp_player_police)
-											randomize = randomize*-1
-
-											inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
-
-											sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
-
-											setElementData(playerid, "ped_police_damage", false)
-
-											local crimes_plus = zakon_kill_crimes
-											crimes[playername] = crimes[playername]+crimes_plus
-											sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
-
-											job_0( playername )
-										else
-											job_call[playername][1] = job_call[playername][3]+3
-											job_call[playername][2] = randomize
-										end
-									else
-										if isPedDead ( job_ped[playername] ) then
-											local randomize = random(zp_player_police/2,zp_player_police)
-											randomize = randomize*-1
-
-											inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
-
-											sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
-
-											setElementData(playerid, "ped_police_damage", false)
-
-											local crimes_plus = zakon_kill_crimes
-											crimes[playername] = crimes[playername]+crimes_plus
-											sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
-
-											job_0( playername )
-										else
-											sendMessage(playerid, "Устраните преступника", yellow[1], yellow[2], yellow[3])
-
-											setElementData(playerid, "ped_police_damage", false)
-
-											--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
-
-											triggerClientEvent(playerid, "event_setPedControlState_fun", playerid, job_ped[playername], "fire", true)
-
-											job_call[playername][1] = job_call[playername][3]+2
-											job_call[playername][2] = randomize
-										end
 									end
 								end
 
-							elseif job_call[playername][1] == job_call[playername][3]+2 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									triggerClientEvent(playerid, "event_setPedAimTarget_fun", playerid, job_ped[playername], x, y, z)
-								end
+								job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
 
-								function died()
-									job_call[playername][1] = job_call[playername][3]+3
-								end
-								addEventHandler("onPedWasted", job_ped[playername], died)
+								setElementData(playerid, "ped_police_damage", job_ped[playername])
 
-							elseif job_call[playername][1] == job_call[playername][3]+3 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+								me_chat(playerid, playername.." взял мегафон")
+								do_chat(playerid, "говорит в мегафон - "..playername)
+								ic_chat(playerid, "Это полиция, положите оружие на землю и поднимите руки вверх")
+							end
+
+							job_call[playername][1] = job_call[playername][1]+1
+						end
+
+					elseif job_call[playername][1] == job_call[playername][3]+1 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+							local randomize = random(1,2)
+
+							triggerClientEvent(playerid, "event_givePedWeapon_fun", playerid, job_ped[playername], weapon[18][2], 1000, true)
+
+							if randomize == 1 then
+								sendMessage(playerid, "Преступник сдается", yellow[1], yellow[2], yellow[3])
+
+								--setPedAnimation(job_ped[playername], "rob_bank", "shp_handsup_scr", -1, false, false, false, true)
+
+								if isPedDead ( job_ped[playername] ) then
 									local randomize = random(zp_player_police/2,zp_player_police)
+									randomize = randomize*-1
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2349,18 +2286,76 @@ function job_timer2 ()
 
 									setElementData(playerid, "ped_police_damage", false)
 
-									destroyElement(job_blip[playername])
-									destroyElement(job_ped[playername])
+									local crimes_plus = zakon_kill_crimes
+									crimes[playername] = crimes[playername]+crimes_plus
+									sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
 
-									job_blip[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
-									job_ped[playername] = 0
+									job_0( playername )
+								else
+									job_call[playername][1] = job_call[playername][3]+3
+									job_call[playername][2] = randomize
+								end
+							else
+								if isPedDead ( job_ped[playername] ) then
+									local randomize = random(zp_player_police/2,zp_player_police)
+									randomize = randomize*-1
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+									sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
+
+									setElementData(playerid, "ped_police_damage", false)
+
+									local crimes_plus = zakon_kill_crimes
+									crimes[playername] = crimes[playername]+crimes_plus
+									sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
+
+									job_0( playername )
+								else
+									sendMessage(playerid, "Устраните преступника", yellow[1], yellow[2], yellow[3])
+
+									setElementData(playerid, "ped_police_damage", false)
+
+									--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
+
+									triggerClientEvent(playerid, "event_setPedControlState_fun", playerid, job_ped[playername], "fire", true)
+
+									job_call[playername][1] = job_call[playername][3]+2
+									job_call[playername][2] = randomize
 								end
 							end
+						end
 
+					elseif job_call[playername][1] == job_call[playername][3]+2 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+							triggerClientEvent(playerid, "event_setPedAimTarget_fun", playerid, job_ped[playername], x, y, z)
+						end
 
+						function died()
+							job_call[playername][1] = job_call[playername][3]+3
+						end
+						addEventHandler("onPedWasted", job_ped[playername], died)
+
+					elseif job_call[playername][1] == job_call[playername][3]+3 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+							local randomize = random(zp_player_police/2,zp_player_police)
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+							sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
+
+							setElementData(playerid, "ped_police_damage", false)
+
+							destroyElement(job_blip[playername])
+							destroyElement(job_ped[playername])
+
+							job_blip[playername] = 0
+							job_pos[playername] = 0
+							job_call[playername] = 0
+							job_ped[playername] = 0
+						end
 					end
+				end
 
 			elseif job[playername] == 0 then--нету рыботы
 				job_0( playername )
