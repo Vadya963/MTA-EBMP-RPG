@@ -1022,6 +1022,13 @@ local interior_job = {--12
 	{18, "Отель Сфинкс", 1726.1370,-1645.2300,20.2260, 2239.05078125,1285.7119140625,10.8203125, 35, 20, "", 5},
 	{18, "Отель Виктория", 1726.1370,-1645.2300,20.2260, -2463.44140625,131.7275390625,35.171875, 35, 21, "", 5},
 	{5, "Черный рынок", 322.1117,1119.3270,1083.8830, 2165.9541015625,-1671.1748046875,15.07315826416, 18, 22, ", Меню - X", 5},
+	{3, "Зона 51", 374.6708,173.8050,1008.3893, 335.5107421875,1951.8466796875,17.640625, 20, 23, ", Меню - X", 5},
+}
+
+--пикапы для работ и фракций
+local interior_job_pickup = {
+	createPickup ( 292.31268310547,1833.2623291016,18.05459022522, 3, job_icon, 10000 ),--кпп1
+	createPickup ( 279.1279296875,1833.1435546875,18.08740234375, 3, job_icon, 10000 )--кпп2
 }
 
 local t_s_salon = {
@@ -1527,7 +1534,9 @@ function job_timer2 ()
 	end
 
 	for k,v in pairs(interior_job) do
-		taxi_pos[#taxi_pos+1] = {v[6],v[7],v[8]}
+		if k ~= 23 then
+			taxi_pos[#taxi_pos+1] = {v[6],v[7],v[8]}
+		end
 	end
 
 	for k,v in pairs(original_business_pos) do
@@ -3292,6 +3301,7 @@ end
 function pickupUse( playerid )
 	local pickup = source
 	local x,y,z = getElementPosition(playerid)
+	local px,py,pz = getElementPosition(pickup)
 
 	if getElementModel(pickup) == business_icon then
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
@@ -3348,6 +3358,17 @@ function pickupUse( playerid )
 	end
 end
 addEventHandler( "onPickupUse", getRootElement(), pickupUse )
+
+function pickedUpWeaponCheck( playerid )
+	local pickup = source
+
+    if interior_job_pickup[2] == pickup then
+		setElementPosition(playerid, 292.31268310547,1833.2623291016,18.05459022522)
+	elseif interior_job_pickup[1] == pickup then
+		setElementPosition(playerid, 279.1279296875,1833.1435546875,18.08740234375)
+	end
+end
+addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
 
 function sqlite_load(playerid)
 	local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
@@ -6761,6 +6782,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 			if job[playername] == 0 then
+				job_0(playername)
 				car_theft_fun(playername)
 			end
 

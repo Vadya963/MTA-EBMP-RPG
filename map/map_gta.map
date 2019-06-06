@@ -29,4 +29,7 @@
 
     <object id="object (cjgaragedoor) (1)" breakable="false" interior="0" collisions="true" alpha="255" model="17951" doublesided="false" scale="1" dimension="0" posX="2521.9004" posY="-1270.3" posZ="35.7" rotX="0" rotY="0" rotZ="0"></object>
 	<object id="object (cjgaragedoor) (2)" breakable="false" interior="0" collisions="true" alpha="255" model="17951" doublesided="false" scale="1" dimension="0" posX="2521.95" posY="-1275.7" posZ="35.6" rotX="0" rotY="0" rotZ="0"></object>
+
+	<object id="object (vgsbldng01_lvs) (1)" breakable="true" interior="0" collisions="true" alpha="255" model="8419" doublesided="false" scale="1" dimension="0" posX="358.29999" posY="1942.1" posZ="28.3" rotX="0" rotY="0" rotZ="180"></object>
+	<object id="object (des_a51guardbox02) (1)" breakable="true" interior="0" alpha="255" model="16095" doublesided="false" scale="1" dimension="0" posX="292.29999" posY="1829.9" posZ="16.6" rotX="0" rotY="0" rotZ="270"></object>
 </map>
