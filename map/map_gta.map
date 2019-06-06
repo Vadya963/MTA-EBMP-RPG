@@ -26,4 +26,7 @@
     <removeWorldObject id="removeWorldObject (lasstepsa_LAS) (2)" radius="6.1882944" interior="0" model="3663" lodModel="0" posX="1832.4531" posY="-2388.4375" posZ="14.46875" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
     <removeWorldObject id="removeWorldObject (lasstepsa_LAS) (3)" radius="6.1882944" interior="0" model="3663" lodModel="0" posX="1664.4531" posY="-2439.8047" posZ="14.46875" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
     <removeWorldObject id="removeWorldObject (lasstepsa_LAS) (4)" radius="6.1882944" interior="0" model="3663" lodModel="0" posX="1580.0938" posY="-2433.8281" posZ="14.57031" rotX="0" rotY="0" rotZ="0"></removeWorldObject>
+
+    <object id="object (cjgaragedoor) (1)" breakable="false" interior="0" collisions="true" alpha="255" model="17951" doublesided="false" scale="1" dimension="0" posX="2521.9004" posY="-1270.3" posZ="35.7" rotX="0" rotY="0" rotZ="0"></object>
+	<object id="object (cjgaragedoor) (2)" breakable="false" interior="0" collisions="true" alpha="255" model="17951" doublesided="false" scale="1" dimension="0" posX="2521.95" posY="-1275.7" posZ="35.6" rotX="0" rotY="0" rotZ="0"></object>
 </map>

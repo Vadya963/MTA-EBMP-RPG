@@ -275,7 +275,7 @@ function police_chat(playerid, text)
 	for k,player in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(player)
 
-		if search_inv_player(player, 10, 1) ~= 0 and search_inv_player(player, 80, police_chanel) ~= 0 then
+		if search_inv_player_2_parameter(player, 10) ~= 0 and search_inv_player(player, 80, police_chanel) ~= 0 then
 			sendMessage(player, text, blue[1], blue[2], blue[3])
 		end
 	end
@@ -378,7 +378,7 @@ local info_png = {
 	[7] = {"сигареты Big Break Blue", "сигарет"},
 	[8] = {"сигареты Big Break White", "сигарет"},
 	[9] = {"Граната", "боеприпасов"},
-	[10] = {"полицейский жетон", "шт"},
+	[10] = {"полицейский жетон", "ранг"},
 	[11] = {"планшет", "шт"},
 	[12] = {"Кольт-45", "боеприпасов"},
 	[13] = {"Дигл", "боеприпасов"},
@@ -453,7 +453,7 @@ local info_png = {
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
 	[84] = {"отмычка", "процентов"},
-	[85] = {"повязка", ""},
+	[85] = {"повязка", "опг"},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
@@ -559,14 +559,13 @@ local weapon_cops = {
 }
 
 local sub_cops = {
-	[10] = {info_png[10][1]},
-	[28] = {info_png[28][1]},
-	[29] = {info_png[29][1]},
-	[30] = {info_png[30][1]},
-	[31] = {info_png[31][1]},
-	[32] = {info_png[32][1]},
-	[57] = {info_png[57][1]},
-	[58] = {info_png[58][1]},
+	{info_png[10][1].." Офицера", 1, 10},
+	{info_png[10][1].." Детектива", 2, 10},
+	{info_png[10][1].." Сержанта", 3, 10},
+	{info_png[10][1].." Лейтенанта", 4, 10},
+	{info_png[10][1].." Капитан", 5, 10},
+	{info_png[57][1], 1, 57},
+	{info_png[58][1], 1, 58},
 }
 
 local deathReasons = {
@@ -2216,7 +2215,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 13 then--работа патрульный
-				if (getElementModel(playerid) == 280 or getElementModel(playerid) == 281 or getElementModel(playerid) == 282) then
+				if (getElementModel(playerid) == 285) then
 					if job_call[playername] == 0 then--старт работы
 						local randomize = random(1,#fire_pos)
 
@@ -3768,12 +3767,12 @@ function buy_subject_fun( playerid, text, number, value )
 
 		for k,v in pairs(sub_cops) do
 			if v[1] == text then
-				if search_inv_player(playerid, 33, 1) == 0 then
+				if search_inv_player(playerid, 10, 6) == 0 then
 					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
 
-				if inv_player_empty(playerid, k, 1) then
+				if inv_player_empty(playerid, v[3], v[2]) then
 					sendMessage(playerid, "Вы получили "..text, orange[1], orange[2], orange[3])
 				else
 					sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
@@ -4741,7 +4740,7 @@ function reg_or_login(playerid)
 			setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
 		elseif (search_inv_player(playerid, 45, 1) ~= 0) then
 			setPlayerNametagColor(playerid, green[1],green[2],green[3])
-		elseif (search_inv_player(playerid, 10, 1) ~= 0) then
+		elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
 			setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
 		elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
 			setPlayerNametagColor(playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][2][1],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][2],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][3])
@@ -4851,7 +4850,7 @@ function detachTrailer(vehicleid)--прицепка прицепа
 	local plate = getVehiclePlateText ( trailer )
 
 	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-	if result[1]["COUNT()"] == 1 then
+	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
@@ -4869,7 +4868,7 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 	local plate = getVehiclePlateText ( trailer )
 
 	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-	if result[1]["COUNT()"] == 1 then
+	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
@@ -4983,7 +4982,7 @@ function buycar ( playerid, id )
 			end
 
 			for k,v in pairs(police_car) do
-				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
+				if v == id and (search_inv_player(playerid, 10, 6) == 0) then
 					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
@@ -5013,7 +5012,7 @@ function buycar ( playerid, id )
 			end
 
 			for k,v in pairs(police_helicopters) do
-				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
+				if v == id and (search_inv_player(playerid, 10, 6) == 0) then
 					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
@@ -5043,7 +5042,7 @@ function buycar ( playerid, id )
 			end
 
 			for k,v in pairs(police_boats) do
-				if v == id and (search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0) then
+				if v == id and (search_inv_player(playerid, 10, 6) == 0) then
 					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 					return
 				end
@@ -5511,7 +5510,7 @@ local vehicleid = getPlayerVehicle(playerid)
 					local police_station = {2,3,4,15,16,17,18}
 					for k,v in pairs(police_station) do
 						if interior_job[v][1] == getElementInterior(playerid) and interior_job[v][10] == getElementDimension(playerid) then
-							if search_inv_player(playerid, 10, 1) == 0 then
+							if search_inv_player_2_parameter(playerid, 10) == 0 then
 								sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 								return
 							end
@@ -6282,21 +6281,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 10 then--документы копа
 			if search_inv_player(playerid, 10, 1) ~= 0 then
-				if search_inv_player(playerid, 28, 1) ~= 0 then
-					me_chat(playerid, "Офицер "..playername.." показал(а) "..info_png[id1][1])
-				elseif search_inv_player(playerid, 29, 1) ~= 0 then
-					me_chat(playerid, "Детектив "..playername.." показал(а) "..info_png[id1][1])
-				elseif search_inv_player(playerid, 30, 1) ~= 0 then
-					me_chat(playerid, "Сержант "..playername.." показал(а) "..info_png[id1][1])
-				elseif search_inv_player(playerid, 31, 1) ~= 0 then
-					me_chat(playerid, "Лейтенант "..playername.." показал(а) "..info_png[id1][1])
-				elseif search_inv_player(playerid, 32, 1) ~= 0 then
-					me_chat(playerid, "Капитан "..playername.." показал(а) "..info_png[id1][1])
-				elseif search_inv_player(playerid, 33, 1) ~= 0 then
-					me_chat(playerid, "Шеф полиции "..playername.." показал(а) "..info_png[id1][1])
-				end
-			else
-				sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
+				me_chat(playerid, "Офицер "..playername.." показал(а) "..info_png[id1][1])
+			elseif search_inv_player(playerid, 10, 2) ~= 0 then
+				me_chat(playerid, "Детектив "..playername.." показал(а) "..info_png[id1][1])
+			elseif search_inv_player(playerid, 10, 3) ~= 0 then
+				me_chat(playerid, "Сержант "..playername.." показал(а) "..info_png[id1][1])
+			elseif search_inv_player(playerid, 10, 4) ~= 0 then
+				me_chat(playerid, "Лейтенант "..playername.." показал(а) "..info_png[id1][1])
+			elseif search_inv_player(playerid, 10, 5) ~= 0 then
+				me_chat(playerid, "Капитан "..playername.." показал(а) "..info_png[id1][1])
+			elseif search_inv_player(playerid, 10, 6) ~= 0 then
+				me_chat(playerid, "Шеф полиции "..playername.." показал(а) "..info_png[id1][1])
 			end
 			return
 
@@ -6749,8 +6744,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if crimes[playername] ~= 0 then
 					sendMessage(playerid, "[ERROR] У вас плохая репутация", red[1], red[2], red[3])
 					return
-				elseif getElementModel(playerid) ~= 280 and getElementModel(playerid) ~= 281 and getElementModel(playerid) ~= 282 then
-					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 280,281,282", red[1], red[2], red[3])
+				elseif getElementModel(playerid) ~= 285 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 285", red[1], red[2], red[3])
 					return
 				end
 
@@ -7212,17 +7207,17 @@ function (playerid, cmd, ...)
 	local radio_chanel = search_inv_player_2_parameter(playerid, 80)
 
 	if(radio_chanel == police_chanel) then
-		if search_inv_player(playerid, 28, 1) ~= 0 then
+		if search_inv_player(playerid, 10, 1) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Офицер "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
-		elseif search_inv_player(playerid, 29, 1) ~= 0 then
+		elseif search_inv_player(playerid, 10, 2) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Детектив "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
-		elseif search_inv_player(playerid, 30, 1) ~= 0 then
+		elseif search_inv_player(playerid, 10, 3) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Сержант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
-		elseif search_inv_player(playerid, 31, 1) ~= 0 then
+		elseif search_inv_player(playerid, 10, 4) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Лейтенант "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
-		elseif search_inv_player(playerid, 32, 1) ~= 0 then
+		elseif search_inv_player(playerid, 10, 5) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Капитан "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
-		elseif search_inv_player(playerid, 33, 1) ~= 0 then
+		elseif search_inv_player(playerid, 10, 6) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Шеф полиции "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		end
 	else
@@ -7363,7 +7358,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if search_inv_player(playerid, 10, 1) == 0 then
+	if search_inv_player_2_parameter(playerid, 10) == 0 then
 		sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 		return
 	end
@@ -7460,7 +7455,7 @@ function (playerid, cmd, value, id)
 		return
 	end
 
-	if search_inv_player(playerid, 10, 1) == 0 then
+	if search_inv_player_2_parameter(playerid, 10) == 0 then
 		sendMessage(playerid, "[ERROR] Вы не полицейский", red[1], red[2], red[3])
 		return
 	end
@@ -7556,7 +7551,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+	if search_inv_player(playerid, 10, 6) == 0 then
 		sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 		return
 	end
@@ -7589,7 +7584,7 @@ function (playerid, cmd, id, rang)
 		return
 	end
 
-	if search_inv_player(playerid, 10, 1) == 0 or search_inv_player(playerid, 33, 1) == 0 then
+	if search_inv_player(playerid, 10, 6) == 0 then
 		sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red[1], red[2], red[3])
 		return
 	end
