@@ -1868,7 +1868,7 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 			guiGridListClear(shoplist)
 			for k,v in pairs(getElementsByType("player")) do
-				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v))
+				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v).." (ОП - "..getElementData(v, "crimes_data")..")")
 			end
 		end
 		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -1876,7 +1876,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "ИД", 0.15)
 		guiGridListAddColumn(shoplist, "Ник", 0.8)
 		for k,v in pairs(getElementsByType("player")) do
-			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v))
+			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v).." (ОП - "..getElementData(v, "crimes_data")..")")
 		end
 	end
 	addEventHandler ( "onClientGUIClick", handbook, outputEditBox, false )
@@ -2330,23 +2330,18 @@ local vehicleid = getPlayerVehicle(playerid)
 		gui_window = nil
 		showCursor( false )
 
-		if int_upgrades ~= 0 and vehicleid then
-			int_upgrades = 0
-			
-			for k,v in pairs(getVehicleUpgrades(vehicleid)) do
-				removeVehicleUpgrade(vehicleid, v)
-			end
-
-			for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
-				addVehicleUpgrade(vehicleid, v)
-			end
+		for k,v in pairs(getVehicleUpgrades(vehicleid)) do
+			removeVehicleUpgrade(vehicleid, v)
 		end
 
-		if int_paint ~= -1 then
-			setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
-			int_paint = -1
+		for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
+			addVehicleUpgrade(vehicleid, v)
 		end
 
+		setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
+
+		int_upgrades = 0
+		int_paint = -1
 		int_stage = 0
 	end
 end

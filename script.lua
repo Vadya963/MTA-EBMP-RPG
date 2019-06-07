@@ -537,7 +537,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Парамедик", 10, 5000, 64},
 	{info_png[64][1].." Уборщик улиц", 11, 5000, 64},
 	{info_png[64][1].." Пожарный", 12, 5000, 64},
-	{info_png[64][1].." Патрульный", 13, 5000, 64},
+	{info_png[64][1].." SWAT", 13, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -2223,7 +2223,7 @@ function job_timer2 ()
 					end
 				end
 
-			elseif job[playername] == 13 then--работа патрульный
+			elseif job[playername] == 13 then--работа swat
 				if (getElementModel(playerid) == 285) then
 					if job_call[playername] == 0 then--старт работы
 						local randomize = random(1,#fire_pos)
@@ -3651,6 +3651,7 @@ function setVehicleStage_fun( vehicleid, value, value1, playerid, number )
 			if cash <= array_player_2[playername][1] then
 
 				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
+				setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
 
 				sendMessage(playerid, "Вы установили stage "..text.." за "..cash.."$", orange[1], orange[2], orange[3])
 
@@ -4929,7 +4930,8 @@ function car_spawn(number)
 			setVehiclePaintjob ( vehicleid, result[1]["paintjob"] )
 
 			setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
-
+			setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
+			
 			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
@@ -6773,7 +6775,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if job[playername] == 0 then
 					job[playername] = 13
 
-					me_chat(playerid, playername.." вышел(ла) на работу Патрульный")
+					me_chat(playerid, playername.." вышел(ла) на работу SWAT")
 				else
 					job[playername] = 0
 
