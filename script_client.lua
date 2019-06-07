@@ -926,6 +926,7 @@ end
 addEventHandler ( "onClientRender", getRootElement(), createText )
 
 local number_business = 0
+local tune_business = false
 local int_upgrades = 0
 local int_paint = -1
 local int_stage = 0
@@ -943,6 +944,7 @@ function tune_window_create (number)--создание окна тюнинга
 	local dimensions1 = dxGetTextWidth ( "Введите цвет в RGB", 1, m2font_dx )
 	local width = 355+50
 	local height = 235.0+(16.0*1)+10
+	tune_business = true
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), 20, width, height, number_business.." бизнес, Автомастерская", false, false )
 
 	local upgrades_table = guiCreateComboBox ( 180, 25, 215, 200, "Апгрейды", false, gui_window )
@@ -2330,19 +2332,22 @@ local vehicleid = getPlayerVehicle(playerid)
 		gui_window = nil
 		showCursor( false )
 
-		for k,v in pairs(getVehicleUpgrades(vehicleid)) do
-			removeVehicleUpgrade(vehicleid, v)
+		if vehicleid and tune_business then
+			for k,v in pairs(getVehicleUpgrades(vehicleid)) do
+				removeVehicleUpgrade(vehicleid, v)
+			end
+
+			for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
+				addVehicleUpgrade(vehicleid, v)
+			end
+
+			setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
+
+			int_upgrades = 0
+			int_paint = -1
+			int_stage = 0
+			tune_business = false
 		end
-
-		for k,v in pairs(getElementData(playerid, "car_upgrades_save")) do
-			addVehicleUpgrade(vehicleid, v)
-		end
-
-		setVehiclePaintjob ( vehicleid, getElementData(playerid, "car_paint_save") )
-
-		int_upgrades = 0
-		int_paint = -1
-		int_stage = 0
 	end
 end
 addEvent( "event_gui_delet", true )
