@@ -71,9 +71,6 @@ local zp_player_medic = 5000
 local zp_player_fire = 5000
 local zp_player_police = 5000
 local zp_player_busdriver = 12000
-local zp_car_75 = 200
-local zp_car_65 = 200
-local zp_car_78 = 200
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -1064,12 +1061,16 @@ local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, ин
 --места сброса предметов
 local down_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6}
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 24, 456},--порт лс
-	{2315.595703125,6.263671875,26.484375, 15, 65, 428},--банк
 	{2787.8974609375,-2455.974609375,13.633636474609, 15, 73, 456},--порт лс
-	{-1813.2890625,-1654.3330078125,22.398532867432, 15, 75, 408},--свалка
-	{2463.7587890625,-2716.375,1.1451852619648, 15, 78, 453},--доки лс
 	{966.951171875,2132.8623046875,10.8203125, 15, 88, 456},--мясокомбинат
 	{-1079.947265625,-1195.580078125,129.79998779297, 15, 89, 456},--скотобойня корм
+}
+
+--места разгрузки
+local down_car_subject_pos = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, зп 7}
+	{-1813.2890625,-1654.3330078125,22.398532867432, 15, 75, 408, 200},--свалка
+	{2315.595703125,6.263671875,26.484375, 15, 65, 428, 200},--банк
+	{2463.7587890625,-2716.375,1.1451852619648, 15, 78, 453, 200},--доки лс
 }
 
 local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интерьер 6, мир 7}
@@ -1555,7 +1556,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 420 then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--нету вызова
+							if job_call[playername] == 0 then
 								local randomize = random(1,#taxi_pos)
 
 								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
@@ -1565,7 +1566,7 @@ function job_timer2 ()
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
-							elseif job_call[playername] == 1 then--есть вызов
+							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = random(1,#taxi_pos)
 									local randomize_skin = 1
@@ -1596,7 +1597,7 @@ function job_timer2 ()
 									end
 								end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
+							elseif job_call[playername] == 2 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = random(zp_player_taxi/2,zp_player_taxi)
 
@@ -1622,13 +1623,13 @@ function job_timer2 ()
 
 			elseif job[playername] == 2 then--работа водителя мусоровоза
 				if vehicleid then
-					if getElementModel(vehicleid) == down_car_subject[4][6] then
+					if getElementModel(vehicleid) == down_car_subject_pos[1][6] then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 								local randomize = random(1,#taxi_pos)
 
-								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Соберите мусор, потом доставьте его на свалку", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
@@ -1637,29 +1638,34 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(zp_car_75/2,zp_car_75)
+									local randomize_zp = random(down_car_subject_pos[1][7]/2,down_car_subject_pos[1][7])
+									local randomize = random(1,#taxi_pos)
 
-									job_call[playername] = 2
+									give_subject( playerid, "car", down_car_subject_pos[1][5], randomize_zp, false )
 
-									give_subject( playerid, "car", 75, randomize_zp )
-
-									job_pos[playername] = {down_car_subject[4][1],down_car_subject[4][2],down_car_subject[4][3]-1}
+									job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
+							end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[4][4]) then
+							if isPointInCircle3D(x,y,z, down_car_subject_pos[1][1],down_car_subject_pos[1][2],down_car_subject_pos[1][3], down_car_subject_pos[1][4]) and amount_inv_car_1_parameter(vehicleid, down_car_subject_pos[1][5]) ~= 0 then
+								local randomize = amount_inv_car_2_parameter(vehicleid, down_car_subject_pos[1][5])
 
-									destroyElement(job_blip[playername])
-									destroyElement(job_marker[playername])
+								inv_car_delet_1_parameter(playerid, down_car_subject_pos[1][5], true)
 
-									job_blip[playername] = 0
-									job_marker[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
-								end
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_marker[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
 							end
 
 						end
@@ -1668,13 +1674,13 @@ function job_timer2 ()
 
 			elseif job[playername] == 3 then--работа инкассатора
 				if vehicleid then
-					if getElementModel(vehicleid) == down_car_subject[2][6] then
+					if getElementModel(vehicleid) == down_car_subject_pos[2][6] then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 								local randomize = random(1,#original_business_pos)
 
-								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Соберите деньги, потом доставьте их в банк (BS на карте)", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {original_business_pos[randomize][1],original_business_pos[randomize][2],original_business_pos[randomize][3]-1}
@@ -1683,29 +1689,34 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(zp_car_65/2,zp_car_65)
+									local randomize_zp = random(down_car_subject_pos[2][7]/2,down_car_subject_pos[2][7])
+									local randomize = random(1,#original_business_pos)
 
-									job_call[playername] = 2
+									give_subject( playerid, "car", down_car_subject_pos[2][5], randomize_zp, false )
 
-									give_subject( playerid, "car", 65, randomize_zp )
-
-									job_pos[playername] = {down_car_subject[2][1],down_car_subject[2][2],down_car_subject[2][3]-1}
+									job_pos[playername] = {original_business_pos[randomize][1],original_business_pos[randomize][2],original_business_pos[randomize][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
+							end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[2][4]) then
+							if isPointInCircle3D(x,y,z, down_car_subject_pos[2][1],down_car_subject_pos[2][2],down_car_subject_pos[2][3], down_car_subject_pos[2][4]) and amount_inv_car_1_parameter(vehicleid, down_car_subject_pos[2][5]) ~= 0 then
+								local randomize = amount_inv_car_2_parameter(vehicleid, down_car_subject_pos[2][5])
 
-									destroyElement(job_blip[playername])
-									destroyElement(job_marker[playername])
+								inv_car_delet_1_parameter(playerid, down_car_subject_pos[2][5], true)
 
-									job_blip[playername] = 0
-									job_marker[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
-								end
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_marker[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
 							end
 
 						end
@@ -1714,13 +1725,13 @@ function job_timer2 ()
 
 			elseif job[playername] == 4 then--работа рыболова
 				if vehicleid then
-					if getElementModel(vehicleid) == down_car_subject[5][6] then
+					if getElementModel(vehicleid) == down_car_subject_pos[3][6] then
 						if getSpeed(vehicleid) <= 5 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 								local randomize = random(1,#fish_pos)
 
-								sendMessage(playerid, "Плывите на место ловли", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Соберите рыбу, потом доставьте её в доки Лос Сантоса", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
 								job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
@@ -1729,29 +1740,34 @@ function job_timer2 ()
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize_zp = random(zp_car_78/2,zp_car_78)
+									local randomize_zp = random(down_car_subject_pos[3][7]/2,down_car_subject_pos[3][7])
+									local randomize = random(1,#fish_pos)
 
-									job_call[playername] = 2
+									give_subject( playerid, "car", down_car_subject_pos[3][5], randomize_zp, false )
 
-									give_subject( playerid, "car", 78, randomize_zp )
-
-									job_pos[playername] = {down_car_subject[5][1],down_car_subject[5][2],down_car_subject[5][3]-1}
+									job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
+							end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], down_car_subject[5][4]) then
+							if isPointInCircle3D(x,y,z, down_car_subject_pos[3][1],down_car_subject_pos[3][2],down_car_subject_pos[3][3], down_car_subject_pos[3][4]) and amount_inv_car_1_parameter(vehicleid, down_car_subject_pos[3][5]) ~= 0 then
+								local randomize = amount_inv_car_2_parameter(vehicleid, down_car_subject_pos[3][5])
 
-									destroyElement(job_blip[playername])
-									destroyElement(job_marker[playername])
+								inv_car_delet_1_parameter(playerid, down_car_subject_pos[3][5], true)
 
-									job_blip[playername] = 0
-									job_marker[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
-								end
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_marker[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
 							end
 
 						end
@@ -1763,7 +1779,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 519 and getElementModel(playerid) == 61 then
 						if getSpeed(vehicleid) <= 5 then
 
-							if job_call[playername] == 0 then--нету вызова
+							if job_call[playername] == 0 then
 								job_call[playername] = 1
 								local randomize = job_call[playername]
 
@@ -1840,7 +1856,7 @@ function job_timer2 ()
 
 			elseif (job[playername] == 6) then --работа Угонщик
 			
-				if (job_call[playername] == 0) then --нету вызова
+				if (job_call[playername] == 0) then 
 				
 					local vehicleid = player_car_theft()
 					local pos = {getElementPosition(vehicleid)}
@@ -1877,7 +1893,7 @@ function job_timer2 ()
 						setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 					end
 				
-				elseif (job_call[playername] == 2) then--сдаем вызов
+				elseif (job_call[playername] == 2) then
 				
 					if (isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) and job_vehicleid[playername][1] == vehicleid) then
 					
@@ -1905,7 +1921,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 7 then--забойщик скота
-				if job_call[playername] == 0 then--нету вызова
+				if job_call[playername] == 0 then
 					job_call[playername] = 1
 					local randomize = random(1,#korovi_pos)
 
@@ -1940,7 +1956,7 @@ function job_timer2 ()
 						end
 					end
 
-				elseif job_call[playername] == 2 then--сдаем вызов
+				elseif job_call[playername] == 2 then
 					destroyElement(job_blip[playername])
 					destroyElement(job_marker[playername])
 
@@ -1955,48 +1971,31 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == up_car_subject[5][6] then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
+								local randomize = random(1,#gans_pos)
 
-								sendMessage(playerid, "Езжайте на место погрузки", yellow[1], yellow[2], yellow[3])
+								sendMessage(playerid, "Езжайте на завод KACC чтобы загрузить ящики с оружием, а потом развезите их по аммунациям", yellow[1], yellow[2], yellow[3])
 
 								job_call[playername] = 1
-								job_pos[playername] = {up_car_subject[5][1],up_car_subject[5][2],up_car_subject[5][3]-1}
+								job_pos[playername] = {gans_pos[randomize][1],gans_pos[randomize][2],gans_pos[randomize][3]-1}
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
-								if(amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5]) ~= 0) then
-									job_pos[playername] = {x,y,z}
-								end
-
 							elseif job_call[playername] == 1 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) and amount_inv_car_1_parameter(vehicleid, up_car_subject[5][5]) ~= 0 then
 									local randomize = random(1,#gans_pos)
-
-									job_call[playername] = 2
+									local sic2p = search_inv_car_2_parameter(vehicleid, up_car_subject[5][5])
 
 									job_pos[playername] = {gans_pos[randomize][1],gans_pos[randomize][2],gans_pos[randomize][3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-								end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-									local randomize = amount_inv_car_2_parameter(vehicleid, up_car_subject[5][5])
+									inv_car_delet(playerid, up_car_subject[5][5], sic2p, true, false)
 
-									inv_car_delet_1_parameter(playerid, up_car_subject[5][5], true)
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+sic2p, playername )
 
-									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
-
-									sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
-
-									destroyElement(job_blip[playername])
-									destroyElement(job_marker[playername])
-
-									job_blip[playername] = 0
-									job_marker[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
+									sendMessage(playerid, "Вы получили "..sic2p.."$", green[1], green[2], green[3])
 								end
 							end
 
@@ -2009,7 +2008,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 437 and getElementModel(playerid) == 253 then
 						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, 74) ~= 0 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 
 								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
 
@@ -2034,7 +2033,7 @@ function job_timer2 ()
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
 
-							elseif job_call[playername] == 4 then--сдаем вызов
+							elseif job_call[playername] == 4 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
 									local randomize = random(zp_player_busdriver/2,zp_player_busdriver)
 
@@ -2063,7 +2062,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 416 and (getElementModel(playerid) == 274 or getElementModel(playerid) == 275 or getElementModel(playerid) == 276) then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--нету вызова
+							if job_call[playername] == 0 then
 								local randomize = random(1,#taxi_pos)
 
 								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
@@ -2073,7 +2072,7 @@ function job_timer2 ()
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
-							elseif job_call[playername] == 1 then--есть вызов
+							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = random(1,#taxi_pos)
 									local randomize_skin = 1
@@ -2103,7 +2102,7 @@ function job_timer2 ()
 									end
 								end
 
-							elseif job_call[playername] == 2 then--сдаем вызов
+							elseif job_call[playername] == 2 then
 								for k,v in pairs(hospital_spawn) do
 									if isPointInCircle3D(x,y,z, v[1],v[2],v[3], 40) then
 										local randomize = random(zp_player_medic/2,zp_player_medic)
@@ -2130,7 +2129,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 574 then
 						if getSpeed(vehicleid) < 61 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 
 								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
 
@@ -2151,7 +2150,7 @@ function job_timer2 ()
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								end
 
-							elseif job_call[playername][3] == #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ] then--сдаем вызов
+							elseif job_call[playername][3] == #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ] then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
 									local randomize = random(zp_player_sas*job_call[playername][3]/2,zp_player_sas*job_call[playername][3])
 
@@ -2178,7 +2177,7 @@ function job_timer2 ()
 					if getElementModel(vehicleid) == 407 and (getElementModel(playerid) == 277 or getElementModel(playerid) == 278 or getElementModel(playerid) == 279) then
 						if getSpeed(vehicleid) < 1 then
 
-							if job_call[playername] == 0 then--старт работы
+							if job_call[playername] == 0 then
 								local randomize = random(1,#fire_pos)
 
 								sendMessage(playerid, "Езжайте на вызов", yellow[1], yellow[2], yellow[3])
@@ -2199,7 +2198,7 @@ function job_timer2 ()
 									triggerClientEvent( playerid, "event_createFire", playerid, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40, 10, 1)
 								end
 
-							elseif job_call[playername] == 60 then--сдаем вызов
+							elseif job_call[playername] == 60 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize = random(zp_player_fire/2,zp_player_fire)
 
@@ -2225,7 +2224,7 @@ function job_timer2 ()
 
 			elseif job[playername] == 13 then--работа swat
 				if (getElementModel(playerid) == 285) then
-					if job_call[playername] == 0 then--старт работы
+					if job_call[playername] == 0 then
 						local randomize = random(1,#fire_pos)
 
 						--[[while true do
@@ -3114,23 +3113,41 @@ function amount_inv_car_2_parameter(vehicleid, id1)--выводит сумму �
 	return val
 end
 
-function inv_car_empty(playerid, id1, id2)--выдача предмета в авто
+function inv_car_empty(playerid, id1, id2, load_value)--выдача предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
 	local plate = getVehiclePlateText ( vehicleid )
 	local count = 0
 
-	for i=0,max_inv do
-		if array_car_1[plate][i+1] == 0 then
-			array_car_1[plate][i+1] = id1
-			array_car_2[plate][i+1] = id2
+	if load_value then
+		for i=0,max_inv do
+			if array_car_1[plate][i+1] == 0 then
+				array_car_1[plate][i+1] = id1
+				array_car_2[plate][i+1] = id2
 
-			count = count+1
+				count = count+1
 
-			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 
-			if state_inv_player[playername] == 1 then
-				triggerClientEvent( playerid, "event_change_image", playerid, "car", i, array_car_1[plate][i+1] )
+				if state_inv_player[playername] == 1 then
+					triggerClientEvent( playerid, "event_change_image", playerid, "car", i, array_car_1[plate][i+1] )
+				end
+			end
+		end
+	else
+		for i=0,max_inv do
+			if array_car_1[plate][i+1] == 0 then
+				array_car_1[plate][i+1] = id1
+				array_car_2[plate][i+1] = id2
+
+				count = count+1
+
+				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+
+				if state_inv_player[playername] == 1 then
+					triggerClientEvent( playerid, "event_change_image", playerid, "car", i, array_car_1[plate][i+1] )
+				end
+				break
 			end
 		end
 	end
@@ -3147,7 +3164,7 @@ function inv_car_empty(playerid, id1, id2)--выдача предмета в а�
 	return count
 end
 
-function inv_car_delet(playerid, id1, id2, delet_inv)--удаления предмета в авто
+function inv_car_delet(playerid, id1, id2, delet_inv, unload_value)--удаления предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
 	local plate = getVehiclePlateText ( vehicleid )
@@ -3157,12 +3174,24 @@ function inv_car_delet(playerid, id1, id2, delet_inv)--удаления пред
 		state_inv_player[playername] = 0
 	end
 
-	for i=0,max_inv do
-		if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
-			array_car_1[plate][i+1] = 0
-			array_car_2[plate][i+1] = 0
+	if unload_value then
+		for i=0,max_inv do
+			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
+				array_car_1[plate][i+1] = 0
+				array_car_2[plate][i+1] = 0
 
-			triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+			end
+		end
+	else
+		for i=0,max_inv do
+			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
+				array_car_1[plate][i+1] = 0
+				array_car_2[plate][i+1] = 0
+
+				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+				break
+			end
 		end
 	end
 
@@ -4167,7 +4196,7 @@ function cow_farms(playerid, value, val1, val2)
 		end
 
 	elseif value == "job" then
-		give_subject(playerid, "player", lic, val1)
+		give_subject(playerid, "player", lic, val1, true)
 
 	elseif value == "load" then
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
@@ -4186,7 +4215,7 @@ function cow_farms(playerid, value, val1, val2)
 	elseif value == "unload" then
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
-		if not isPointInCircle3D(x,y,z, down_car_subject[6][1],down_car_subject[6][2],down_car_subject[6][3], down_car_subject[6][4]) then
+		if not isPointInCircle3D(x,y,z, down_car_subject[3][1],down_car_subject[3][2],down_car_subject[3][3], down_car_subject[3][4]) then
 			return false
 		end
 
@@ -4194,7 +4223,7 @@ function cow_farms(playerid, value, val1, val2)
 			return true
 		end
 
-		inv_car_delet(playerid, 88, val2, true)
+		inv_car_delet(playerid, 88, val2, true, true)
 
 		local money = val1*val2
 
@@ -4203,7 +4232,7 @@ function cow_farms(playerid, value, val1, val2)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
 
-		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..cash.."$", green[1], green[2], green[3])
+		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт за "..cash.."$", green[1], green[2], green[3])
 
 		sqlite( "UPDATE cow_farms_db SET money = money + '"..cash2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
@@ -4213,7 +4242,7 @@ function cow_farms(playerid, value, val1, val2)
 		local money = val1*val2
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'" )
 
-		if not isPointInCircle3D(x,y,z, down_car_subject[7][1],down_car_subject[7][2],down_car_subject[7][3], down_car_subject[7][4]) then
+		if not isPointInCircle3D(x,y,z, down_car_subject[4][1],down_car_subject[4][2],down_car_subject[4][3], down_car_subject[4][4]) then
 			return false
 		end
 
@@ -4227,11 +4256,11 @@ function cow_farms(playerid, value, val1, val2)
 			return true
 		end
 
-		inv_car_delet(playerid, 89, val2, true)
+		inv_car_delet(playerid, 89, val2, true, true)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 
-		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[89][1].." "..val1.." шт ("..val2.."$ за 1 шт) за "..money.."$", green[1], green[2], green[3])
+		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[89][1].." "..val1.." шт за "..money.."$", green[1], green[2], green[3])
 
 		sqlite( "UPDATE cow_farms_db SET money = money - '"..money.."', prod = prod + '"..val1.."' WHERE number = '"..search_inv_player_2_parameter(playerid, lic).."'")
 
@@ -4343,10 +4372,17 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		for k,v in pairs(up_car_subject) do
 			createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 		end
 
 		for k,v in pairs(down_car_subject) do
 			createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
+		end
+
+		for k,v in pairs(down_car_subject_pos) do
+			createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 		end
 
 		for k,v in pairs(t_s_salon) do
@@ -4363,14 +4399,6 @@ function displayLoadedRes ( res )--старт ресурсов
 
 
 		--создание маркеров
-		for k,v in pairs(up_car_subject) do 
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
-		end
-
-		for k,v in pairs(down_car_subject) do 
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
-		end
-
 		for k,v in pairs(up_player_subject) do
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 			setElementInterior(marker, v[7])
@@ -5399,7 +5427,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					end
 				end
 
-				give_subject(playerid, "car", v[5], random(v[7]/2,v[7]))
+				give_subject(playerid, "car", v[5], random(v[7]/2,v[7]), true)
 			end
 		end
 
@@ -5412,7 +5440,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					end
 				end
 
-				give_subject(playerid, "player", v[5], random(1,v[6]))
+				give_subject(playerid, "player", v[5], random(1,v[6]), true)
 			end
 		end
 
@@ -5715,7 +5743,7 @@ function left_alt_down (playerid, key, keyState)
 	end
 end
 
-function give_subject( playerid, value, id1, id2 )--выдача предметов игроку или авто
+function give_subject( playerid, value, id1, id2, load_value )--выдача предметов игроку или авто
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local vehicleid = getPlayerVehicle(playerid)
@@ -5794,24 +5822,14 @@ function give_subject( playerid, value, id1, id2 )--выдача предмет�
 				end
 			end
 
-			inv_car_empty(playerid, id1, id2)
+			inv_car_empty(playerid, id1, id2, load_value)
 
-			local count = search_inv_car(vehicleid, id1, id2)
-
-			sendMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." "..count.." шт за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
+			sendMessage(playerid, "Вы загрузили в т/с "..info_png[id1][1].." за "..id2.."$", svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
 				
 			if id1 == 24 then
 				sendMessage(playerid, "[TIPS] Езжайте в порт или в любой бизнес, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-			elseif id1 == 65 then
-				sendMessage(playerid, "[TIPS] Езжайте в банк, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-			elseif id1 == 66 then
-				sendMessage(playerid, "[TIPS] Езжайте в аммунацию, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 73 then
 				sendMessage(playerid, "[TIPS] Езжайте в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-			elseif id1 == 75 then
-				sendMessage(playerid, "[TIPS] Езжайте на свалку, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
-			elseif id1 == 78 then
-				sendMessage(playerid, "[TIPS] Плывите в порт, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 88 then
 				sendMessage(playerid, "[TIPS] Езжайте на мясокомбинат, чтобы разгрузиться", color_tips[1], color_tips[2], color_tips[3])
 			elseif id1 == 89 then
@@ -5865,7 +5883,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 						return
 					end
 
-					inv_car_delet(playerid, id, sic2p, true)
+					inv_car_delet(playerid, id, sic2p, true, true)
 
 					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
 
@@ -5880,7 +5898,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
 					if not cow_farms(playerid, "unload", count, sic2p) and not cow_farms(playerid, "unload_prod", count, sic2p) then
 
-						inv_car_delet(playerid, id, sic2p, true)
+						inv_car_delet(playerid, id, sic2p, true, true)
 
 						money = count*sic2p
 
@@ -8016,7 +8034,7 @@ function (playerid, cmd, id1, id2 )
 		return
 	end
 
-	if inv_car_empty(playerid, val1, val2) then
+	if inv_car_empty(playerid, val1, val2, true) then
 		sendMessage(playerid, "Вы создали "..info_png[val1][1].." "..val2.." "..info_png[val1][2], lyme[1], lyme[2], lyme[3])
 	else
 		sendMessage(playerid, "[ERROR] Инвентарь полон", red[1], red[2], red[3])
