@@ -161,6 +161,27 @@
 	
 	<file src="upgrade/999_w_s.png"/>	
 
+	<!--пак оружия-->
+	<file src="weapons_pack/grenade.txd"/>
+	<file src="weapons_pack/grenade.dff"/>
+	<file src="weapons_pack/colt45.txd"/>
+	<file src="weapons_pack/colt45.dff"/>
+	<file src="weapons_pack/desert_eagle.txd"/>
+	<file src="weapons_pack/desert_eagle.dff"/>
+	<file src="weapons_pack/chromegun.txd"/>
+	<file src="weapons_pack/chromegun.dff"/>
+	<file src="weapons_pack/nitestick.txd"/>
+	<file src="weapons_pack/nitestick.dff"/>
+	<file src="weapons_pack/bat.txd"/>
+	<file src="weapons_pack/bat.dff"/>
+	<file src="weapons_pack/knifecur.txd"/>
+	<file src="weapons_pack/knifecur.dff"/>
+	<file src="weapons_pack/cuntgun.txd"/>
+	<file src="weapons_pack/cuntgun.dff"/>
+	<file src="weapons_pack/shovel.txd"/>
+	<file src="weapons_pack/shovel.dff"/>
+
+
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>
 	<script src="parachute/parachute.lua"/>
