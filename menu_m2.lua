@@ -9,45 +9,32 @@ local menu_m2_table_text = {
 	["вертолет"] = {"назад к т/с", "прицепить", "", "отцепить"},
 	["назад к т/с"] = {"фары", "двигатель", "вертолет", "двери"},
 
-	--triggerEvent
-	["завести"] = {"event", "event_client_car_engine", "true"},
-	["заглушить"] = {"event", "event_client_car_engine", "false"},
+	["анимации"] = {"2 страница", "сесть 1", "поднять руки", "сесть 2"},
+	["поднять руки"] = {"назад к анимации", "запуск поднять руки", "", "остановить анимацию"},
+	["сесть 1"] = {"назад к анимации", "запуск сесть 1", "", "остановить анимацию"},
+	["сесть 2"] = {"назад к анимации", "запуск сесть 2", "", "остановить анимацию"},
+	["назад к анимации"] = {"2 страница", "сесть 1", "поднять руки", "сесть 2"},
 
-	["открыть"] = {"event", "event_client_car_door", "false"},
-	["закрыть"] = {"event", "event_client_car_door", "true"},
+	--triggerServerEvent
+	--тс
+	["завести"] = {"event", "event_server_car_engine", "true"},
+	["заглушить"] = {"event", "event_server_car_engine", "false"},
 
-	["включить"] = {"event", "event_client_car_light", "true"},
-	["выключить"] = {"event", "event_client_car_light", "false"},
+	["открыть"] = {"event", "event_server_car_door", "false"},
+	["закрыть"] = {"event", "event_server_car_door", "true"},
 
-	["прицепить"] = {"event", "event_client_attach", "true"},
-	["отцепить"] = {"event", "event_client_attach", "false"},
+	["включить"] = {"event", "event_server_car_light", "true"},
+	["выключить"] = {"event", "event_server_car_light", "false"},
+
+	["прицепить"] = {"event", "event_server_attach", "true"},
+	["отцепить"] = {"event", "event_server_attach", "false"},
+
+	--анимации
+	["запуск поднять руки"] = {"event", "event_server_anim_player", "rob_bank,shp_handsup_scr,true"},
+	["запуск сесть 1"] = {"event", "event_server_anim_player", "attractors,stepsit_loop,true"},
+	["запуск сесть 2"] = {"event", "event_server_anim_player", "ped,seat_idle,true"},
+	["остановить анимацию"] = {"event", "event_server_anim_player", "nil,nil,false"},
 }
-
---triggerEvent---------------------------------------------------------------------------
-function outputEditBox(value)
-	triggerServerEvent( "event_server_attach", getRootElement(), localPlayer, value )
-end
-addEvent( "event_client_attach", true )
-addEventHandler ( "event_client_attach", getRootElement(), outputEditBox )
-
-function outputEditBox(value)
-	triggerServerEvent( "event_server_car_engine", getRootElement(), localPlayer, value )
-end
-addEvent( "event_client_car_engine", true )
-addEventHandler ( "event_client_car_engine", getRootElement(), outputEditBox )
-
-function outputEditBox(value)
-	triggerServerEvent( "event_server_car_door", getRootElement(), localPlayer, value )
-end
-addEvent( "event_client_car_door", true )
-addEventHandler ( "event_client_car_door", getRootElement(), outputEditBox )
-
-function outputEditBox(value)
-	triggerServerEvent( "event_server_car_light", getRootElement(), localPlayer, value )
-end
-addEvent( "event_client_car_light", true )
-addEventHandler ( "event_client_car_light", getRootElement(), outputEditBox )
------------------------------------------------------------------------------------------
 
 --menu from mafia 2
 local menu_m2 = guiCreateStaticImage( screenWidth/2-30, screenHeight-100, 57, 58, "gui/window-m2.png", false )
@@ -150,7 +137,7 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 							end
 						end
 					else
-						triggerEvent ( v1[2], getRootElement(), v1[3] )
+						triggerServerEvent ( v1[2], getRootElement(), localPlayer, v1[3] )
 					end
 				end
 			end

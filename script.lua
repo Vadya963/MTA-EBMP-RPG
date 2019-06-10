@@ -4899,9 +4899,10 @@ end
 function detachTrailer(vehicleid)--прицепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
+	local playerid = getVehicleController ( vehicleid )
 
 	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 then
+	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 and search_inv_player_2_parameter(playerid, 10) ~= 0 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
@@ -4919,7 +4920,7 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 	local plate = getVehiclePlateText ( trailer )
 
 	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 then
+	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 and search_inv_player_2_parameter(playerid, 10) ~= 0 then
 		local x,y,z = getElementPosition(trailer)
 		local rx,ry,rz = getElementRotation(trailer)
 
@@ -8164,7 +8165,7 @@ function (playerid, cmd, value, id)
 	end
 
 	if id == nil then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", red[1], red[2], red[3])
+		sendMessage(playerid, "[ERROR] /"..cmd.." [player | car | house] [имя игрока | номер т/с | номер дома]", red[1], red[2], red[3])
 		return
 	end
 
@@ -8593,5 +8594,19 @@ function ( playerid, state )
 
 			return
 		end
+	end
+end)
+
+addEvent("event_server_anim_player", true)
+addEventHandler("event_server_anim_player", getRootElement(),
+function ( playerid, state )
+	local x,y,z = getElementPosition(playerid)
+	local playername = getPlayerName ( playerid )
+	local spl = split(state, ",")
+
+	if spl[3] == "true" then
+		setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, true)
+	else
+		setPedAnimation(playerid, nil, nil)
 	end
 end)
