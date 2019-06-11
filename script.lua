@@ -48,7 +48,7 @@ local house_pos = {}--позиции домов
 local police_chanel = 1--канал копов
 local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
-local plates_pos_count = 0--кол-во растений на ферме
+local grass_pos_count = 0--кол-во растений на ферме
 local ferm_etap_count = 300--кол-во этапов за раз
 
 --законы
@@ -77,6 +77,7 @@ local zp_player_busdriver = 12000
 local money_guns_zone = 5000
 local money_guns_zone_business = 1000
 local zp_player_ferm = 100
+local zp_player_ferm_etap = 10000
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -1366,7 +1367,7 @@ local busdriver_pos = {
 }
 
 local korovi_pos = {}
-local plates_pos = {}
+local grass_pos = {}
 
 --инв-рь игрока
 local array_player_1 = {}
@@ -2396,11 +2397,11 @@ function job_timer2 ()
 
 						elseif job_call[playername] == 1 then
 							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
-								local randomize = random(1,#plates_pos)
+								local randomize = random(1,#grass_pos)
 
 								job_call[playername] = 2
 
-								job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]+2}
+								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+2}
 
 								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
@@ -2422,18 +2423,24 @@ function job_timer2 ()
 									end
 								end, (5*1000), 1)
 
-								plates_pos_count = plates_pos_count+ferm_etap_count
+								grass_pos_count = grass_pos_count+ferm_etap_count
 
-								if plates_pos_count == #plates_pos then
+								if grass_pos_count == #grass_pos then
 									ferm_etap = 2
-									plates_pos_count = 0
+									grass_pos_count = 0
 
-									for k,v in pairs(plates_pos) do
-										setElementPosition(v[1], v[2],v[3],2)
+									for k,v in pairs(grass_pos) do
+										setElementPosition(v[1], v[2],v[3],v[4]+2)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
 										job_call[getPlayerName(i)] = 0
+
+										local randomize = zp_player_ferm_etap
+
+										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+										sendMessage(i, "Вы получили премию "..randomize.."$", green[1], green[2], green[3])
 									end
 								end
 
@@ -2458,11 +2465,11 @@ function job_timer2 ()
 
 						elseif job_call[playername] == 1 then
 							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
-								local randomize = random(1,#plates_pos)
+								local randomize = random(1,#grass_pos)
 
 								job_call[playername] = 2
 
-								job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]+1}
+								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+1}
 
 								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
@@ -2486,18 +2493,24 @@ function job_timer2 ()
 									end
 								end, (5*1000), 1)
 
-								plates_pos_count = plates_pos_count+ferm_etap_count
+								grass_pos_count = grass_pos_count+ferm_etap_count
 
-								if plates_pos_count == #plates_pos then
+								if grass_pos_count == #grass_pos then
 									ferm_etap = 3
-									plates_pos_count = 0
+									grass_pos_count = 0
 
-									for k,v in pairs(plates_pos) do
-										setElementPosition(v[1], v[2],v[3],3)
+									for k,v in pairs(grass_pos) do
+										setElementPosition(v[1], v[2],v[3],v[4]+3)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
 										job_call[getPlayerName(i)] = 0
+
+										local randomize = zp_player_ferm_etap
+
+										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+										sendMessage(i, "Вы получили премию "..randomize.."$", green[1], green[2], green[3])
 									end
 								end
 
@@ -2513,17 +2526,17 @@ function job_timer2 ()
 
 					elseif ferm_etap == 3 then
 						if job_call[playername] == 0 then
-							local randomize = random(1,#plates_pos)
+							local randomize = random(1,#grass_pos)
 
 							job_call[playername] = {1,randomize}
-							job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]-1}
+							job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]-1}
 
 							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
 						elseif job_call[playername][1] == 1 then
 							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
-								local randomize = random(1,#plates_pos)
+								local randomize = random(1,#grass_pos)
 
 								setPedAnimation(playerid, "rob_bank", "cat_safe_rob", -1, true, false, false, false)
 
@@ -2549,18 +2562,24 @@ function job_timer2 ()
 
 								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
-								plates_pos_count = plates_pos_count+ferm_etap_count
+								grass_pos_count = grass_pos_count+ferm_etap_count
 
-								if plates_pos_count == #plates_pos then
+								if grass_pos_count == #grass_pos then
 									ferm_etap = 1
-									plates_pos_count = 0
+									grass_pos_count = 0
 
-									for k,v in pairs(plates_pos) do
-										setElementPosition(v[1], v[2],v[3],0)
+									for k,v in pairs(grass_pos) do
+										setElementPosition(v[1], v[2],v[3],v[4]-3)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
 										job_call[getPlayerName(i)] = 0
+
+										local randomize = zp_player_ferm_etap
+
+										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+										sendMessage(i, "Вы получили премию "..randomize.."$", green[1], green[2], green[3])
 									end
 								end
 
@@ -4655,7 +4674,11 @@ function displayLoadedRes ( res )--старт ресурсов
 			for i=0,19 do
 				local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),0.0
 				local obj = createObject(804, x,y,z, 0,0,0)
-				plates_pos[#plates_pos+1] = {obj, x,y,z}
+				if 18 <= i and i <= 19 then
+					grass_pos[#grass_pos+1] = {obj, x,y,z-0.5}
+				else
+					grass_pos[#grass_pos+1] = {obj, x,y,z}
+				end
 			end
 		end
 	end
