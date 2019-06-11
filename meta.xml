@@ -162,25 +162,26 @@
 	<file src="upgrade/999_w_s.png"/>	
 
 	<!--пак оружия-->
-	<file src="weapons_pack/grenade.txd"/>
-	<file src="weapons_pack/grenade.dff"/>
-	<file src="weapons_pack/colt45.txd"/>
-	<file src="weapons_pack/colt45.dff"/>
-	<file src="weapons_pack/desert_eagle.txd"/>
-	<file src="weapons_pack/desert_eagle.dff"/>
-	<file src="weapons_pack/chromegun.txd"/>
-	<file src="weapons_pack/chromegun.dff"/>
-	<file src="weapons_pack/nitestick.txd"/>
-	<file src="weapons_pack/nitestick.dff"/>
-	<file src="weapons_pack/bat.txd"/>
-	<file src="weapons_pack/bat.dff"/>
-	<file src="weapons_pack/knifecur.txd"/>
-	<file src="weapons_pack/knifecur.dff"/>
-	<file src="weapons_pack/cuntgun.txd"/>
-	<file src="weapons_pack/cuntgun.dff"/>
-	<file src="weapons_pack/shovel.txd"/>
-	<file src="weapons_pack/shovel.dff"/>
-
+	<file src="dff_and_txd/grenade.txd"/>
+	<file src="dff_and_txd/grenade.dff"/>
+	<file src="dff_and_txd/colt45.txd"/>
+	<file src="dff_and_txd/colt45.dff"/>
+	<file src="dff_and_txd/desert_eagle.txd"/>
+	<file src="dff_and_txd/desert_eagle.dff"/>
+	<file src="dff_and_txd/chromegun.txd"/>
+	<file src="dff_and_txd/chromegun.dff"/>
+	<file src="dff_and_txd/nitestick.txd"/>
+	<file src="dff_and_txd/nitestick.dff"/>
+	<file src="dff_and_txd/bat.txd"/>
+	<file src="dff_and_txd/bat.dff"/>
+	<file src="dff_and_txd/knifecur.txd"/>
+	<file src="dff_and_txd/knifecur.dff"/>
+	<file src="dff_and_txd/cuntgun.txd"/>
+	<file src="dff_and_txd/cuntgun.dff"/>
+	<file src="dff_and_txd/shovel.txd"/>
+	<file src="dff_and_txd/shovel.dff"/>
+	<file src="dff_and_txd/leyka.txd"/>
+	<file src="dff_and_txd/leyka.dff"/>
 
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>

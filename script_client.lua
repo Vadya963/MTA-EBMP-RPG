@@ -273,13 +273,11 @@ end, 60000, 0)
 setTimer(function ()
 	pos_timer = 1
 
-	for k,v in pairs(getElementData(localPlayer, "weapon_table")) do
-		if v[5] then
-			local txd = engineLoadTXD ( "weapons_pack/"..v[5]..".txd" )
-			engineImportTXD ( txd, v[6] )
-			local dff = engineLoadDFF ( "weapons_pack/"..v[5]..".dff" )
-			engineReplaceModel ( dff, v[6] )
-		end
+	for k,v in pairs(getElementData(localPlayer, "dff_and_txd_table")) do
+		local txd = engineLoadTXD ( "dff_and_txd/"..v[1]..".txd" )
+		engineImportTXD ( txd, v[2] )
+		local dff = engineLoadDFF ( "dff_and_txd/"..v[1]..".dff" )
+		engineReplaceModel ( dff, v[2] )
 	end
 end, 5000, 1)
 
@@ -458,7 +456,7 @@ local weapon = {
 	[38] = {info_png[38][1], 4, 150, 1},
 	--[40] = {info_png[40][1], 15, 150, 1},
 	[41] = {info_png[41][1], 34, 6000, 25},
-	[47] = {info_png[47][1], 41, 50, 25},
+	--[47] = {info_png[47][1], 41, 50, 25},
 	[49] = {info_png[49][1], 6, 50, 1},
 }
 

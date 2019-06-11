@@ -1,4 +1,5 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
+local coef_dimensions = 15
 
 local menu_m2_table_text = {
 	--button text
@@ -78,19 +79,19 @@ function menu_mafia_2( key, keyState )
 
 			for k,v in pairs(menu_m2_table) do
 				local dimensions = dxGetTextWidth ( v, 1, "default-bold" )
-				dimensions = dimensions+10
+				dimensions = dimensions+coef_dimensions
 				guiSetText(arrow_m2[k][2], v)
 
 				local px1,py1 = guiGetPosition(arrow_m2[k][2], false)
 				guiSetSize(arrow_m2[k][2], dimensions, 15, false)
 				if k == 1 then
-					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2), py1, false)
+					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
 				elseif k == 2 then
 					guiSetPosition(arrow_m2[k][2], px-dimensions-5, py1, false)
 				elseif k == 3 then
-					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2), py1, false)
+					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
 				elseif k == 4 then
-					guiSetPosition(arrow_m2[k][2], px+sx+5+7, py1, false)
+					guiSetPosition(arrow_m2[k][2], px+sx+5+coef_dimensions, py1, false)
 				end
 			end
 
@@ -121,19 +122,19 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 					if v1[1] ~= "event" then
 						for k2,v2 in pairs(menu_m2_table_text[k1]) do
 							local dimensions = dxGetTextWidth ( v2, 1, "default-bold" )
-							dimensions = dimensions+10
+							dimensions = dimensions+coef_dimensions
 							guiSetText(arrow_m2[k2][2], v2)
 
 							local px1,py1 = guiGetPosition(arrow_m2[k2][2], false)
 							guiSetSize(arrow_m2[k2][2], dimensions, 15, false)
 							if k2 == 1 then
-								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2), py1, false)
+								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
 							elseif k2 == 2 then
 								guiSetPosition(arrow_m2[k2][2], px-dimensions-5, py1, false)
 							elseif k2 == 3 then
-								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2), py1, false)
+								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
 							elseif k == 4 then
-								guiSetPosition(arrow_m2[k2][2], px+sx+5+7, py1, false)
+								guiSetPosition(arrow_m2[k2][2], px+sx+5+coef_dimensions, py1, false)
 							end
 						end
 					else

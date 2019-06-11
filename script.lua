@@ -47,6 +47,9 @@ local business_pos = {}--позиции бизнесов
 local house_pos = {}--позиции домов
 local police_chanel = 1--канал копов
 local car_stage_coef = 0.33--коэф-нт прокачки двигла
+local ferm_etap = 1--этап фермы, всего 3
+local plates_pos_count = 0--кол-во растений на ферме
+local ferm_etap_count = 300--кол-во этапов за раз
 
 --законы
 local zakon_alcohol = 1
@@ -71,6 +74,9 @@ local zp_player_medic = 5000
 local zp_player_fire = 5000
 local zp_player_police = 5000
 local zp_player_busdriver = 12000
+local money_guns_zone = 5000
+local money_guns_zone_business = 1000
+local zp_player_ferm = 100
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -96,8 +102,6 @@ local gray = {150,150,150}--серый
 local green_rc = {115,180,97}--темно зеленый
 
 --капты-----------------------------------------------------------------------------------------------------------
-local money_guns_zone = 5000
-local money_guns_zone_business = 1000
 local point_guns_zone = {0,0, 0,0, 0,0}--1-идет ли захват, 2-номер зоны, 3-атакующие, 4-очки захвата, 5-защищающие, 6-очки захвата
 local time_gz = 1*60
 local time_guns_zone = time_gz
@@ -459,15 +463,28 @@ local info_png = {
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 }
 
+local dff_and_txd_table = {
+	{"grenade", 342},
+	{"colt45", 346},
+	{"desert_eagle", 348},
+	{"chromegun", 349},
+	{"nitestick", 334},
+	{"bat", 336},
+	{"knifecur", 335},
+	{"cuntgun", 357},
+	{"shovel", 337},
+	{"leyka", 321},
+}
+
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
 	{info_png[81][1].." 1 "..info_png[81][2].." ", info_png[82][1].." 1 "..info_png[82][2].." + "..info_png[83][1].." 100 "..info_png[83][2], "82,83", "1,100", "81,1"},
 	{info_png[20][1].." 1 "..info_png[20][2].." ", info_png[90][1].." 3 "..info_png[90][2].." + "..info_png[90][1].." 78 "..info_png[90][2], "90,90", "3,78", "20,1"},
 }
 
 local weapon = {
-	[9] = {info_png[9][1], 16, 360, 5, "grenade", 342},
-	[12] = {info_png[12][1], 22, 240, 25, "colt45", 346},
-	[13] = {info_png[13][1], 24, 1440, 25, "desert_eagle", 348},
+	[9] = {info_png[9][1], 16, 360, 5},
+	[12] = {info_png[12][1], 22, 240, 25},
+	[13] = {info_png[13][1], 24, 1440, 25},
 	[14] = {info_png[14][1], 30, 4200, 25},
 	[15] = {info_png[15][1], 31, 5400, 25},
 	[16] = {info_png[16][1], 32, 360, 25},
@@ -475,15 +492,15 @@ local weapon = {
 	[18] = {info_png[18][1], 28, 600, 25},
 	[19] = {info_png[19][1], 17, 360, 5},
 	[26] = {info_png[26][1], 23, 720, 25},
-	[34] = {info_png[34][1], 25, 720, 25, "chromegun", 349},
+	[34] = {info_png[34][1], 25, 720, 25},
 	[35] = {info_png[35][1], 46, 200, 1},
-	[36] = {info_png[36][1], 3, 150, 1, "nitestick", 334},
-	[37] = {info_png[37][1], 5, 150, 1, "bat", 336},
-	[38] = {info_png[38][1], 4, 150, 1, "knifecur", 335},
+	[36] = {info_png[36][1], 3, 150, 1},
+	[37] = {info_png[37][1], 5, 150, 1},
+	[38] = {info_png[38][1], 4, 150, 1},
 	--[40] = {info_png[40][1], 15, 150, 1},
-	[41] = {info_png[41][1], 33, 6000, 25, "cuntgun", 357},
+	[41] = {info_png[41][1], 33, 6000, 25},
 	[47] = {info_png[47][1], 41, 50, 25},
-	[49] = {info_png[49][1], 6, 50, 1, "shovel", 337},
+	[49] = {info_png[49][1], 6, 50, 1},
 }
 
 local shop = {
@@ -498,6 +515,7 @@ local shop = {
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 5000},
 	[46] = {info_png[46][1], 1, 100},
+	[47] = {info_png[47][1], 25, 50},
 	[52] = {info_png[52][1], 1, 1000},
 	[53] = {info_png[53][1], 1, 100},
 	[54] = {info_png[54][1], 1, 50},
@@ -535,6 +553,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Уборщик улиц", 11, 5000, 64},
 	{info_png[64][1].." Пожарный", 12, 5000, 64},
 	{info_png[64][1].." SWAT", 13, 5000, 64},
+	{info_png[64][1].." Фермер", 14, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -1019,13 +1038,14 @@ local interior_job = {--12
 	{18, "Отель Сфинкс", 1726.1370,-1645.2300,20.2260, 2239.05078125,1285.7119140625,10.8203125, 35, 20, "", 5},
 	{18, "Отель Виктория", 1726.1370,-1645.2300,20.2260, -2463.44140625,131.7275390625,35.171875, 35, 21, "", 5},
 	{5, "Черный рынок", 322.1117,1119.3270,1083.8830, 2165.9541015625,-1671.1748046875,15.07315826416, 18, 22, ", Меню - X", 5},
-	{3, "Зона 51", 374.6708,173.8050,1008.3893, 335.5107421875,1951.8466796875,17.640625, 20, 23, ", Меню - X", 5},
+	{3, "Зона 51", 374.6708,173.8050,1008.3893, 333.18359375,1951.68359375,17.640625, 20, 23, ", Меню - X", 5},
+	{18, "Казарма", 1726.1370,-1645.2300,20.2260, 233.2578125,1840.21875,17.640625, 35, 24, "", 5},
 }
 
 --пикапы для работ и фракций
 local interior_job_pickup = {
-	createPickup ( 292.31268310547,1833.2623291016,18.05459022522, 3, job_icon, 10000 ),--кпп1
-	createPickup ( 279.1279296875,1833.1435546875,18.08740234375, 3, job_icon, 10000 )--кпп2
+	{createPickup ( 292.31268310547,1833.2623291016,18.05459022522, 3, job_icon, 10000 ), 279.1279296875,1833.1435546875,18.08740234375},--кпп1
+	{createPickup ( 279.1279296875,1833.1435546875,18.08740234375, 3, job_icon, 10000 ), 292.31268310547,1833.2623291016,18.05459022522}--кпп2
 }
 
 local t_s_salon = {
@@ -1045,14 +1065,12 @@ local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, з
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
 	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 50, 1, 1, 0},--мясокомбинат
-	
 	{2559.1171875,-1287.2275390625,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2551.1318359375,-1287.2294921875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2543.0859375,-1287.2216796875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2543.166015625,-1300.0927734375,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2551.09375,-1300.09375,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2559.0185546875,-1300.0927734375,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
-
 	{-491.4609375,-194.43359375,78.394332885742, 5, 67, 1, 0, 0, 27},--лесоповал
 	{576.8212890625,846.5732421875,-42.264389038086, 5, 70, 1, 0, 0, 260},--рудник лв
 	{1743.0302734375,-1864.4560546875,13.573830604553, 5, 74, 1, 0, 0, 253},--автобусник
@@ -1348,6 +1366,7 @@ local busdriver_pos = {
 }
 
 local korovi_pos = {}
+local plates_pos = {}
 
 --инв-рь игрока
 local array_player_1 = {}
@@ -2006,13 +2025,13 @@ function job_timer2 ()
 			elseif job[playername] == 9 then--работа автобусник
 				if vehicleid then
 					if getElementModel(vehicleid) == 437 and getElementModel(playerid) == 253 then
-						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, 74) ~= 0 then
+						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, up_player_subject[10][5]) ~= 0 then
 
 							if job_call[playername] == 0 then
 
 								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
 
-								job_call[playername] = search_inv_player_2_parameter(playerid, 74)
+								job_call[playername] = search_inv_player_2_parameter(playerid, up_player_subject[10][5])
 								job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
 
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
@@ -2021,11 +2040,11 @@ function job_timer2 ()
 							elseif job_call[playername] >= 1 and job_call[playername] <= 3 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
 
-									inv_player_delet(playerid, 74, job_call[playername], true)
+									inv_player_delet(playerid, up_player_subject[10][5], job_call[playername], true)
 
 									job_call[playername] = job_call[playername]+1
 
-									inv_player_empty(playerid, 74, job_call[playername])
+									inv_player_empty(playerid, up_player_subject[10][5], job_call[playername])
 
 									job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
 
@@ -2037,7 +2056,7 @@ function job_timer2 ()
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
 									local randomize = random(zp_player_busdriver/2,zp_player_busdriver)
 
-									inv_player_delet(playerid, 74, job_call[playername], true)
+									inv_player_delet(playerid, up_player_subject[10][5], job_call[playername], true)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2360,6 +2379,199 @@ function job_timer2 ()
 							job_pos[playername] = 0
 							job_call[playername] = 0
 							job_ped[playername] = 0
+						end
+					end
+				end
+
+			elseif job[playername] == 14 then--работа фермер
+				if getElementModel(playerid) == 158 then
+					if ferm_etap == 1 then
+						if job_call[playername] == 0 then
+
+							job_call[playername] = 1
+							job_pos[playername] = {-108.6884765625,-3.3505859375,3.1171875-1}
+
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+						elseif job_call[playername] == 1 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(1,#plates_pos)
+
+								job_call[playername] = 2
+
+								job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]+2}
+
+								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+							end
+
+						elseif job_call[playername] == 2 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(zp_player_ferm/2,zp_player_ferm)
+
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								setPedAnimation(playerid, "rob_bank", "cat_safe_rob", -1, true, false, false, false)
+
+								setTimer(function ()
+									if isElement(playerid) then
+										setPedAnimation(playerid, nil, nil)
+									end
+								end, (5*1000), 1)
+
+								plates_pos_count = plates_pos_count+ferm_etap_count
+
+								if plates_pos_count == #plates_pos then
+									ferm_etap = 2
+									plates_pos_count = 0
+
+									for k,v in pairs(plates_pos) do
+										setElementPosition(v[1], v[2],v[3],2)
+									end
+
+									for _,i in pairs(getElementsByType("player")) do
+										job_call[getPlayerName(i)] = 0
+									end
+								end
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
+								job_marker[playername] = 0
+							end
+						end
+
+					elseif ferm_etap == 2 then
+						if job_call[playername] == 0 then
+
+							job_call[playername] = 1
+							job_pos[playername] = {-108.6884765625,-3.3505859375,3.1171875-1}
+
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+						elseif job_call[playername] == 1 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(1,#plates_pos)
+
+								job_call[playername] = 2
+
+								job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]+1}
+
+								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+							end
+
+						elseif job_call[playername] == 2 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(zp_player_ferm/2,zp_player_ferm)
+
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								object_attach(playerid, 321, 12, 0.15,0,0.3, 0,-90,0, (5*1000))
+
+								setPedAnimation(playerid, "camera", "camstnd_idleloop", -1, true, false, false, false)
+
+								setTimer(function ()
+									if isElement(playerid) then
+										setPedAnimation(playerid, nil, nil)
+									end
+								end, (5*1000), 1)
+
+								plates_pos_count = plates_pos_count+ferm_etap_count
+
+								if plates_pos_count == #plates_pos then
+									ferm_etap = 3
+									plates_pos_count = 0
+
+									for k,v in pairs(plates_pos) do
+										setElementPosition(v[1], v[2],v[3],3)
+									end
+
+									for _,i in pairs(getElementsByType("player")) do
+										job_call[getPlayerName(i)] = 0
+									end
+								end
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
+								job_marker[playername] = 0
+							end
+						end
+
+					elseif ferm_etap == 3 then
+						if job_call[playername] == 0 then
+							local randomize = random(1,#plates_pos)
+
+							job_call[playername] = {1,randomize}
+							job_pos[playername] = {plates_pos[randomize][2],plates_pos[randomize][3],plates_pos[randomize][4]-1}
+
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+
+						elseif job_call[playername][1] == 1 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(1,#plates_pos)
+
+								setPedAnimation(playerid, "rob_bank", "cat_safe_rob", -1, true, false, false, false)
+
+								setTimer(function ()
+									if isElement(playerid) then
+										setPedAnimation(playerid, nil, nil)
+									end
+								end, (5*1000), 1)
+
+								job_call[playername][1] = 2
+
+								job_pos[playername] = {-108.6884765625,-3.3505859375,3.1171875-1}
+
+								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+							end
+
+						elseif job_call[playername][1] == 2 then
+							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+								local randomize = random(zp_player_ferm/2,zp_player_ferm)
+
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
+
+								plates_pos_count = plates_pos_count+ferm_etap_count
+
+								if plates_pos_count == #plates_pos then
+									ferm_etap = 1
+									plates_pos_count = 0
+
+									for k,v in pairs(plates_pos) do
+										setElementPosition(v[1], v[2],v[3],0)
+									end
+
+									for _,i in pairs(getElementsByType("player")) do
+										job_call[getPlayerName(i)] = 0
+									end
+								end
+
+								destroyElement(job_blip[playername])
+								destroyElement(job_marker[playername])
+
+								job_blip[playername] = 0
+								job_pos[playername] = 0
+								job_call[playername] = 0
+								job_marker[playername] = 0
+							end
 						end
 					end
 				end
@@ -3047,6 +3259,20 @@ function points_add_in_gz(playerid, value)
 		end
 	end
 end
+
+function setPlayerNametagColor_fun( playerid )
+	if (search_inv_player(playerid, 44, 1) ~= 0) then
+		setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
+	elseif (search_inv_player(playerid, 45, 1) ~= 0) then
+		setPlayerNametagColor(playerid, green[1],green[2],green[3])
+	elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
+		setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
+	elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
+		setPlayerNametagColor(playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][2][1],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][2],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][3])
+	else 
+		setPlayerNametagColor(playerid, white[1],white[2],white[3])
+	end
+end
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------авто-------------------------------------------------------------
@@ -3391,11 +3617,12 @@ addEventHandler( "onPickupUse", getRootElement(), pickupUse )
 function pickedUpWeaponCheck( playerid )
 	local pickup = source
 
-    if interior_job_pickup[2] == pickup then
-		setElementPosition(playerid, 292.31268310547,1833.2623291016,18.05459022522)
-	elseif interior_job_pickup[1] == pickup then
-		setElementPosition(playerid, 279.1279296875,1833.1435546875,18.08740234375)
-	end
+    for k,v in pairs(interior_job_pickup) do
+    	if pickup == v[1] then
+    		setElementPosition(playerid, v[2],v[3],v[4])
+    		break
+    	end
+    end
 end
 addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
 
@@ -4423,6 +4650,14 @@ function displayLoadedRes ( res )--старт ресурсов
 			setObjectScale (obj, 0.7)
 			korovi_pos[i] = {x,y,z}
 		end
+
+		for j=0,29 do
+			for i=0,19 do
+				local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),0.0
+				local obj = createObject(804, x,y,z, 0,0,0)
+				plates_pos[#plates_pos+1] = {obj, x,y,z}
+			end
+		end
 	end
 end
 addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
@@ -4786,17 +5021,7 @@ function reg_or_login(playerid)
 
 		setElementHealth( playerid, result[1]["heal"] )
 
-		if (search_inv_player(playerid, 44, 1) ~= 0) then
-			setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
-		elseif (search_inv_player(playerid, 45, 1) ~= 0) then
-			setPlayerNametagColor(playerid, green[1],green[2],green[3])
-		elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
-			setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
-		elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
-			setPlayerNametagColor(playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][2][1],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][2],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][3])
-		else 
-			setPlayerNametagColor(playerid, white[1],white[2],white[3])
-		end
+		setPlayerNametagColor_fun(playerid)
 
 		sendMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 	end
@@ -4825,7 +5050,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
 	setElementData(playerid, "ped_police_damage", false)
-	setElementData(playerid, "weapon_table", weapon)
+	setElementData(playerid, "dff_and_txd_table", dff_and_txd_table)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -5390,6 +5615,8 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 	inv_server_load( playerid, value, id3, 0, 0, tabpanel )
 
+	setPlayerNametagColor_fun( playerid )
+
 	me_chat(playerid, playername.." выбросил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 	--sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow[1], yellow[2], yellow[3])
 end
@@ -5478,6 +5705,8 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 				end
 
 				if inv_player_empty(playerid, v[4], v[5]) then
+
+					setPlayerNametagColor_fun( playerid )
 					
 					me_chat(playerid, playername.." поднял(а) "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2])
 					--sendMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3])
@@ -6214,7 +6443,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					setPedAnimation(playerid, "int_house", "wash_up", -1, false, false, false, false)
 
-				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid)) ) then
+				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid) or interior_job[24][1] == getElementInterior(playerid) and interior_job[24][10] == getElementDimension(playerid)) ) then
 				
 					if (player_hotel(playerid, 55)) then
 					
@@ -6796,6 +7025,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 13
 
 					me_chat(playerid, playername.." вышел(ла) на работу SWAT")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 14 then
+				if getElementModel(playerid) ~= 158 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 158", red[1], red[2], red[3])
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 14
+
+					me_chat(playerid, playername.." вышел(ла) на работу Фермер")
 				else
 					job[playername] = 0
 
