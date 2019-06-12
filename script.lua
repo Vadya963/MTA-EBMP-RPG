@@ -2423,7 +2423,7 @@ function job_timer2 ()
 
 								sendMessage(playerid, "Вы получили "..randomize.."$", green[1], green[2], green[3])
 
-								setPedAnimation(playerid, "rob_bank", "cat_safe_rob", -1, true, false, false, false)
+								setPedAnimation(playerid, "BOMBER", "BOM_Plant", -1, true, false, false, false)
 
 								setTimer(function ()
 									if isElement(playerid) then
@@ -8880,7 +8880,11 @@ function ( playerid, state )
 	local spl = split(state, ",")
 
 	if spl[3] == "true" then
-		setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, true)
+		if spl[4] == "loop_true" then
+			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, true, false, false, false)
+		else
+			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, true)
+		end
 	else
 		setPedAnimation(playerid, nil, nil)
 	end

@@ -14,6 +14,10 @@ local menu_m2_table_text = {
 	["поднять руки"] = {"назад к анимации", "запуск поднять руки", "", "остановить анимацию"},
 	["сесть 1"] = {"назад к анимации", "запуск сесть 1", "", "остановить анимацию"},
 	["сесть 2"] = {"назад к анимации", "запуск сесть 2", "", "остановить анимацию"},
+	["2 страница"] = {"3 страница", "действие", "курить", "боль"},
+	["действие"] = {"назад к анимации", "запуск действие", "", "остановить анимацию"},
+	["курить"] = {"назад к анимации", "запуск курить", "", "остановить анимацию"},
+	["боль"] = {"назад к анимации", "запуск боль", "", "остановить анимацию"},
 	["назад к анимации"] = {"2 страница", "сесть 1", "поднять руки", "сесть 2"},
 
 	--triggerServerEvent
@@ -31,10 +35,13 @@ local menu_m2_table_text = {
 	["отцепить"] = {"event", "event_server_attach", "false"},
 
 	--анимации
-	["запуск поднять руки"] = {"event", "event_server_anim_player", "rob_bank,shp_handsup_scr,true"},
-	["запуск сесть 1"] = {"event", "event_server_anim_player", "attractors,stepsit_loop,true"},
-	["запуск сесть 2"] = {"event", "event_server_anim_player", "ped,seat_idle,true"},
-	["остановить анимацию"] = {"event", "event_server_anim_player", "nil,nil,false"},
+	["запуск поднять руки"] = {"event", "event_server_anim_player", "rob_bank,shp_handsup_scr,true,nil"},
+	["запуск сесть 1"] = {"event", "event_server_anim_player", "attractors,stepsit_loop,true,nil"},
+	["запуск сесть 2"] = {"event", "event_server_anim_player", "ped,seat_idle,true,nil"},
+	["запуск действие"] = {"event", "event_server_anim_player", "BOMBER,BOM_Plant,true,loop_true"},
+	["запуск курить"] = {"event", "event_server_anim_player", "SMOKING,M_smklean_loop,true,loop_true"},
+	["запуск боль"] = {"event", "event_server_anim_player", "CRACK,crckdeth2,true,loop_true"},
+	["остановить анимацию"] = {"event", "event_server_anim_player", "nil,nil,false,nil"},
 }
 
 --menu from mafia 2
