@@ -161,6 +161,14 @@ function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
 	end
 end
 
+function isPointInCircle2D(x, y, x1, y1, radius)
+	if getDistanceBetweenPoints2D(x, y, x1, y1) <= radius then
+		return true
+	else
+		return false
+	end
+end
+
 function getPlayerVehicle( playerid )
 	local vehicle = getPedOccupiedVehicle ( playerid )
 	return vehicle
@@ -2396,7 +2404,7 @@ function job_timer2 ()
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
 						elseif job_call[playername] == 1 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(1,#grass_pos)
 
 								job_call[playername] = 2
@@ -2408,7 +2416,7 @@ function job_timer2 ()
 							end
 
 						elseif job_call[playername] == 2 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(zp_player_ferm/2,zp_player_ferm)
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
@@ -2464,7 +2472,7 @@ function job_timer2 ()
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
 						elseif job_call[playername] == 1 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(1,#grass_pos)
 
 								job_call[playername] = 2
@@ -2476,7 +2484,7 @@ function job_timer2 ()
 							end
 
 						elseif job_call[playername] == 2 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(zp_player_ferm/2,zp_player_ferm)
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
@@ -2535,7 +2543,7 @@ function job_timer2 ()
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 
 						elseif job_call[playername][1] == 1 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(1,#grass_pos)
 
 								setPedAnimation(playerid, "rob_bank", "cat_safe_rob", -1, true, false, false, false)
@@ -2555,7 +2563,7 @@ function job_timer2 ()
 							end
 
 						elseif job_call[playername][1] == 2 then
-							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							if isPointInCircle2D(x,y, job_pos[playername][1],job_pos[playername][2], 1) then
 								local randomize = random(zp_player_ferm/2,zp_player_ferm)
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
@@ -6495,7 +6503,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." вздремнул(а)")
 					id2 = id2 - 1
 
-				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid)) ) then
+				elseif (enter_job[playername] == 1 and (interior_job[19][1] == getElementInterior(playerid) and interior_job[19][10] == getElementDimension(playerid) or interior_job[20][1] == getElementInterior(playerid) and interior_job[20][10] == getElementDimension(playerid) or interior_job[21][1] == getElementInterior(playerid) and interior_job[21][10] == getElementDimension(playerid) or interior_job[24][1] == getElementInterior(playerid) and interior_job[24][10] == getElementDimension(playerid)) ) then
 				
 					if (player_hotel(playerid, 56)) then
 					
