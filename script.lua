@@ -5057,7 +5057,7 @@ function reg_or_login(playerid)
 		sendMessage(playerid, "Вы удачно зашли!", turquoise[1], turquoise[2], turquoise[3])
 	end
 
-	setElementData(playerid, "player_id", { count_player, {getPlayerNametagColor(playerid)} })
+	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
 	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)

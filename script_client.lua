@@ -924,7 +924,8 @@ function createText ()
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) then
 					local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", 1, m2font_dx1 )
-					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( getElementData(player, "player_id")[2][1], getElementData(player, "player_id")[2][2], getElementData(player, "player_id")[2][3], 255 ), 1, m2font_dx1 )
+					local r,g,b = getPlayerNametagColor ( player )
+					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")[1]..")", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( r,g,b, 255 ), 1, m2font_dx1 )
 				end
 			end
 		end
