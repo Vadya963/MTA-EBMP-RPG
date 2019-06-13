@@ -157,8 +157,10 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 	local ped = source
 	local reason = weapon
 
-	if getElementData(localPlayer, "ped_police_damage") == ped then
-		cancelEvent()
+	for k,playerid in pairs(getElementsByType("player")) do
+		if getElementData(playerid, "ped_police_damage") == ped then
+			cancelEvent()
+		end
 	end
 end
 addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )

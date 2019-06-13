@@ -2311,53 +2311,19 @@ function job_timer2 ()
 
 								--setPedAnimation(job_ped[playername], "rob_bank", "shp_handsup_scr", -1, false, false, false, true)
 
-								if isPedDead ( job_ped[playername] ) then
-									local randomize = random(zp_player_police/2,zp_player_police)
-									randomize = randomize*-1
-
-									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
-
-									sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
-
-									setElementData(playerid, "ped_police_damage", false)
-
-									local crimes_plus = zakon_kill_crimes
-									crimes[playername] = crimes[playername]+crimes_plus
-									sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
-
-									job_0( playername )
-								else
-									job_call[playername][1] = job_call[playername][3]+3
-									job_call[playername][2] = randomize
-								end
+								job_call[playername][1] = job_call[playername][3]+3
+								job_call[playername][2] = randomize
 							else
-								if isPedDead ( job_ped[playername] ) then
-									local randomize = random(zp_player_police/2,zp_player_police)
-									randomize = randomize*-1
+								sendMessage(playerid, "Устраните преступника", yellow[1], yellow[2], yellow[3])
 
-									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+								setElementData(playerid, "ped_police_damage", false)
 
-									sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
+								--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
 
-									setElementData(playerid, "ped_police_damage", false)
+								triggerClientEvent(playerid, "event_setPedControlState_fun", playerid, job_ped[playername], "fire", true)
 
-									local crimes_plus = zakon_kill_crimes
-									crimes[playername] = crimes[playername]+crimes_plus
-									sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue[1], blue[2], blue[3])
-
-									job_0( playername )
-								else
-									sendMessage(playerid, "Устраните преступника", yellow[1], yellow[2], yellow[3])
-
-									setElementData(playerid, "ped_police_damage", false)
-
-									--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
-
-									triggerClientEvent(playerid, "event_setPedControlState_fun", playerid, job_ped[playername], "fire", true)
-
-									job_call[playername][1] = job_call[playername][3]+2
-									job_call[playername][2] = randomize
-								end
+								job_call[playername][1] = job_call[playername][3]+2
+								job_call[playername][2] = randomize
 							end
 						end
 
