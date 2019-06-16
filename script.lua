@@ -2306,7 +2306,7 @@ function job_timer2 ()
 
 								job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
 
-								setElementData(playerid, "ped_police_damage", job_ped[playername])
+								setElementData(playerid, "no_ped_damage", job_ped[playername])
 
 								me_chat(playerid, playername.." взял мегафон")
 								do_chat(playerid, "говорит в мегафон - "..playername)
@@ -2332,7 +2332,7 @@ function job_timer2 ()
 							else
 								sendMessage(playerid, "Устраните преступника", yellow[1], yellow[2], yellow[3])
 
-								setElementData(playerid, "ped_police_damage", false)
+								setElementData(playerid, "no_ped_damage", false)
 
 								--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
 
@@ -2361,7 +2361,7 @@ function job_timer2 ()
 
 							sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green[1], green[2], green[3])
 
-							setElementData(playerid, "ped_police_damage", false)
+							setElementData(playerid, "no_ped_damage", false)
 
 							destroyElement(job_blip[playername])
 							destroyElement(job_ped[playername])
@@ -2599,7 +2599,7 @@ function job_timer2 ()
 						job_ped[playername] = createPed ( 264, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
 						setElementFrozen(job_ped[playername], true)
 						setPedAnimation(job_ped[playername], "crack", "crckidle4", -1, true, false, false, false)
-						setElementData(playerid, "ped_police_damage", job_ped[playername])
+						setElementData(playerid, "no_ped_damage", job_ped[playername])
 
 					elseif job_call[playername] == 1 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
@@ -2607,7 +2607,7 @@ function job_timer2 ()
 
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]-1.5, "cylinder", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
 						
-							setElementData(playerid, "ped_police_damage", false)
+							setElementData(playerid, "no_ped_damage", false)
 
 							job_call[playername] = 2
 						end
@@ -2640,7 +2640,7 @@ function job_0( playername )
 	if job_ped[playername] ~= 0 then
 		destroyElement(job_ped[playername])
 
-		setElementData(getPlayerFromName ( playername ), "ped_police_damage", false)
+		setElementData(getPlayerFromName ( playername ), "no_ped_damage", false)
 	end
 
 	if job_blip[playername] ~= 0 then
@@ -4645,9 +4645,6 @@ function displayLoadedRes ( res )--старт ресурсов
 			createPickup ( v[6], v[7], v[8], 3, job_icon, 10000 )
 		end
 
-		createBlip ( -491.4609375,-194.43359375,78.394332885742, 51, 0, 0,0,0,0, 0, max_blip )--лесоповал
-		createBlip ( 576.8212890625,846.5732421875,-42.264389038086, 51, 0, 0,0,0,0, 0, max_blip )--рудник лв
-		createBlip ( 1743.0302734375,-1864.4560546875,13.573830604553, 51, 0, 0,0,0,0, 0, max_blip )--лс автобусник
 		createBlip ( 2308.81640625,-13.25,26.7421875, 8, 0, 0,0,0,0, 0, max_blip )--банк штата
 
 		for k,v in pairs(up_car_subject) do
@@ -4683,12 +4680,20 @@ function displayLoadedRes ( res )--старт ресурсов
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 			setElementInterior(marker, v[7])
 			setElementDimension(marker, v[8])
+
+			if v[7] == 0 then
+				createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
+			end
 		end
 
 		for k,v in pairs(down_player_subject) do
 			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1], yellow[2], yellow[3] )
 			setElementInterior(marker, v[6])
 			setElementDimension(marker, v[7])
+
+			if v[6] == 0 then
+				createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+			end
 		end
 
 		for k,v in pairs(anim_player_subject) do
@@ -4796,11 +4801,11 @@ function()
 	setPlayerNametagShowing ( playerid, false )
 	count_player = count_player+1
 
-	for _, stat in pairs({ 22, 24, 225 }) do
+	for _, stat in pairs({ 22, 24, 225, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
 	end
 
-	for _, stat in pairs({ 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 }) do
+	for _, stat in pairs({ 69, 75 }) do
 		setPedStat(playerid, stat, 998)
 	end
 
@@ -5106,7 +5111,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_car", cash_car)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
-	setElementData(playerid, "ped_police_damage", false)
+	setElementData(playerid, "no_ped_damage", false)
 	setElementData(playerid, "dff_and_txd_table", dff_and_txd_table)
 end
 
