@@ -67,7 +67,7 @@ local zakon_nalog_business = 2000
 local zakon_price_house = 300000
 local zakon_price_business = 300000
 --зп
-local zp_player_taxi = 1000
+local zp_player_taxi = 2500
 local zp_player_plane = 2000
 local zp_player_sas = 200
 local zp_player_medic = 5000
@@ -78,6 +78,7 @@ local money_guns_zone = 5000
 local money_guns_zone_business = 1000
 local zp_player_ferm = 100
 local zp_player_ferm_etap = 10000
+local zp_player_bamby = 5000
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -470,6 +471,8 @@ local info_png = {
 	[89] = {"мешок с кормом", "$ за штуку"},
 	[90] = {"колба", "реагент"},
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
+	[92] = {"тушка оленя", "$ за штуку"},
+	[93] = {"охотничий рожок", "%"},
 }
 
 local dff_and_txd_table = {
@@ -483,6 +486,7 @@ local dff_and_txd_table = {
 	{"cuntgun", 357},
 	{"shovel", 337},
 	{"leyka", 321},
+	{"horse", 264},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -534,6 +538,7 @@ local shop = {
 	[72] = {info_png[72][1], 1, 500},
 	[76] = {info_png[76][1], 1, 250},
 	[80] = {info_png[80][1], 10, 500},
+	[93] = {info_png[93][1], 100, 500},
 }
 
 local gas = {
@@ -563,6 +568,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Пожарный", 12, 5000, 64},
 	{info_png[64][1].." SWAT", 13, 5000, 64},
 	{info_png[64][1].." Фермер", 14, 5000, 64},
+	{info_png[64][1].." Охотник", 15, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -1105,6 +1111,7 @@ local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интер
 	{2564.779296875,-1293.0673828125,1044.125, 2, 62, 2, 6},--завод продуктов
 	{681.7744140625,823.8447265625,-26.840600967407, 5, 71, 0, 0},--рудник лв
 	{-488.2119140625,-176.8603515625,78.2109375, 5, 68, 0, 0},--склад бревен
+	{-1633.845703125,-2239.08984375,31.4765625, 5, 92, 0, 0}--охотничий дом
 }
 
 local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пнг2 6, зп 7, анимация1 8, анимация2 9, интерьер 10, мир 11, время работы анимации 12} также нужно прописать ид пнг 
@@ -1599,11 +1606,14 @@ function job_timer2 ()
 									local randomize = random(1,#taxi_pos)
 									local randomize_skin = 1
 
-									for k,v in pairs(getValidPedModels()) do
-										local random = random(2,312)
-										if v == random then
-											randomize_skin = random
+									while true do
+										local skin_table = getValidPedModels()
+										local random1 = random(1,#skin_table)
+										if skin_table[random1] ~= 264 then
+											randomize_skin = skin_table[random1]
 											break
+										else
+											random1 = random(1,#skin_table)
 										end
 									end
 
@@ -2105,11 +2115,14 @@ function job_timer2 ()
 									local randomize = random(1,#taxi_pos)
 									local randomize_skin = 1
 
-									for k,v in pairs(getValidPedModels()) do
-										local random = random(2,312)
-										if v == random then
-											randomize_skin = random
+									while true do
+										local skin_table = getValidPedModels()
+										local random1 = random(1,#skin_table)
+										if skin_table[random1] ~= 264 then
+											randomize_skin = skin_table[random1]
 											break
+										else
+											random1 = random(1,#skin_table)
 										end
 									end
 
@@ -2280,11 +2293,14 @@ function job_timer2 ()
 							if job_call[playername][1] == 1 then
 								local randomize_skin = 1
 
-								for k,v in pairs(getValidPedModels()) do
-									local random = random(2,312)
-									if v == random then
-										randomize_skin = random
+								while true do
+									local skin_table = getValidPedModels()
+									local random1 = random(1,#skin_table)
+									if skin_table[random1] ~= 264 then
+										randomize_skin = skin_table[random1]
 										break
+									else
+										random1 = random(1,#skin_table)
 									end
 								end
 
@@ -2565,6 +2581,50 @@ function job_timer2 ()
 								job_call[playername] = 0
 								job_marker[playername] = 0
 							end
+						end
+					end
+				end
+
+			elseif job[playername] == 15 then--работа охотник
+				if (getElementModel(playerid) == 312) then
+					if job_call[playername] == 0 then
+						local bamby_pos = getElementData(playerid, "BambyPosition")
+						local randomize = random(1,#bamby_pos.X)
+
+						sendMessage(playerid, "Найдите оленя", yellow[1], yellow[2], yellow[3])
+
+						job_call[playername] = 1
+						job_pos[playername] = {bamby_pos.X[randomize],bamby_pos.Y[randomize],bamby_pos.Z[randomize]+0.5}
+
+						job_ped[playername] = createPed ( 264, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
+						setElementFrozen(job_ped[playername], true)
+						setPedAnimation(job_ped[playername], "crack", "crckidle4", -1, true, false, false, false)
+						setElementData(playerid, "ped_police_damage", job_ped[playername])
+
+					elseif job_call[playername] == 1 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+							sendMessage(playerid, "Убейте оленя", yellow[1], yellow[2], yellow[3])
+
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]-1.5, "cylinder", 1.0, yellow[1], yellow[2], yellow[3], 255, playerid )
+						
+							setElementData(playerid, "ped_police_damage", false)
+
+							job_call[playername] = 2
+						end
+
+					elseif job_call[playername] == 2 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and isPedDead ( job_ped[playername] ) then
+							local randomize = random(zp_player_bamby/2,zp_player_bamby)
+
+							give_subject(playerid, "player", down_player_subject[5][5], randomize)
+
+							destroyElement(job_ped[playername])
+							destroyElement(job_marker[playername])
+
+							job_ped[playername] = 0
+							job_pos[playername] = 0
+							job_call[playername] = 0
+							job_marker[playername] = 0
 						end
 					end
 				end
@@ -7042,6 +7102,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
+			elseif id2 == 15 then
+				if getElementModel(playerid) ~= 312 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 312", red[1], red[2], red[3])
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 15
+
+					me_chat(playerid, playername.." вышел(ла) на работу Охотник")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			end
 
 			if job[playername] == 0 then
@@ -7228,6 +7303,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 91 then--ордер
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..info_png[id1][id2+2])
 			return
+
+		elseif id1 == 93 then--рожок
+
+			if job[playername] == 15 then
+				id2 = id2-1
+
+				sendMessage(playerid, "Расстояние до оленя: "..split(getDistanceBetweenPoints2D(job_pos[playername][1],job_pos[playername][2], x,y), ".")[1].." метров", yellow[1], yellow[2], yellow[3])
+			else
+				sendMessage(playerid, "[ERROR] Вы не Охотник", red[1], red[2], red[3])
+				return
+			end
 
 		else
 			if id1 == 1 then
@@ -8845,8 +8931,8 @@ function ( playerid, state )
 	local playername = getPlayerName ( playerid )
 	local spl = split(state, ",")
 
-	if spl[3] == "true" then
-		if spl[4] == "loop_true" then
+	if spl[1] ~= "nil" then
+		if spl[3] == "true" then
 			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, true, false, false, false)
 		else
 			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, true)
