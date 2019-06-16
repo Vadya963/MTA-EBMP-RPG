@@ -4902,28 +4902,30 @@ function(ammo, attacker, weapon, bodypart)
 		if getElementType ( attacker ) == "player" then
 			playername_a = getPlayerName ( attacker )
 
-			if search_inv_player(attacker, 10, 1) == 0 then
-				local crimes_plus = zakon_kill_crimes
-				crimes[playername_a] = crimes[playername_a]+crimes_plus
-				sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
-			else
-				if crimes[playername] ~= 0 then
-					arrest[playername] = 1
+			if playername_a ~= playername then
+				if search_inv_player_2_parameter(attacker, 10) == 0 then
+					local crimes_plus = zakon_kill_crimes
+					crimes[playername_a] = crimes[playername_a]+crimes_plus
+					sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
+				else
+					if crimes[playername] ~= 0 then
+						arrest[playername] = 1
 
-					sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
+						sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
-					inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+						inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+					end
 				end
-			end
 
-			if(point_guns_zone[1] == 1 and search_inv_player_2_parameter(playerid, 85) ~= 0 and search_inv_player_2_parameter(attacker, 85) ~= 0) then
-			
-				for k,v in pairs(guns_zone) do
-					if(isInsideRadarArea(v[1], x,y) and k == point_guns_zone[2]) then
-					
-						if(search_inv_player_2_parameter(playerid, 85) == point_guns_zone[5] and search_inv_player_2_parameter(attacker, 85) ~= point_guns_zone[5]) then
+				if(point_guns_zone[1] == 1 and search_inv_player_2_parameter(playerid, 85) ~= 0 and search_inv_player_2_parameter(attacker, 85) ~= 0) then
+				
+					for k,v in pairs(guns_zone) do
+						if(isInsideRadarArea(v[1], x,y) and k == point_guns_zone[2]) then
 						
-							points_add_in_gz(attacker, 2)
+							if(search_inv_player_2_parameter(playerid, 85) == point_guns_zone[5] and search_inv_player_2_parameter(attacker, 85) ~= point_guns_zone[5]) then
+							
+								points_add_in_gz(attacker, 2)
+							end
 						end
 					end
 				end
@@ -4936,17 +4938,19 @@ function(ammo, attacker, weapon, bodypart)
 				if attacker == vehicleid then
 					playername_a = getPlayerName ( player_id )
 
-					if search_inv_player(player_id, 10, 1) == 0 then
-						local crimes_plus = zakon_kill_crimes
-						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
-					else
-						if crimes[playername] ~= 0 then
-							arrest[playername] = 1
+					if playername_a ~= playername then
+						if search_inv_player_2_parameter(player_id, 10) == 0 then
+							local crimes_plus = zakon_kill_crimes
+							crimes[playername_a] = crimes[playername_a]+crimes_plus
+							sendMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue[1], blue[2], blue[3])
+						else
+							if crimes[playername] ~= 0 then
+								arrest[playername] = 1
 
-							sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
+								sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green[1], green[2], green[3] )
 
-							inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+								inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+							end
 						end
 					end
 
