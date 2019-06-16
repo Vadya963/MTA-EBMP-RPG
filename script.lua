@@ -8509,8 +8509,14 @@ function (playerid, cmd, value, id)
 		local result = sqlite( "SELECT COUNT() FROM account WHERE name = '"..id.."'" )
 		if result[1]["COUNT()"] == 1 then
 			local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
+			local text = ""
+
+			for k,v in pairs(split(result[1]["inventory"], ",")) do
+				local spl = split(v, ":")
+				text = text..info_png[tonumber(spl[1])][1].." "..spl[2].." "..info_png[tonumber(spl[1])][2].."\n"
+			end
 			
-			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, result[1]["inventory"])
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", id, text)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
@@ -8521,8 +8527,14 @@ function (playerid, cmd, value, id)
 		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..id.."'" )
 		if result[1]["COUNT()"] == 1 then
 			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id.."'" )
+			local text = ""
+
+			for k,v in pairs(split(result[1]["inventory"], ",")) do
+				local spl = split(v, ":")
+				text = text..info_png[tonumber(spl[1])][1].." "..spl[2].." "..info_png[tonumber(spl[1])][2].."\n"
+			end
 			
-			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", "car-"..id, result[1]["inventory"])
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", "car-"..id, text)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
@@ -8533,8 +8545,14 @@ function (playerid, cmd, value, id)
 		local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..id.."'" )
 		if result[1]["COUNT()"] == 1 then
 			local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id.."'" )
+			local text = ""
 
-			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", "house-"..id, result[1]["inventory"])
+			for k,v in pairs(split(result[1]["inventory"], ",")) do
+				local spl = split(v, ":")
+				text = text..info_png[tonumber(spl[1])][1].." "..spl[2].." "..info_png[tonumber(spl[1])][2].."\n"
+			end
+
+			triggerClientEvent(playerid, "event_invsave_fun", playerid, "save", "house-"..id, text)
 
 			triggerClientEvent(playerid, "event_invsave_fun", playerid, "load", 0, 0, 0, 0)
 		else
