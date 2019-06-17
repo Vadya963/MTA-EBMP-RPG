@@ -167,6 +167,9 @@
 	<file src="dff_and_txd/leyka.dff"/>
 	<file src="dff_and_txd/horse.txd"/>
 	<file src="dff_and_txd/horse.dff"/>
+	<file src="dff_and_txd/gun_cane.txd"/>
+	<file src="dff_and_txd/gun_cane.dff"/>
+	
 
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>

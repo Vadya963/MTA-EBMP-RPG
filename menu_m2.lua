@@ -49,10 +49,10 @@ local menu_m2 = guiCreateStaticImage( screenWidth/2-30, screenHeight-100, 57, 58
 local sx,sy = guiGetSize(menu_m2, false)
 local px,py = guiGetPosition(menu_m2, false)
 local arrow_m2 = {
-	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "gui/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down"},
-	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left"},
-	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "gui/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up"},
-	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right"},
+	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "gui/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down", 0},
+	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left", 0},
+	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "gui/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up", 0},
+	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right", 0},
 }
 guiSetVisible ( menu_m2, false )
 for i=1,4 do

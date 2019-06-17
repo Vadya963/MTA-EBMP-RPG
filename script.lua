@@ -476,6 +476,8 @@ local info_png = {
 local dff_and_txd_table = {
 	{"leyka", 321},
 	{"horse", 264},
+	{"gun_cane", 326},
+	--{"subway", 326}
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -498,7 +500,6 @@ local weapon = {
 	[36] = {info_png[36][1], 3, 150, 1},
 	[37] = {info_png[37][1], 5, 150, 1},
 	[38] = {info_png[38][1], 4, 150, 1},
-	--[40] = {info_png[40][1], 15, 150, 1},
 	[41] = {info_png[41][1], 33, 6000, 25},
 	[47] = {info_png[47][1], 41, 50, 25},
 	[49] = {info_png[49][1], 6, 50, 1},
@@ -5635,7 +5636,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 				if id1 == 67 then--предмет для работы
 					object_attach(playerid, 341, 12, 0,0,0, 0,-90,0, (v[12]*1000))
 				elseif id1 == 70 then
-					object_attach(playerid, 337, 12, 0,0,0, 0,-90,0, (v[12]*1000))
+					object_attach(playerid, 326, 12, 0,0,0, 0,-90,0, (v[12]*1000))
 				end
 
 				setPedAnimation(playerid, v[8], v[9], -1, true, false, false, false)
@@ -8695,28 +8696,20 @@ function ( playerid, cmd, id, ... )
 	end
 end)]]
 
+--[[local obj = 0 
 addCommandHandler ( "int",
-function ( playerid, cmd, id )
+function ( playerid, cmd, id,id2,id3,id4 )
 	local playername = getPlayerName ( playerid )
-	local id = tonumber(id)
-
-	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
-		return
-	end
-
-	if id == nil then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [номер интерьера]", red[1], red[2], red[3])
-		return
-	end
-
-	if interior[id] ~= nil then
-		setElementInterior(playerid, 0)
-		setElementInterior(playerid, interior[id][1], interior[id][3], interior[id][4], interior[id][5])
-		sendMessage(playerid, "setElementInterior "..interior[id][2], lyme[1], lyme[2], lyme[3])
+	local x,y,z = getElementPosition(playerid)
+	local id,id2,id3,id4 = tonumber(id),tonumber(id2),tonumber(id3),tonumber(id4)
+	
+	if obj == 0 then
+		obj = createObject(326, x,y,z+id, id2,id3,id4)
 	else
-		setElementInterior(playerid, 0, spawnX, spawnY, spawnZ)
+		destroyElement(obj)
+		obj = 0
 	end
-end)
+end)]]
 
 addCommandHandler ( "dim",
 function ( playerid, cmd, id )
@@ -8820,7 +8813,7 @@ addEventHandler ( "onConsole", getRootElement(), input_Console )
 --[[local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (2702, x, y, z)
+	objPick = createObject (326, x, y, z)
 
 	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
 end
