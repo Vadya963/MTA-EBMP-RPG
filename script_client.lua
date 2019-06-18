@@ -143,8 +143,6 @@ local info_png = {
 	[89] = {"мешок с кормом", "$ за штуку"},
 	[90] = {"колба", "реагент"},
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
-	[92] = {"тушка оленя", "$ за штуку"},
-	[93] = {"охотничий рожок", "%"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -282,13 +280,6 @@ end, 60000, 0)
 
 setTimer(function ()
 	pos_timer = 1
-
-	for k,v in pairs(getElementData(localPlayer, "dff_and_txd_table")) do
-		local txd = engineLoadTXD ( "dff_and_txd/"..v[1]..".txd" )
-		engineImportTXD ( txd, v[2] )
-		local dff = engineLoadDFF ( "dff_and_txd/"..v[1]..".dff" )
-		engineReplaceModel ( dff, v[2] )
-	end
 end, 5000, 1)
 
 setTimer(function ()

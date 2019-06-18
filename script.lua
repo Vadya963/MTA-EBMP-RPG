@@ -473,13 +473,6 @@ local info_png = {
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 }
 
-local dff_and_txd_table = {
-	{"leyka", 321},
-	{"horse", 264},
-	{"gun_cane", 326},
-	--{"subway", 326}
-}
-
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
 	{info_png[81][1].." 1 "..info_png[81][2].." ", info_png[82][1].." 1 "..info_png[82][2].." + "..info_png[83][1].." 100 "..info_png[83][2], "82,83", "1,100", "81,1"},
 	{info_png[20][1].." 1 "..info_png[20][2].." ", info_png[90][1].." 3 "..info_png[90][2].." + "..info_png[90][1].." 78 "..info_png[90][2], "90,90", "3,78", "20,1"},
@@ -5105,7 +5098,6 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
 	setElementData(playerid, "no_ped_damage", false)
-	setElementData(playerid, "dff_and_txd_table", dff_and_txd_table)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
