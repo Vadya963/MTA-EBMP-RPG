@@ -176,6 +176,9 @@
 	<file src="dff_and_txd/knifecur.dff"/>
 	<file src="dff_and_txd/shovel.txd"/>
 	<file src="dff_and_txd/shovel.dff"/>
+	<file src="dff_and_txd/pig.txd"/>
+	<file src="dff_and_txd/pig.dff"/>
+	<file src="dff_and_txd/pig.col"/>
 	
 
 	<!--парашют-->

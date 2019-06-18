@@ -427,7 +427,7 @@ local info_png = {
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "мл"},
-	[48] = {"тушка коровы", "$ за штуку"},
+	[48] = {"тушка свиньи", "$ за штуку"},
 	[49] = {"лопата", "шт"},
 	[50] = {"лицензия на оружие", "шт"},
 	[51] = {"jetpack", "шт"},
@@ -1061,7 +1061,6 @@ local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, з
 }
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
-	{955.9677734375,2143.6513671875,1011.0258789063, 5, 48, 50, 1, 1, 0},--мясокомбинат
 	{2559.1171875,-1287.2275390625,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2551.1318359375,-1287.2294921875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
 	{2543.0859375,-1287.2216796875,1044.125, 2, 69, 1, 2, 6, 16},--завод продуктов
@@ -2026,13 +2025,13 @@ function job_timer2 ()
 			elseif job[playername] == 9 then--работа автобусник
 				if vehicleid then
 					if getElementModel(vehicleid) == 437 and getElementModel(playerid) == 253 then
-						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, up_player_subject[10][5]) ~= 0 then
+						if getSpeed(vehicleid) < 1 and search_inv_player_2_parameter(playerid, up_player_subject[9][5]) ~= 0 then
 
 							if job_call[playername] == 0 then
 
 								sendMessage(playerid, "Езжайте по маршруту", yellow[1], yellow[2], yellow[3])
 
-								job_call[playername] = search_inv_player_2_parameter(playerid, up_player_subject[10][5])
+								job_call[playername] = search_inv_player_2_parameter(playerid, up_player_subject[9][5])
 								job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
 
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1], yellow[2], yellow[3], 255, 0, 16383.0, playerid )
@@ -2041,11 +2040,11 @@ function job_timer2 ()
 							elseif job_call[playername] >= 1 and job_call[playername] <= 3 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
 
-									inv_player_delet(playerid, up_player_subject[10][5], job_call[playername], true)
+									inv_player_delet(playerid, up_player_subject[9][5], job_call[playername], true)
 
 									job_call[playername] = job_call[playername]+1
 
-									inv_player_empty(playerid, up_player_subject[10][5], job_call[playername])
+									inv_player_empty(playerid, up_player_subject[9][5], job_call[playername])
 
 									job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
 
@@ -2057,7 +2056,7 @@ function job_timer2 ()
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 15) then
 									local randomize = random(zp_player_busdriver/2,zp_player_busdriver)
 
-									inv_player_delet(playerid, up_player_subject[10][5], job_call[playername], true)
+									inv_player_delet(playerid, up_player_subject[9][5], job_call[playername], true)
 
 									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -4654,6 +4653,20 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		for k,v in pairs(hospital_spawn) do
 			createBlip ( v[1], v[2], v[3], 22, 0, 0,0,0,0, 0, max_blip )--больницы
+		end
+
+		for j=0,1 do
+			for i=0,4 do
+				local obj = createObject(2804, 954.90002+(j*6.5),2143.5-(3*i),1010.9, 0,180,270)
+				setElementInterior(obj, interior_job[1][1])
+				setElementDimension(obj, interior_job[1][10])
+
+				local obj = createObject(941, 955.79999+(j*6.5),2143.6001-(3*i),1010.5, 0,0,0)
+				setElementInterior(obj, interior_job[1][1])
+				setElementDimension(obj, interior_job[1][10])
+
+				up_player_subject[#up_player_subject+1] = {956.0166015625+(j*6.5),2142.6650390625-(3*i),1011.0181274414, 2, 48, 50, 1, 1, 0}
+			end
 		end
 
 
