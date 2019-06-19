@@ -8,7 +8,6 @@
 	<script src="script_client.lua" type="client" cache="false"/>
 	<script src="menu_m2.lua" type="client" cache="false"/>
 	<script src="object_eb.lua" type="client" cache="false"/>
-	<!--<script src="ignore_server.lua" type="server"/>-->
 
 	<map src="map/map_gta.map"/>
 	<script src="map/mapEditorScriptingExtension_s.lua" type="server"></script>
@@ -179,6 +178,9 @@
 	<file src="dff_and_txd/pig.txd"/>
 	<file src="dff_and_txd/pig.dff"/>
 	<file src="dff_and_txd/pig.col"/>
+	<file src="dff_and_txd/coal.txd"/>
+	<file src="dff_and_txd/coal.dff"/>
+	<file src="dff_and_txd/coal.col"/>
 	
 
 	<!--парашют-->

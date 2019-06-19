@@ -6,6 +6,7 @@ local dff_and_txd_table = {
 	{"knifecur", 335},
 	{"shovel", 337},
 	{"pig", 2804, true},
+	{"coal", 3931, true},
 }
 
 local car_spawn_value = 0
