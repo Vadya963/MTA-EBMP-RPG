@@ -219,6 +219,15 @@ end
 addEvent( "event_body_hit_sound", true )
 addEventHandler ( "event_body_hit_sound", getRootElement(), body_hit_sound )
 
+function setElementCollidableWith_fun (value1, element, value)--вкл/откл столкновения тс
+	for index,vehicle in pairs(getElementsByType(value1)) do --LOOP through all Vehicles
+		setElementCollidableWith(vehicle, element, value) -- Set the Collison off with the Other vehicles.
+	end
+end
+addEvent( "event_setElementCollidableWith_fun", true )
+addEventHandler ( "event_setElementCollidableWith_fun", getRootElement(), setElementCollidableWith_fun )
+
+
 local name_player = 0
 local logplayer = {}
 function logsave_fun (value, name, i, id)--таблица логов

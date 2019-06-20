@@ -4539,7 +4539,6 @@ addEvent( "event_cow_farms", true )
 addEventHandler ( "event_cow_farms", getRootElement(), cow_farms )
 -------------------------------------------------------------------------------------------------------------
 
-
 function displayLoadedRes ( res )--старт ресурсов
 	if car_spawn_value == 0 then
 		car_spawn_value = 1
@@ -5186,9 +5185,13 @@ function freez_car()--заморозка авто
 
 		--[[if getVehicleType (vehicleid) == "Plane" or getVehicleType (vehicleid) == "Helicopter" then
 			if isInsideColShape(lv_airport, x,y,z) or isInsideColShape(sf_airport, x,y,z) or isInsideColShape(ls_airport, x,y,z) then
-				setElementCollisionsEnabled(vehicleid, false)
+				for k,playerid in pairs(getElementsByType("player")) do
+					triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, false )
+				end
 			else
-				setElementCollisionsEnabled(vehicleid, true)
+				for k,playerid in pairs(getElementsByType("player")) do
+					triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, true )
+				end
 			end
 		end]]
 	end
