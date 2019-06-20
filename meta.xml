@@ -1,5 +1,5 @@
 <meta>
-	<info author="Paolo_Ricchi" type="gamemode" name="EBMP-RPG" description="My first MTA server"/>
+	<info author="Paolo_Ricchi" type="gamemode" name="discord.gg/000000" description="My first MTA server"/>
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 	
@@ -181,6 +181,8 @@
 	<file src="dff_and_txd/coal.txd"/>
 	<file src="dff_and_txd/coal.dff"/>
 	<file src="dff_and_txd/coal.col"/>
+	<file src="dff_and_txd/armour.txd"/>
+	<file src="dff_and_txd/armour.dff"/>
 	
 
 	<!--парашют-->

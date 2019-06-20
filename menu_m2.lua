@@ -39,7 +39,7 @@ local menu_m2_table_text = {
 	["запуск сесть 1"] = {"event", "event_server_anim_player", "attractors,stepsit_loop,false"},
 	["запуск сесть 2"] = {"event", "event_server_anim_player", "ped,seat_idle,false"},
 	["запуск ждать"] = {"event", "event_server_anim_player", "playidles,time,true"},
-	["запуск курить"] = {"event", "event_server_anim_player", "SMOKING,M_smklean_loop,true"},
+	["запуск курить"] = {"event", "event_server_anim_player", "smoking,m_smk_drag,true"},
 	["запуск боль"] = {"event", "event_server_anim_player", "CRACK,crckdeth2,true"},
 	["остановить анимацию"] = {"event", "event_server_anim_player", "nil,nil,false"},
 }

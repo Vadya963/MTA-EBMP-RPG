@@ -328,26 +328,26 @@ function set_weather()
 end
 
 --[[Bone IDs:
-1: head
-2: neck
-3: spine
-4: pelvis
-5: left clavicle
-6: right clavicle
-7: left shoulder
-8: right shoulder
-9: left elbow
-10: right elbow
-11: left hand
-12: right hand
-13: left hip
-14: right hip
-15: left knee
-16: right knee
-17: left ankle
-18: right ankle
-19: left foot
-20: right foot]]
+1: глава
+2: шея
+3: позвоночник
+4: таз
+5: левой ключицы
+6: правой ключице
+7: левое плечо
+8: правое плечо
+9: левым локтем
+10: правым локтем
+11: левой рукой
+12: правой рукой
+13: левое бедро
+14: правое бедро
+15: левое колено
+16: правое колено
+17: левой лодыжке
+18: правую лодыжку
+19: левая нога
+20: правая нога]]
 function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прикрепление объектов к игроку
 	local x1, y1, z1 = getElementPosition (playerid)
 	local objPick = createObject (model, x1, y1, z1)
@@ -1390,6 +1390,7 @@ local job_marker = {}--создан ли маркер, 0-нет
 local job_pos = {}--позиция места назначения
 local job_vehicleid = {}--позиция авто
 local job_timer = {}--таймер угона
+local armour = {}--броня
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -1535,6 +1536,11 @@ function debuginfo ()
 		end
 
 		sqlite_load(playerid)
+
+		if armour[playername] ~= 0 and getPedArmor(playerid) == 0 then
+			destroyElement(armour[playername])
+			armour[playername] = 0
+		end
 	end
 end
 
@@ -4752,6 +4758,7 @@ function()
 	job_pos[playername] = 0
 	job_vehicleid[playername] = 0
 	job_timer[playername] = 0
+	armour[playername] = 0
 
 	--нужды
 	alcohol[playername] = 0
@@ -4843,6 +4850,11 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 				x,y,z = v[6],v[7],v[8]
 				break
 			end
+		end
+
+		if armour[playername] ~= 0 then
+			destroyElement(armour[playername])
+			armour[playername] = 0
 		end
 
 		local heal = getElementHealth( playerid )
@@ -5220,41 +5232,40 @@ end
 addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
 
 function car_spawn(number)
+	local plate = number
+	local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 
-		local plate = number
-		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+	if result[1]["nalog"] ~= 0 then
+		local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
-		if result[1]["nalog"] ~= 0 then
-			local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
+		setVehicleLocked ( vehicleid, true )
 
-			setVehicleLocked ( vehicleid, true )
+		fuel[plate] = result[1]["fuel"]
+		probeg[plate] = result[1]["probeg"]
 
-			fuel[plate] = result[1]["fuel"]
-			probeg[plate] = result[1]["probeg"]
-
-			local spl = split(result[1]["tune"], ",")
-			for k,v in pairs(spl) do
-				addVehicleUpgrade ( vehicleid, v )
-			end
-
-			local spl = split(result[1]["car_rgb"], ",")
-			setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
-
-			local spl = split(result[1]["headlight_rgb"], ",")
-			setVehicleHeadLightColor ( vehicleid, spl[1], spl[2], spl[3] )
-
-			setVehiclePaintjob ( vehicleid, result[1]["paintjob"] )
-
-			setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
-			setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
-			
-			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
-			load_inv(plate, "car", result[1]["inventory"])
-
-			carnumber_number = carnumber_number+1
+		local spl = split(result[1]["tune"], ",")
+		for k,v in pairs(spl) do
+			addVehicleUpgrade ( vehicleid, v )
 		end
+
+		local spl = split(result[1]["car_rgb"], ",")
+		setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
+
+		local spl = split(result[1]["headlight_rgb"], ",")
+		setVehicleHeadLightColor ( vehicleid, spl[1], spl[2], spl[3] )
+
+		setVehiclePaintjob ( vehicleid, result[1]["paintjob"] )
+
+		setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
+		setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
+			
+		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+		load_inv(plate, "car", result[1]["inventory"])
+
+		carnumber_number = carnumber_number+1
+	end
 end
 
 function spawn_carparking( playerid, plate )
@@ -6718,6 +6729,10 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendMessage(playerid, "[ERROR] На вас надет бронежилет", red[1], red[2], red[3])
 				return
 			end
+
+			armour[playername] = createObject (1242, x, y, z)
+			setObjectScale(armour[playername], 1.7)
+			attachElementToBone (armour[playername], playerid, 3, 0,0.04,0.06, 5,0,0)
 
 			setPedArmor(playerid, 100)
 
@@ -8711,8 +8726,6 @@ function ( playerid, cmd, id,id2,id3,id4 )
 	
 	if obj == 0 then
 		obj = createObject(1558, x,y,z+id, id2,id3,id4)
-		setElementFrozen(obj, false)
-		setElementVelocity(obj, 0,0,0)
 	else
 		destroyElement(obj)
 		obj = 0
@@ -8818,23 +8831,28 @@ function input_Console ( text )
 end
 addEventHandler ( "onConsole", getRootElement(), input_Console )
 
---[[local objPick = 0
+local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (326, x, y, z)
+	objPick = createObject (1242, x, y, z)
+	setObjectScale(objPick, 1.7)
 
-	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
+	attachElementToBone (objPick, thePlayer, 3, 0,0,0, 0,0,0)
 end
 
 addCommandHandler ("orot",
 function (playerid, cmd, id1, id2, id3)
-	setElementBoneRotationOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
+	if objPick ~= 0 then
+		setElementBoneRotationOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
+	end
 end)
 
 addCommandHandler ("opos",
 function (playerid, cmd, id1, id2, id3)
-	setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
-end)]]
+	if objPick ~= 0 then
+		setElementBonePositionOffset (objPick, tonumber(id1), tonumber(id2), tonumber(id3))
+	end
+end)
 
 addEvent("event_server_attach", true)
 addEventHandler ( "event_server_attach", getRootElement(),
