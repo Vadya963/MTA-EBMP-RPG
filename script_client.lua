@@ -174,7 +174,7 @@ addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )
 function setPedOxygenLevel_fun ()--кислородный балон
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
-		sendMessage("Кислород пополнился", yellow[1], yellow[2], yellow[3] )
+		sendMessage("Кислород пополнился", yellow )
 	end, 38000, 8)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
@@ -249,7 +249,7 @@ function save_logplayer()
 			fileWrite(newFile, logplayer[i].."\n")
 		end
 
-		sendMessage("лог "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
+		sendMessage("лог "..name_player.." загружен и сохранен в папке с модом", lyme)
 		fileClose(newFile)
 
 		logplayer = {}
@@ -274,7 +274,7 @@ function save_invplayer()
 	if (newFile) then
 		fileWrite(newFile, invplayer.."\n")
 
-		sendMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme[1], lyme[2], lyme[3])
+		sendMessage("инв-рь "..name_player.." загружен и сохранен в папке с модом", lyme)
 		fileClose(newFile)
 
 		invplayer = {}
@@ -349,10 +349,10 @@ for i=0,max_inv do
 	inv_slot_house[i] = {0,0,0}
 end
 
-function sendMessage(text, r, g, b)
+function sendMessage(text, color)
 	local time = getRealTime()
 
-	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, r, g, b)
+	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, color[1], color[2], color[3])
 end
 
 function getPlayerVehicle( playerid )
@@ -753,7 +753,7 @@ function createText ()
 
 					if coords[1] and coords[2] then
 						if tonumber(speed_table[1]) >= max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( red, 255 ), 1, m2font_dx1 )
 						elseif tonumber(speed_table[1]) < max_speed then
 							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 						end
@@ -934,7 +934,7 @@ function createText ()
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 then
 					local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
-					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( red, 255 ), 1, m2font_dx1 )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) then
@@ -1079,7 +1079,7 @@ function tune_window_create (number)--создание окна тюнинга
 					end
 				end
 
-				sendMessage("[ERROR] Эту деталь нельзя установить", red[1], red[2], red[3])
+				sendMessage("[ERROR] Эту деталь нельзя установить", red)
 			end
 
 		elseif int_paint ~= -1 then
@@ -1339,7 +1339,7 @@ function avto_bikes_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red)
 			return
 		end
 
@@ -1376,7 +1376,7 @@ function boats_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red)
 			return
 		end
 
@@ -1413,7 +1413,7 @@ function helicopters_menu()--создание окна машин
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 		
 		if text == "" then
-			sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+			sendMessage("[ERROR] Вы не выбрали т/с", red)
 			return
 		end
 
@@ -1500,7 +1500,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы не выбрали предмет", red)
 					return
 				end
 				
@@ -1512,7 +1512,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы не выбрали предмет", red)
 					return
 				end
 
@@ -1620,7 +1620,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendMessage("[ERROR] URL пуст", red[1], red[2], red[3])
+						sendMessage("[ERROR] URL пуст", red)
 					end
 
 				elseif source == home then
@@ -1673,7 +1673,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendMessage("[ERROR] URL пуст", red[1], red[2], red[3])
+						sendMessage("[ERROR] URL пуст", red)
 					end
 
 				elseif source == home then
@@ -1710,7 +1710,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendMessage("[ERROR] Вы не выбрали предмет", red[1], red[2], red[3])
+				sendMessage("[ERROR] Вы не выбрали предмет", red)
 				return
 			end
 
@@ -1746,7 +1746,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendMessage("[ERROR] Вы не выбрали т/с", red[1], red[2], red[3])
+				sendMessage("[ERROR] Вы не выбрали т/с", red)
 				return
 			end
 
@@ -1809,12 +1809,12 @@ function tablet_fun()--создание планшета
 				local text2 = tonumber(guiGetText ( edit ))
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
 					return
 				end
 
 				if not text2 then
-					sendMessage("[ERROR] Введите число в белое поле", red[1], red[2], red[3])
+					sendMessage("[ERROR] Введите число в белое поле", red)
 					return
 				end
 
@@ -1856,7 +1856,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red[1], red[2], red[3])
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
 					return
 				end
 
@@ -1893,15 +1893,16 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 			guiGridListClear(shoplist)
 			for k,v in pairs(getElementsByType("player")) do
-				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v).." (ОП - "..getElementData(v, "crimes_data")..")")
+				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
 			end
 		end
 		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 		guiGridListAddColumn(shoplist, "ИД", 0.15)
-		guiGridListAddColumn(shoplist, "Ник", 0.8)
+		guiGridListAddColumn(shoplist, "Ник", 0.7)
+		guiGridListAddColumn(shoplist, "ОП", 0.1)
 		for k,v in pairs(getElementsByType("player")) do
-			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v).." (ОП - "..getElementData(v, "crimes_data")..")")
+			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
 		end
 	end
 	addEventHandler ( "onClientGUIClick", handbook, outputEditBox, false )
@@ -2473,7 +2474,7 @@ function ( cmd, x,y )
 	local x,y = tonumber(x),tonumber(y)
 
 	if not x or not y then
-		sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red[1], red[2], red[3])
+		sendMessage("[ERROR] /"..cmd.." [x координата] [y координата]", red)
 		return
 	end
 
