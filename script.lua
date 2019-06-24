@@ -50,7 +50,7 @@ local police_chanel = 1--канал копов
 local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во растений на ферме
-local ferm_etap_count = 300--кол-во этапов за раз
+local ferm_etap_count = 255--кол-во этапов за раз
 
 --законы
 local zakon_alcohol = 1
@@ -2383,7 +2383,7 @@ function job_timer2 ()
 
 								job_call[playername] = 2
 
-								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+2}
+								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+1.5}
 
 								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
@@ -2412,17 +2412,19 @@ function job_timer2 ()
 									grass_pos_count = 0
 
 									for k,v in pairs(grass_pos) do
-										setElementPosition(v[1], v[2],v[3],v[4]+2)
+										setElementPosition(v[1], v[2],v[3],v[4]+0.2)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
-										job_call[getPlayerName(i)] = 0
+										if job[getPlayerName(i)] == 14 then
+											job_call[getPlayerName(i)] = 0
 
-										local randomize = zp_player_ferm_etap
+											local randomize = zp_player_ferm_etap
 
-										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+											inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-										sendMessage(i, "Вы получили премию "..randomize.."$", green)
+											sendMessage(i, "Вы получили премию "..randomize.."$", green)
+										end
 									end
 								end
 
@@ -2451,7 +2453,7 @@ function job_timer2 ()
 
 								job_call[playername] = 2
 
-								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+1}
+								job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]+1.3}
 
 								setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 								setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
@@ -2482,17 +2484,19 @@ function job_timer2 ()
 									grass_pos_count = 0
 
 									for k,v in pairs(grass_pos) do
-										setElementPosition(v[1], v[2],v[3],v[4]+3)
+										setElementPosition(v[1], v[2],v[3],v[4]+0.6)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
-										job_call[getPlayerName(i)] = 0
+										if job[getPlayerName(i)] == 14 then
+											job_call[getPlayerName(i)] = 0
 
-										local randomize = zp_player_ferm_etap
+											local randomize = zp_player_ferm_etap
 
-										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+											inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-										sendMessage(i, "Вы получили премию "..randomize.."$", green)
+											sendMessage(i, "Вы получили премию "..randomize.."$", green)
+										end
 									end
 								end
 
@@ -2511,7 +2515,7 @@ function job_timer2 ()
 							local randomize = random(1,#grass_pos)
 
 							job_call[playername] = {1,randomize}
-							job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]-1}
+							job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]}
 
 							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
@@ -2551,17 +2555,19 @@ function job_timer2 ()
 									grass_pos_count = 0
 
 									for k,v in pairs(grass_pos) do
-										setElementPosition(v[1], v[2],v[3],v[4]-3)
+										setElementPosition(v[1], v[2],v[3],v[4]-1.5)
 									end
 
 									for _,i in pairs(getElementsByType("player")) do
-										job_call[getPlayerName(i)] = 0
+										if job[getPlayerName(i)] == 14 then
+											job_call[getPlayerName(i)] = 0
 
-										local randomize = zp_player_ferm_etap
+											local randomize = zp_player_ferm_etap
 
-										inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+											inv_server_load( i, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-										sendMessage(i, "Вы получили премию "..randomize.."$", green)
+											sendMessage(i, "Вы получили премию "..randomize.."$", green)
+										end
 									end
 								end
 
@@ -4715,14 +4721,10 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 
 		for j=0,29 do
-			for i=0,19 do
-				local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),0.0
-				local obj = createObject(804, x,y,z, 0,0,0)
-				if 18 <= i and i <= 19 then
-					grass_pos[#grass_pos+1] = {obj, x,y,z-0.5}
-				else
-					grass_pos[#grass_pos+1] = {obj, x,y,z}
-				end
+			for i=0,16 do
+				local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),3.11-1.5
+				local obj = createObject(323, x,y,z, 0,180,0)
+				grass_pos[#grass_pos+1] = {obj, x,y,z}
 			end
 		end
 	end
@@ -8742,13 +8744,13 @@ end)]]
 
 local obj = 0 
 addCommandHandler ( "int",
-function ( playerid, cmd, id,id2,id3,id4 )
+function ( playerid, cmd, id0,id1,id2,id3,id4 )
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
-	local id,id2,id3,id4 = tonumber(id),tonumber(id2),tonumber(id3),tonumber(id4)
+	local id0,id1,id2,id3,id4 = tonumber(id0),tonumber(id1),tonumber(id2),tonumber(id3),tonumber(id4)
 	
 	if obj == 0 then
-		obj = createObject(19315, x,y,z+id, id2,id3,id4)
+		obj = createObject(id0, x,y,z+id1, id2,id3,id4)
 	else
 		destroyElement(obj)
 		obj = 0

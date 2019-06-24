@@ -9,6 +9,7 @@ local dff_and_txd_table = {
 	{"coal", 3931, true},
 	{"armour", 1242},
 	{"knife", 322},
+	{"pumpkin01", 323},
 }
 
 local car_spawn_value = 0
