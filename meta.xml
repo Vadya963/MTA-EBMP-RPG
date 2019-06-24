@@ -183,6 +183,8 @@
 	<file src="dff_and_txd/coal.col"/>
 	<file src="dff_and_txd/armour.txd"/>
 	<file src="dff_and_txd/armour.dff"/>
+	<file src="dff_and_txd/knife.txd"/>
+	<file src="dff_and_txd/knife.dff"/>
 	
 
 	<!--парашют-->

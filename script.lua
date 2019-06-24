@@ -359,6 +359,8 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 		detachElementFromBone(objPick)
 		destroyElement(objPick)
 	end, time, 1)
+
+	return objPick
 end
 
 --[[function string.split(input, separator)
@@ -410,7 +412,7 @@ local info_png = {
 	[27] = {"одежда", ""},
 	[28] = {"тушка оленя", "$ за штуку"},
 	[29] = {"охотничий рожок", "%"},
-	[30] = {"шеврон Сержанта", "шт"},
+	[30] = {"нож мясника", "шт"},
 	[31] = {"шеврон Лейтенанта", "шт"},
 	[32] = {"шеврон Капитан", "шт"},
 	[33] = {"шеврон Шефа полиции", "шт"},
@@ -428,7 +430,7 @@ local info_png = {
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "мл"},
-	[48] = {"тушка свиньи", "$ за штуку"},
+	[48] = {"мясо", "$ за штуку"},
 	[49] = {"лопата", "шт"},
 	[50] = {"лицензия на оружие", "шт"},
 	[51] = {"jetpack", "шт"},
@@ -1071,6 +1073,7 @@ local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, ин
 	{-491.4609375,-194.43359375,78.394332885742, 5, 67, 1, 0, 0, 27},--лесоповал
 	{576.8212890625,846.5732421875,-42.264389038086, 5, 70, 1, 0, 0, 260},--рудник лв
 	{1743.0302734375,-1864.4560546875,13.573830604553, 5, 74, 1, 0, 0, 253},--автобусник
+	{964.064453125,2117.3544921875,1011.0302734375, 1, 30, 1, 1, 1, 0},--мясокомбинат
 }
 
 --места сброса предметов
@@ -4672,7 +4675,7 @@ function displayLoadedRes ( res )--старт ресурсов
 				setElementInterior(obj, interior_job[1][1])
 				setElementDimension(obj, interior_job[1][10])
 
-				up_player_subject[#up_player_subject+1] = {956.0166015625+(j*6.5),2142.6650390625-(3*i),1011.0181274414, 2, 48, 50, 1, 1, 0}
+				anim_player_subject[#anim_player_subject+1] = {956.0166015625+(j*6.5),2142.6650390625-(3*i),1011.0181274414, 1, 30, 48, 100, "knife", "knife_4", 1, 1, 10}
 			end
 		end
 
@@ -5648,7 +5651,12 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 				sendMessage(playerid, "Вы получили "..info_png[v[6]][1].." "..randomize.." "..info_png[v[6]][2], svetlo_zolotoy)
 
-				if id1 == 67 then--предмет для работы
+				--предмет для работы
+				if id1 == 30 then
+					local obj = object_attach(playerid, 322, 12, 0,0.03,0.07, 180,0,-90, (v[12]*1000))
+					setElementInterior(obj, v[10])
+					setElementDimension(obj, v[11])
+				elseif id1 == 67 then
 					object_attach(playerid, 341, 12, 0,0,0, 0,-90,0, (v[12]*1000))
 				elseif id1 == 70 then
 					object_attach(playerid, 326, 12, 0,0,0, 0,-90,0, (v[12]*1000))
@@ -8849,10 +8857,10 @@ addEventHandler ( "onConsole", getRootElement(), input_Console )
 local objPick = 0
 function o_pos( thePlayer )
 	local x, y, z = getElementPosition (thePlayer)
-	objPick = createObject (1242, x, y, z)
+	objPick = createObject (322, x, y, z)
 	setObjectScale(objPick, 1.7)
 
-	attachElementToBone (objPick, thePlayer, 3, 0,0,0, 0,0,0)
+	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
 end
 
 addCommandHandler ("orot",
