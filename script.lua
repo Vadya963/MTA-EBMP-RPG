@@ -41,6 +41,7 @@ local job_icon = 1318--пикап работ
 local time_nalog = 12--время когда будет взиматься налог
 local price_hotel = 100--цена в отеле
 local crimes_giuseppe = 25--//прес-ия для джузеппе
+local crimes_capture = crimes_giuseppe*2--прес-ия для захвата
 local car_theft_time = 10--время для угона
 local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
@@ -8284,12 +8285,17 @@ function (playerid)
 	
 	elseif(search_inv_player_2_parameter(playerid, 85) == 0) then
 	
-		sendMessage(playerid, "[ERROR] Вы не состоите в мафии", red)
+		sendMessage(playerid, "[ERROR] Вы не состоите в банде", red)
 		return
 	
 	elseif(point_guns_zone[1] == 1) then
 	
 		sendMessage(playerid, "[ERROR] Идет захват территории", red)
+		return
+
+	elseif(crimes[playername] < crimes_capture) then
+	
+		sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_capture.." преступлений", red)
 		return
 	end
 
