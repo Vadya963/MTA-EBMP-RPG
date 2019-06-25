@@ -7969,60 +7969,21 @@ function (playerid, cmd, id)
 	local id,player = getPlayerId(id)
 		
 	if id then
-		if inv_player_delet(player, 10, 1, true) then
+		if search_inv_player(player, 10, 6) == 1 then
+			sendMessage(playerid, "[ERROR] "..id.." Шеф полиции", red)
+			return
+		end
+
+		if inv_player_delet(player, 10, search_inv_player_2_parameter(player, 10), true) then
 			sendMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow)
 			sendMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow)
+
+			setPlayerNametagColor_fun(player)
 		else
 			sendMessage(playerid, "[ERROR] У игрока нет жетона", red)
 		end
 	else
 		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
-	end
-end)
-
-addCommandHandler("takepolicerank",--забрать шеврон
-function (playerid, cmd, id, rang)
-	local playername = getPlayerName ( playerid )
-	local rang = tonumber(rang)
-
-	if logged[playername] == 0 then
-		return
-	end
-
-	if not id or not rang then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [от 28 до 32]", red)
-		return
-	end
-
-	if search_inv_player(playerid, 10, 6) == 0 then
-		sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red)
-		return
-	end
-
-	if rang >= 28 and rang <= 32 then
-		local id,player = getPlayerId(id)
-
-		if id then
-			if inv_player_delet(player, rang, 1, true) then
-				sendMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow)
-				sendMessage(player, playername.." забрал(а) у вас "..info_png[rang][1], yellow)
-			else
-				sendMessage(playerid, "[ERROR] У игрока нет шеврона", red)
-			end
-		else
-			--[[local s_sql = select_sqlite(rang, 1)
-			if id == s_sql[1] then
-				sendMessage(playerid, "Вы забрали у "..id.." "..info_png[rang][1], yellow)
-
-				sqlite( "UPDATE account SET slot_"..s_sql[2].."_1 = '0', slot_"..s_sql[2].."_2 = '0' WHERE name = '"..s_sql[1].."'")
-			else
-				sendMessage(playerid, "[ERROR] У игрока нет шеврона", red)
-			end]]
-
-			sendMessage(playerid, "[ERROR] Такого игрока нет", red)
-		end
-	else
-		sendMessage(playerid, "[ERROR] от 28 до 32", red)
 	end
 end)
 
