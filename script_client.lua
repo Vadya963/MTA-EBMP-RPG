@@ -156,16 +156,10 @@ end
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local ped = source
 
-	for k,playerid in pairs(getElementsByType("player")) do
-		if getElementData(playerid, "no_ped_damage") == ped then
+	for k,v in pairs(getElementData(playerid, "no_ped_damage")[2]) do
+		if v == ped then
 			cancelEvent()
-		elseif not getElementData(playerid, "no_ped_damage") then
-			if getElementModel(ped) == 264 then
-				if weapon == 33 then
-				else
-					cancelEvent()
-				end
-			end
+			break
 		end
 	end
 end

@@ -51,6 +51,10 @@ local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во растений на ферме
 local ferm_etap_count = 255--кол-во этапов за раз
+local no_ped_damage = {--таблица нпс по которым не будет проходить дамаг
+	[1] = 0,--кол-во нпс добавленных в таблицу
+	[2] = {}--таблица нпс
+}
 
 --законы
 local zakon_alcohol = 1
@@ -379,6 +383,20 @@ end
 	end
 	return t
 end]]
+
+function add_ped_in_no_ped_damage(ped)--добавление нпс
+	no_ped_damage[1] = no_ped_damage[1]+1
+	no_ped_damage[2][no_ped_damage[1]] = ped
+end
+
+function delet_ped_in_no_ped_damage(ped)--удаление нпс
+	for k,v in pairs(no_ped_damage[2]) do
+		if v == ped then
+			no_ped_damage[2][k] = nil
+			break
+		end
+	end
+end
 -----------------------------------------------------------------------------------------
 
 local info_png = {
@@ -1523,6 +1541,7 @@ function debuginfo ()
 		setElementData(playerid, "auc", result_auc)
 		setElementData(playerid, "carparking_table", result_car)
 		setElementData(playerid, "cow_farms_table2", result_cow_farms)
+		setElementData(playerid, "no_ped_damage", no_ped_damage)
 
 		--позиции домов, бизнесов, зданий
 		setElementData(playerid, "house_pos", house_pos)
@@ -2300,7 +2319,7 @@ function job_timer2 ()
 
 								job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
 
-								setElementData(playerid, "no_ped_damage", job_ped[playername])
+								add_ped_in_no_ped_damage(job_ped[playername])
 
 								me_chat(playerid, playername.." взял мегафон")
 								do_chat(playerid, "говорит в мегафон - "..playername)
@@ -2326,7 +2345,7 @@ function job_timer2 ()
 							else
 								sendMessage(playerid, "Устраните преступника", yellow)
 
-								setElementData(playerid, "no_ped_damage", false)
+								delet_ped_in_no_ped_damage(job_ped[playername])
 
 								--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
 
@@ -2355,7 +2374,7 @@ function job_timer2 ()
 
 							sendMessage(playerid, "Вы получили за вызов "..randomize.."$", green)
 
-							setElementData(playerid, "no_ped_damage", false)
+							delet_ped_in_no_ped_damage(job_ped[playername])
 
 							destroyElement(job_blip[playername])
 							destroyElement(job_ped[playername])
@@ -2599,7 +2618,7 @@ function job_timer2 ()
 						job_ped[playername] = createPed ( 264, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
 						setElementFrozen(job_ped[playername], true)
 						setPedAnimation(job_ped[playername], "crack", "crckidle4", -1, true, false, false, false)
-						setElementData(playerid, "no_ped_damage", job_ped[playername])
+						add_ped_in_no_ped_damage(job_ped[playername])
 
 					elseif job_call[playername] == 1 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
@@ -2607,7 +2626,7 @@ function job_timer2 ()
 
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]-1.5, "cylinder", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 						
-							setElementData(playerid, "no_ped_damage", false)
+							delet_ped_in_no_ped_damage(job_ped[playername])
 
 							job_call[playername] = 2
 						end
@@ -2677,7 +2696,7 @@ function job_0( playername )
 	if job_ped[playername] ~= 0 then
 		destroyElement(job_ped[playername])
 
-		setElementData(getPlayerFromName ( playername ), "no_ped_damage", false)
+		delet_ped_in_no_ped_damage(job_ped[playername])
 	end
 
 	if job_blip[playername] ~= 0 then
@@ -5172,7 +5191,6 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_car", cash_car)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
-	setElementData(playerid, "no_ped_damage", false)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -7885,6 +7903,9 @@ function (playerid, cmd, id)
 
 		if arrest[id] == 0 then
 			sendMessage(playerid, "[ERROR] Игрок не в тюрьме", red)
+			return
+		elseif crimes[id] == 1 then
+			sendMessage(playerid, "[ERROR] Маленький срок заключения", red)
 			return
 		end
 
