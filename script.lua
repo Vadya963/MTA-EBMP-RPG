@@ -413,7 +413,7 @@ local info_png = {
 	[28] = {"тушка оленя", "$ за штуку"},
 	[29] = {"охотничий рожок", "%"},
 	[30] = {"нож мясника", "шт"},
-	[31] = {"шеврон Лейтенанта", "шт"},
+	[31] = {"пицца", "$ за штуку"},
 	[32] = {"шеврон Капитан", "шт"},
 	[33] = {"шеврон Шефа полиции", "шт"},
 	[34] = {"Дробовик", "боеприпасов"},
@@ -554,6 +554,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." SWAT", 13, 5000, 64},
 	{info_png[64][1].." Фермер", 14, 5000, 64},
 	{info_png[64][1].." Охотник", 15, 5000, 64},
+	{info_png[64][1].." Развозчик пиццы", 16, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -924,7 +925,7 @@ local cash_airplanes = {
 }
 
 local car_cash_coef = 10
-local car_cash_no = {456,428,420,574,416,408,437,453,519,407}
+local car_cash_no = {456,428,420,574,416,408,437,453,519,407,448}
 for k,v in pairs(cash_car) do
 	local count = 0
 	for _,v1 in pairs(car_cash_no) do
@@ -1061,6 +1062,7 @@ local up_car_subject = {--{x,y,z, радиус 4, ид пнг 5, ид тс 6, з
 	{-1061.6103515625,-1195.5166015625,129.828125, 15, 88, 456, 200},--скотобойня
 	{1461.939453125,974.8876953125,10.30264377594, 15, 89, 456, 50},--склад корма для коров
 	{2492.3974609375,2773.46484375,10.803514480591, 15, 66, 428, 200},--kacc
+	{2122.8994140625,-1790.56640625,13.5546875, 15, 31, 448, 200},--pizza
 }
 
 local up_player_subject = {--{x,y,z, радиус 4, ид пнг 5, зп 6, интерьер 7, мир 8, скин 9}
@@ -2623,6 +2625,43 @@ function job_timer2 ()
 							job_pos[playername] = 0
 							job_call[playername] = 0
 							job_marker[playername] = 0
+						end
+					end
+				end
+
+			elseif job[playername] == 16 then--работа развозчик пиццы
+				if vehicleid then
+					if getElementModel(vehicleid) == up_car_subject[6][6] and getElementModel(playerid) == 155 then
+						if getSpeed(vehicleid) < 1 then
+
+							if job_call[playername] == 0 then
+								local randomize = random(1,#house_pos)
+
+								sendMessage(playerid, "Езжайте к пиццерии в гетто чтобы загрузить пиццу, а потом развезите их по домам", yellow)
+
+								job_call[playername] = 1
+								job_pos[playername] = {house_pos[randomize][1],house_pos[randomize][2],house_pos[randomize][3]-1}
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
+
+							elseif job_call[playername] == 1 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) and amount_inv_car_1_parameter(vehicleid, up_car_subject[6][5]) ~= 0 then
+									local randomize = random(1,#house_pos)
+									local sic2p = search_inv_car_2_parameter(vehicleid, up_car_subject[6][5])
+
+									job_pos[playername] = {house_pos[randomize][1],house_pos[randomize][2],house_pos[randomize][3]-1}
+
+									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+
+									inv_car_delet(playerid, up_car_subject[6][5], sic2p, true, false)
+
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+sic2p, playername )
+
+									sendMessage(playerid, "Вы получили "..sic2p.."$", green)
+								end
+							end
+
 						end
 					end
 				end
@@ -4713,6 +4752,10 @@ function displayLoadedRes ( res )--старт ресурсов
 			setElementDimension(marker, v[11])
 		end
 
+		for k,v in pairs(t_s_salon) do
+			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+		end
+
 		for i=1,50 do
 			local x,y,z = math.random(1007,1189)*-1, math.random(916,1061)*-1, 129.51875
 			local obj = createObject(16442, x,y,z, 0,0,math.random(0,360))
@@ -4819,6 +4862,7 @@ function()
 
 	sendMessage(playerid, "[TIPS] F1 - скрыть или показать курсор", color_tips)
 	sendMessage(playerid, "[TIPS] F2 - скрыть или показать худ", color_tips)
+	sendMessage(playerid, "[TIPS] F3 - меню т/с и анимаций", color_tips)
 	sendMessage(playerid, "[TIPS] TAB - открыть инвентарь, ПКМ - использовать предмет, чтобы выкинуть переместите его за пределы инвентаря", color_tips)
 	sendMessage(playerid, "[TIPS] X - крафт предметов", color_tips)
 	sendMessage(playerid, "[TIPS] Листать чат page up и page down", color_tips)
@@ -7167,6 +7211,21 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
+			elseif id2 == 16 then
+				if getElementModel(playerid) ~= 155 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 155", red)
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 16
+
+					me_chat(playerid, playername.." вышел(ла) на работу Развозчик пиццы")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			end
 
 			if job[playername] == 0 then
@@ -8807,6 +8866,11 @@ function input_Console ( text )
 				sendMessage(getRootElement(), "save pos "..text, lyme)
 			end
 		end, 5000, 0)
+
+		for i=1,24 do
+
+			sqlite( "INSERT INTO guns_zone (number, x1, y1, x2, y2, mafia) VALUES ('"..(i+24).."', '"..(-3000+((i-1)*250)).."', '-3000', '250', '3500', '0')" )
+		end
 
 	elseif text == "c" then
 		killTimer(timer)]]
