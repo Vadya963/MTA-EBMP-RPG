@@ -4632,7 +4632,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 
 		for k,v in pairs(sqlite( "SELECT * FROM guns_zone" )) do
-			guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x1"]*-1+v["x2"], v["y1"]-v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
+			guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x2"], v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
 		end
 
 
