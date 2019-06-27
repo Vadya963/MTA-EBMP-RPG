@@ -2277,7 +2277,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 13 then--работа swat
-				if (getElementModel(playerid) == 285) then
+				if (getElementModel(playerid) == 285) and search_inv_player_2_parameter(playerid, 10) ~= 0 then
 					if job_call[playername] == 0 then
 						local randomize = random(1,#fire_pos)
 
@@ -7187,6 +7187,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				elseif getElementModel(playerid) ~= 285 then
 					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 285", red)
+					return
+				elseif search_inv_player_2_parameter(playerid, 10) == 0 then
+					sendMessage(playerid, "[ERROR] Вы не полицейский", red)
 					return
 				end
 
