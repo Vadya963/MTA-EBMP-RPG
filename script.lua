@@ -7723,7 +7723,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if arrest[playername] == 1 then
+	if arrest[playername] == 1 or enter_house[playername][1] == 1 or enter_job[playername] == 1 or enter_business[playername] == 1 then
 		return
 	end
 
