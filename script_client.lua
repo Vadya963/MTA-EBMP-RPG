@@ -162,6 +162,13 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 			break
 		end
 	end
+
+	if getElementData(playerid, "job_player") == 15 and getElementModel(ped) == 264 then
+		if weapon == 33 then
+		else
+			cancelEvent()
+		end
+	end
 end
 addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )
 
@@ -465,7 +472,7 @@ local weapon = {
 	--[36] = {info_png[36][1], 3, 150, 1},
 	[37] = {info_png[37][1], 5, 150, 1},
 	[38] = {info_png[38][1], 4, 150, 1},
-	[41] = {info_png[41][1], 34, 6000, 25},
+	[41] = {info_png[41][1], 33, 6000, 25},
 	--[47] = {info_png[47][1], 41, 50, 25},
 	[49] = {info_png[49][1], 6, 50, 1},
 }
@@ -1456,9 +1463,10 @@ function tablet_fun()--создание планшета
 	local youtube = guiCreateStaticImage( 100, 10, 85, 60, "comp/youtube.png", false, fon )
 	local wiki = guiCreateStaticImage( 195, 10, 66, 60, "comp/wiki.png", false, fon )
 	local craft = guiCreateStaticImage( 270, 10, 55, 60, "comp/bookcraft.png", false, fon )
-	local carparking = guiCreateStaticImage( 340, 10, 60, 60, "comp/carparking.png", false, fon )
-	local shop = guiCreateStaticImage( 410, 10, 60, 60, "comp/shop.png", false, fon )
-	local handbook = guiCreateStaticImage( 480, 10, 60, 60, "comp/handbook.png", false, fon )
+	local carparking = guiCreateStaticImage( 335, 10, 60, 60, "comp/carparking.png", false, fon )
+	local shop = guiCreateStaticImage( 405, 10, 60, 60, "comp/shop.png", false, fon )
+	local handbook = guiCreateStaticImage( 475, 10, 60, 60, "comp/handbook.png", false, fon )
+	local admin = guiCreateStaticImage( 545, 10, 52, 60, "comp/admin.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
