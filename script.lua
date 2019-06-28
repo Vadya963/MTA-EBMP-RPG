@@ -3409,6 +3409,8 @@ end
 function setPlayerNametagColor_fun( playerid )
 	if (search_inv_player(playerid, 44, 1) ~= 0) then
 		setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
+		setElementData(playerid, "admin", true)
+		return
 	elseif (search_inv_player(playerid, 45, 1) ~= 0) then
 		setPlayerNametagColor(playerid, green[1],green[2],green[3])
 	elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
@@ -3418,6 +3420,8 @@ function setPlayerNametagColor_fun( playerid )
 	else 
 		setPlayerNametagColor(playerid, white[1],white[2],white[3])
 	end
+
+	setElementData(playerid, "admin", false)
 end
 --------------------------------------------------------------------------------------------------------
 
