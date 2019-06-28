@@ -52,8 +52,11 @@ local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во растений на ферме
 local ferm_etap_count = 255--кол-во этапов за раз
 local no_ped_damage = {--таблица нпс по которым не будет проходить дамаг
-	[1] = 0,--кол-во нпс добавленных в таблицу
-	[2] = {}--таблица нпс
+	[1] = 2,--кол-во нпс добавленных в таблицу
+	[2] = {
+			[1] = createPed ( 312, 2435.337890625,-2704.7568359375,3, 180.0, true ),
+			[2] = createPed ( 312, -1632.9775390625,-2239.0263671875,31.4765625, 90.0, true ),
+			}--таблица нпс
 }
 
 --законы
@@ -84,6 +87,7 @@ local money_guns_zone_business = 1000
 local zp_player_ferm = 100
 local zp_player_ferm_etap = 10000
 local zp_player_bamby = 5000
+local zp_player_box = 5000
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -432,8 +436,8 @@ local info_png = {
 	[29] = {"охотничий рожок", "%"},
 	[30] = {"нож мясника", "шт"},
 	[31] = {"пицца", "$ за штуку"},
-	[32] = {"шеврон Капитан", "шт"},
-	[33] = {"шеврон Шефа полиции", "шт"},
+	[32] = {"потерянный груз", "$ за штуку"},
+	[33] = {"эхолокатор", "%"},
 	[34] = {"Дробовик", "боеприпасов"},
 	[35] = {"парашют", "шт"},
 	[36] = {"дубинка", "шт"},
@@ -529,6 +533,7 @@ local shop = {
 	[22] = {info_png[22][1], 1, 60},
 	[23] = {info_png[23][1], 1, 100},
 	[29] = {info_png[29][1], 100, 500},
+	[33] = {info_png[33][1], 100, 500},
 	[40] = {info_png[40][1], 10, 500},
 	[42] = {info_png[42][1], 1, 5000},
 	[46] = {info_png[46][1], 1, 100},
@@ -573,6 +578,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Фермер", 14, 5000, 64},
 	{info_png[64][1].." Охотник", 15, 5000, 64},
 	{info_png[64][1].." Развозчик пиццы", 16, 5000, 64},
+	{info_png[64][1].." Уборщик морского дна", 17, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
 	{"квитанция для оплаты дома на "..day_nalog.." дней", day_nalog, (zakon_nalog_house*day_nalog), 59},
@@ -1118,6 +1124,7 @@ local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интер
 	{-488.2119140625,-176.8603515625,78.2109375, 5, 68, 0, 0},--склад бревен
 	{-1633.845703125,-2239.08984375,31.4765625, 5, 28, 0, 0},--охотничий дом
 	{681.7744140625,823.8447265625,-26.840600967407, 5, 16, 0, 0},--рудник лв
+	{2435.361328125,-2705.46484375,3, 5, 32, 0, 0},--доки лc
 }
 
 local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пнг2 6, зп 7, анимация1 8, анимация2 9, интерьер 10, мир 11, время работы анимации 12} также нужно прописать ид пнг 
@@ -1206,12 +1213,6 @@ local station = {
 	{-1973.22265625,116.78515625,27.6875, 10, "вокзал сф"},
 	{2848.4521484375,1291.462890625,11.390625, 10, "вокзал лв"},
 }
-
-local fish_pos = {}
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_fish'" )) do
-	local spl = split(v["pos"], ",")
-	fish_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
 
 local roulette_pos = {}
 for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'roulette'" )) do
@@ -1414,6 +1415,7 @@ local job_marker = {}--создан ли маркер, 0-нет
 local job_pos = {}--позиция места назначения
 local job_vehicleid = {}--позиция авто
 local job_timer = {}--таймер угона
+local job_object = {}--создан ли объект, 0-нет
 local armour = {}--броня
 --нужды
 local alcohol = {}
@@ -1780,23 +1782,23 @@ function job_timer2 ()
 						if getSpeed(vehicleid) <= 5 then
 
 							if job_call[playername] == 0 then
-								local randomize = random(1,#fish_pos)
+								local fish_pos = {random(3000,4000), random(-3000,500), 0}
 
 								sendMessage(playerid, "Соберите рыбу, потом доставьте её в доки Лос Сантоса", yellow)
 
 								job_call[playername] = 1
-								job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
+								job_pos[playername] = {fish_pos[1],fish_pos[2],fish_pos[3]-1}
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
 								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 									local randomize_zp = random(down_car_subject_pos[3][7]/2,down_car_subject_pos[3][7])
-									local randomize = random(1,#fish_pos)
+									local fish_pos = {random(3000,4000), random(-3000,500), 0}
 
 									give_subject( playerid, "car", down_car_subject_pos[3][5], randomize_zp, false )
 
-									job_pos[playername] = {fish_pos[randomize][1],fish_pos[randomize][2],fish_pos[randomize][3]-1}
+									job_pos[playername] = {fish_pos[1],fish_pos[2],fish_pos[3]-1}
 
 									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
@@ -2685,6 +2687,32 @@ function job_timer2 ()
 					end
 				end
 
+			elseif job[playername] == 17 then--работа умд
+				--if (getElementModel(playerid) == 312) then
+					if job_call[playername] == 0 then
+						local box_pos = {random(-3000,3000), random(-4000,-3000), -68,9}
+
+						sendMessage(playerid, "Соберите потерянный груз, потом доставьте его к NPC в доки Лос Сантоса", yellow)
+
+						job_call[playername] = 1
+						job_pos[playername] = {box_pos[1],box_pos[2],box_pos[3]-1}
+
+						job_object[playername] = createObject(3798, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0,0,0)
+						
+					elseif job_call[playername] == 1 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
+							local randomize = random(zp_player_box/2,zp_player_box)
+							local box_pos = {random(-3000,3000), random(-4000,-3000), -68,9}
+
+							job_pos[playername] = {box_pos[1],box_pos[2],box_pos[3]-1}
+
+							give_subject(playerid, "player", down_player_subject[7][5], randomize)
+
+							setElementPosition(job_object[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+						end
+					end
+				--end
+
 			elseif job[playername] == 0 then--нету рыботы
 				job_0( playername )
 			end
@@ -2707,6 +2735,10 @@ function job_0( playername )
 		destroyElement(job_marker[playername])
 	end
 
+	if job_object[playername] ~= 0 then
+		destroyElement(job_object[playername])
+	end
+
 	job[playername] = 0
 	job_pos[playername] = 0
 	job_call[playername] = 0
@@ -2714,6 +2746,7 @@ function job_0( playername )
 	job_ped[playername] = 0
 	job_blip[playername] = 0
 	job_marker[playername] = 0
+	job_object[playername] = 0
 end
 
 function car_theft_fun(playername)
@@ -4013,6 +4046,13 @@ function setVehicleStage_fun( vehicleid, value, value1, playerid, number )
 				return
 			end
 
+			for k,v in pairs(car_cash_no) do
+				if getElementModel(v) == getElementModel(vehicleid) then
+					sendMessage(playerid, "[ERROR] На это т/с нельзя установить stage", red)
+					return
+				end
+			end
+
 			if cash <= array_player_2[playername][1] then
 
 				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
@@ -4629,6 +4669,11 @@ function displayLoadedRes ( res )--старт ресурсов
 		setGlitchEnabled ( "quickreload", true )
 
 
+		for k,v in pairs(no_ped_damage[2]) do--заморозка нпс
+			setElementFrozen(v, true)
+		end
+
+
 		local result = sqlite( "SELECT COUNT() FROM account" )
 		print("[account] "..result[1]["COUNT()"])
 
@@ -4776,7 +4821,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 
 		for i=1,50 do
-			local x,y,z = math.random(1007,1189)*-1, math.random(916,1061)*-1, 129.51875
+			local x,y,z = math.random(-1189,-1007), math.random(-1061,-916), 129.51875
 			local obj = createObject(16442, x,y,z, 0,0,math.random(0,360))
 			setObjectScale (obj, 0.7)
 			korovi_pos[i] = {x,y,z}
@@ -4825,6 +4870,7 @@ function()
 	job_pos[playername] = 0
 	job_vehicleid[playername] = 0
 	job_timer[playername] = 0
+	job_object[playername] = 0
 	armour[playername] = 0
 
 	--нужды
@@ -6806,6 +6852,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
+		elseif id1 == 33 then--эхолокатор
+
+			if job[playername] == 17 then
+				id2 = id2-1
+
+				sendMessage(playerid, "Расстояние до груза: "..split(getDistanceBetweenPoints2D(job_pos[playername][1],job_pos[playername][2], x,y), ".")[1].." метров", yellow)
+			else
+				sendMessage(playerid, "[ERROR] Вы не Уборщик морского дна", red)
+				return
+			end
+
 		elseif id1 == 39 then--броник
 			if getPedArmor(playerid) ~= 0 then
 				sendMessage(playerid, "[ERROR] На вас надет бронежилет", red)
@@ -6932,6 +6989,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			return
 
 		elseif id1 == 52 then--кислородный балон
+			if getElementData(playerid, "OxygenLevel") then
+				sendMessage(playerid, "[ERROR] На вас надет кислородный балон", red)
+				return
+			end
+
 			id2 = id2 - 1
 
 			triggerClientEvent( playerid, "event_setPedOxygenLevel_fun", playerid )
@@ -7242,6 +7304,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 16
 
 					me_chat(playerid, playername.." вышел(ла) на работу Развозчик пиццы")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 17 then
+				if job[playername] == 0 then
+					job[playername] = 17
+
+					me_chat(playerid, playername.." вышел(ла) на работу Уборщик морского дна")
 				else
 					job[playername] = 0
 

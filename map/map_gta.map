@@ -35,4 +35,5 @@
     <object id="object (8)" breakable="true" interior="1" alpha="255" model="322" doublesided="false" scale="1" dimension="1" posX="964.5" posY="2116.8999" posZ="1011" rotX="0" rotY="90" rotZ="270"></object>
     <object id="object (9)" breakable="true" interior="1" alpha="255" model="322" doublesided="false" scale="1" dimension="1" posX="964.5" posY="2116.7" posZ="1011" rotX="0" rotY="90" rotZ="270"></object>
     <object id="object (10)" breakable="true" interior="1" alpha="255" model="322" doublesided="false" scale="1" dimension="1" posX="964.5" posY="2116.5" posZ="1011" rotX="0" rotY="90" rotZ="270"></object>
+    <object id="object (Gen_doorSHOP3) (1)" breakable="true" interior="0" alpha="255" model="1522" doublesided="false" scale="1" dimension="0" posX="2122.1001" posY="-1791" posZ="12.6" rotX="0" rotY="0" rotZ="0"></object>
 </map>

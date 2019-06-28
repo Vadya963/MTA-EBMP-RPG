@@ -83,8 +83,8 @@ local info_png = {
 	[29] = {"охотничий рожок", "%"},
 	[30] = {"нож мясника", "шт"},
 	[31] = {"пицца", "$ за штуку"},
-	[32] = {"шеврон Капитан", "шт"},
-	[33] = {"шеврон Шефа полиции", "шт"},
+	[32] = {"потерянный груз", "$ за штуку"},
+	[33] = {"эхолокатор", "%"},
 	[34] = {"Дробовик", "боеприпасов"},
 	[35] = {"парашют", "шт"},
 	[36] = {"дубинка", "шт"},
@@ -166,10 +166,18 @@ end
 addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )
 
 function setPedOxygenLevel_fun ()--кислородный балон
+	local count = 0
+	
 	setTimer(function()
 		setPedOxygenLevel ( playerid, 4000 )
-		sendMessage("Кислород пополнился", yellow )
-	end, 38000, 8)
+		count = count+1
+
+		if count == 300 then
+			setElementData(playerid, "OxygenLevel", false)
+		end
+	end, 1000, 300)
+
+	setElementData(playerid, "OxygenLevel", true)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
@@ -484,6 +492,7 @@ local text_3d = {--3d text
 	{681.7744140625,823.8447265625,-26.840600967407, 5, "Выбросите руду, чтобы получить прибыль"},
 	{-488.2119140625,-176.8603515625,78.2109375, 5, "Выбросите дрова, чтобы получить прибыль"},--склад бревен
 	{-1633.845703125,-2239.08984375,31.4765625, 5, "Выбросите тушку оленя, чтобы получить прибыль"},--охотничий дом
+	{2435.361328125,-2705.46484375,3, 5, "Выбросите потерянный груз, чтобы получить прибыль"},--доки лc
 
 	--up_car_subject
 	{89.9423828125,-304.623046875,1.578125, 15, "Склад продуктов (Загрузить ящики - E)"},
@@ -685,7 +694,7 @@ function createText ()
 	local heal_player = split(getElementHealth(playerid), ".")
 
 
-	if debuginfo then
+	if isCursorShowing() then
 		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( "skin "..getElementModel(playerid)..", interior "..getElementInterior(playerid)..", dimension "..getElementDimension(playerid), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
