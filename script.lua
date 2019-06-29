@@ -47,6 +47,7 @@ local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
 local house_pos = {}--позиции домов
 local police_chanel = 1--канал копов
+local admin_chanel = 2--канал админов
 local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во растений на ферме
@@ -291,6 +292,18 @@ function ic_chat(playerid, text)
 	end
 end
 
+function admin_chat(playerid, text)
+	for k,player in pairs(getElementsByType("player")) do
+		local playername = getPlayerName(player)
+
+		if search_inv_player_2_parameter(player, 44) ~= 0 and search_inv_player(player, 80, admin_chanel) ~= 0 then
+			sendMessage(player, text, lyme)
+		end
+	end
+end
+addEvent("event_admin_chat", true)
+addEventHandler("event_admin_chat", getRootElement(), admin_chat)
+
 function police_chat(playerid, text)
 	for k,player in pairs(getElementsByType("player")) do
 		local playername = getPlayerName(player)
@@ -448,7 +461,7 @@ local info_png = {
 	[41] = {"Винтовка", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на бизнес под номером", ""},
-	[44] = {"админский жетон", "шт"},
+	[44] = {"админский жетон", "ранг"},
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "мл"},
@@ -3407,9 +3420,9 @@ function points_add_in_gz(playerid, value)
 end
 
 function setPlayerNametagColor_fun( playerid )
-	if (search_inv_player(playerid, 44, 1) ~= 0) then
+	if (search_inv_player_2_parameter(playerid, 44) ~= 0) then
 		setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
-		setElementData(playerid, "admin", true)
+		setElementData(playerid, "admin_data", search_inv_player_2_parameter(playerid, 44))
 		return
 	elseif (search_inv_player(playerid, 45, 1) ~= 0) then
 		setPlayerNametagColor(playerid, green[1],green[2],green[3])
@@ -3421,7 +3434,7 @@ function setPlayerNametagColor_fun( playerid )
 		setPlayerNametagColor(playerid, white[1],white[2],white[3])
 	end
 
-	setElementData(playerid, "admin", false)
+	setElementData(playerid, "admin_data", search_inv_player_2_parameter(playerid, 44))
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -7789,6 +7802,10 @@ function (playerid, cmd, ...)
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Капитан "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		elseif search_inv_player(playerid, 10, 6) ~= 0 then
 			police_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Шеф полиции "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
+		end
+	elseif(radio_chanel == admin_chanel) then
+		if search_inv_player_2_parameter(playerid, 44) ~= 0 then
+			admin_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] Админ "..search_inv_player_2_parameter(playerid, 44).." "..info_png[44][2].." "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text)
 		end
 	else
 		radio_chat(playerid, "[РАЦИЯ "..radio_chanel.." K] "..playername.." ["..getElementData(playerid, "player_id")[1].."]: "..text, green_rc)

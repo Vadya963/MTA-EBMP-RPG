@@ -95,7 +95,7 @@ local info_png = {
 	[41] = {"Винтовка", "боеприпасов"},
 	[42] = {"таблетки от наркозависимости", "шт"},
 	[43] = {"документы на бизнес под номером", ""},
-	[44] = {"админский жетон", "шт"},
+	[44] = {"админский жетон", "ранг"},
 	[45] = {"риэлторская лицензия", "шт"},
 	[46] = {"радар", "шт"},
 	[47] = {"перцовый балончик", "мл"},
@@ -1932,7 +1932,7 @@ function tablet_fun()--создание планшета
 
 
 	function outputEditBox( button, state, absoluteX, absoluteY )--админ панель
-		if not getElementData(playerid, "admin") then
+		if getElementData(playerid, "admin_data") ~= 1 then
 			sendMessage("[ERROR] Вы не админ", red)
 			return
 		end
@@ -1965,7 +1965,6 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				setCameraTarget(playerid)
 				guiGridListClear(shoplist)
 				for k,v in pairs(getElementsByType("player")) do
 					guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
@@ -1987,7 +1986,7 @@ function tablet_fun()--создание планшета
 
 				local x,y,z = getElementPosition(player)
 				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..id, lyme)
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -2004,7 +2003,7 @@ function tablet_fun()--создание планшета
 				end
 
 				setCameraTarget(player)
-				sendMessage("Вы следите за "..id, lyme)
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", target, complete, false )
 
@@ -2090,7 +2089,7 @@ function tablet_fun()--создание планшета
 
 				local x,y,z = getElementData(playerid, "business_pos")[tonumber(text)][1],getElementData(playerid, "business_pos")[tonumber(text)][2],getElementData(playerid, "business_pos")[tonumber(text)][3]
 				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." дому", lyme)
+				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
