@@ -35,13 +35,6 @@
 	<file src="gui/window-arrow-on-up.png"/>
 	<file src="gui/window-m2.png"/>
 
-	<!--мой сайт-->
-	<file src="wiki/comand.html"/>
-	<file src="wiki/index.html"/>
-	<file src="wiki/spisok.html"/>
-	<file src="wiki/style.css"/>
-	<file src="wiki/Mafia_2_2.jpg"/>
-
 	<file src="speedometer/speed_v.png"/>
 	<file src="speedometer/arrow_speed_v.png"/>
 	<file src="speedometer/fuel_v.png"/>

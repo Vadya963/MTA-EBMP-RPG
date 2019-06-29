@@ -147,6 +147,30 @@ local info_png = {
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
+local commands = {
+	"/sms [ИД игрока] [текст] - отправить смс игроку",
+	"/roulette [режим игры (красное, черное, четное, нечетное, 1-18, 19-36, 1-12, 2-12, 3-12, 3-1, 3-2, 3-3)] [сумма] - сыграть в рулетку",
+	"/r [текст] - рация",
+	"/setchanel [канал] - сменить канал в рации",
+	"/ec [номер т/с] - эвакуция т/с",
+	"/wc [сумма] - выписать чек",
+	"/prison [ИД игрока] - посадить игрока в тюрьму (для полицейских)",
+	"/lawyer [ИД игрока] - заплатить залог за игрока",
+	"/search [player | car | house] [ИД игрока | номер т/с | номер дома] - обыскать игрока, т/с или дом (для полицейских)",
+	"/takepolicetoken [ИД игрока] - забрать полицейский жетон (для полицейских)",
+	"/sellhouse - создать дом (для риэлторов)",
+	"/sellbusiness [номер бизнеса от 1 до 5] - создать бизнес (для риэлторов)",
+	"/buyinthouse [номер интерьера от 1 до 29] - сменить интерьер дома",
+	"/capture - захват территории (для банд)",
+	"/me [текст] - описание действия от 1 лица",
+	"/do [текст] - описание от 3 лица",
+	"/try [текст] - попытка действия",
+	"/b [текст] - ближний OOC чат",
+	"/сс - очистить чат",
+	"/marker [x координата] [y координата] - поставить маркер",
+	"/idpng - ид предметов сервера",
+}
+
 -----------эвенты------------------------------------------------------------------------
 function random(min, max)
 	--math.randomseed(getTickCount())
@@ -1658,53 +1682,20 @@ function tablet_fun()--создание планшета
 
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--вики
-		if not browser then
-			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-			local home = guiCreateStaticImage ( 0, 0, 25, 25, "comp/homebut.png", false, low_fon )
-			local NavigateBack = guiCreateStaticImage ( 25, 0, 25, 25, "comp/backbut.png", false, low_fon )
-			local NavigateForward = guiCreateStaticImage ( 50, 0, 25, 25, "comp/forbut.png", false, low_fon )
-			local reloadPage = guiCreateStaticImage ( 75, 0, 25, 25, "comp/update.png", false, low_fon )
-			local loadURL = guiCreateStaticImage ( 100, 0, 25, 25, "comp/connect.png", false, low_fon )
-			local addressBar = guiCreateEdit ( 125, 0, width_fon-125, 25, "", false, low_fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 
-			browser = guiCreateBrowser( 0, 25, width_fon, height_fon-25, true, false, false, low_fon )
-			local theBrowser = guiGetBrowser( browser )
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
-			addEventHandler("onClientBrowserCreated", theBrowser,
-			function ()
-				loadBrowserURL(theBrowser, "http://mta/local/wiki/index.html")
-			end, false)
+		guiGridListAddColumn(shoplist, "Команды сервера", 1.5)
 
-			addEventHandler( "onClientBrowserDocumentReady", theBrowser, function( )
-				guiSetText( addressBar, getBrowserURL( theBrowser ) )
-			end)
-
-			addEventHandler( "onClientGUIClick", resourceRoot,
-			function()
-				if source == NavigateBack then
-					navigateBrowserBack(theBrowser)
-
-				elseif source == NavigateForward then
-					navigateBrowserForward(theBrowser)
-
-				elseif source == reloadPage then
-					reloadBrowserPage(theBrowser)
-
-				elseif source == loadURL then
-					local text = guiGetText ( addressBar )
-					if text ~= "" then
-						loadBrowserURL(theBrowser, text)
-					else
-						sendMessage("[ERROR] URL пуст", red)
-					end
-
-				elseif source == home then
-					destroyElement(low_fon)
-
-					browser = nil
-				end
-			end)
+		for k,v in pairs(commands) do
+			guiGridListAddRow(shoplist, v)
 		end
 	end
 	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
@@ -1986,7 +1977,7 @@ function tablet_fun()--создание планшета
 
 				local x,y,z = getElementPosition(player)
 				setElementPosition(playerid, x,y,z)
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
