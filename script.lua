@@ -509,6 +509,7 @@ local info_png = {
 	[89] = {"мешок с кормом", "$ за штуку"},
 	[90] = {"колба", "реагент"},
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
+	[92] = {"наручники", "шт"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -1418,7 +1419,7 @@ local enter_house = {}--0-не вошел, 1-вошел (не удалять)
 local enter_business = {}--0-не вошел, 1-вошел (не удалять)
 local enter_job = {}--0-не вошел, 1-вошел (не удалять)
 local speed_car_device = {}--отображение скорости авто, 0-выкл, 1-вкл
-local arrest = {}--арест игрока, 0-нет, 1-да
+local arrest = {}--арест игрока, 0-нет, 1-да, 2-да админом
 local crimes = {}--преступления
 local robbery_player = {}--ограбление, 0-нет, 1-да
 local robbery_timer = {}--таймер ограбления
@@ -1433,6 +1434,7 @@ local job_vehicleid = {}--позиция авто
 local job_timer = {}--таймер угона
 local job_object = {}--создан ли объект, 0-нет
 local armour = {}--броня
+
 --нужды
 local alcohol = {}
 local satiety = {}
@@ -1508,42 +1510,6 @@ function debuginfo ()
 		if(point_guns_zone[1] == 1) then
 			points_add_in_gz(playerid, 1)
 		end
-
-		--элементдата
-		--[[setElementData(playerid, "0", "max_earth "..max_earth)
-		setElementData(playerid, "1", "state_inv_player[playername] "..state_inv_player[playername])
-		setElementData(playerid, "2", "state_gui_window[playername] "..state_gui_window[playername])
-		setElementData(playerid, "3", "logged[playername] "..logged[playername])
-		setElementData(playerid, "4", "enter_house[playername] "..enter_house[playername][1]..", "..enter_house[playername][2])
-		setElementData(playerid, "5", "enter_business[playername] "..enter_business[playername])
-		setElementData(playerid, "6", "enter_job[playername] "..enter_job[playername])
-		setElementData(playerid, "7", "speed_car_device[playername] "..speed_car_device[playername])
-		setElementData(playerid, "8", "arrest[playername] "..arrest[playername])
-		setElementData(playerid, "9", "crimes[playername] "..crimes[playername])
-		setElementData(playerid, "10", "robbery_player[playername] "..robbery_player[playername])
-		setElementData(playerid, "11", "gps_device[playername] "..gps_device[playername])
-		setElementData(playerid, "12", "robbery_timer[playername] "..tostring(robbery_timer[playername]))
-		setElementData(playerid, "13", "job[playername] "..job[playername])
-		setElementData(playerid, "14", "job_call[playername] "..job_call[playername])
-		setElementData(playerid, "15", "job_ped[playername] "..tostring(job_ped[playername]))
-		setElementData(playerid, "16", "job_blip[playername] "..tostring(job_blip[playername]))
-
-		if job_pos[playername] ~= 0 then
-			setElementData(playerid, "17", "job_pos[playername] "..job_pos[playername][1]..", "..job_pos[playername][2]..", "..job_pos[playername][3])
-		else
-			setElementData(playerid, "17", "job_pos[playername] "..job_pos[playername])
-		end
-
-		setElementData(playerid, "18", "job_marker[playername] "..tostring(job_marker[playername]))
-
-		if job_vehicleid[playername] ~= 0 then
-			setElementData(playerid, "19", "job_vehicleid[playername] "..tostring(job_vehicleid[playername][1])..", "..job_vehicleid[playername][2]..", "..job_vehicleid[playername][3]..", "..job_vehicleid[playername][4]..", "..job_vehicleid[playername][5])
-		else
-			setElementData(playerid, "19", "job_vehicleid[playername] "..job_vehicleid[playername])
-		end
-
-		setElementData(playerid, "20", "job_timer[playername] "..tostring(job_timer[playername]))]]
-
 
 		setElementData(playerid, "crimes_data", crimes[playername])
 		setElementData(playerid, "alcohol_data", alcohol[playername])
@@ -2990,7 +2956,7 @@ function prison_timer()--античит если не в тюрьме
 		local playername = getPlayerName(playerid)
 		local x,y,z = getElementPosition(playerid)
 
-		if arrest[playername] == 1 then
+		if arrest[playername] ~= 0 then
 			for k,v in pairs(prison_cell) do
 				if not isPointInCircle3D(x,y,z, v[4],v[5],v[6], 5) then
 					count = count+1
@@ -3044,6 +3010,27 @@ function prison()--таймер заключения
 
 				sendMessage(playerid, "Вам сидеть ещё "..(crimes[playername]).." мин", yellow)
 			end
+
+		elseif arrest[playername] == 2 then
+			if array_player_2[playername][25] == 1 then
+				arrest[playername] = 0
+
+				local randomize = random(2,4)
+
+				setElementDimension(playerid, 0)
+				setElementInterior(playerid, 0, interior_job[randomize][6], interior_job[randomize][7], interior_job[randomize][8])
+
+				sendMessage(playerid, "Вы свободны, больше не нарушайте", yellow)
+
+				inv_server_load(playerid, "player", 24, 0, 0, playername)
+
+			elseif array_player_2[playername][25] > 1 then
+				array_player_2[playername][25] = array_player_2[playername][25]-1
+
+				sendMessage(playerid, "Вам сидеть ещё "..array_player_2[playername][25].." мин", yellow)
+
+				inv_server_load(playerid, "player", 24, 92, array_player_2[playername][25], playername)
+			end
 		end
 	end
 end
@@ -3090,7 +3077,7 @@ function onChat(message, messageType)
 
 	cancelEvent()
 
-	if logged[playername] == 0 or arrest[playername] == 1 then
+	if logged[playername] == 0 or arrest[playername] ~= 0 then
 		return
 	end
 
@@ -3163,7 +3150,7 @@ end
 function save_inv(val, value)
 	if value == "player" then
 		local text = ""
-		for i=0,max_inv do
+		for i=0,max_inv+1 do
 			text = text..array_player_1[val][i+1]..":"..array_player_2[val][i+1]..","
 		end
 		return text
@@ -4868,8 +4855,8 @@ function()
 
 	--o_pos(playerid)
 
-	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_player_1[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	array_player_2[playername] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
 	state_inv_player[playername] = 0
 	state_gui_window[playername] = 0
@@ -5186,7 +5173,7 @@ function reg_or_login(playerid)
 			return
 		end
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '1:500,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '1:500,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
@@ -6366,10 +6353,12 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
 
-		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
+		if id3+1 ~= 25 then
+			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
 
-		if state_inv_player[playername] == 1 then
-			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, array_player_1[playername][id3+1] )
+			if state_inv_player[playername] == 1 then
+				triggerClientEvent( playerid, "event_change_image", playerid, value, id3, array_player_1[playername][id3+1] )
+			end
 		end
 
 		sqlite( "UPDATE account SET inventory = '"..save_inv(playername, "player").."' WHERE name = '"..playername.."'")
@@ -7365,7 +7354,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
 		elseif id1 == 66 then--ящик с оружием
-			local array_weapon = {9,12,13,14,15,16,17,18,19,26,34,41}
+			local array_weapon = {9,12,13,14,15,17,18,19,26,34,41}
 
 			local randomize = random(1,#array_weapon)
 
@@ -7823,7 +7812,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if arrest[playername] == 1 or enter_house[playername][1] == 1 or enter_job[playername] == 1 or enter_business[playername] == 1 then
+	if arrest[playername] ~= 0 or enter_house[playername][1] == 1 or enter_job[playername] == 1 or enter_business[playername] == 1 then
 		return
 	end
 
@@ -7909,7 +7898,7 @@ function (playerid, cmd, cash)
 		return
 	end
 
-	if logged[playername] == 0 or cash < 1 or arrest[playername] == 1 then
+	if logged[playername] == 0 or cash < 1 or arrest[playername] ~= 0 then
 		return
 	end
 
@@ -7955,7 +7944,7 @@ function (playerid, cmd, id)
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
 
-		if arrest[id] == 1 then
+		if arrest[id] ~= 0 then
 			sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
 			return
 		end
@@ -8001,7 +7990,7 @@ function (playerid, cmd, id)
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
 
-		if arrest[id] == 0 then
+		if arrest[id] == 0 or arrest[id] == 2 then
 			sendMessage(playerid, "[ERROR] Игрок не в тюрьме", red)
 			return
 		elseif crimes[id] == 1 then
@@ -8737,8 +8726,7 @@ function (playerid, cmd, value, id)
 	end
 end)
 
-addCommandHandler ( "prisonplayer",--(посадить игрока в тюрьму)
-function (playerid, cmd, id, time, ...)
+function prisonplayer (playerid, cmd, id, time, ...)--(посадить игрока в тюрьму)
 	local playername = getPlayerName ( playerid )
 	local reason = ""
 	local time = tonumber(time)
@@ -8765,12 +8753,15 @@ function (playerid, cmd, id, time, ...)
 	if id then
 		sendMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme)
 
-		arrest[id] = 1
-		crimes[id] = time
+		arrest[id] = 2
+		inv_server_load (playerid, "player", 24, 92, time, playername)
 	else
 		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
 	end
-end)
+end
+addCommandHandler ( "prisonplayer", prisonplayer)
+addEvent("event_prisonplayer", true)
+addEventHandler("event_prisonplayer", getRootElement(), prisonplayer)
 
 --[[addCommandHandler ( "banplayer",
 function ( playerid, cmd, id, ... )

@@ -143,6 +143,7 @@ local info_png = {
 	[89] = {"мешок с кормом", "$ за штуку"},
 	[90] = {"колба", "реагент"},
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
+	[92] = {"наручники", "шт"},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -744,10 +745,6 @@ function createText ()
 			local screenx, screeny, worldx, worldy, worldz = getCursorPosition()
 			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		end
-
-		--[[for i=0,20 do--setdata
-			dxdrawtext ( getElementData(playerid, tostring(i)), 10.0, 175.0+(15*i), 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		end]]
 
 		dxdrawtext ( heal_player[1], screenWidth-width_need-30-30, height_need, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( (alcohol/100), screenWidth-width_need-30-30, height_need+(20+7.5)*1, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
@@ -1947,6 +1944,7 @@ function tablet_fun()--создание планшета
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
 			local target,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Следить", false, low_fon )
+			local prison,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Посадить", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
@@ -1997,6 +1995,22 @@ function tablet_fun()--создание планшета
 				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", target, complete, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--prison
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				local id,player = getPlayerId(text)
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				elseif not id then
+					sendMessage("[ERROR] Такого игрока нет", red)
+					return
+				end
+
+				triggerServerEvent("event_prisonplayer", getRootElement(), playerid, "", text, 60, "Нарушение правил сервера")
+			end
+			addEventHandler ( "onClientGUIClick", prison, complete, false )
 
 			guiGridListAddColumn(shoplist, "ИД", 0.15)
 			guiGridListAddColumn(shoplist, "Ник", 0.7)
