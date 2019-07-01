@@ -450,7 +450,7 @@ local info_png = {
 	[30] = {"нож мясника", "шт"},
 	[31] = {"пицца", "$ за штуку"},
 	[32] = {"потерянный груз", "$ за штуку"},
-	[33] = {"эхолокатор", "%"},
+	[33] = {"сонар", "%"},
 	[34] = {"Дробовик", "боеприпасов"},
 	[35] = {"парашют", "шт"},
 	[36] = {"дубинка", "шт"},
@@ -4055,7 +4055,7 @@ function setVehicleStage_fun( vehicleid, value, value1, playerid, number )
 			end
 
 			for k,v in pairs(car_cash_no) do
-				if getElementModel(v) == getElementModel(vehicleid) then
+				if v == getElementModel(vehicleid) then
 					sendMessage(playerid, "[ERROR] На это т/с нельзя установить stage", red)
 					return
 				end
@@ -6862,7 +6862,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-		elseif id1 == 33 then--эхолокатор
+		elseif id1 == 33 then--сонар
 
 			if job[playername] == 17 then
 				id2 = id2-1
