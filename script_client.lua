@@ -1908,7 +1908,9 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 			guiGridListClear(shoplist)
 			for k,v in pairs(getElementsByType("player")) do
-				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local r,g,b = getPlayerNametagColor(playerid)
+				guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 			end
 		end
 		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -1917,7 +1919,9 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Ник", 0.7)
 		guiGridListAddColumn(shoplist, "ОП", 0.1)
 		for k,v in pairs(getElementsByType("player")) do
-			guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+			local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+			local r,g,b = getPlayerNametagColor(playerid)
+			guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 		end
 	end
 	addEventHandler ( "onClientGUIClick", handbook, outputEditBox, false )
@@ -1960,7 +1964,9 @@ function tablet_fun()--создание планшета
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 				guiGridListClear(shoplist)
 				for k,v in pairs(getElementsByType("player")) do
-					guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+					local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+					local r,g,b = getPlayerNametagColor(playerid)
+					guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 				end
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -2020,7 +2026,9 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "Ник", 0.7)
 			guiGridListAddColumn(shoplist, "ОП", 0.1)
 			for k,v in pairs(getElementsByType("player")) do
-				guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local r,g,b = getPlayerNametagColor(playerid)
+				guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_player, outputEditBox, false )
@@ -2181,7 +2189,11 @@ function tablet_fun()--создание планшета
 
 				if count == #v[8] then
 					if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
-						guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+						local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					
+						for i=1,guiGridListGetColumnCount (shoplist) do
+							guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+						end
 					else
 						guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 					end
@@ -2203,6 +2215,17 @@ function tablet_fun()--создание планшета
 					sendMessage("[ERROR] Вы выполнили этот квест", red)
 					return
 				end
+			end
+
+			for i=0,guiGridListGetRowCount (shoplist) do
+				for j=1,guiGridListGetColumnCount (shoplist) do
+					guiGridListSetItemColor ( shoplist, i,j, white[1], white[2], white[3])
+				end
+			end
+
+			local r,c = guiGridListGetSelectedItem ( shoplist )
+			for i=1,guiGridListGetColumnCount (shoplist) do
+				guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
 			end
 
 			sendMessage("Вы взяли квест "..getElementData(playerid, "quest_table")[tonumber(text)][1], yellow)
@@ -2227,7 +2250,11 @@ function tablet_fun()--создание планшета
 
 			if count == #v[8] then
 				if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
-					guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					
+					for i=1,guiGridListGetColumnCount (shoplist) do
+						guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+					end
 				else
 					guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 				end
