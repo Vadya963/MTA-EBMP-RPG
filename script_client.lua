@@ -173,8 +173,8 @@ local commands = {
 }
 
 -----------эвенты------------------------------------------------------------------------
+math.randomseed(getTickCount())
 function random(min, max)
-	--math.randomseed(getTickCount())
 	return math.random(min, max)
 end
 
@@ -214,24 +214,6 @@ end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
 
-function setPedAimTarget_fun (ped, x,y,z)--аим педа
-	setPedAimTarget ( ped, x, y, z )
-end
-addEvent( "event_setPedAimTarget_fun", true )
-addEventHandler ( "event_setPedAimTarget_fun", getRootElement(), setPedAimTarget_fun )
-
-function setPedControlState_fun (ped, control, state)--контроль педа
-	setPedControlState ( ped, control, state )
-end
-addEvent( "event_setPedControlState_fun", true )
-addEventHandler ( "event_setPedControlState_fun", getRootElement(), setPedControlState_fun )
-
-function givePedWeapon_fun (ped, weapon, ammo, setAsCurrent)--выдать оружие педу
-	givePedWeapon ( ped, weapon, ammo, setAsCurrent )
-end
-addEvent( "event_givePedWeapon_fun", true )
-addEventHandler ( "event_givePedWeapon_fun", getRootElement(), givePedWeapon_fun )
-
 function createFire_fun (x,y,z, size, radius, count)--создание огня
 	local r1,r2 = random(radius*-1,radius),random(radius*-1,radius)
 	for i=1,count do
@@ -240,12 +222,6 @@ function createFire_fun (x,y,z, size, radius, count)--создание огня
 end
 addEvent( "event_createFire", true )
 addEventHandler ( "event_createFire", getRootElement(), createFire_fun )
-
-function extinguishFire_fun (x,y,z, r)--тушение огня
-	extinguishFire(x,y,z, r)
-end
-addEvent( "event_extinguishFire", true )
-addEventHandler ( "event_extinguishFire", getRootElement(), extinguishFire_fun )
 
 function body_hit_sound ()--звук поподания в тело
 	playSound("parachute/body_hit_sound.mp3")
@@ -260,6 +236,18 @@ function setElementCollidableWith_fun (value1, element, value)--вкл/откл 
 end
 addEvent( "event_setElementCollidableWith_fun", true )
 addEventHandler ( "event_setElementCollidableWith_fun", getRootElement(), setElementCollidableWith_fun )
+
+addEvent( "event_extinguishFire", true )
+addEventHandler ( "event_extinguishFire", getRootElement(), extinguishFire )
+
+addEvent( "event_setPedAimTarget", true )
+addEventHandler ( "event_setPedAimTarget", getRootElement(), setPedAimTarget )
+
+addEvent( "event_setPedControlState", true )
+addEventHandler ( "event_setPedControlState", getRootElement(), setPedControlState )
+
+addEvent( "event_givePedWeapon", true )
+addEventHandler ( "event_givePedWeapon", getRootElement(), givePedWeapon )
 
 
 local name_player = 0
@@ -385,8 +373,23 @@ end
 
 function sendMessage(text, color)
 	local time = getRealTime()
+	local hour = time["hour"]
+	local minute = time["minute"]
+	local second = time["second"]
 
-	outputChatBox("[ "..time["hour"]..":"..time["minute"]..":"..time["second"].." ] "..text, color[1], color[2], color[3])
+	if time["hour"] < 10 then
+		hour = "0"..hour
+	end
+
+	if time["minute"] < 10 then
+		minute = "0"..minute
+	end
+
+	if time["second"] < 10 then
+		second = "0"..second
+	end
+
+	outputChatBox("["..hour..":"..minute..":"..second.."] "..text, color[1], color[2], color[3])
 end
 
 function getPlayerVehicle( playerid )
@@ -1498,6 +1501,7 @@ function tablet_fun()--создание планшета
 	local shop = guiCreateStaticImage( 405, 10, 60, 60, "comp/shop.png", false, fon )
 	local handbook = guiCreateStaticImage( 475, 10, 60, 60, "comp/handbook.png", false, fon )
 	local admin = guiCreateStaticImage( 545, 10, 52, 60, "comp/admin.png", false, fon )
+	local quest = guiCreateStaticImage( 10, 80, 60, 60, "comp/quest.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -2150,6 +2154,87 @@ function tablet_fun()--создание планшета
 
 	end
 	addEventHandler ( "onClientGUIClick", admin, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--квесты
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Выбрать", false, low_fon )
+		local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			guiGridListClear(shoplist)
+			for k,v in pairs(getElementData(playerid, "quest_table")) do
+				local count = 0
+				for k,v in pairs(v[8]) do
+					if v ~= getPlayerName(playerid) then
+						count = count+1
+					end
+				end
+
+				if count == #v[8] then
+					if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
+						guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					else
+						guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					end
+				end
+			end
+		end
+		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+			if text == "" then
+				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				return
+			end
+
+			for k,v in pairs(getElementData(playerid, "quest_table")[tonumber(text)][8]) do
+				if v == getPlayerName(playerid) then
+					sendMessage("[ERROR] Вы выполнили этот квест", red)
+					return
+				end
+			end
+
+			sendMessage("Вы взяли квест "..getElementData(playerid, "quest_table")[tonumber(text)][1], yellow)
+
+			setElementData(playerid, "quest_select", text..":0")
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+		guiGridListAddColumn(shoplist, "Номер", 0.1)
+		guiGridListAddColumn(shoplist, "Название", 0.1)
+		guiGridListAddColumn(shoplist, "Описание", 0.5)
+		guiGridListAddColumn(shoplist, "Прогресс", 0.1)
+		guiGridListAddColumn(shoplist, "Награда $", 0.1)
+		guiGridListAddColumn(shoplist, "Награда предметом", 0.3)
+		for k,v in pairs(getElementData(playerid, "quest_table")) do
+			local count = 0
+			for k,v in pairs(v[8]) do
+				if v ~= getPlayerName(playerid) then
+					count = count+1
+				end
+			end
+
+			if count == #v[8] then
+				if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
+					guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+				else
+					guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+				end
+			end
+		end
+	end
+	addEventHandler ( "onClientGUIClick", quest, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

@@ -192,8 +192,8 @@ function getSpeed(vehicle)
 	end
 end
 
+math.randomseed(getTickCount())
 function random(min, max)
-	--math.randomseed(getTickCount())
 	return math.random(min, max)
 end
 
@@ -323,18 +323,6 @@ function radio_chat(playerid, text, color)
 		end
 	end
 end
-
-function reloadWeapon(playerid)
-	reloadPedWeapon(playerid)
-end
-addEvent("relWep", true)
-addEventHandler("relWep", resourceRoot, reloadWeapon)
-
-function kickPlayer_fun(playerid)
-	kickPlayer(playerid)
-end
-addEvent("event_kickPlayer", true)
-addEventHandler("event_kickPlayer", getRootElement(), kickPlayer_fun)
 
 function set_weather()
 	local hour, minute = getTime()
@@ -517,6 +505,11 @@ local craft_table = {--[предмет 1, рецепт 2, предметы дл�
 	{info_png[20][1].." 1 "..info_png[20][2].." ", info_png[90][1].." 3 "..info_png[90][2].." + "..info_png[90][1].." 78 "..info_png[90][2], "90,90", "3,78", "20,1"},
 }
 
+local quest_table = {--1 название, 2 описание, 3 кол-во, 5 предмет засчитывания, 6 награда $, 7 награда предметом, 8 массив имен кто выполнил квест
+	[1] = {"Мясник", "Обработать ", math.random(1,5), " кусков мяса", 48, math.random(1000,5000), {79,10000}, {}},
+	[2] = {"Рудокоп", "Добыть ", math.random(1,5), " кг железной руды", 71, math.random(1000,5000), {0,0}, {}},
+}
+
 local weapon = {
 	[9] = {info_png[9][1], 16, 360, 5},
 	[12] = {info_png[12][1], 22, 240, 25},
@@ -568,9 +561,16 @@ local gas = {
 }
 
 local giuseppe = {
+	{info_png[64][1].." Угонщик", 6, 5000, 64},
 	{info_png[83][1], 100, 1000, 83},
 	{info_png[84][1], 10, 500, 84},
-	{info_png[64][1].." Угонщик", 6, 5000, 64},
+	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},
+	{info_png[85][1].." "..name_mafia[2][1], 2, 5000, 85},
+	{info_png[85][1].." "..name_mafia[3][1], 3, 5000, 85},
+	{info_png[85][1].." "..name_mafia[4][1], 4, 5000, 85},
+	{info_png[85][1].." "..name_mafia[5][1], 5, 5000, 85},
+	{info_png[85][1].." "..name_mafia[6][1], 6, 5000, 85},
+	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -1527,6 +1527,7 @@ function debuginfo ()
 		setElementData(playerid, "cow_farms_table2", result_cow_farms)
 		setElementData(playerid, "no_ped_damage", no_ped_damage)
 		setElementData(playerid, "job_player", job[playername])
+		setElementData(playerid, "quest_table", quest_table)
 
 		--позиции домов, бизнесов, зданий
 		setElementData(playerid, "house_pos", house_pos)
@@ -2318,7 +2319,7 @@ function job_timer2 ()
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 							local randomize = random(1,2)
 
-							triggerClientEvent(playerid, "event_givePedWeapon_fun", playerid, job_ped[playername], weapon[18][2], 1000, true)
+							triggerClientEvent(playerid, "event_givePedWeapon", playerid, job_ped[playername], weapon[18][2], 1000, true)
 
 							if randomize == 1 then
 								sendMessage(playerid, "Преступник сдается", yellow)
@@ -2334,7 +2335,7 @@ function job_timer2 ()
 
 								--setPedAnimation(job_ped[playername], "ped", "gang_gunstand", -1, false, false, false, true)
 
-								triggerClientEvent(playerid, "event_setPedControlState_fun", playerid, job_ped[playername], "fire", true)
+								triggerClientEvent(playerid, "event_setPedControlState", playerid, job_ped[playername], "fire", true)
 
 								job_call[playername][1] = job_call[playername][3]+2
 								job_call[playername][2] = randomize
@@ -2343,7 +2344,7 @@ function job_timer2 ()
 
 					elseif job_call[playername][1] == job_call[playername][3]+2 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
-							triggerClientEvent(playerid, "event_setPedAimTarget_fun", playerid, job_ped[playername], x, y, z)
+							triggerClientEvent(playerid, "event_setPedAimTarget", playerid, job_ped[playername], x, y, z)
 						end
 
 						function died()
@@ -3422,6 +3423,42 @@ function setPlayerNametagColor_fun( playerid )
 	end
 
 	setElementData(playerid, "admin_data", search_inv_player_2_parameter(playerid, 44))
+end
+
+function quest_player(playerid, id)
+	local playername = getPlayerName(playerid)
+
+	if getElementData(playerid, "quest_select") ~= "0:0" then
+		local spl = split(getElementData(playerid, "quest_select"), ":")
+		local quest = tonumber(spl[1])
+		local quest_progress = tonumber(spl[2])
+
+		if 1 <= quest and quest <= 2 then
+			if id == quest_table[quest][5] then
+				quest_progress = quest_progress+1
+				setElementData(playerid, "quest_select", quest..":"..quest_progress)
+			end
+			
+			if quest_table[quest][3] == quest_progress then
+				if quest_table[quest][7][1] ~= 0 then
+					if not inv_player_empty(playerid, quest_table[quest][7][1], quest_table[quest][7][2]) then
+						sendMessage(playerid, "[ERROR] Для завершения квеста освободите инвентарь", red)
+						return
+					else
+						sendMessage(playerid, "[QUEST] Вы получили "..info_png[quest_table[quest][7][1]][1].." "..quest_table[quest][7][2].." "..info_png[quest_table[quest][7][1]][2], svetlo_zolotoy)
+					end
+				end
+
+				setElementData(playerid, "quest_select", "0:0")
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+quest_table[quest][6], playername )
+
+				sendMessage(playerid, "[QUEST] Вы получили "..quest_table[quest][6].."$", green)
+
+				table.insert(quest_table[quest][8], playername)
+			end
+		end
+	end
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -5245,6 +5282,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_car", cash_car)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
+	setElementData(playerid, "quest_select", "0:0")
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -5753,6 +5791,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] then--получение прибыли за предметы
 				inv_player_delet( playerid, id1, id2 )
 				inv_server_load( playerid, value, 0, 1, array_player_2[playername][1]+id2, tabpanel )
+				quest_player(playerid, id1)
 
 				sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow)
 
