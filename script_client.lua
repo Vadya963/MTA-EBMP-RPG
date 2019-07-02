@@ -799,7 +799,7 @@ function createText ()
 
 					if coords[1] and coords[2] then
 						if tonumber(speed_table[1]) >= max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( red, 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
 						elseif tonumber(speed_table[1]) < max_speed then
 							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 						end
@@ -980,7 +980,7 @@ function createText ()
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 then
 					local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
-					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( red, 255 ), 1, m2font_dx1 )
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( red[1], red[2], red[3], 255 ), 1, m2font_dx1 )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) then

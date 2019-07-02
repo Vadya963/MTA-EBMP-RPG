@@ -5225,7 +5225,6 @@ function reg_or_login(playerid)
 
 		spawnPlayer(playerid, result[1]["x"], result[1]["y"], result[1]["z"], 0, result[1]["skin"], 0, 0)
 		setElementHealth( playerid, result[1]["heal"] )
-		setPlayerNametagColor(playerid, white[1],white[2],white[3])
 
 		sendMessage(playerid, "Вы удачно зарегистрировались!", turquoise)
 
@@ -5254,10 +5253,10 @@ function reg_or_login(playerid)
 
 		setElementHealth( playerid, result[1]["heal"] )
 
-		setPlayerNametagColor_fun(playerid)
-
 		sendMessage(playerid, "Вы удачно зашли!", turquoise)
 	end
+
+	setPlayerNametagColor_fun( playerid )
 
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
@@ -5850,8 +5849,6 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 
 	inv_server_load( playerid, value, id3, 0, 0, tabpanel )
 
-	setPlayerNametagColor_fun( playerid )
-
 	me_chat(playerid, playername.." выбросил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 	--sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow)
 end
@@ -5940,8 +5937,6 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 				end
 
 				if inv_player_empty(playerid, v[4], v[5]) then
-
-					setPlayerNametagColor_fun( playerid )
 					
 					me_chat(playerid, playername.." поднял(а) "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2])
 					--sendMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy)
@@ -6393,6 +6388,8 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		array_player_2[playername][id3+1] = id2
 
 		if id3+1 ~= 25 then
+			setPlayerNametagColor_fun( playerid )
+			
 			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
 
 			if state_inv_player[playername] == 1 then
@@ -8185,8 +8182,6 @@ function (playerid, cmd, id)
 		if inv_player_delet(player, 10, search_inv_player_2_parameter(player, 10), true) then
 			sendMessage(playerid, "Вы забрали у "..id.." "..info_png[10][1], yellow)
 			sendMessage(player, playername.." забрал(а) у вас "..info_png[10][1], yellow)
-
-			setPlayerNametagColor_fun(player)
 		else
 			sendMessage(playerid, "[ERROR] У игрока нет жетона", red)
 		end
