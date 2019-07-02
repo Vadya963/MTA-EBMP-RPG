@@ -14,6 +14,8 @@ function sqlite(text)
 
 	return result
 end
+addEvent("event_sqlite", true)
+addEventHandler("event_sqlite", getRootElement(), sqlite)
 
 local upgrades_car_table = {}
 local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
@@ -1546,7 +1548,7 @@ function debuginfo ()
 			setElementData(playerid, "guns_zone2", false)
 		end
 
-		sqlite_load(playerid)
+		sqlite_load(playerid, "cow_farms_db")
 
 		if armour[playername] ~= 0 and getPedArmor(playerid) == 0 then
 			destroyElement(armour[playername])
@@ -3813,21 +3815,41 @@ function pickedUpWeaponCheck( playerid )
 end
 addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
 
-function sqlite_load(playerid)
-	local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
-	if result[1] then
-		local farms = {
-			{result[1]["number"], "Зарплата", result[1]["price"].."$"},
-			{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
-			{result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
-			{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
-			{result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
-			{result[1]["number"], "Склад", result[1]["prod"].." мешков с кормом"},
-		}
-		
-		setElementData(playerid, "cow_farms_table1", farms)
+function sqlite_load(playerid, value)
+	if value == "cow_farms_db" then
+		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
+		if result[1] then
+			local farms = {
+				{result[1]["number"], "Зарплата", result[1]["price"].."$"},
+				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
+				{result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
+				{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
+				{result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
+				{result[1]["number"], "Склад", result[1]["prod"].." мешков с кормом"},
+			}
+			
+			setElementData(playerid, "cow_farms_table1", farms)
+		end
+
+	elseif value == "account_db" then
+		local result = sqlite( "SELECT * FROM account" )
+		setElementData(playerid, "account_db", result)
+
+	elseif value == "house_db" then
+		local result = sqlite( "SELECT * FROM house_db" )
+		setElementData(playerid, "house_db", result)
+
+	elseif value == "business_db" then
+		local result = sqlite( "SELECT * FROM business_db" )
+		setElementData(playerid, "business_db", result)
+
+	elseif value == "car_db" then
+		local result = sqlite( "SELECT * FROM car_db" )
+		setElementData(playerid, "car_db", result)
 	end
 end
+addEvent("event_sqlite_load", true)
+addEventHandler("event_sqlite_load", getRootElement(), sqlite_load)
 
 function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--продажа покупка вещей
 	local playername = getPlayerName ( playerid )
@@ -5257,6 +5279,13 @@ function reg_or_login(playerid)
 	end
 
 	setPlayerNametagColor_fun( playerid )
+
+	if getElementData(playerid, "admin_data") ~= 0 then
+		sqlite_load(playerid, "account_db")
+		sqlite_load(playerid, "house_db")
+		sqlite_load(playerid, "business_db")
+		sqlite_load(playerid, "car_db")
+	end
 
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)

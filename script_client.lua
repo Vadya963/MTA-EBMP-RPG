@@ -1934,11 +1934,13 @@ function tablet_fun()--создание планшета
 		end
 
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-		local tp_player = m2gui_button( 0, 0, "Телепорт к игроку", false, low_fon )
-		local tp_house = m2gui_button( 0, 20, "Телепорт к дому", false, low_fon )
-		local tp_business = m2gui_button( 0, 20*2, "Телепорт к бизнесу", false, low_fon )
-		local tp_interior_job = m2gui_button( 0, 20*3, "Телепорт к зданию", false, low_fon )
-		local work_table = m2gui_button( 0, 20*4, "Рабочий стол", false, low_fon )
+		local tp_player = m2gui_button( 0, 0, "Игроки", false, low_fon )
+		local tp_interior_job = m2gui_button( 0, 20*1, "Здания", false, low_fon )
+		local tp_player_db = m2gui_button( 0, 20*2, "Игроки БД", false, low_fon )
+		local tp_house = m2gui_button( 0, 20*3, "Дома БД", false, low_fon )
+		local tp_business = m2gui_button( 0, 20*4, "Бизнесы БД", false, low_fon )
+		local tp_car = m2gui_button( 0, 20*5, "Машины БД", false, low_fon )
+		local work_table = m2gui_button( 0, 20*6, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
@@ -1949,7 +1951,7 @@ function tablet_fun()--создание планшета
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
 			local target,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Следить", false, low_fon )
 			local prison,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Посадить", false, low_fon )
@@ -1966,7 +1968,7 @@ function tablet_fun()--создание планшета
 				for k,v in pairs(getElementsByType("player")) do
 					local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
 					local r,g,b = getPlayerNametagColor(playerid)
-					guiGridListSetItemColor ( shoplist, row,2, r,g,b)
+					guiGridListSetItemColor (shoplist, row,2, r,g,b)
 				end
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
@@ -2028,100 +2030,16 @@ function tablet_fun()--создание планшета
 			for k,v in pairs(getElementsByType("player")) do
 				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
 				local r,g,b = getPlayerNametagColor(playerid)
-				guiGridListSetItemColor ( shoplist, row,2, r,g,b)
+				guiGridListSetItemColor (shoplist, row,2, r,g,b)
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_player, outputEditBox, false )
-
-		function outputEditBox( button, state, absoluteX, absoluteY )--tp_house
-			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
-
-			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
-			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
-			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
-
-			function outputEditBox ( button, state, absoluteX, absoluteY )
-				destroyElement(low_fon)
-			end
-			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
-
-			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "house_pos")) do
-					guiGridListAddRow(shoplist, k)
-				end
-			end
-			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
-
-			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-				
-				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
-					return
-				end
-
-				local x,y,z = getElementData(playerid, "house_pos")[tonumber(text)][1],getElementData(playerid, "house_pos")[tonumber(text)][2],getElementData(playerid, "house_pos")[tonumber(text)][3]
-				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." дому", lyme)
-			end
-			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
-
-			guiGridListAddColumn(shoplist, "Номер", 0.95)
-			for k,v in pairs(getElementData(playerid, "house_pos")) do
-				guiGridListAddRow(shoplist, k)
-			end
-		end
-		addEventHandler ( "onClientGUIClick", tp_house, outputEditBox, false )
-
-		function outputEditBox( button, state, absoluteX, absoluteY )--tp_business
-			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
-
-			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
-			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
-			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
-
-			function outputEditBox ( button, state, absoluteX, absoluteY )
-				destroyElement(low_fon)
-			end
-			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
-
-			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "business_pos")) do
-					guiGridListAddRow(shoplist, k)
-				end
-			end
-			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
-
-			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-				
-				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
-					return
-				end
-
-				local x,y,z = getElementData(playerid, "business_pos")[tonumber(text)][1],getElementData(playerid, "business_pos")[tonumber(text)][2],getElementData(playerid, "business_pos")[tonumber(text)][3]
-				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
-			end
-			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
-
-			guiGridListAddColumn(shoplist, "Номер", 0.95)
-			for k,v in pairs(getElementData(playerid, "business_pos")) do
-				guiGridListAddRow(shoplist, k)
-			end
-		end
-		addEventHandler ( "onClientGUIClick", tp_business, outputEditBox, false )
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_interior_job
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
 
-			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
@@ -2160,6 +2078,240 @@ function tablet_fun()--создание планшета
 		end
 		addEventHandler ( "onClientGUIClick", tp_interior_job, outputEditBox, false )
 
+		function outputEditBox( button, state, absoluteX, absoluteY )--tp_house
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "house_db")
+				guiGridListClear(shoplist)
+
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "house_db")) do
+						guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
+					end
+				end, 1000, 1)
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				local x,y,z = getElementData(playerid, "house_db")[tonumber(text)]["x"],getElementData(playerid, "house_db")[tonumber(text)]["y"],getElementData(playerid, "house_db")[tonumber(text)]["z"]
+				setElementPosition(playerid, x,y,z)
+				sendMessage("Вы телепортировались к "..text.." дому", lyme)
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+			guiGridListAddColumn(shoplist, "number", 0.1)
+			guiGridListAddColumn(shoplist, "door", 0.1)
+			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "x", 0.2)
+			guiGridListAddColumn(shoplist, "y", 0.2)
+			guiGridListAddColumn(shoplist, "z", 0.2)
+			guiGridListAddColumn(shoplist, "interior", 0.1)
+			guiGridListAddColumn(shoplist, "world", 0.1)
+			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			for k,v in pairs(getElementData(playerid, "house_db")) do
+				guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
+			end
+		end
+		addEventHandler ( "onClientGUIClick", tp_house, outputEditBox, false )
+
+		function outputEditBox( button, state, absoluteX, absoluteY )--tp_business
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "business_db")
+				guiGridListClear(shoplist)
+
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "business_db")) do
+						guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
+					end
+				end, 1000, 1)
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
+				setElementPosition(playerid, x,y,z)
+				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+			guiGridListAddColumn(shoplist, "number", 0.1)
+			guiGridListAddColumn(shoplist, "type", 0.2)
+			guiGridListAddColumn(shoplist, "price", 0.1)
+			guiGridListAddColumn(shoplist, "money", 0.1)
+			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "warehouse", 0.1)
+			guiGridListAddColumn(shoplist, "x", 0.2)
+			guiGridListAddColumn(shoplist, "y", 0.2)
+			guiGridListAddColumn(shoplist, "z", 0.2)
+			guiGridListAddColumn(shoplist, "interior", 0.1)
+			guiGridListAddColumn(shoplist, "world", 0.1)
+			for k,v in pairs(getElementData(playerid, "business_db")) do
+				guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
+			end
+		end
+		addEventHandler ( "onClientGUIClick", tp_business, outputEditBox, false )
+
+		function outputEditBox( button, state, absoluteX, absoluteY )--tp_player_db
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			--local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "account_db")
+				guiGridListClear(shoplist)
+
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "account_db")) do
+						guiGridListAddRow(shoplist, v["name"], v["ban"], v["reason"], v["x"], v["y"], v["z"], v["reg_ip"], v["reg_serial"], v["heal"], v["alcohol"], v["satiety"], v["hygiene"], v["sleep"], v["drugs"], v["skin"], v["arrest"], v["crimes"], v["inventory"])
+					end
+				end, 1000, 1)
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			--[[function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
+				setElementPosition(playerid, x,y,z)
+				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )]]
+
+			guiGridListAddColumn(shoplist, "name", 0.2)
+			guiGridListAddColumn(shoplist, "ban", 0.1)
+			guiGridListAddColumn(shoplist, "reason", 0.1)
+			guiGridListAddColumn(shoplist, "x", 0.2)
+			guiGridListAddColumn(shoplist, "y", 0.2)
+			guiGridListAddColumn(shoplist, "z", 0.2)
+			guiGridListAddColumn(shoplist, "reg_ip", 0.2)
+			guiGridListAddColumn(shoplist, "reg_serial", 0.4)
+			guiGridListAddColumn(shoplist, "heal", 0.1)
+			guiGridListAddColumn(shoplist, "alcohol", 0.1)
+			guiGridListAddColumn(shoplist, "satiety", 0.1)
+			guiGridListAddColumn(shoplist, "hygiene", 0.1)
+			guiGridListAddColumn(shoplist, "sleep", 0.1)
+			guiGridListAddColumn(shoplist, "drugs", 0.1)
+			guiGridListAddColumn(shoplist, "skin", 0.1)
+			guiGridListAddColumn(shoplist, "arrest", 0.1)
+			guiGridListAddColumn(shoplist, "crimes", 0.1)
+			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			for k,v in pairs(getElementData(playerid, "account_db")) do
+				guiGridListAddRow(shoplist, v["name"], v["ban"], v["reason"], v["x"], v["y"], v["z"], v["reg_ip"], v["reg_serial"], v["heal"], v["alcohol"], v["satiety"], v["hygiene"], v["sleep"], v["drugs"], v["skin"], v["arrest"], v["crimes"], v["inventory"])
+			end
+		end
+		addEventHandler ( "onClientGUIClick", tp_player_db, outputEditBox, false )
+
+		function outputEditBox( button, state, absoluteX, absoluteY )--tp_car
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			--local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "car_db")
+				guiGridListClear(shoplist)
+				
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "car_db")) do
+						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["inventory"])
+					end
+				end, 1000, 1)
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			--[[function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
+				setElementPosition(playerid, x,y,z)
+				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+			end
+			addEventHandler ( "onClientGUIClick", complete_button, complete, false )]]
+
+			guiGridListAddColumn(shoplist, "number", 0.1)
+			guiGridListAddColumn(shoplist, "model", 0.1)
+			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "frozen", 0.1)
+			guiGridListAddColumn(shoplist, "evacuate", 0.1)
+			guiGridListAddColumn(shoplist, "x", 0.2)
+			guiGridListAddColumn(shoplist, "y", 0.2)
+			guiGridListAddColumn(shoplist, "z", 0.2)
+			guiGridListAddColumn(shoplist, "rot", 0.2)
+			guiGridListAddColumn(shoplist, "fuel", 0.2)
+			guiGridListAddColumn(shoplist, "car_rgb", 0.2)
+			guiGridListAddColumn(shoplist, "headlight_rgb", 0.2)
+			guiGridListAddColumn(shoplist, "paintjob", 0.1)
+			guiGridListAddColumn(shoplist, "tune", 0.5)
+			guiGridListAddColumn(shoplist, "stage", 0.1)
+			guiGridListAddColumn(shoplist, "probeg", 0.2)
+			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			for k,v in pairs(getElementData(playerid, "car_db")) do
+				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["inventory"])
+			end
+		end
+		addEventHandler ( "onClientGUIClick", tp_car, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", admin, outputEditBox, false )
 
