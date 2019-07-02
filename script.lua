@@ -17,6 +17,12 @@ end
 addEvent("event_sqlite", true)
 addEventHandler("event_sqlite", getRootElement(), sqlite)
 
+addEvent( "event_destroyElement", true )
+addEventHandler ( "event_destroyElement", getRootElement(), destroyElement )
+
+addEvent( "event_removePedFromVehicle", true )
+addEventHandler ( "event_removePedFromVehicle", getRootElement(), removePedFromVehicle )
+
 local upgrades_car_table = {}
 local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
 for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
@@ -1461,10 +1467,6 @@ local array_house_2 = {}
 
 -------------------пользовательские функции 2----------------------------------------------
 function debuginfo ()
-	local result_auc = sqlite( "SELECT * FROM auction" )
-	local result_car = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
-	local result_cow_farms = sqlite( "SELECT * FROM cow_farms_db" )
-
 	if(point_guns_zone[1] == 1) then
 	
 		time_guns_zone = time_guns_zone-1
@@ -1524,12 +1526,8 @@ function debuginfo ()
 		setElementData(playerid, "gps_device_data", gps_device[playername])
 		setElementData(playerid, "timeserver", hour..":"..minute)
 		setElementData(playerid, "earth", earth)
-		setElementData(playerid, "auc", result_auc)
-		setElementData(playerid, "carparking_table", result_car)
-		setElementData(playerid, "cow_farms_table2", result_cow_farms)
 		setElementData(playerid, "no_ped_damage", no_ped_damage)
 		setElementData(playerid, "job_player", job[playername])
-		setElementData(playerid, "quest_table", quest_table)
 
 		--позиции домов, бизнесов, зданий
 		setElementData(playerid, "house_pos", house_pos)
@@ -3276,7 +3274,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 		if robbery_player[playername] == 1 then
 			local x,y,z = getElementPosition(playerid)
 			local crimes_plus = zakon
-			local cash = random(1,money)
+			local cash = random(money/2,money)
 
 			if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
 				crimes[playername] = crimes[playername]+crimes_plus
@@ -3816,7 +3814,7 @@ end
 addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
 
 function sqlite_load(playerid, value)
-	if value == "cow_farms_db" then
+	if value == "cow_farms_table1" then
 		local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 86).."'" )
 		if result[1] then
 			local farms = {
@@ -3830,6 +3828,21 @@ function sqlite_load(playerid, value)
 			
 			setElementData(playerid, "cow_farms_table1", farms)
 		end
+
+	elseif value == "quest_table" then
+		setElementData(playerid, "quest_table", quest_table)
+
+	elseif value == "auc" then
+		local result = sqlite( "SELECT * FROM auction" )
+		setElementData(playerid, "auc", result)
+
+	elseif value == "carparking_table" then
+		local result_car = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
+		setElementData(playerid, "carparking_table", result_car)
+
+	elseif value == "cow_farms_table2" then
+		local result_cow_farms = sqlite( "SELECT * FROM cow_farms_db" )
+		setElementData(playerid, "cow_farms_table2", result_cow_farms)
 
 	elseif value == "account_db" then
 		local result = sqlite( "SELECT * FROM account" )
@@ -3846,6 +3859,10 @@ function sqlite_load(playerid, value)
 	elseif value == "car_db" then
 		local result = sqlite( "SELECT * FROM car_db" )
 		setElementData(playerid, "car_db", result)
+
+	elseif value == "cow_farms_db2" then
+		local result = sqlite( "SELECT * FROM cow_farms_db" )
+		setElementData(playerid, "cow_farms_db2", result)
 	end
 end
 addEvent("event_sqlite_load", true)
@@ -4766,10 +4783,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		local house_number = 0
 		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 			local h = v["number"]
-			createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip )
-			createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )
-
-			house_pos[v["number"]] = {v["x"], v["y"], v["z"]}
+			house_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip ), createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )}
 
 			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -4783,10 +4797,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		local business_number = 0
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-			createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip )
-			createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )
-
-			business_pos[v["number"]] = {v["x"], v["y"], v["z"]}
+			business_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip ), createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )}
 
 			business_number = business_number+1
 		end
@@ -5281,10 +5292,16 @@ function reg_or_login(playerid)
 	setPlayerNametagColor_fun( playerid )
 
 	if getElementData(playerid, "admin_data") ~= 0 then
+		sqlite_load(playerid, "quest_table")
+		sqlite_load(playerid, "auc")
+		sqlite_load(playerid, "cow_farms_table1")
+		sqlite_load(playerid, "cow_farms_table2")
+		sqlite_load(playerid, "carparking_table")
 		sqlite_load(playerid, "account_db")
 		sqlite_load(playerid, "house_db")
 		sqlite_load(playerid, "business_db")
 		sqlite_load(playerid, "car_db")
+		sqlite_load(playerid, "cow_farms_db2")
 	end
 
 	setElementData(playerid, "player_id", { count_player, 0 })
@@ -5458,6 +5475,8 @@ function car_spawn(number)
 		carnumber_number = carnumber_number+1
 	end
 end
+addEvent("event_car_spawn", true)
+addEventHandler("event_car_spawn", getRootElement(), car_spawn)
 
 function spawn_carparking( playerid, plate )
 	local playername = getPlayerName(playerid)
@@ -8273,10 +8292,7 @@ function (playerid)
 			array_house_2[dim] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 			local house_door = 0
 
-			createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 )
-			createPickup ( x, y, z, 3, house_icon, 10000 )
-
-			house_pos[dim] = {x, y, z}
+			house_pos[dim] = {x, y, z, createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, house_icon, 10000 )}
 
 			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
@@ -8348,10 +8364,7 @@ function (playerid, cmd, id)
 			local dim = business_number+1
 
 			if inv_player_empty(playerid, 43, dim) then
-				createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 )
-				createPickup ( x, y, z, 3, business_icon, 10000 )
-
-				business_pos[dim] = {x, y, z}
+				business_pos[dim] = {x, y, z, createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, business_icon, 10000 )}
 
 				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 

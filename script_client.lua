@@ -1537,10 +1537,14 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить меню аука
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "auc")
 				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "auc")) do
-					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
-				end
+
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "auc")) do
+						guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
+					end
+				end, 1000, 1)
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
@@ -1750,10 +1754,14 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "carparking_table")
 			guiGridListClear(shoplist)
-			for k,v in pairs(getElementData(playerid, "carparking_table")) do
-				guiGridListAddRow(shoplist, v)
-			end
+
+			setTimer(function()
+				for k,v in pairs(getElementData(playerid, "carparking_table")) do
+					guiGridListAddRow(shoplist, v)
+				end
+			end, 1000, 1)
 		end
 		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
@@ -1810,12 +1818,16 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_table1")
 				guiGridListClear(shoplist)
-				if getElementData(playerid, "cow_farms_table1") then
-					for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
-						guiGridListAddRow(shoplist, v[2], v[3])
+
+				setTimer(function()
+					if getElementData(playerid, "cow_farms_table1") then
+						for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+							guiGridListAddRow(shoplist, v[2], v[3])
+						end
 					end
-				end
+				end, 1000, 1)
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
@@ -1860,10 +1872,14 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_table2")
 				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
-					guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
-				end
+
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+						guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
+					end
+				end, 1000, 1)
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
@@ -1936,11 +1952,12 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local tp_player = m2gui_button( 0, 0, "Игроки", false, low_fon )
 		local tp_interior_job = m2gui_button( 0, 20*1, "Здания", false, low_fon )
-		local tp_player_db = m2gui_button( 0, 20*2, "Игроки БД", false, low_fon )
-		local tp_house = m2gui_button( 0, 20*3, "Дома БД", false, low_fon )
-		local tp_business = m2gui_button( 0, 20*4, "Бизнесы БД", false, low_fon )
-		local tp_car = m2gui_button( 0, 20*5, "Машины БД", false, low_fon )
-		local work_table = m2gui_button( 0, 20*6, "Рабочий стол", false, low_fon )
+		local tp_player_db = m2gui_button( 0, 20*2, "account", false, low_fon )
+		local tp_car = m2gui_button( 0, 20*3, "car_db", false, low_fon )
+		local tp_house = m2gui_button( 0, 20*4, "house_db", false, low_fon )
+		local tp_business = m2gui_button( 0, 20*5, "business_db", false, low_fon )
+		local tp_cow_farms = m2gui_button( 0, 20*6, "cow_farms_db", false, low_fon )
+		local work_table = m2gui_button( 0, 20*7, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
@@ -2004,7 +2021,7 @@ function tablet_fun()--создание планшета
 				end
 
 				setCameraTarget(player)
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", target, complete, false )
 
@@ -2080,9 +2097,11 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_house
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
@@ -2102,6 +2121,20 @@ function tablet_fun()--создание планшета
 				end, 1000, 1)
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--update_db
+				local text = guiGetText(edit)
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не написали", red)
+					return
+				end
+
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+
+				triggerServerEvent("event_sqlite", getRootElement(), text)
+			end
+			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -2125,7 +2158,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "z", 0.2)
 			guiGridListAddColumn(shoplist, "interior", 0.1)
 			guiGridListAddColumn(shoplist, "world", 0.1)
-			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(playerid, "house_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
 			end
@@ -2134,9 +2167,11 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_business
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
@@ -2156,6 +2191,20 @@ function tablet_fun()--создание планшета
 				end, 1000, 1)
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--update_db
+				local text = guiGetText(edit)
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не написали", red)
+					return
+				end
+
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+
+				triggerServerEvent("event_sqlite", getRootElement(), text)
+			end
+			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -2190,10 +2239,11 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_player_db
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			--local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
@@ -2213,19 +2263,19 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
-			--[[function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+			function complete ( button, state, absoluteX, absoluteY )--update_db
+				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не написали", red)
 					return
 				end
 
-				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
-				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+
+				triggerServerEvent("event_sqlite", getRootElement(), text)
 			end
-			addEventHandler ( "onClientGUIClick", complete_button, complete, false )]]
+			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
 			guiGridListAddColumn(shoplist, "name", 0.2)
 			guiGridListAddColumn(shoplist, "ban", 0.1)
@@ -2244,7 +2294,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "skin", 0.1)
 			guiGridListAddColumn(shoplist, "arrest", 0.1)
 			guiGridListAddColumn(shoplist, "crimes", 0.1)
-			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(playerid, "account_db")) do
 				guiGridListAddRow(shoplist, v["name"], v["ban"], v["reason"], v["x"], v["y"], v["z"], v["reg_ip"], v["reg_serial"], v["heal"], v["alcohol"], v["satiety"], v["hygiene"], v["sleep"], v["drugs"], v["skin"], v["arrest"], v["crimes"], v["inventory"])
 			end
@@ -2253,16 +2303,41 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_car
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
-			--local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
+			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
+			local refresh_car,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Пересоздать", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				for i,vehicleid in pairs(getElementsByType("vehicle")) do
+					if (getVehiclePlateText(vehicleid) == text) then
+						for k,v in pairs(getVehicleOccupants(vehicleid)) do
+							triggerServerEvent("event_removePedFromVehicle", getRootElement(), v)
+						end
+
+						triggerServerEvent("event_destroyElement", getRootElement(), vehicleid)
+						triggerServerEvent("event_car_spawn", getRootElement(), text)
+						triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
+						break
+					end
+				end
+			end
+			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "car_db")
@@ -2276,19 +2351,19 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
-			--[[function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+			function complete ( button, state, absoluteX, absoluteY )--update_db
+				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не написали", red)
 					return
 				end
 
-				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
-				setElementPosition(playerid, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+
+				triggerServerEvent("event_sqlite", getRootElement(), text)
 			end
-			addEventHandler ( "onClientGUIClick", complete_button, complete, false )]]
+			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
 			guiGridListAddColumn(shoplist, "number", 0.1)
 			guiGridListAddColumn(shoplist, "model", 0.1)
@@ -2306,12 +2381,65 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "tune", 0.5)
 			guiGridListAddColumn(shoplist, "stage", 0.1)
 			guiGridListAddColumn(shoplist, "probeg", 0.2)
-			guiGridListAddColumn(shoplist, "inventory", 3.0)
+			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(playerid, "car_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["inventory"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_car, outputEditBox, false )
+
+		function outputEditBox( button, state, absoluteX, absoluteY )--tp_cow_farms
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+			local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "", false, low_fon )
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
+			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_db2")
+				guiGridListClear(shoplist)
+				
+				setTimer(function()
+					for k,v in pairs(getElementData(playerid, "cow_farms_db2")) do
+						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
+					end
+				end, 1000, 1)
+			end
+			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--update_db
+				local text = guiGetText(edit)
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не написали", red)
+					return
+				end
+
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+
+				triggerServerEvent("event_sqlite", getRootElement(), text)
+			end
+			addEventHandler ( "onClientGUIClick", update_db, complete, false )
+
+			guiGridListAddColumn(shoplist, "number", 0.1)
+			guiGridListAddColumn(shoplist, "price", 0.1)
+			guiGridListAddColumn(shoplist, "coef", 0.1)
+			guiGridListAddColumn(shoplist, "money", 0.2)
+			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "warehouse", 0.1)
+			guiGridListAddColumn(shoplist, "prod", 0.1)
+			for k,v in pairs(getElementData(playerid, "cow_farms_db2")) do
+				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
+			end
+		end
+		addEventHandler ( "onClientGUIClick", tp_cow_farms, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", admin, outputEditBox, false )
 
@@ -2330,27 +2458,31 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "quest_table")
 			guiGridListClear(shoplist)
-			for k,v in pairs(getElementData(playerid, "quest_table")) do
-				local count = 0
-				for k,v in pairs(v[8]) do
-					if v ~= getPlayerName(playerid) then
-						count = count+1
-					end
-				end
-
-				if count == #v[8] then
-					if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
-						local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
-					
-						for i=1,guiGridListGetColumnCount (shoplist) do
-							guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+				
+			setTimer(function()
+				for k,v in pairs(getElementData(playerid, "quest_table")) do
+					local count = 0
+					for k,v in pairs(v[8]) do
+						if v ~= getPlayerName(playerid) then
+							count = count+1
 						end
-					else
-						guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+					end
+
+					if count == #v[8] then
+						if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
+							local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+						
+							for i=1,guiGridListGetColumnCount (shoplist) do
+								guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+							end
+						else
+							guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+						end
 					end
 				end
-			end
+			end, 1000, 1)
 		end
 		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
