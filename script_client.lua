@@ -2456,11 +2456,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_db2")
+				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_db")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "cow_farms_db2")) do
+					for k,v in pairs(getElementData(playerid, "cow_farms_db")) do
 						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 					end
 				end, 1000, 1)
@@ -2493,7 +2493,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "nalog", 0.1)
 			guiGridListAddColumn(shoplist, "warehouse", 0.1)
 			guiGridListAddColumn(shoplist, "prod", 0.1)
-			for k,v in pairs(getElementData(playerid, "cow_farms_db2")) do
+			for k,v in pairs(getElementData(playerid, "cow_farms_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 			end
 		end

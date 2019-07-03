@@ -3898,9 +3898,9 @@ function sqlite_load(playerid, value)
 		local result = sqlite( "SELECT * FROM car_db" )
 		setElementData(playerid, "car_db", result)
 
-	elseif value == "cow_farms_db2" then
+	elseif value == "cow_farms_db" then
 		local result = sqlite( "SELECT * FROM cow_farms_db" )
-		setElementData(playerid, "cow_farms_db2", result)
+		setElementData(playerid, "cow_farms_db", result)
 	end
 end
 addEvent("event_sqlite_load", true)
