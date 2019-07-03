@@ -7,6 +7,7 @@ local debuginfo = false
 local car_spawn_value = 0
 local hud = true
 local playerid = 0
+local update_db_rang = 1
 
 addEventHandler( "onClientResourceStart", getRootElement( ),
 function ( startedRes )
@@ -423,6 +424,17 @@ function getVehicleNameFromPlate( number )
 	end
 end
 
+function getVehicleidFromPlate( number )
+	local number = tostring(number)
+
+	for i,vehicleid in pairs(getElementsByType("vehicle")) do
+		local plate = getVehiclePlateText(vehicleid)
+		if number == plate then
+			return vehicleid
+		end
+	end
+end
+
 function getPlayerId( id )--узнать имя игрока из ид
 	for k,player in pairs(getElementsByType("player")) do
 		if getElementData(player, "player_id")[1] == tonumber(id) then
@@ -807,7 +819,9 @@ function createText ()
 				end
 
 				local dimensions = dxGetTextWidth ( plate, 1, m2font_dx1 )
-				dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				if getElementDimension(vehicle) == 0 then
+					dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
 			end
 		end
 	end
@@ -1957,12 +1971,18 @@ function tablet_fun()--создание планшета
 		local tp_house = m2gui_button( 0, 20*4, "house_db", false, low_fon )
 		local tp_business = m2gui_button( 0, 20*5, "business_db", false, low_fon )
 		local tp_cow_farms = m2gui_button( 0, 20*6, "cow_farms_db", false, low_fon )
-		local work_table = m2gui_button( 0, 20*7, "Рабочий стол", false, low_fon )
+		local timer_earth_clear = m2gui_button( 0, 20*7, "timer_earth_clear", false, low_fon )
+		local work_table = m2gui_button( 0, 20*8, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
 		end
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			triggerServerEvent("event_earth_true", getRootElement(), playerid)
+		end
+		addEventHandler ( "onClientGUIClick", timer_earth_clear, outputEditBox, false )
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_player
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
@@ -2123,6 +2143,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
+				if getElementData(playerid, "admin_data") ~= update_db_rang then
+					sendMessage("[ERROR] Вы не админ", red)
+					return
+				end
+
 				local text = guiGetText(edit)
 				
 				if text == "" then
@@ -2193,6 +2218,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
+				if getElementData(playerid, "admin_data") ~= update_db_rang then
+					sendMessage("[ERROR] Вы не админ", red)
+					return
+				end
+
 				local text = guiGetText(edit)
 				
 				if text == "" then
@@ -2264,6 +2294,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
+				if getElementData(playerid, "admin_data") ~= update_db_rang then
+					sendMessage("[ERROR] Вы не админ", red)
+					return
+				end
+
 				local text = guiGetText(edit)
 				
 				if text == "" then
@@ -2309,6 +2344,7 @@ function tablet_fun()--создание планшета
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local update_db,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Update DB", false, low_fon )
 			local refresh_car,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Пересоздать", false, low_fon )
+			local dim_0,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Убрать", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
@@ -2324,18 +2360,14 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				for i,vehicleid in pairs(getElementsByType("vehicle")) do
-					if (getVehiclePlateText(vehicleid) == text) then
-						for k,v in pairs(getVehicleOccupants(vehicleid)) do
-							triggerServerEvent("event_removePedFromVehicle", getRootElement(), v)
-						end
-
-						triggerServerEvent("event_destroyElement", getRootElement(), vehicleid)
-						triggerServerEvent("event_car_spawn", getRootElement(), text)
-						triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
-						break
-					end
+				local vehicleid = getVehicleidFromPlate( text )
+				for k,v in pairs(getVehicleOccupants(vehicleid)) do
+					triggerServerEvent("event_removePedFromVehicle", getRootElement(), v)
 				end
+
+				triggerServerEvent("event_destroyElement", getRootElement(), vehicleid)
+				triggerServerEvent("event_car_spawn", getRootElement(), text)
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
 			end
 			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
@@ -2352,6 +2384,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
+				if getElementData(playerid, "admin_data") ~= update_db_rang then
+					sendMessage("[ERROR] Вы не админ", red)
+					return
+				end
+
 				local text = guiGetText(edit)
 				
 				if text == "" then
@@ -2364,6 +2401,22 @@ function tablet_fun()--создание планшета
 				triggerServerEvent("event_sqlite", getRootElement(), text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
+
+			function complete ( button, state, absoluteX, absoluteY )--dim_0
+				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+				
+				if text == "" then
+					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					return
+				end
+
+				local vehicleid = getVehicleidFromPlate( text )
+
+				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с с номером "..text)
+
+				triggerServerEvent("event_setElementDimension", getRootElement(), vehicleid, 1)
+			end
+			addEventHandler ( "onClientGUIClick", dim_0, complete, false )
 
 			guiGridListAddColumn(shoplist, "number", 0.1)
 			guiGridListAddColumn(shoplist, "model", 0.1)
@@ -2415,6 +2468,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
+				if getElementData(playerid, "admin_data") ~= update_db_rang then
+					sendMessage("[ERROR] Вы не админ", red)
+					return
+				end
+
 				local text = guiGetText(edit)
 				
 				if text == "" then

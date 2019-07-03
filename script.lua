@@ -23,6 +23,9 @@ addEventHandler ( "event_destroyElement", getRootElement(), destroyElement )
 addEvent( "event_removePedFromVehicle", true )
 addEventHandler ( "event_removePedFromVehicle", getRootElement(), removePedFromVehicle )
 
+addEvent( "event_setElementDimension", true )
+addEventHandler ( "event_setElementDimension", getRootElement(), setElementDimension )
+
 local upgrades_car_table = {}
 local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
 for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
@@ -32,6 +35,7 @@ end
 fileClose(uc_txt)
 
 local earth = {}--слоты земли
+local earth_true = true--очищать ли землю
 local max_earth = 0--мак-ое кол-во выброшенных предметов на землю
 local count_player = 0--кол-во подключенных игроков
 local me_radius = 10--радиус отображения действий игрока в чате
@@ -160,6 +164,14 @@ function sendMessage(playerid, text, color)
 	outputChatBox("["..hour..":"..minute..":"..second.."] "..text, playerid, color[1], color[2], color[3])
 end
 
+function earth_true(playerid)
+	local playername = getPlayerName(playerid)
+	earth_true = not earth_true
+	admin_chat(playerid, "[ADMIN] "..playername.." ["..getElementData(playerid, "player_id")[1].."] использовал function earth_true(playerid) return "..tostring(earth_true).." end")
+end
+addEvent( "event_earth_true", true )
+addEventHandler ( "event_earth_true", getRootElement(), earth_true )
+
 function player_position( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local x_table = split(x, ".")
@@ -197,6 +209,28 @@ function getSpeed(vehicle)
 	if vehicle then
 		local x, y, z = getElementVelocity(vehicle)
 		return math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))*111.847*1.61--узнает скорость авто в км/ч
+	end
+end
+
+function getVehicleNameFromPlate( number )
+	local number = tostring(number)
+
+	for i,vehicleid in pairs(getElementsByType("vehicle")) do
+		local plate = getVehiclePlateText(vehicleid)
+		if number == plate then
+			return getVehicleNameFromModel(getElementModel(vehicleid))
+		end
+	end
+end
+
+function getVehicleidFromPlate( number )
+	local number = tostring(number)
+
+	for i,vehicleid in pairs(getElementsByType("vehicle")) do
+		local plate = getVehiclePlateText(vehicleid)
+		if number == plate then
+			return vehicleid
+		end
 	end
 end
 
@@ -2933,7 +2967,7 @@ end
 function timer_earth_clear()--очистка земли
 	local hour, minute = getTime()
 
-	if hour == 0 then
+	if hour == 0 and earth_true then
 		local count_earth = 0
 
 		for i,v in pairs(earth) do
@@ -2966,6 +3000,10 @@ function prison_timer()--античит если не в тюрьме
 
 			if count == #prison_cell then
 				local randomize = random(1,#prison_cell)
+
+				if getPlayerVehicle(playerid) then
+					removePedFromVehicle(playerid)
+				end
 
 				triggerClientEvent( playerid, "event_inv_delet", playerid )
 				state_inv_player[playername] = 0
@@ -5290,13 +5328,13 @@ function reg_or_login(playerid)
 	end
 
 	setPlayerNametagColor_fun( playerid )
+	sqlite_load(playerid, "quest_table")
+	sqlite_load(playerid, "auc")
+	sqlite_load(playerid, "cow_farms_table1")
+	sqlite_load(playerid, "cow_farms_table2")
+	sqlite_load(playerid, "carparking_table")
 
 	if getElementData(playerid, "admin_data") ~= 0 then
-		sqlite_load(playerid, "quest_table")
-		sqlite_load(playerid, "auc")
-		sqlite_load(playerid, "cow_farms_table1")
-		sqlite_load(playerid, "cow_farms_table2")
-		sqlite_load(playerid, "carparking_table")
 		sqlite_load(playerid, "account_db")
 		sqlite_load(playerid, "house_db")
 		sqlite_load(playerid, "business_db")
@@ -7943,6 +7981,7 @@ function (playerid, cmd, id)
 
 								setElementPosition(vehicleid, x+2,y,z+1)
 								setElementRotation(vehicleid, 0,0,0)
+								setElementDimension(vehicleid, 0)
 
 								sqlite( "UPDATE car_db SET x = '"..(x+2).."', y = '"..y.."', z = '"..(z+1).."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 
@@ -9064,6 +9103,10 @@ function input_Console ( text )
 		killTimer(timer)]]
 
 	elseif text == "x" then
+		for k,v in pairs(getElementsByType("player")) do
+			kickPlayer(v, "restartAllResources")
+		end
+
 		restartAllResources()
 	end
 end
