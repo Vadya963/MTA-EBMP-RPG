@@ -49,14 +49,18 @@ local menu_m2 = guiCreateStaticImage( screenWidth/2-30, screenHeight-100, 57, 58
 local sx,sy = guiGetSize(menu_m2, false)
 local px,py = guiGetPosition(menu_m2, false)
 local arrow_m2 = {
-	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "gui/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down"},
-	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left"},
-	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "gui/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up"},
-	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right"},
+	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "gui/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down", m2gui_label( px+(sx/2)-(25/2)+1, py+sy+3+1, 25, 15, "test", false )},
+	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left", m2gui_label( px-25-5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
+	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "gui/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up", m2gui_label( px+(sx/2)-(25/2)+1, py-15-5+1, 25, 15, "test", false )},
+	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right", m2gui_label( px+sx+5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
 }
 guiSetVisible ( menu_m2, false )
 for i=1,4 do
 	guiSetVisible ( arrow_m2[i][2], false )
+	guiLabelSetColor ( arrow_m2[i][4], 0, 0, 0 )
+	guiSetEnabled ( arrow_m2[i][4], false )
+	guiMoveToBack( arrow_m2[i][4] )
+	guiSetVisible ( arrow_m2[i][4], false )
 end
 
 for i=1,4 do
@@ -88,29 +92,38 @@ function menu_mafia_2( key, keyState )
 				local dimensions = dxGetTextWidth ( v, 1, "default-bold" )
 				dimensions = dimensions+coef_dimensions
 				guiSetText(arrow_m2[k][2], v)
+				guiSetText(arrow_m2[k][4], v)
 
 				local px1,py1 = guiGetPosition(arrow_m2[k][2], false)
+				local px2,py2 = guiGetPosition(arrow_m2[k][4], false)
 				guiSetSize(arrow_m2[k][2], dimensions, 15, false)
+				guiSetSize(arrow_m2[k][4], dimensions, 15, false)
 				if k == 1 then
 					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
+					guiSetPosition(arrow_m2[k][4], px+(sx/2)-(dimensions/2)+(coef_dimensions/2)+1, py2, false)
 				elseif k == 2 then
 					guiSetPosition(arrow_m2[k][2], px-dimensions-5, py1, false)
+					guiSetPosition(arrow_m2[k][4], px-dimensions-5+1, py2, false)
 				elseif k == 3 then
 					guiSetPosition(arrow_m2[k][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
+					guiSetPosition(arrow_m2[k][4], px+(sx/2)-(dimensions/2)+(coef_dimensions/2)+1, py2, false)
 				elseif k == 4 then
 					guiSetPosition(arrow_m2[k][2], px+sx+5+coef_dimensions, py1, false)
+					guiSetPosition(arrow_m2[k][4], px+sx+5+coef_dimensions+1, py2, false)
 				end
 			end
 
 			guiSetVisible ( menu_m2, true )
 			for i=1,4 do
 				guiSetVisible ( arrow_m2[i][2], true )
+				guiSetVisible ( arrow_m2[i][4], true )
 			end
 			showCursor( true )
 		else
 			guiSetVisible ( menu_m2, false )
 			for i=1,4 do
 				guiSetVisible ( arrow_m2[i][2], false )
+				guiSetVisible ( arrow_m2[i][4], false )
 			end
 			showCursor( false )
 		end
@@ -131,17 +144,24 @@ function outputEditBox ( button, state, absoluteX, absoluteY )
 							local dimensions = dxGetTextWidth ( v2, 1, "default-bold" )
 							dimensions = dimensions+coef_dimensions
 							guiSetText(arrow_m2[k2][2], v2)
+							guiSetText(arrow_m2[k2][4], v2)
 
 							local px1,py1 = guiGetPosition(arrow_m2[k2][2], false)
+							local px2,py2 = guiGetPosition(arrow_m2[k2][4], false)
 							guiSetSize(arrow_m2[k2][2], dimensions, 15, false)
+							guiSetSize(arrow_m2[k2][4], dimensions, 15, false)
 							if k2 == 1 then
 								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
+								guiSetPosition(arrow_m2[k2][4], px+(sx/2)-(dimensions/2)+(coef_dimensions/2)+1, py2, false)
 							elseif k2 == 2 then
 								guiSetPosition(arrow_m2[k2][2], px-dimensions-5, py1, false)
+								guiSetPosition(arrow_m2[k2][4], px-dimensions-5+1, py2, false)
 							elseif k2 == 3 then
 								guiSetPosition(arrow_m2[k2][2], px+(sx/2)-(dimensions/2)+(coef_dimensions/2), py1, false)
+								guiSetPosition(arrow_m2[k2][4], px+(sx/2)-(dimensions/2)+(coef_dimensions/2)+1, py2, false)
 							elseif k == 4 then
 								guiSetPosition(arrow_m2[k2][2], px+sx+5+coef_dimensions, py1, false)
+								guiSetPosition(arrow_m2[k2][4], px+sx+5+coef_dimensions+1, py2, false)
 							end
 						end
 					else
