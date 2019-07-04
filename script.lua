@@ -5,7 +5,23 @@ function sqlite(text)
 
 	if string.find(text, "UPDATE") or string.find(text, "INSERT") or string.find(text, "DELETE") then
 		local time = getRealTime()
-		local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"].."] "
+		local hour = time["hour"]
+		local minute = time["minute"]
+		local second = time["second"]
+
+		if time["hour"] < 10 then
+			hour = "0"..hour
+		end
+
+		if time["minute"] < 10 then
+			minute = "0"..minute
+		end
+
+		if time["second"] < 10 then
+			second = "0"..second
+		end
+
+		local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..hour..":"..minute..":"..second.."] "
 		local hFile = fileOpen(":ebmp/save_sqlite.sql")
 		fileSetPos( hFile, fileGetSize( hFile ) )
 		fileWrite(hFile, client_time..text.."\n" )
@@ -7845,6 +7861,49 @@ function (playerid, cmd, id, cash)
 		end
 
 		sendMessage(playerid, "[ERROR] Вы не у стола", red)
+	else
+		sendMessage(playerid, "[ERROR] Вы не в казино", red)
+	end
+end)
+
+addCommandHandler ( "slots",
+function (playerid, cmd, cash)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local cash = tonumber(cash)
+	local randomize1 = random(1,5)
+	local randomize2 = random(1,5)
+	local randomize3 = random(1,5)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not cash then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [сумма]", red)
+		return
+	end
+
+	if cash < 1 then
+		return
+	end
+
+	if cash > array_player_2[playername][1] then
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+		return
+	end
+
+	if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
+
+		sendMessage(playerid, "====[ ОДНОРУКИЙ БАНДИТ ]====", yellow)
+		sendMessage(playerid, "Выпало "..randomize1.." - "..randomize2.." - "..randomize3, yellow)
+
+		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+		if(randomize1 == randomize2 and randomize1 == randomize3) then
+			win_roulette( playerid, cash, 25 )
+		end
+
 	else
 		sendMessage(playerid, "[ERROR] Вы не в казино", red)
 	end
