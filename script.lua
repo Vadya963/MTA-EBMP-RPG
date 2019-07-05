@@ -1657,8 +1657,8 @@ function job_timer2 ()
 
 									while true do
 										local skin_table = getValidPedModels()
-										local random1 = random(1,#skin_table)
-										if skin_table[random1] ~= 264 then
+										local random1 = random(1,312)
+										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
 											randomize_skin = skin_table[random1]
 											break
 										else
@@ -2166,8 +2166,8 @@ function job_timer2 ()
 
 									while true do
 										local skin_table = getValidPedModels()
-										local random1 = random(1,#skin_table)
-										if skin_table[random1] ~= 264 then
+										local random1 = random(1,312)
+										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
 											randomize_skin = skin_table[random1]
 											break
 										else
@@ -2344,8 +2344,8 @@ function job_timer2 ()
 
 								while true do
 									local skin_table = getValidPedModels()
-									local random1 = random(1,#skin_table)
-									if skin_table[random1] ~= 264 then
+									local random1 = random(1,312)
+									if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
 										randomize_skin = skin_table[random1]
 										break
 									else
@@ -2722,7 +2722,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 17 then--работа умд
-				--if (getElementModel(playerid) == 312) then
+				if (getElementModel(playerid) == 311) then
 					if job_call[playername] == 0 then
 						local box_pos = {random(-3000,3000), random(-4000,-3000), -68,9}
 
@@ -2745,7 +2745,7 @@ function job_timer2 ()
 							setElementPosition(job_object[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 						end
 					end
-				--end
+				end
 
 			elseif job[playername] == 0 then--нету рыботы
 				job_0( playername )
@@ -7458,6 +7458,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 17 then
+				if getElementModel(playerid) ~= 311 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 311", red)
+					return
+				end
+
 				if job[playername] == 0 then
 					job[playername] = 17
 
@@ -7936,6 +7941,54 @@ function( playerid, cmd, id )
 	me_chat(playerid, playername.." сменил(а) канал в рации на "..id)
 end)
 
+--[[addCommandHandler ( "blackjack",
+function (playerid, cmd, id, cash)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local cash = tonumber(cash)
+	local randomize1 = random(1,5)
+	local randomize2 = random(1,5)
+	local randomize3 = random(1,5)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if not cash then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [сумма]", red)
+		return
+	end
+
+	if cash < 1 then
+		return
+	end
+
+	if cash > array_player_2[playername][1] then
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+		return
+	end
+
+	local id,player = getPlayerId(id)
+		
+	if id then
+		local x1,y1,z1 = getElementPosition(player)
+		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+
+			if arrest[id] ~= 0 then
+				sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
+				return
+			end
+
+			
+			
+		else
+			sendMessage(playerid, "[ERROR] Игрок далеко", red)
+		end
+	else
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
+	end
+end)]]
+
 addCommandHandler ( "r",--рация
 function (playerid, cmd, ...)
 	local playername = getPlayerName ( playerid )
@@ -8125,18 +8178,18 @@ function (playerid, cmd, id)
 		
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
-
-		if arrest[id] ~= 0 then
-			sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
-			return
-		end
-
-		if crimes[id] == 0 then
-			sendMessage(playerid, "[ERROR] Гражданин чист перед законом", red)
-			return
-		end
-
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+
+			if arrest[id] ~= 0 then
+				sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
+				return
+			end
+
+			if crimes[id] == 0 then
+				sendMessage(playerid, "[ERROR] Гражданин чист перед законом", red)
+				return
+			end
+
 			me_chat(playerid, playername.." посадил(а) "..id.." в камеру на "..(crimes[id]).." мин")
 
 			arrest[id] = 1
@@ -8171,21 +8224,21 @@ function (playerid, cmd, id)
 		
 	if id then
 		local x1,y1,z1 = getElementPosition(player)
-
-		if arrest[id] == 0 or arrest[id] == 2 then
-			sendMessage(playerid, "[ERROR] Игрок не в тюрьме", red)
-			return
-		elseif crimes[id] == 1 then
-			sendMessage(playerid, "[ERROR] Маленький срок заключения", red)
-			return
-		end
-
-		if cash*crimes[id] > array_player_2[playername][1] then
-			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-			return
-		end
-
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+
+			if arrest[id] == 0 or arrest[id] == 2 then
+				sendMessage(playerid, "[ERROR] Игрок не в тюрьме", red)
+				return
+			elseif crimes[id] == 1 then
+				sendMessage(playerid, "[ERROR] Маленький срок заключения", red)
+				return
+			end
+
+			if cash*crimes[id] > array_player_2[playername][1] then
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+				return
+			end
+
 			me_chat(playerid, playername.." заплатил(а) залог за "..id.." в размере "..(cash*(crimes[id])).."$")
 
 			sendMessage(player, "Ждите освобождения", yellow)
