@@ -556,6 +556,7 @@ local info_png = {
 	[90] = {"колба", "реагент"},
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 	[92] = {"наручники", "шт"},
+	[93] = {"колода карт", "шт"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -612,6 +613,7 @@ local shop = {
 	[72] = {info_png[72][1], 1, 500},
 	[76] = {info_png[76][1], 1, 250},
 	[80] = {info_png[80][1], 10, 500},
+	[93] = {info_png[93][1], 1, 50},
 }
 
 local gas = {
@@ -1492,6 +1494,8 @@ local job_vehicleid = {}--позиция авто
 local job_timer = {}--таймер угона
 local job_object = {}--создан ли объект, 0-нет
 local armour = {}--броня
+local game = {}--карты игрока
+local accept_player = {}--переменная игры
 
 --нужды
 local alcohol = {}
@@ -5004,6 +5008,8 @@ function()
 	job_timer[playername] = 0
 	job_object[playername] = 0
 	armour[playername] = 0
+	game[playername] = {}
+	accept_player[playername] = {false,false,false,false}
 
 	--нужды
 	alcohol[playername] = 0
@@ -7941,53 +7947,238 @@ function( playerid, cmd, id )
 	me_chat(playerid, playername.." сменил(а) канал в рации на "..id)
 end)
 
---[[addCommandHandler ( "blackjack",
-function (playerid, cmd, id, cash)
+local blackjack_card = {"2:2", "3:3", "4:4", "5:5", "6:6", "7:7", "8:8", "9:9", "10:10", "В:10", "Д:10", "К:10", "Т:11"}
+function blackjack (playerid, cmd, value, ...)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
-	local cash = tonumber(cash)
-	local randomize1 = random(1,5)
-	local randomize2 = random(1,5)
-	local randomize3 = random(1,5)
 
 	if logged[playername] == 0 then
 		return
-	end
-
-	if not cash then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [сумма]", red)
+	elseif search_inv_player(playerid, 93, 1) == 0 then
+		sendMessage(playerid, "[ERROR] У вас нет "..info_png[93][1], red)
 		return
 	end
 
-	if cash < 1 then
+	if not value then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [invite | take | open]", red)
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
-		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-		return
-	end
+	if value == "invite" then
+		local id = arg[1]
+		local cash = tonumber(arg[2])
 
-	local id,player = getPlayerId(id)
-		
-	if id then
-		local x1,y1,z1 = getElementPosition(player)
-		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+		if not id or not cash then
+			sendMessage(playerid, "[ERROR] /"..cmd.." [invite | take | open] [ИД игрока] [сумма]", red)
+			return
+		elseif cash < 1 then
+			return
+		end
 
-			if arrest[id] ~= 0 then
-				sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
+		if cash > array_player_2[playername][1] then
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+			return
+		end
+
+		local id,player = getPlayerId(id)
+			
+		if id then
+			local x1,y1,z1 = getElementPosition(player)
+			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+
+				if arrest[id] ~= 0 then
+					sendMessage(playerid, "[ERROR] Игрок в тюрьме", red)
+					return
+				elseif accept_player[id][1] then
+					sendMessage(playerid, "[ERROR] Игрок играет", red)
+					return
+				elseif accept_player[playername][1] then
+					sendMessage(playerid, "[ERROR] Вы играете", red)
+					return
+				elseif playername == id then
+					sendMessage(playerid, "[ERROR] На столько всё плохо?", red)
+					return
+				end
+
+				accept_player[id] = {false, playerid, cash, false}
+				accept_player[playername] = {false, playerid, cash, false}
+
+				me_chat(playerid, playername.." предложил(а) "..id.." сыграть в блекджек на сумму "..cash.."$")
+				sendMessage(player, "/accept yes - согласиться", yellow)
+				sendMessage(player, "/accept no - отказаться", yellow)
+				
+			else
+				sendMessage(playerid, "[ERROR] Игрок далеко", red)
+			end
+		else
+			sendMessage(playerid, "[ERROR] Такого игрока нет", red)
+		end
+
+	elseif value == "take" then
+		if not accept_player[playername][1] then
+			sendMessage(playerid, "[ERROR] Вы не играете", red)
+			return
+		elseif accept_player[playername][4] then
+			sendMessage(playerid, "[ERROR] Вы готовы вскрыть карты", red)
+			return
+		elseif #game[playername] == 5 then
+			sendMessage(playerid, "[ERROR] У вас 5 карт", red)
+			return
+		end
+
+		if logged[getPlayerName(accept_player[playername][2])] == 1 then
+			local x1,y1,z1 = getElementPosition(accept_player[playername][2])
+			if not isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+				sendMessage(playerid, "[ERROR] Игрок далеко", red)
 				return
 			end
-
-			
-			
 		else
 			sendMessage(playerid, "[ERROR] Игрок далеко", red)
+			return
 		end
-	else
-		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
+
+		me_chat(playerid, playername.." взял(а) карту")
+
+		local randomize = random(1,#blackjack_card)
+		local spl = blackjack_card[randomize]
+
+		while true do 
+			local count = 0
+			for k,v in pairs(game[playername]) do
+				if split(v, ":")[1] == split(spl, ":")[1] then
+					count = count + 1
+				end
+			end
+
+			if count < 4 then
+				break
+
+			else
+				randomize = random(1,#blackjack_card)
+				spl = blackjack_card[randomize]
+			end
+		end
+
+		table.insert(game[playername], blackjack_card[randomize])
+
+		local point = 0
+		for k,v in pairs(game[playername]) do
+			point = point+tonumber(split(v, ":")[2])
+		end
+
+		sendMessage(playerid, "Вы взяли "..split(spl, ":")[1]..", у вас "..point.." очков", yellow)
+
+		if point >= 21 then
+			blackjack(playerid, "/blackjack", "open")
+		end
+
+	elseif value == "open" then
+		if not accept_player[playername][1] then
+			sendMessage(playerid, "[ERROR] Вы не играете", red)
+			return
+		end
+
+		if logged[getPlayerName(accept_player[playername][2])] == 1 then
+			local x1,y1,z1 = getElementPosition(accept_player[playername][2])
+			if not isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
+				sendMessage(playerid, "[ERROR] Игрок далеко", red)
+				return
+			end
+		else
+			sendMessage(playerid, "[ERROR] Игрок далеко", red)
+			return
+		end
+
+		if not accept_player[getPlayerName(accept_player[playername][2])][4] then
+			me_chat(playerid, playername.." готов(а) вскрыть карты")
+
+			accept_player[playername][4] = true
+		else
+			me_chat(playerid, playername.." вскрывает карты")
+
+			accept_player[playername][4] = true
+
+			local point = 0
+			for k,v in pairs(game[playername]) do
+				point = point+tonumber(split(v, ":")[2])
+			end
+
+			local point2 = 0
+			for k,v in pairs(game[getPlayerName(accept_player[playername][2])]) do
+				point2 = point2+tonumber(split(v, ":")[2])
+			end
+
+			do_chat(playerid, point.." очков - "..playername)
+			do_chat(playerid, point2.." очков - "..getPlayerName(accept_player[playername][2]))
+
+			if point == point2 then
+
+			elseif point < point2 and point2 <= 21 or point2 == 21 then
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-accept_player[playername][3], playername )
+
+				win_roulette(accept_player[playername][2], accept_player[playername][3], 1)
+				print("win point2")
+			elseif point > point2 and point <= 21 or point == 21 then
+				inv_server_load( accept_player[playername][2], "player", 0, 1, array_player_2[getPlayerName(accept_player[playername][2])][1]-accept_player[playername][3], playername )
+
+				win_roulette(playerid, accept_player[playername][3], 1)
+				print("win point")
+			else
+
+			end
+
+			game[getPlayerName(accept_player[playername][2])] = {}
+			game[playername] = {}
+			accept_player[getPlayerName(accept_player[playername][2])] = {false,false,false,false}
+			accept_player[playername] = {false,false,false,false}
+		end
 	end
-end)]]
+end
+addCommandHandler ( "blackjack", blackjack)
+addEvent("event_blackjack", true)
+addEventHandler("event_blackjack", getRootElement(), blackjack)
+
+function accept (playerid, cmd, value)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 then
+		return
+
+	elseif not value then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [yes | no]", red)
+		return
+
+	elseif not accept_player[playername][2] then
+		sendMessage(playerid, "[ERROR] У вас нет предложений", red)
+		return
+	end
+
+	if value == "yes" then
+		if accept_player[playername][1] then
+			sendMessage(playerid, "[ERROR] Вы играете", red)
+			return
+		end
+
+		accept_player[playername][1] = true
+		accept_player[getPlayerName(accept_player[playername][2])][1] = true
+
+		me_chat(playerid, playername.." согласился(ась) с "..getPlayerName(accept_player[playername][2]).." сыграть в блекджек на сумму "..accept_player[playername][3].."$")
+
+		sendMessage(playerid, "/blackjack take - взять карту", yellow)
+		sendMessage(playerid, "/blackjack open - вскрыть карты", yellow)
+	elseif value == "no" then
+		me_chat(playerid, playername.." отказался(ась) от предложения "..getPlayerName(accept_player[playername][2]).." сыграть в блекджек на сумму "..accept_player[playername][3].."$")
+
+		game[getPlayerName(accept_player[playername][2])] = {}
+		game[playername] = {}
+		accept_player[getPlayerName(accept_player[playername][2])] = {false,false,false,false}
+		accept_player[playername] = {false,false,false,false}
+	end
+end
+addCommandHandler ( "accept", accept)
+addEvent("event_accept", true)
+addEventHandler("event_accept", getRootElement(), accept)
 
 addCommandHandler ( "r",--рация
 function (playerid, cmd, ...)
