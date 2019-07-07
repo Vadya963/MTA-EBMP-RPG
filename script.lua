@@ -7969,7 +7969,7 @@ function blackjack (playerid, cmd, value, ...)
 		local cash = tonumber(arg[2])
 
 		if not id or not cash then
-			sendMessage(playerid, "[ERROR] /"..cmd.." [invite | take | open] [ИД игрока] [сумма]", red)
+			sendMessage(playerid, "[ERROR] /"..cmd.." [invite] [ИД игрока] [сумма]", red)
 			return
 		elseif cash < 1 then
 			return
@@ -8003,7 +8003,7 @@ function blackjack (playerid, cmd, value, ...)
 				accept_player[id] = {false, playerid, cash, false}
 				accept_player[playername] = {false, playerid, cash, false}
 
-				me_chat(playerid, playername.." предложил(а) "..id.." сыграть в блекджек на сумму "..cash.."$")
+				me_chat(playerid, playername.." предложил(а) "..id.." сыграть в блэкджек на сумму "..cash.."$")
 				sendMessage(player, "/accept yes - согласиться", yellow)
 				sendMessage(player, "/accept no - отказаться", yellow)
 				
@@ -8163,12 +8163,12 @@ function accept (playerid, cmd, value)
 		accept_player[playername][1] = true
 		accept_player[getPlayerName(accept_player[playername][2])][1] = true
 
-		me_chat(playerid, playername.." согласился(ась) с "..getPlayerName(accept_player[playername][2]).." сыграть в блекджек на сумму "..accept_player[playername][3].."$")
+		me_chat(playerid, playername.." согласился(ась) с "..getPlayerName(accept_player[playername][2]).." сыграть в блэкджек на сумму "..accept_player[playername][3].."$")
 
 		sendMessage(playerid, "/blackjack take - взять карту", yellow)
 		sendMessage(playerid, "/blackjack open - вскрыть карты", yellow)
 	elseif value == "no" then
-		me_chat(playerid, playername.." отказался(ась) от предложения "..getPlayerName(accept_player[playername][2]).." сыграть в блекджек на сумму "..accept_player[playername][3].."$")
+		me_chat(playerid, playername.." отказался(ась) от предложения "..getPlayerName(accept_player[playername][2]).." сыграть в блэкджек на сумму "..accept_player[playername][3].."$")
 
 		game[getPlayerName(accept_player[playername][2])] = {}
 		game[playername] = {}
