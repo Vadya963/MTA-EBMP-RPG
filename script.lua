@@ -7883,9 +7883,9 @@ function (playerid, cmd, cash)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local cash = tonumber(cash)
-	local randomize1 = random(1,5)
-	local randomize2 = random(1,5)
-	local randomize3 = random(1,5)
+	local randomize1 = random(1,6)
+	local randomize2 = random(1,6)
+	local randomize3 = random(1,6)
 
 	if logged[playername] == 0 then
 		return
@@ -7970,7 +7970,7 @@ function blackjack (playerid, cmd, value, ...)
 		local cash = tonumber(arg[2])
 
 		if not id or not cash then
-			sendMessage(playerid, "[ERROR] /"..cmd.." [invite] [ИД игрока] [сумма]", red)
+			sendMessage(playerid, "[ERROR] /"..cmd.." invite [ИД игрока] [сумма]", red)
 			return
 		elseif cash < 1 then
 			return
