@@ -1,7 +1,8 @@
 local database = dbConnect( "sqlite", "ebmp-rpg.db" )
 function sqlite(text)
-	local result = dbQuery( database, text )
-	local result = dbPoll( result, -1 )
+	local result1 = dbQuery( database, text )
+	local result = dbPoll( result1, -1 )
+	dbFree(result1)
 
 	if string.find(text, "UPDATE") or string.find(text, "INSERT") or string.find(text, "DELETE") then
 		local time = getRealTime()
