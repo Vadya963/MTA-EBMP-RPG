@@ -1519,6 +1519,7 @@ function tablet_fun()--создание планшета
 	local handbook = guiCreateStaticImage( 475, 10, 60, 60, "comp/handbook.png", false, fon )
 	local admin = guiCreateStaticImage( 545, 10, 52, 60, "comp/admin.png", false, fon )
 	local quest = guiCreateStaticImage( 10, 80, 60, 60, "comp/quest.png", false, fon )
+	local slot = guiCreateStaticImage( 80, 80, 63, 60, "comp/slot.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -2607,6 +2608,73 @@ function tablet_fun()--создание планшета
 		end
 	end
 	addEventHandler ( "onClientGUIClick", quest, outputEditBox, false )
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--слоты
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local slots = guiCreateStaticImage( 0, 0, width_fon, height_fon-25, "comp/slot_0.png", false, low_fon )
+		local slots_1 = guiCreateStaticImage( 102+59-30, 40+81-22, 60, 43, "comp/slot_1.png", false, slots )
+		local slots_2 = guiCreateStaticImage( 248+59-30, 40+81-22, 60, 43, "comp/slot_1.png", false, slots )
+		local slots_3 = guiCreateStaticImage( 394+59-30, 40+81-22, 60, 43, "comp/slot_1.png", false, slots )
+
+		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Крутить", false, low_fon )
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1-m2gui_width2, 25, "укажите ставку", false, low_fon )
+		local start,count,time_slot = false,0,20
+		local randomize1 = 0
+		local randomize2 = 0
+		local randomize3 = 0
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			guiSetText(edit, "")
+		end
+		addEventHandler ( "onClientGUIClick", edit, outputEditBox, false )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGetText(edit)
+			local cash = tonumber(text)
+				
+			if text == "" then
+				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				return
+			elseif not cash then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif start then
+				sendMessage("[ERROR] Вы играете", red)
+				return
+			end
+
+			start = true
+
+			setTimer(function()
+				if not isElement(low_fon) then
+					return
+				end
+
+				count = count+1
+
+				randomize1 = random(1,6)
+				randomize2 = random(1,6)
+				randomize3 = random(1,6)
+
+				guiStaticImageLoadImage ( slots_1, "comp/slot_"..randomize1..".png" )
+				guiStaticImageLoadImage ( slots_2, "comp/slot_"..randomize2..".png" )
+				guiStaticImageLoadImage ( slots_3, "comp/slot_"..randomize3..".png" )
+
+				if count == time_slot then
+					triggerServerEvent("event_slots", getRootElement(), playerid, cash, randomize1, randomize2, randomize3)
+					start,count = false,0
+				end
+			end, 500, time_slot)
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+	end
+	addEventHandler ( "onClientGUIClick", slot, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

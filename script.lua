@@ -7878,14 +7878,13 @@ function (playerid, cmd, id, cash)
 	end
 end)
 
-addCommandHandler ( "slots",
-function (playerid, cmd, cash)
+function slots (playerid, cash, randomize1, randomize2, randomize3)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
-	local cash = tonumber(cash)
+	--[[local cash = tonumber(cash)
 	local randomize1 = random(1,6)
 	local randomize2 = random(1,6)
-	local randomize3 = random(1,6)
+	local randomize3 = random(1,6)]]
 
 	if logged[playername] == 0 then
 		return
@@ -7905,10 +7904,10 @@ function (playerid, cmd, cash)
 		return
 	end
 
-	if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
+	--if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
 
-		sendMessage(playerid, "====[ ОДНОРУКИЙ БАНДИТ ]====", yellow)
-		sendMessage(playerid, "Выпало "..randomize1.." - "..randomize2.." - "..randomize3, yellow)
+		--sendMessage(playerid, "====[ ОДНОРУКИЙ БАНДИТ ]====", yellow)
+		--sendMessage(playerid, "Выпало "..randomize1.." - "..randomize2.." - "..randomize3, yellow)
 
 		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
@@ -7916,10 +7915,13 @@ function (playerid, cmd, cash)
 			win_roulette( playerid, cash, 25 )
 		end
 
-	else
+	--[[else
 		sendMessage(playerid, "[ERROR] Вы не в казино", red)
-	end
-end)
+	end]]
+end
+--addCommandHandler ( "slots", slots)
+addEvent("event_slots", true)
+addEventHandler("event_slots", getRootElement(), slots)
 
 addCommandHandler( "setchanel",--//сменить канал в рации
 function( playerid, cmd, id )

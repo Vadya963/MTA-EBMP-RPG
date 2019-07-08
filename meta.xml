@@ -61,6 +61,14 @@
 	<file src="comp/handbook.png"/>
 	<file src="comp/admin.png"/>
 	<file src="comp/quest.png"/>
+	<file src="comp/slot.png"/>
+	<file src="comp/slot_0.png"/>
+	<file src="comp/slot_1.png"/>
+	<file src="comp/slot_2.png"/>
+	<file src="comp/slot_3.png"/>
+	<file src="comp/slot_4.png"/>
+	<file src="comp/slot_5.png"/>
+	<file src="comp/slot_6.png"/>
 	
 	<file src="image_inventory/0.png"/>
 	<file src="image_inventory/1.png"/>
