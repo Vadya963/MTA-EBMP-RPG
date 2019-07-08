@@ -2151,7 +2151,7 @@ function job_timer2 ()
 
 			elseif job[playername] == 10 then--работа парамедик
 				if vehicleid then
-					if getElementModel(vehicleid) == 416 and (getElementModel(playerid) == 274 or getElementModel(playerid) == 275 or getElementModel(playerid) == 276) then
+					if getElementModel(vehicleid) == 416 and (getElementModel(playerid) == 274 or getElementModel(playerid) == 275 or getElementModel(playerid) == 276 or getElementModel(playerid) == 145) then
 						if getSpeed(vehicleid) < 1 then
 
 							if job_call[playername] == 0 then
@@ -2318,7 +2318,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 13 then--работа swat
-				if (getElementModel(playerid) == 285) and search_inv_player_2_parameter(playerid, 10) ~= 0 then
+				if (getElementModel(playerid) == 285 or getElementModel(playerid) == 75) and search_inv_player_2_parameter(playerid, 10) ~= 0 then
 					if job_call[playername] == 0 then
 						local randomize = random(1,#fire_pos)
 
@@ -2429,7 +2429,7 @@ function job_timer2 ()
 				end
 
 			elseif job[playername] == 14 then--работа фермер
-				if getElementModel(playerid) == 158 then
+				if getElementModel(playerid) == 158 or getElementModel(playerid) == 198 then
 					if ferm_etap == 1 then
 						if job_call[playername] == 0 then
 
@@ -7356,8 +7356,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if crimes[playername] ~= 0 then
 					sendMessage(playerid, "[ERROR] У вас плохая репутация", red)
 					return
-				elseif getElementModel(playerid) ~= 274 and getElementModel(playerid) ~= 275 and getElementModel(playerid) ~= 276 then
-					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 274,275,276", red)
+				elseif getElementModel(playerid) ~= 274 and getElementModel(playerid) ~= 275 and getElementModel(playerid) ~= 276 and getElementModel(playerid) ~= 145 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 274,275,276,145", red)
 					return
 				end
 
@@ -7402,8 +7402,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if crimes[playername] ~= 0 then
 					sendMessage(playerid, "[ERROR] У вас плохая репутация", red)
 					return
-				elseif getElementModel(playerid) ~= 285 then
-					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 285", red)
+				elseif getElementModel(playerid) ~= 285 and getElementModel(playerid) ~= 75 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 285,75", red)
 					return
 				elseif search_inv_player_2_parameter(playerid, 10) == 0 then
 					sendMessage(playerid, "[ERROR] Вы не полицейский", red)
@@ -7420,8 +7420,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
 			elseif id2 == 14 then
-				if getElementModel(playerid) ~= 158 then
-					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 158", red)
+				if getElementModel(playerid) ~= 158 and getElementModel(playerid) ~= 198 then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде 158,198", red)
 					return
 				end
 

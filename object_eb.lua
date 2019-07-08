@@ -11,6 +11,10 @@ local dff_and_txd_table = {
 	{"knife", 322},
 	{"pumpkin01", 323},
 	{"hfyri", 311},
+	{"sheriffpolicefemale", 64},
+	{"sofybu_2", 75},
+	{"wfyclpd", 87},
+	{"darkhairfemalemedic", 145},
 }
 
 local car_spawn_value = 0
