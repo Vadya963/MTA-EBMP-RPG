@@ -1009,11 +1009,11 @@ local cash_helicopters = {
 	[519] = {"SHAMAL", 45000},
 	[487] = {"MAVERICK", 45000},--верт
 	--[553] = {"NEVADA", 45000},--самолет
+	[593] = {"DODO", 45000},
 }
 
 local cash_airplanes = {
 	[592] = {"ANDROM", 45000},--андромада
-	[593] = {"DODO", 45000},
 	[577] = {"AT400", 45000},
 	[511] = {"BEAGLE", 45000},--самолет
 	[512] = {"CROPDUST", 45000},--кукурузник
@@ -1024,7 +1024,7 @@ local cash_airplanes = {
 }
 
 local car_cash_coef = 10
-local car_cash_no = {456,428,420,574,416,408,437,453,519,407,448}
+local car_cash_no = {456,428,420,574,416,408,437,453,593,407,448}
 for k,v in pairs(cash_car) do
 	local count = 0
 	for _,v1 in pairs(car_cash_no) do
@@ -1868,7 +1868,7 @@ function job_timer2 ()
 
 			elseif job[playername] == 5 then--работа пилота
 				if vehicleid then
-					if getElementModel(vehicleid) == 519 and getElementModel(playerid) == 61 then
+					if getElementModel(vehicleid) == 593 and getElementModel(playerid) == 61 then
 						if getSpeed(vehicleid) <= 5 then
 
 							if job_call[playername] == 0 then

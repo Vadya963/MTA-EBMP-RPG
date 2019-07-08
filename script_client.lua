@@ -2618,7 +2618,7 @@ function tablet_fun()--создание планшета
 
 		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Крутить", false, low_fon )
-		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1-m2gui_width2, 25, "укажите ставку", false, low_fon )
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "укажите ставку", false, low_fon )
 		local start,count,time_slot = false,0,20
 		local randomize1 = 0
 		local randomize2 = 0
