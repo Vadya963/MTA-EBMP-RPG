@@ -15,6 +15,8 @@ local dff_and_txd_table = {
 	{"sofybu_2", 75},
 	{"wfyclpd", 87},
 	{"darkhairfemalemedic", 145},
+	{"wmyplt", 62},
+	{"vitpra", 162},
 }
 
 local car_spawn_value = 0

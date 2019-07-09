@@ -1663,7 +1663,7 @@ function job_timer2 ()
 									while true do
 										local skin_table = getValidPedModels()
 										local random1 = random(1,312)
-										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
+										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 and skin_table[random1] ~= 162 then
 											randomize_skin = skin_table[random1]
 											break
 										else
@@ -2172,7 +2172,7 @@ function job_timer2 ()
 									while true do
 										local skin_table = getValidPedModels()
 										local random1 = random(1,312)
-										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
+										if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 and skin_table[random1] ~= 162 then
 											randomize_skin = skin_table[random1]
 											break
 										else
@@ -2350,7 +2350,7 @@ function job_timer2 ()
 								while true do
 									local skin_table = getValidPedModels()
 									local random1 = random(1,312)
-									if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 then
+									if skin_table[random1] and skin_table[random1] ~= 264 and skin_table[random1] ~= 311 and skin_table[random1] ~= 162 then
 										randomize_skin = skin_table[random1]
 										break
 									else
