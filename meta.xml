@@ -9,9 +9,9 @@
 	<script src="menu_m2.lua" type="client" cache="false"/>
 	<script src="object_eb.lua" type="client" cache="false"/>
 
-	<map src="map/map_gta.map"/>
-	<script src="map/mapEditorScriptingExtension_s.lua" type="server"></script>
-	<script src="map/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
+	<map src="mapping/map_gta.map"/>
+	<script src="mapping/mapEditorScriptingExtension_s.lua" type="server"></script>
+	<script src="mapping/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
 
 	<file src="parachute/body_hit_sound.mp3"/>
 
@@ -296,4 +296,98 @@
 	<export function="isDrivebyEnabled" type="shared" />
 	<export function="setDrivebyEnabled" type="shared" />
 	
+
+	<!--кастомная карта-->
+	<script src="map_img/maximap_c.lua" type="client"/>
+	<script src="map_img/getControlState.lua" type="client"/>
+
+	<export function="isPlayerMapVisible" type="client"/>
+	<export function="getPlayerMapBoundingBox" type="client"/>
+	<export function="getPlayerMapImage" type="client"/>
+	<export function="setPlayerMapBoundingBox" type="client"/>
+	<export function="setPlayerMapVisible" type="client"/>
+	<export function="getMapFromWorldPosition" type="client"/>
+	<export function="getWorldFromMapPosition" type="client"/>
+	<export function="setPlayerMapImage" type="client"/>
+	<export function="setPlayerMapColor" type="client"/>
+	<export function="getPlayerMapColor" type="client"/>
+	<export function="getPlayerMapMovementSpeed" type="client"/>
+	<export function="setPlayerMapMovementSpeed" type="client"/>
+	<export function="getPlayerMapZoomFactor" type="client"/>
+	<export function="setPlayerMapZoomFactor" type="client"/>
+	<export function="getPlayerMapZoomRate" type="client"/>
+	<export function="setPlayerMapZoomRate" type="client"/>
+	<export function="getPlayerMapMinZoomLimit" type="client"/>
+	<export function="setPlayerMapMinZoomLimit" type="client"/>
+	<export function="getPlayerMapMaxZoomLimit" type="client"/>
+	<export function="setPlayerMapMaxZoomLimit" type="client"/>
+	<export function="setBlipShowingOnMaximap" type="client"/>
+	<export function="getBlipShowingOnMaximap" type="client"/>
+
+	<file src="map_img/images/radar.jpg"/>
+
+	<file src="map_img/images/blips/0.png"/>
+	<file src="map_img/images/blips/1.png"/>
+	<file src="map_img/images/blips/2.png"/>
+	<file src="map_img/images/blips/3.png"/>
+	<file src="map_img/images/blips/4.png"/>
+	<file src="map_img/images/blips/5.png"/>
+	<file src="map_img/images/blips/6.png"/>
+	<file src="map_img/images/blips/7.png"/>
+	<file src="map_img/images/blips/8.png"/>
+	<file src="map_img/images/blips/9.png"/>
+	<file src="map_img/images/blips/10.png"/>
+	<file src="map_img/images/blips/11.png"/>
+	<file src="map_img/images/blips/12.png"/>
+	<file src="map_img/images/blips/13.png"/>
+	<file src="map_img/images/blips/14.png"/>
+	<file src="map_img/images/blips/15.png"/>
+	<file src="map_img/images/blips/16.png"/>
+	<file src="map_img/images/blips/17.png"/>
+	<file src="map_img/images/blips/18.png"/>
+	<file src="map_img/images/blips/19.png"/>
+	<file src="map_img/images/blips/20.png"/>
+	<file src="map_img/images/blips/21.png"/>
+	<file src="map_img/images/blips/22.png"/>
+	<file src="map_img/images/blips/23.png"/>
+	<file src="map_img/images/blips/24.png"/>
+	<file src="map_img/images/blips/25.png"/>
+	<file src="map_img/images/blips/26.png"/>
+	<file src="map_img/images/blips/27.png"/>
+	<file src="map_img/images/blips/28.png"/>
+	<file src="map_img/images/blips/29.png"/>
+	<file src="map_img/images/blips/30.png"/>
+	<file src="map_img/images/blips/31.png"/>
+	<file src="map_img/images/blips/32.png"/>
+	<file src="map_img/images/blips/33.png"/>
+	<file src="map_img/images/blips/34.png"/>
+	<file src="map_img/images/blips/35.png"/>
+	<file src="map_img/images/blips/36.png"/>
+	<file src="map_img/images/blips/37.png"/>
+	<file src="map_img/images/blips/38.png"/>
+	<file src="map_img/images/blips/39.png"/>
+	<file src="map_img/images/blips/40.png"/>
+	<file src="map_img/images/blips/41.png"/>
+	<file src="map_img/images/blips/42.png"/>
+	<file src="map_img/images/blips/43.png"/>
+	<file src="map_img/images/blips/44.png"/>
+	<file src="map_img/images/blips/45.png"/>
+	<file src="map_img/images/blips/46.png"/>
+	<file src="map_img/images/blips/47.png"/>
+	<file src="map_img/images/blips/48.png"/>
+	<file src="map_img/images/blips/49.png"/>
+	<file src="map_img/images/blips/50.png"/>
+	<file src="map_img/images/blips/51.png"/>
+	<file src="map_img/images/blips/52.png"/>
+	<file src="map_img/images/blips/53.png"/>
+	<file src="map_img/images/blips/54.png"/>
+	<file src="map_img/images/blips/55.png"/>
+	<file src="map_img/images/blips/56.png"/>
+	<file src="map_img/images/blips/57.png"/>
+	<file src="map_img/images/blips/58.png"/>
+	<file src="map_img/images/blips/59.png"/>
+	<file src="map_img/images/blips/60.png"/>
+	<file src="map_img/images/blips/61.png"/>
+	<file src="map_img/images/blips/62.png"/>
+	<file src="map_img/images/blips/63.png"/>
 </meta>
