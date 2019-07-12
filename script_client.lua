@@ -1520,6 +1520,7 @@ function tablet_fun()--создание планшета
 	local admin = guiCreateStaticImage( 545, 10, 52, 60, "comp/admin.png", false, fon )
 	local quest = guiCreateStaticImage( 10, 80, 60, 60, "comp/quest.png", false, fon )
 	local slot = guiCreateStaticImage( 80, 80, 63, 60, "comp/slot.png", false, fon )
+	local poker = guiCreateStaticImage( 150, 80, 60, 60, "comp/poker.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -2675,6 +2676,163 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", slot, outputEditBox, false )
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--poker
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local rb = {}
+		rb[1] = m2gui_radiobutton ( 140, 0, 50, 15, "1", false, low_fon )
+		rb[2] = m2gui_radiobutton ( 193, 0, 50, 15, "2", false, low_fon )
+		rb[3] = m2gui_radiobutton ( 245, 0, 50, 15, "3", false, low_fon )
+		rb[4] = m2gui_radiobutton ( 297, 0, 50, 15, "4", false, low_fon )
+		rb[5] = m2gui_radiobutton ( 349, 0, 50, 15, "5", false, low_fon )
+		local slots = guiCreateStaticImage( 0, 20, 433, 188, "comp/card/cards.png", false, low_fon )
+		local count_card, cash, token = 5, 1000, 1000
+		local radiobutton_table = {
+			[1] = {0,0,0,0,0},
+			[2] = {0,0,0,0,0},
+			[3] = {0,0,0,0,0},
+			[4] = {0,0,0,0,0}
+		}
+		radiobutton_table[1][1],radiobutton_table[2][1],radiobutton_table[3][1],radiobutton_table[4][1] = m2gui_label ( 14, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 14, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
+		radiobutton_table[1][2],radiobutton_table[2][2],radiobutton_table[3][2],radiobutton_table[4][2] = m2gui_label ( 142, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 142, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
+		radiobutton_table[1][3],radiobutton_table[2][3],radiobutton_table[3][3],radiobutton_table[4][3] = m2gui_label ( 270, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 270, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
+		radiobutton_table[1][4],radiobutton_table[2][4],radiobutton_table[3][4],radiobutton_table[4][4] = m2gui_label ( 398, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 398, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
+		radiobutton_table[1][5],radiobutton_table[2][5],radiobutton_table[3][5],radiobutton_table[4][5] = m2gui_label ( 526, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 526, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
+
+		for i=1,count_card do
+			guiLabelSetColor(radiobutton_table[1][i], gray[1], gray[2], gray[3])
+			guiSetEnabled ( radiobutton_table[4][i], false )
+		end
+
+		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "ставка "..cash.."$", false, low_fon )
+		guiSetEnabled ( edit, false )
+
+		local start,count,coef = false,1,0
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		for i=1,5 do
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				guiSetText(edit, "ставка "..(token*guiGetText(source)).."$")
+				cash = tonumber(token*guiGetText(source))
+			end
+			addEventHandler ( "onClientGUIClick", rb[i], outputEditBox, false )
+		end
+
+		for i=1,count_card do
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				for k,v in pairs(radiobutton_table[4]) do
+					if v == source then
+						if radiobutton_table[2][k] then
+							radiobutton_table[2][k] = false
+							guiLabelSetColor(radiobutton_table[1][i], green[1], green[2], green[3])
+						else
+							radiobutton_table[2][k] = true
+							guiLabelSetColor(radiobutton_table[1][i], red[1], red[2], red[3])
+						end
+					end
+				end
+			end
+			addEventHandler ( "onClientGUIClick", radiobutton_table[4][i], outputEditBox, false )
+		end
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			if count == 1 then
+				coef = ""
+				for k,v in pairs(getElementsByType("gui-radiobutton")) do
+					if guiRadioButtonGetSelected(v) then
+						coef = guiGetText(v)
+					end
+				end
+
+				if coef == "" then
+					sendMessage("[ERROR] Вы не выбрали коэффициент", red)
+					return
+				end
+
+				start,count = true,2
+
+				for i=1,count_card do
+					guiLabelSetColor(radiobutton_table[1][i], green[1], green[2], green[3])
+					guiSetEnabled ( radiobutton_table[4][i], true )
+				end
+
+				local card = {"c","d","h","s"}
+				local text = random(1,11)..card[random(1,#card)]
+
+				for j=1,count_card do
+					while true do
+						local count = 0
+						for i=1,count_card do
+							if text ~= radiobutton_table[3][i] then
+								count = count+1
+							end
+						end
+
+						if count == count_card then
+							break
+						else
+							text = random(1,11)..card[random(1,#card)]
+						end
+					end
+
+					radiobutton_table[3][j] = text
+					guiStaticImageLoadImage ( radiobutton_table[4][j], "comp/card/cd"..radiobutton_table[3][j]..".png" )
+				end
+			elseif count == 2 then
+				local card = {"c","d","h","s"}
+				local text = random(1,11)..card[random(1,#card)]
+
+				for j=1,count_card do
+					while true do
+						local count = 0
+						for i=1,count_card do
+							if text ~= radiobutton_table[3][i] then
+								count = count+1
+							end
+						end
+
+						if count == count_card then
+							break
+						else
+							text = random(1,11)..card[random(1,#card)]
+						end
+					end
+
+					if not radiobutton_table[2][j] then
+						radiobutton_table[3][j] = text
+						guiStaticImageLoadImage ( radiobutton_table[4][j], "comp/card/cd"..radiobutton_table[3][j]..".png" )
+					end
+				end
+
+				local text = ""
+				for i=1,count_card do
+					text = text..radiobutton_table[3][i]..","
+				end
+				
+				triggerServerEvent("event_poker_win", getRootElement(), playerid, text, cash, coef, token)
+
+				start,count = false,1
+				radiobutton_table[2][1],radiobutton_table[3][1] = false, "0"
+				radiobutton_table[2][2],radiobutton_table[3][2] = false, "0"
+				radiobutton_table[2][3],radiobutton_table[3][3] = false, "0"
+				radiobutton_table[2][4],radiobutton_table[3][4] = false, "0"
+				radiobutton_table[2][5],radiobutton_table[3][5] = false, "0"
+
+				for i=1,count_card do
+					guiLabelSetColor(radiobutton_table[1][i], gray[1], gray[2], gray[3])
+					guiSetEnabled ( radiobutton_table[4][i], false )
+				end
+			end
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+	end
+	addEventHandler ( "onClientGUIClick", poker, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )

@@ -7923,32 +7923,209 @@ end
 addEvent("event_slots", true)
 addEventHandler("event_slots", getRootElement(), slots)
 
-addCommandHandler( "setchanel",--//сменить канал в рации
-function( playerid, cmd, id )
+local poker_coef = {
+	[1] = {0,1,2,3,4,6,9,25,50,250},
+	[2] = {0,2,4,6,8,12,18,50,100,500},
+	[3] = {0,3,6,9,12,18,27,75,150,750},
+	[4] = {0,4,8,12,16,24,36,100,200,1000},
+	[5] = {0,5,10,15,20,30,45,125,250,4000},
+}
+local poker_name = {"","пара","две пары","тройка","стрит","флеш","фулл-хауз","каре","стрит флеш","флеш рояль"}
+function poker_win( playerid, value, cash, coef, token )
+	local playername = getPlayerName(playerid)
+	local spl = split(value, ",")
+	local card = {}
+	local cash = tonumber(cash)
+	local coef = tonumber(coef)
 
-	local playername = getPlayerName ( playerid )
-	local id = tonumber(id)
-
-	if not id then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [канал]", red)
-		return
-	
-	elseif (logged[playername] == 0 or id <= 0) then
-	
-		return
-	
-	elseif (amount_inv_player_1_parameter(playerid, 80) == 0) then
-	
-		sendMessage(playerid, "[ERROR] У вас нет рации", red)
+	if cash > array_player_2[playername][1] then
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
 		return
 	end
 
-	inv_player_delet(playerid, 80, search_inv_player_2_parameter(playerid, 80), true)
+	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-	inv_player_empty(playerid, 80, id)
+	for k,v in pairs(spl) do
+		table.insert(card, v)
+	end
 
-	me_chat(playerid, playername.." сменил(а) канал в рации на "..id)
-end)
+	table.sort( card )
+
+	local card_i = ""
+	local card_s = ""
+
+	for k,v in ipairs(card) do
+		card_i = card_i..split(v, "cdhs")[1]
+		card_s = card_s..split(v, "0123456789")[1]
+		--print(k,v)
+	end
+
+	--выигрышные комбанции
+	if card_i == "101112131" and (card_s == "ccccc" or card_s == "ddddd" or card_s == "hhhhh" or card_s == "sssss") then
+		sendMessage(playerid, poker_name[10], yellow)
+		win_roulette( playerid, token, poker_coef[coef][10] )
+		--print("win 10")
+		return
+	end
+
+	local table_win = {
+		[1] = "106789",
+		[2] = "1011789",
+		[3] = "10111289",
+		[4] = "101112139",
+	}
+	local text = ""
+	for j=0,3 do
+		for i=2+j,6+j do
+			text = text..i
+		end
+		table.insert(table_win, text)
+		text = ""
+	end
+	for k,v in pairs(table_win) do
+		if card_i == v and (card_s == "ccccc" or card_s == "ddddd" or card_s == "hhhhh" or card_s == "sssss") then
+			sendMessage(playerid, poker_name[9], yellow)
+			win_roulette( playerid, token, poker_coef[coef][9] )
+			--print("win 9")
+			return
+		end
+	end
+
+	for i=1,5 do
+		local count = 0
+		for j=1,5 do
+			if split(spl[i], "cdhs")[1] == split(spl[j], "cdhs")[1] then
+				count = count+1
+			end
+		end
+
+		if count == 4 then
+			sendMessage(playerid, poker_name[8], yellow)
+			win_roulette( playerid, token, poker_coef[coef][8] )
+			--print("win 8")
+			return
+		end
+	end
+
+	local table_win2 = {}
+	for i=1,5 do
+		local count = 0
+		for j=1,5 do
+			if split(spl[i], "cdhs")[1] == split(spl[j], "cdhs")[1] then
+				count = count+1
+			end
+		end
+
+		table.insert(table_win2, count)
+	end
+	local count1 = 0
+	local count2 = 0
+	for k,v in pairs(table_win2) do
+		if v == 3 then
+			count1 = count1+1
+		elseif v == 2 then
+			count2 = count2+1
+		end
+	end
+	if count1 == 3 and count2 == 2 then
+		sendMessage(playerid, poker_name[7], yellow)
+		win_roulette( playerid, token, poker_coef[coef][7] )
+		--print("win 7")
+		return
+	end
+
+	if card_i == v and (card_s == "ccccc" or card_s == "ddddd" or card_s == "hhhhh" or card_s == "sssss") then
+		sendMessage(playerid, poker_name[6], yellow)
+		win_roulette( playerid, token, poker_coef[coef][6] )
+		--print("win 6")
+		return
+	end
+
+	for k,v in pairs(table_win) do
+		if card_i == v then
+			sendMessage(playerid, poker_name[5], yellow)
+			win_roulette( playerid, token, poker_coef[coef][5] )
+			--print("win 5")
+			return
+		end
+	end
+
+	local table_win2 = {}
+	for i=1,5 do
+		local count = 0
+		for j=1,5 do
+			if split(spl[i], "cdhs")[1] == split(spl[j], "cdhs")[1] then
+				count = count+1
+			end
+		end
+
+		table.insert(table_win2, count)
+	end
+	local count1 = 0
+	for k,v in pairs(table_win2) do
+		if v == 3 then
+			count1 = count1+1
+		end
+	end
+	if count1 == 3 then
+		sendMessage(playerid, poker_name[4], yellow)
+		win_roulette( playerid, token, poker_coef[coef][4] )
+		--print("win 4")
+		return
+	end
+
+	local table_win2 = {}
+	for i=1,5 do
+		local count = 0
+		for j=1,5 do
+			if split(spl[i], "cdhs")[1] == split(spl[j], "cdhs")[1] then
+				count = count+1
+			end
+		end
+
+		table.insert(table_win2, count)
+	end
+	local count1 = 0
+	for k,v in pairs(table_win2) do
+		if v == 2 then
+			count1 = count1+1
+		end
+	end
+	if count1 == 4 then
+		sendMessage(playerid, poker_name[3], yellow)
+		win_roulette( playerid, token, poker_coef[coef][3] )
+		--print("win 3")
+		return
+	end
+
+	local table_win2 = {}
+	for i=1,5 do
+		local count = 0
+		for j=1,5 do
+			if split(spl[i], "cdhs")[1] == split(spl[j], "cdhs")[1] then
+				count = count+1
+			end
+		end
+
+		table.insert(table_win2, count)
+	end
+	local count1 = 0
+	for k,v in pairs(table_win2) do
+		if v == 2 then
+			count1 = count1+1
+		end
+	end
+	if count1 == 2 then
+		sendMessage(playerid, poker_name[2], yellow)
+		win_roulette( playerid, token, poker_coef[coef][2] )
+		--print("win 2")
+		return
+	end
+
+	--print(card_i,card_s)
+end
+addEvent("event_poker_win", true)
+addEventHandler("event_poker_win", getRootElement(), poker_win)
 
 local blackjack_card = {"2:2", "3:3", "4:4", "5:5", "6:6", "7:7", "8:8", "9:9", "10:10", "В:10", "Д:10", "К:10", "Т:11"}
 function blackjack (playerid, cmd, value, ...)
@@ -8004,7 +8181,7 @@ function blackjack (playerid, cmd, value, ...)
 				end
 
 				accept_player[id] = {false, playerid, cash, false}
-				accept_player[playername] = {false, playerid, cash, false}
+				accept_player[playername] = {false, player, cash, false}
 
 				me_chat(playerid, playername.." предложил(а) "..id.." сыграть в блэкджек на сумму "..cash.."$")
 				sendMessage(player, "/accept yes - согласиться", yellow)
@@ -8173,15 +8350,40 @@ function accept (playerid, cmd, value)
 	elseif value == "no" then
 		me_chat(playerid, playername.." отказался(ась) от предложения "..getPlayerName(accept_player[playername][2]).." сыграть в блэкджек на сумму "..accept_player[playername][3].."$")
 
-		game[getPlayerName(accept_player[playername][2])] = {}
 		game[playername] = {}
-		accept_player[getPlayerName(accept_player[playername][2])] = {false,false,false,false}
 		accept_player[playername] = {false,false,false,false}
 	end
 end
 addCommandHandler ( "accept", accept)
 addEvent("event_accept", true)
 addEventHandler("event_accept", getRootElement(), accept)
+
+addCommandHandler( "setchanel",--//сменить канал в рации
+function( playerid, cmd, id )
+
+	local playername = getPlayerName ( playerid )
+	local id = tonumber(id)
+
+	if not id then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [канал]", red)
+		return
+	
+	elseif (logged[playername] == 0 or id <= 0) then
+	
+		return
+	
+	elseif (amount_inv_player_1_parameter(playerid, 80) == 0) then
+	
+		sendMessage(playerid, "[ERROR] У вас нет рации", red)
+		return
+	end
+
+	inv_player_delet(playerid, 80, search_inv_player_2_parameter(playerid, 80), true)
+
+	inv_player_empty(playerid, 80, id)
+
+	me_chat(playerid, playername.." сменил(а) канал в рации на "..id)
+end)
 
 addCommandHandler ( "r",--рация
 function (playerid, cmd, ...)
@@ -9407,6 +9609,7 @@ function input_Console ( text )
 
 	elseif text == "c" then
 		killTimer(timer)]]
+
 
 	elseif text == "x" then
 		for k,v in pairs(getElementsByType("player")) do

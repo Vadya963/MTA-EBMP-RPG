@@ -2,6 +2,8 @@
 	<info author="Paolo_Ricchi" type="gamemode" name="discord.gg/000000" description="My first MTA server"/>
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
+
+	<!--<include resource="tr_poker" />-->
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
@@ -69,6 +71,60 @@
 	<file src="comp/slot_4.png"/>
 	<file src="comp/slot_5.png"/>
 	<file src="comp/slot_6.png"/>
+	<file src="comp/poker.png"/>
+	<file src="comp/card/cards.png"/>
+	<file src="comp/card/cd1c.png"/>
+	<file src="comp/card/cd1d.png"/>
+	<file src="comp/card/cd1h.png"/>
+	<file src="comp/card/cd1s.png"/>
+	<file src="comp/card/cd2c.png"/>
+	<file src="comp/card/cd2d.png"/>
+	<file src="comp/card/cd2h.png"/>
+	<file src="comp/card/cd2s.png"/>
+	<file src="comp/card/cd3c.png"/>
+	<file src="comp/card/cd3d.png"/>
+	<file src="comp/card/cd3h.png"/>
+	<file src="comp/card/cd3s.png"/>
+	<file src="comp/card/cd4c.png"/>
+	<file src="comp/card/cd4d.png"/>
+	<file src="comp/card/cd4h.png"/>
+	<file src="comp/card/cd4s.png"/>
+	<file src="comp/card/cd5c.png"/>
+	<file src="comp/card/cd5d.png"/>
+	<file src="comp/card/cd5h.png"/>
+	<file src="comp/card/cd5s.png"/>
+	<file src="comp/card/cd6c.png"/>
+	<file src="comp/card/cd6d.png"/>
+	<file src="comp/card/cd6h.png"/>
+	<file src="comp/card/cd6s.png"/>
+	<file src="comp/card/cd7c.png"/>
+	<file src="comp/card/cd7d.png"/>
+	<file src="comp/card/cd7h.png"/>
+	<file src="comp/card/cd7s.png"/>
+	<file src="comp/card/cd8c.png"/>
+	<file src="comp/card/cd8d.png"/>
+	<file src="comp/card/cd8h.png"/>
+	<file src="comp/card/cd8s.png"/>
+	<file src="comp/card/cd9c.png"/>
+	<file src="comp/card/cd9d.png"/>
+	<file src="comp/card/cd9h.png"/>
+	<file src="comp/card/cd9s.png"/>
+	<file src="comp/card/cd10c.png"/>
+	<file src="comp/card/cd10d.png"/>
+	<file src="comp/card/cd10h.png"/>
+	<file src="comp/card/cd10s.png"/>
+	<file src="comp/card/cd11c.png"/>
+	<file src="comp/card/cd11d.png"/>
+	<file src="comp/card/cd11h.png"/>
+	<file src="comp/card/cd11s.png"/>
+	<file src="comp/card/cd12c.png"/>
+	<file src="comp/card/cd12d.png"/>
+	<file src="comp/card/cd12h.png"/>
+	<file src="comp/card/cd12s.png"/>
+	<file src="comp/card/cd13c.png"/>
+	<file src="comp/card/cd13d.png"/>
+	<file src="comp/card/cd13h.png"/>
+	<file src="comp/card/cd13s.png"/>
 	
 	<file src="image_inventory/0.png"/>
 	<file src="image_inventory/1.png"/>
