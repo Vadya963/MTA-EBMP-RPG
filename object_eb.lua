@@ -14,7 +14,7 @@ local dff_and_txd_table = {
 	{"sheriffpolicefemale", 64},
 	{"sofybu_2", 75},
 	{"wfyclpd", 87},
-	{"darkhairfemalemedic", 145},
+	{"wfyclot", 145},
 	{"wmyplt", 62},
 	{"vitpra", 162},
 }
