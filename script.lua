@@ -4796,6 +4796,14 @@ function displayLoadedRes ( res )--старт ресурсов
 
 		setTime(0,0)
 		setGameType ( "discord.gg/000000" )--ссылка на дискорд
+		removeWorldModel(1283, 999999, 0, 0, 0)
+		removeWorldModel(1315, 999999, 0, 0, 0)
+		removeWorldModel(1284, 999999, 0, 0, 0)
+		removeWorldModel(1350, 999999, 0, 0, 0)
+		removeWorldModel(1351, 999999, 0, 0, 0)
+		removeWorldModel(3516, 999999, 0, 0, 0)
+		removeWorldModel(1352, 999999, 0, 0, 0)
+		removeWorldModel(3855, 999999, 0, 0, 0)
 
 		setTimer(debuginfo, 1000, 0)--дебагинфа
 		setTimer(freez_car, 1000, 0)--заморозка авто и не только
