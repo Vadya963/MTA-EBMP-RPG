@@ -1,0 +1,357 @@
+<meta>
+	<info author="Paolo_Ricchi" type="gamemode" name="discord.gg/000000" description="My first MTA server"/>
+
+	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
+
+	<include resource="maximap" />
+	<include resource="hdhud" />
+	<include resource="hdradar" />
+	
+	<script src="script.lua" type="server"/>
+	<script src="client_pos.lua" type="client" cache="false"/>
+	<script src="script_client.lua" type="client" cache="false"/>
+	<script src="menu_m2.lua" type="client" cache="false"/>
+	<script src="object_eb.lua" type="client" cache="false"/>
+
+	<map src="mapping/map_gta.map"/>
+	<script src="mapping/mapEditorScriptingExtension_s.lua" type="server"></script>
+	<script src="mapping/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
+
+	<file src="parachute/body_hit_sound.mp3"/>
+
+	<!--худ-->
+	<file src="hud/alcohol.png"/>
+	<file src="hud/health.png"/>
+	<file src="hud/hygiene.png"/>
+	<file src="hud/satiety.png"/>
+	<file src="hud/sleep.png"/>
+	<file src="hud/drugs.png"/>
+
+	<file src="gui/m2font.ttf"/>
+	<file src="gui/gui7.png"/>
+	<file src="gui/window-arrow-off-down.png"/>
+	<file src="gui/window-arrow-on-down.png"/>
+	<file src="gui/window-arrow-off-left.png"/>
+	<file src="gui/window-arrow-on-left.png"/>
+	<file src="gui/window-arrow-off-right.png"/>
+	<file src="gui/window-arrow-on-right.png"/>
+	<file src="gui/window-arrow-off-up.png"/>
+	<file src="gui/window-arrow-on-up.png"/>
+	<file src="gui/window-m2.png"/>
+
+	<file src="speedometer/speed_v.png"/>
+	<file src="speedometer/arrow_speed_v.png"/>
+	<file src="speedometer/fuel_v.png"/>
+
+	<file src="comp/tablet-display.png"/>
+	<file src="comp/backbut.png"/>
+	<file src="comp/forbut.png"/>
+	<file src="comp/homebut.png"/>
+	<file src="comp/update.png"/>
+	<file src="comp/auction.png"/>
+	<file src="comp/low_fon.png"/>
+	<file src="comp/low_fon1.png"/>
+	<file src="comp/CLOUDY.png"/>
+	<file src="comp/SUNNY.png"/>
+	<file src="comp/FOGGY.png"/>
+	<file src="comp/RAINY.png"/>
+	<file src="comp/SANDSTORM.png"/>
+	<file src="comp/connect.png"/>
+	<file src="comp/wiki.png"/>
+	<file src="comp/youtube.png"/>
+	<file src="comp/bookcraft.png"/>
+	<file src="comp/carparking.png"/>
+	<file src="comp/shop.png"/>
+	<file src="comp/handbook.png"/>
+	<file src="comp/admin.png"/>
+	<file src="comp/quest.png"/>
+	<file src="comp/slot.png"/>
+	<file src="comp/slot_0.png"/>
+	<file src="comp/slot_1.png"/>
+	<file src="comp/slot_2.png"/>
+	<file src="comp/slot_3.png"/>
+	<file src="comp/slot_4.png"/>
+	<file src="comp/slot_5.png"/>
+	<file src="comp/slot_6.png"/>
+	<file src="comp/poker.png"/>
+	<file src="comp/card/cards.png"/>
+	<file src="comp/card/cd1c.png"/>
+	<file src="comp/card/cd1d.png"/>
+	<file src="comp/card/cd1h.png"/>
+	<file src="comp/card/cd1s.png"/>
+	<file src="comp/card/cd2c.png"/>
+	<file src="comp/card/cd2d.png"/>
+	<file src="comp/card/cd2h.png"/>
+	<file src="comp/card/cd2s.png"/>
+	<file src="comp/card/cd3c.png"/>
+	<file src="comp/card/cd3d.png"/>
+	<file src="comp/card/cd3h.png"/>
+	<file src="comp/card/cd3s.png"/>
+	<file src="comp/card/cd4c.png"/>
+	<file src="comp/card/cd4d.png"/>
+	<file src="comp/card/cd4h.png"/>
+	<file src="comp/card/cd4s.png"/>
+	<file src="comp/card/cd5c.png"/>
+	<file src="comp/card/cd5d.png"/>
+	<file src="comp/card/cd5h.png"/>
+	<file src="comp/card/cd5s.png"/>
+	<file src="comp/card/cd6c.png"/>
+	<file src="comp/card/cd6d.png"/>
+	<file src="comp/card/cd6h.png"/>
+	<file src="comp/card/cd6s.png"/>
+	<file src="comp/card/cd7c.png"/>
+	<file src="comp/card/cd7d.png"/>
+	<file src="comp/card/cd7h.png"/>
+	<file src="comp/card/cd7s.png"/>
+	<file src="comp/card/cd8c.png"/>
+	<file src="comp/card/cd8d.png"/>
+	<file src="comp/card/cd8h.png"/>
+	<file src="comp/card/cd8s.png"/>
+	<file src="comp/card/cd9c.png"/>
+	<file src="comp/card/cd9d.png"/>
+	<file src="comp/card/cd9h.png"/>
+	<file src="comp/card/cd9s.png"/>
+	<file src="comp/card/cd10c.png"/>
+	<file src="comp/card/cd10d.png"/>
+	<file src="comp/card/cd10h.png"/>
+	<file src="comp/card/cd10s.png"/>
+	<file src="comp/card/cd11c.png"/>
+	<file src="comp/card/cd11d.png"/>
+	<file src="comp/card/cd11h.png"/>
+	<file src="comp/card/cd11s.png"/>
+	<file src="comp/card/cd12c.png"/>
+	<file src="comp/card/cd12d.png"/>
+	<file src="comp/card/cd12h.png"/>
+	<file src="comp/card/cd12s.png"/>
+	<file src="comp/card/cd13c.png"/>
+	<file src="comp/card/cd13d.png"/>
+	<file src="comp/card/cd13h.png"/>
+	<file src="comp/card/cd13s.png"/>
+	
+	<file src="image_inventory/0.png"/>
+	<file src="image_inventory/1.png"/>
+	<file src="image_inventory/2.png"/>
+	<file src="image_inventory/3.png"/>
+	<file src="image_inventory/4.png"/>
+	<file src="image_inventory/5.png"/>
+	<file src="image_inventory/6.png"/>
+	<file src="image_inventory/7.png"/>
+	<file src="image_inventory/8.png"/>
+	<file src="image_inventory/9.png"/>
+	<file src="image_inventory/10.png"/>
+	<file src="image_inventory/11.png"/>
+	<file src="image_inventory/12.png"/>
+	<file src="image_inventory/13.png"/>
+	<file src="image_inventory/14.png"/>
+	<file src="image_inventory/15.png"/>
+	<file src="image_inventory/16.png"/>
+	<file src="image_inventory/17.png"/>
+	<file src="image_inventory/18.png"/>
+	<file src="image_inventory/19.png"/>
+	<file src="image_inventory/20.png"/>
+	<file src="image_inventory/21.png"/>
+	<file src="image_inventory/22.png"/>
+	<file src="image_inventory/23.png"/>
+	<file src="image_inventory/24.png"/>
+	<file src="image_inventory/25.png"/>
+	<file src="image_inventory/26.png"/>
+	<file src="image_inventory/27.png"/>
+	<file src="image_inventory/28.png"/>
+	<file src="image_inventory/29.png"/>
+	<file src="image_inventory/30.png"/>
+	<file src="image_inventory/31.png"/>
+	<file src="image_inventory/32.png"/>
+	<file src="image_inventory/33.png"/>
+	<file src="image_inventory/34.png"/>
+	<file src="image_inventory/35.png"/>
+	<file src="image_inventory/36.png"/>
+	<file src="image_inventory/37.png"/>
+	<file src="image_inventory/38.png"/>
+	<file src="image_inventory/39.png"/>
+	<file src="image_inventory/40.png"/>
+	<file src="image_inventory/41.png"/>
+	<file src="image_inventory/42.png"/>
+	<file src="image_inventory/43.png"/>
+	<file src="image_inventory/44.png"/>
+	<file src="image_inventory/45.png"/>
+	<file src="image_inventory/46.png"/>
+	<file src="image_inventory/47.png"/>
+	<file src="image_inventory/48.png"/>
+	<file src="image_inventory/49.png"/>
+	<file src="image_inventory/50.png"/>
+	<file src="image_inventory/51.png"/>
+	<file src="image_inventory/52.png"/>
+	<file src="image_inventory/53.png"/>
+	<file src="image_inventory/54.png"/>
+	<file src="image_inventory/55.png"/>
+	<file src="image_inventory/56.png"/>
+	<file src="image_inventory/57.png"/>
+	<file src="image_inventory/58.png"/>
+	<file src="image_inventory/59.png"/>
+	<file src="image_inventory/60.png"/>
+	<file src="image_inventory/61.png"/>
+	<file src="image_inventory/62.png"/>
+	<file src="image_inventory/63.png"/>
+	<file src="image_inventory/64.png"/>
+	<file src="image_inventory/65.png"/>
+	<file src="image_inventory/66.png"/>
+	<file src="image_inventory/67.png"/>
+	<file src="image_inventory/68.png"/>
+	<file src="image_inventory/69.png"/>
+	<file src="image_inventory/70.png"/>
+	<file src="image_inventory/71.png"/>
+	<file src="image_inventory/72.png"/>
+	<file src="image_inventory/73.png"/>
+	<file src="image_inventory/74.png"/>
+	<file src="image_inventory/75.png"/>
+	<file src="image_inventory/76.png"/>
+	<file src="image_inventory/77.png"/>
+	<file src="image_inventory/78.png"/>
+	<file src="image_inventory/79.png"/>
+	<file src="image_inventory/80.png"/>
+	<file src="image_inventory/81.png"/>
+	<file src="image_inventory/82.png"/>
+	<file src="image_inventory/83.png"/>
+	<file src="image_inventory/84.png"/>
+	<file src="image_inventory/85.png"/>
+	<file src="image_inventory/86.png"/>
+	<file src="image_inventory/87.png"/>
+	<file src="image_inventory/88.png"/>
+	<file src="image_inventory/89.png"/>
+	<file src="image_inventory/90.png"/>
+	<file src="image_inventory/91.png"/>
+	<file src="image_inventory/92.png"/>
+	<file src="image_inventory/93.png"/>
+	
+	<file src="upgrade/999_w_s.png"/>	
+
+	<!--замененки-->
+	<file src="dff_and_txd/leyka.txd"/>
+	<file src="dff_and_txd/leyka.dff"/>
+	<file src="dff_and_txd/horse.txd"/>
+	<file src="dff_and_txd/horse.dff"/>
+	<file src="dff_and_txd/gun_cane.txd"/>
+	<file src="dff_and_txd/gun_cane.dff"/>
+	<file src="dff_and_txd/bat.txd"/>
+	<file src="dff_and_txd/bat.dff"/>
+	<file src="dff_and_txd/knifecur.txd"/>
+	<file src="dff_and_txd/knifecur.dff"/>
+	<file src="dff_and_txd/shovel.txd"/>
+	<file src="dff_and_txd/shovel.dff"/>
+	<file src="dff_and_txd/pig.txd"/>
+	<file src="dff_and_txd/pig.dff"/>
+	<file src="dff_and_txd/pig.col"/>
+	<file src="dff_and_txd/coal.txd"/>
+	<file src="dff_and_txd/coal.dff"/>
+	<file src="dff_and_txd/coal.col"/>
+	<file src="dff_and_txd/armour.txd"/>
+	<file src="dff_and_txd/armour.dff"/>
+	<file src="dff_and_txd/knife.txd"/>
+	<file src="dff_and_txd/knife.dff"/>
+	<file src="dff_and_txd/pumpkin01.txd"/>
+	<file src="dff_and_txd/pumpkin01.dff"/>
+	<file src="dff_and_txd/hfyri.txd"/>
+	<file src="dff_and_txd/hfyri.dff"/>
+	<file src="dff_and_txd/sheriffpolicefemale.txd"/>
+	<file src="dff_and_txd/sheriffpolicefemale.dff"/>
+	<file src="dff_and_txd/sofybu_2.txd"/>
+	<file src="dff_and_txd/sofybu_2.dff"/>
+	<file src="dff_and_txd/wfyclpd.txd"/>
+	<file src="dff_and_txd/wfyclpd.dff"/>
+	<file src="dff_and_txd/wfyclot.txd"/>
+	<file src="dff_and_txd/wfyclot.dff"/>
+	<file src="dff_and_txd/wmyplt.txd"/>
+	<file src="dff_and_txd/wmyplt.dff"/>
+	<file src="dff_and_txd/vitpra.txd"/>
+	<file src="dff_and_txd/vitpra.dff"/>
+	
+
+	<!--парашют-->
+	<script src="parachute/utility.lua" type="client"/>
+	<script src="parachute/parachute.lua"/>
+	<script src="parachute/parachute_cl.lua" type="client"/>
+	<script src="parachute/skydiving_cl.lua" type="client"/>
+	<script src="parachute/openChute.lua" type="client"/>
+	<script src="parachute/client_anim.lua" type="client"/>
+	<file src="parachute/parachuteopen.mp3"/>
+
+	<export function="removeParachute" type="client"/>
+	<export function="stopSkyDiving" type="client"/>
+
+	<export function="isPlayerSkyDiving" type="client"/>
+	<export function="isPlayerParachuting" type="client"/>
+
+	<!--прикрепление объектов к игроку-->
+	<script src="bone_attach/bone_attach.lua"/>
+	<script src="bone_attach/bone_attach_c.lua" type="client"/>
+	<script src="bone_attach/attach_func.lua"/>
+	<script src="bone_attach/attach_func.lua" type="client"/>
+	<script src="bone_attach/bone_pos_rot.lua" type="client"/>
+
+	<export function="attachElementToBone" type="server"/>
+	<export function="attachElementToBone" type="client"/>
+	<export function="detachElementFromBone" type="server"/>
+	<export function="detachElementFromBone" type="client"/>
+	<export function="isElementAttachedToBone" type="server"/>
+	<export function="isElementAttachedToBone" type="client"/>
+	<export function="getElementBoneAttachmentDetails" type="server"/>
+	<export function="getElementBoneAttachmentDetails" type="client"/>
+	<export function="setElementBonePositionOffset" type="server"/>
+	<export function="setElementBonePositionOffset" type="client"/>
+	<export function="setElementBoneRotationOffset" type="server"/>
+	<export function="setElementBoneRotationOffset" type="client"/>
+	<export function="getBonePositionAndRotation" type="client"/>
+
+	<!--убийство из авто-->
+	<script src="realdriveby/driveby_client.lua" type="client" />
+	<script src="realdriveby/exports_client.lua" type="client" />
+	<script src="realdriveby/driveby_server.lua" type="server" />
+	<script src="realdriveby/exports_server.lua" type="server" />
+
+	<!--utils-->
+	<script src="realdriveby/utils/textlib.lua" type="client" />
+	<script src="realdriveby/utils/client_anim.lua" type="client" />
+	<script src="realdriveby/utils/textlib_anim.lua" type="client" />
+
+	<settings>
+		<!--Weapon ids that the driver can use.  For no weapons just use "[[ ]]"-->
+		<setting name="driveby_driver" value="[[ 22,23,24,26,28,29,32 ]]"/>
+
+		<!--Weapon ids that passngers can use-->
+		<setting name="driveby_passenger" value="[[ 22,23,24,25,26,28,29,32,30,31,33 ]]"/>
+
+		<!--Defines the shot delay for individual weapons that arent meant for driveby, in the format of 'weapon':time(ms)-->
+		<setting name="driveby_shot_delay" value="[{ '22':300,'23':300,'24':800,'26':700, '27':330 }]"/>
+
+		<!--Vehicles that cannot be drivebyd inside-->
+		<setting name="driveby_blocked_vehicles" value="[[ 432,601,437,431,592,553,577,488,497,548,563,512,476,447,425,519,520,460,417,469,487,513,441,464,501,465,564,538,449,537,539,570472,473,493,595,484,430,453,452,446,454,606,591,607,611,610,590,569,611,435,608,584,450 ]]"/>
+
+		<!--Whether or not turning should be enabled for vehicles (excluding bikes) while in driveby mode-->
+		<setting name="driveby_steer_cars" value="[true]"/>
+
+		<!--Whether or not turning should be enabled for bikes/motorbikes while in driveby mode-->
+		<setting name="driveby_steer_bikes" value="[true]"/>
+
+		<!--Whether a weapon should be equiped as soon as you enter a vehicle. -->
+		<setting name="driveby_auto_equip" value="[false]"/>
+
+		<!--Block instant eject when using driveby while exiting vehicle -->
+		<setting name="block_instant_eject" value="[true]"/>
+
+		<!--Whether or not is driveby enabled for all players by default -->
+		<setting name="driveby_enabled" value="[true]"/>
+	</settings>
+	<export function="setDriverDrivebyAbility" type="client" />
+	<export function="setPassengerDrivebyAbility" type="client" />
+	<export function="getDriverDrivebyAbility" type="client" />
+	<export function="getPassengerDrivebyAbility" type="client" />
+	<export function="setWeaponShotDelay" type="client" />
+	<export function="getWeaponShotDelay" type="client" />
+	<export function="setDrivebySteeringAbility" type="client" />
+	<export function="getDrivebySteeringAbility" type="client" />
+	<export function="setDrivebyAutoEquip" type="client" />
+	<export function="getDrivebyAutoEquip" type="client" />
+	<export function="isDrivebyEnabled" type="shared" />
+	<export function="setDrivebyEnabled" type="shared" />
+	
+</meta>
