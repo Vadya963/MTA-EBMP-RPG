@@ -6,6 +6,7 @@
 	<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="hdradar" />
+	<include resource="vozle_merii_app" />
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
