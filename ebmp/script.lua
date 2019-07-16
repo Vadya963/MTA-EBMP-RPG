@@ -1652,7 +1652,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -1725,7 +1725,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -1776,7 +1776,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {original_business_pos[randomize][1],original_business_pos[randomize][2],original_business_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -1827,7 +1827,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {fish_pos[1],fish_pos[2],fish_pos[3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -1878,7 +1878,7 @@ function job_timer2 ()
 								sendMessage(playerid, "Летите в аэропорт "..plane_job[randomize][4], yellow)
 
 								job_pos[playername] = {plane_job[randomize][1],plane_job[randomize][2],plane_job[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then--лв
@@ -1962,7 +1962,7 @@ function job_timer2 ()
 
 					sendMessage(playerid, "Угоните т/с гос.номер "..getVehiclePlateText(job_vehicleid[playername][1])..", у вас есть "..car_theft_time.." мин", yellow)
 
-					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 					job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 					
 				elseif (job_call[playername] == 1) then
@@ -2020,7 +2020,7 @@ function job_timer2 ()
 					sendMessage(playerid, "Убейте корову", yellow)
 
 					job_pos[playername] = {korovi_pos[randomize][1],korovi_pos[randomize][2],korovi_pos[randomize][3]-1}
-					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 					job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 				elseif job_call[playername] == 1 then
@@ -2070,7 +2070,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {gans_pos[randomize][1],gans_pos[randomize][2],gans_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -2107,7 +2107,7 @@ function job_timer2 ()
 								job_call[playername] = search_inv_player_2_parameter(playerid, up_player_subject[9][5])
 								job_pos[playername] = {busdriver_pos[ job_call[playername] ][1],busdriver_pos[ job_call[playername] ][2],busdriver_pos[ job_call[playername] ][3]-1}
 
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 15.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] >= 1 and job_call[playername] <= 3 then
@@ -2161,7 +2161,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {taxi_pos[randomize][1],taxi_pos[randomize][2],taxi_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -2231,7 +2231,7 @@ function job_timer2 ()
 								job_call[playername] = {getElementZoneName ( playerid, true ), random(1,2), 1}
 								job_pos[playername] = {clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][1],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][2],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][3]-1}
 
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername][3] >= 1 and job_call[playername][3] <= #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ]-1 then
@@ -2280,7 +2280,7 @@ function job_timer2 ()
 								job_call[playername] = 1
 								job_pos[playername] = {fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3]-1}
 
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] >= 1 and job_call[playername] <= 59 then
@@ -2339,7 +2339,7 @@ function job_timer2 ()
 						job_call[playername] = {1,0,random(5,30)--[[n секунд чтобы преступник подумал]]}
 						job_pos[playername] = {fire_pos[randomize][1],fire_pos[randomize][2],fire_pos[randomize][3]-1}
 
-						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 
 					elseif job_call[playername][1] >= 1 and job_call[playername][1] <= job_call[playername][3] then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
@@ -2436,7 +2436,7 @@ function job_timer2 ()
 							job_call[playername] = 1
 							job_pos[playername] = {-108.6884765625,-3.3505859375,3.1171875-1}
 
-							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 						elseif job_call[playername] == 1 then
@@ -2506,7 +2506,7 @@ function job_timer2 ()
 							job_call[playername] = 1
 							job_pos[playername] = {-108.6884765625,-3.3505859375,3.1171875-1}
 
-							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 						elseif job_call[playername] == 1 then
@@ -2579,7 +2579,7 @@ function job_timer2 ()
 							job_call[playername] = {1,randomize}
 							job_pos[playername] = {grass_pos[randomize][2],grass_pos[randomize][3],grass_pos[randomize][4]}
 
-							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 						elseif job_call[playername][1] == 1 then
@@ -2701,7 +2701,7 @@ function job_timer2 ()
 
 								job_call[playername] = 1
 								job_pos[playername] = {house_pos[randomize][1],house_pos[randomize][2],house_pos[randomize][3]-1}
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 4, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
@@ -3469,8 +3469,6 @@ end
 function setPlayerNametagColor_fun( playerid )
 	if (search_inv_player_2_parameter(playerid, 44) ~= 0) then
 		setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
-		setElementData(playerid, "admin_data", search_inv_player_2_parameter(playerid, 44))
-		return
 	elseif (search_inv_player(playerid, 45, 1) ~= 0) then
 		setPlayerNametagColor(playerid, green[1],green[2],green[3])
 	elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
@@ -5062,7 +5060,7 @@ function()
 	setPlayerHudComponentVisible ( playerid, "area_name", false )
 	setPlayerHudComponentVisible ( playerid, "vehicle_name", true )
 	setPlayerNametagShowing ( playerid, false )
-	count_player = count_player+1
+	setPlayerBlurLevel ( playerid, 0 )
 
 	for _, stat in pairs({ 22, 24, 225, 70, 71, 72, 73, 74, 76, 77, 78, 79 }) do
 		setPedStat(playerid, stat, 1000)
@@ -5373,6 +5371,7 @@ function reg_or_login(playerid)
 		sqlite_load(playerid, "cow_farms_db2")
 	end
 
+	count_player = count_player+1
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
@@ -5397,6 +5396,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_boats", cash_boats)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
 	setElementData(playerid, "quest_select", "0:0")
+	setElementData(playerid, "radar_visible", true)
 end
 
 ------------------------------------взрыв авто-------------------------------------------

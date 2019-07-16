@@ -18,6 +18,7 @@ function ( startedRes )
 		bindKey ( "F2", "down", showdebuginfo_b )
 		bindKey ( "F3", "down", menu_mafia_2 )
 		bindKey ( "F11", "down", showdebuginfo_b )
+		bindKey( "vehicle_fire", "down", toggleNOS )
 	end
 end)
 
@@ -448,6 +449,21 @@ function getPlayerId( id )--узнать имя игрока из ид
 	return false
 end
 
+function getPedMaxHealth(ped)
+    -- Output an error and stop executing the function if the argument is not valid
+    assert(isElement(ped) and (getElementType(ped) == "ped" or getElementType(ped) == "player"), "Bad argument @ 'getPedMaxHealth' [Expected ped/player at argument 1, got " .. tostring(ped) .. "]")
+
+    -- Grab his player health stat.
+    local stat = getPedStat(ped, 24)
+
+    -- Do a linear interpolation to get how many health a ped can have.
+    -- Assumes: 100 health = 569 stat, 200 health = 1000 stat.
+    local maxhealth = 100 + (stat - 569) / 4.31
+
+    -- Return the max health. Make sure it can't be below 1
+    return math.max(1, maxhealth)
+end
+
 ------------------------------собственное гуи--------------------------------------------
 function m2gui_label( x,y, width, height, text, bool_r, parent )
 	local text = guiCreateLabel ( x, y, width, height, text, bool_r, parent )
@@ -716,7 +732,7 @@ function createText ()
 
 		dxDrawImage ( screenWidth-30, height_need-7.5, 30, 30, "hud/health.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-		dxDrawRectangle( screenWidth-width_need-30, height_need, (width_need/200)*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need, (width_need/getPedMaxHealth(playerid))*getElementHealth(playerid), 15, tocolor ( 90, 151, 107, 255 ) )
 
 		--нужды
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*1, 30, 30, "hud/alcohol.png" )
@@ -3380,16 +3396,28 @@ function showcursor_b (key, keyState)
 	end
 end
 
+function toggleNOS( key, state )
+	local vehicleid = getPlayerVehicle(playerid)
+
+	if vehicleid then
+		local upgrades = getVehicleUpgrades(vehicleid)
+		for v, upgrade in ipairs ( upgrades ) do
+			if (upgrade == 1008 or upgrade == 1009 or upgrade == 1010) then
+				addVehicleUpgrade( vehicleid, upgrade )
+				break
+			end
+		end
+	end
+end
+
 function showdebuginfo_b (key, keyState)
 	if keyState == "down" then
 		--debuginfo = not debuginfo
 		hud = not hud
 		setPlayerHudComponentVisible ( "ammo", hud )
-		setPlayerHudComponentVisible ( "armour", hud )
-		setPlayerHudComponentVisible ( "breath", hud )
 		setPlayerHudComponentVisible ( "clock", hud )
-		setPlayerHudComponentVisible ( "radar", hud )
 		setPlayerHudComponentVisible ( "weapon", hud )
+		setElementData(playerid, "radar_visible", hud)
 		showChat(hud)
 	end
 end
