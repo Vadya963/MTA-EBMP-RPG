@@ -7,16 +7,13 @@
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
 	<include resource="vozle_merii_app" />
+	<include resource="map_gta" />
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
 	<script src="script_client.lua" type="client" cache="false"/>
 	<script src="menu_m2.lua" type="client" cache="false"/>
 	<script src="object_eb.lua" type="client" cache="false"/>
-
-	<map src="mapping/map_gta.map"/>
-	<script src="mapping/mapEditorScriptingExtension_s.lua" type="server"></script>
-	<script src="mapping/mapEditorScriptingExtension_c.lua" type="client" validate="false"></script>
 
 	<file src="parachute/body_hit_sound.mp3"/>
 
