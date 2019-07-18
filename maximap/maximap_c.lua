@@ -99,7 +99,7 @@ function drawBlips()
 	for k,v in ipairs(getElementsByType("blip")) do
 		if not getElementData(v,"DoNotDrawOnMaximap") then
 			local icon=getBlipIcon(v) or 0
-			local size=(getBlipSize(v) or 2)*4
+			local size=(getBlipSize(v)*2 or 2)*4
 			local r,g,b,a=getBlipColor(v)
 			
 			if icon~=0 then

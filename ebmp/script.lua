@@ -4973,8 +4973,6 @@ function()
 	bindKey(playerid, "lalt", "down", left_alt_down )
 	bindKey(playerid, "h", "down", h_down )
 
-	fadeCamera(playerid, true)
-	setCameraTarget(playerid, playerid)
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
 	setPlayerHudComponentVisible ( playerid, "area_name", false )
@@ -5001,7 +4999,7 @@ function()
 	sendMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips)
 	sendMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips)
 
-	reg_or_login(playerid)
+	setTimer(reg_or_login, 5000, 1, playerid)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -5281,6 +5279,8 @@ function reg_or_login(playerid)
 		sendMessage(playerid, "Вы удачно зашли!", turquoise)
 	end
 
+	fadeCamera(playerid, true)
+	setCameraTarget(playerid, playerid)
 	setPlayerNametagColor_fun( playerid )
 	sqlite_load(playerid, "quest_table")
 	sqlite_load(playerid, "auc")
