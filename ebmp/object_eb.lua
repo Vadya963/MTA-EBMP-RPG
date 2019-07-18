@@ -19,6 +19,8 @@ local dff_and_txd_table = {
 	{"vitpra", 162},
 }
 
+local wheel = {1025}
+
 local car_spawn_value = 0
 addEventHandler( "onClientResourceStart", getRootElement( ),
 function ( startedRes )
@@ -35,6 +37,11 @@ function ( startedRes )
 				local col = engineLoadCOL ( "dff_and_txd/"..v[1]..".col" )
 				engineReplaceCOL ( col, v[2] )
 			end
+		end
+
+		for k,v in pairs(wheel) do
+			local dff = engineLoadDFF ( "dff_and_txd/"..v..".dff" )
+			engineReplaceModel ( dff, v )
 		end
 	end
 end)

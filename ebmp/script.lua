@@ -34,8 +34,15 @@ end
 addEvent("event_sqlite", true)
 addEventHandler("event_sqlite", getRootElement(), sqlite)
 
+function destroyElement_fun( vehicleid )
+	for k,v in pairs(getAttachedElements ( vehicleid )) do
+		destroyElement(v)
+	end
+
+	destroyElement(vehicleid)
+end
 addEvent( "event_destroyElement", true )
-addEventHandler ( "event_destroyElement", getRootElement(), destroyElement )
+addEventHandler ( "event_destroyElement", getRootElement(), destroyElement_fun )
 
 addEvent( "event_removePedFromVehicle", true )
 addEventHandler ( "event_removePedFromVehicle", getRootElement(), removePedFromVehicle )
@@ -141,6 +148,23 @@ local crimson = {220,20,60}--малиновый
 local purple = {175,0,255}--фиолетовый
 local gray = {150,150,150}--серый
 local green_rc = {115,180,97}--темно зеленый
+
+local color_table = {
+	--color gtasa
+	{0,0,0},{245,245,245},{42,119,161},{132,4,16},{38,55,57},{134,68,110},{215,142,16},{76,117,183},{189,190,198},{94,112,114},
+	{70,89,122},{101,106,121},{93,126,141},{88,89,90},{214,218,214},{156,161,163},{51,95,63},{115,14,26},{123,10,42},{159,157,148},
+	{59,78,120},{115,46,62},{105,30,59},{150,145,140},{81,84,89},{63,62,69},{165,169,167},{99,92,90},{61,74,104},{151,149,146},
+	{66,31,33},{95,39,43},{132,148,171},{118,123,124},{100,100,100},{90,87,82},{37,37,39},{45,58,53},{147,163,150},{109,122,136},
+	{34,25,24},{111,103,95},{124,28,42},{95,10,21},{25,56,38},{93,27,32},{157,152,114},{122,117,96},{152,149,134},{173,176,176},
+	{132,137,136},{48,79,69},{77,98,104},{22,34,72},{39,47,75},{125,98,86},{158,164,171},{156,141,113},{109,24,34},{78,104,129},
+	{156,156,152},{145,115,71},{102,28,38},{148,157,159},{164,167,165},{142,140,70},{52,26,30},{106,122,140},{170,173,142},{171,152,143},
+	{133,31,46},{111,130,151},{88,88,83},{154,167,144},{96,26,35},{32,32,44},{164,160,150},{170,157,132},{120,34,43},{14,49,109},
+	{114,42,63},{123,113,94},{116,29,40},{30,46,50},{77,50,47},{124,27,68},{46,91,32},{57,90,131},{109,40,55},{167,162,143},
+	{175,177,177},{54,65,85},{109,108,110},{15,106,137},{32,75,107},{43,62,87},{155,159,157},{108,132,149},{77,93,96},{174,155,127},
+	{64,108,143},{31,37,59},{171,146,118},{19,69,115},{150,129,108},{100,104,106},{16,80,130},{161,153,131},{56,86,148},{82,86,97},
+	{127,105,86},{140,146,154},{89,110,135},{71,53,50},{68,98,79},{115,10,39},{34,52,87},{100,13,27},{163,173,198},{105,88,83},
+	{155,139,128},{98,11,28},{91,93,94},{98,68,40},{115,24,39},{27,55,109},{236,106,174},
+}
 
 --капты-----------------------------------------------------------------------------------------------------------
 local point_guns_zone = {0,0, 0,0, 0,0}--1-идет ли захват, 2-номер зоны, 3-атакующие, 4-очки захвата, 5-защищающие, 6-очки захвата
@@ -558,6 +582,13 @@ local info_png = {
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 	[92] = {"наручники", "шт"},
 	[93] = {"колода карт", "шт"},
+	[94] = {"маска", "шт"},
+	[95] = {"двигатель", "stage"},
+	[96] = {"колесо", "марка"},
+	[97] = {"банка краски", "цвет"},
+	[98] = {"фара", "цвет"},
+	[99] = {"винилы", "вариант"},
+	[100] = {"гидравлика", "шт"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -616,6 +647,43 @@ local shop = {
 	[80] = {info_png[80][1], 10, 500},
 	[93] = {info_png[93][1], 1, 50},
 }
+
+local repair_shop = {
+	{info_png[95][1].." 0 "..info_png[95][2], 0, 0.1, 95},
+	{info_png[95][1].." 1 "..info_png[95][2], 1, 1, 95},
+	{info_png[95][1].." 2 "..info_png[95][2], 2, 2, 95},
+	{info_png[95][1].." 3 "..info_png[95][2], 3, 3, 95},
+	{info_png[99][1].." 0 "..info_png[99][2], 0, 0.5, 99},
+	{info_png[99][1].." 1 "..info_png[99][2], 1, 0.5, 99},
+	{info_png[99][1].." 2 "..info_png[99][2], 2, 0.5, 99},
+	{info_png[99][1].." 3 "..info_png[99][2], 3, 0.5, 99},
+	{info_png[100][1], 1, 1, 100},
+	{info_png[96][1].." 1025 "..info_png[96][2], 1025, 1, 96},
+	{info_png[96][1].." 1073 "..info_png[96][2], 1073, 1, 96},
+	{info_png[96][1].." 1074 "..info_png[96][2], 1074, 1, 96},
+	{info_png[96][1].." 1075 "..info_png[96][2], 1075, 1, 96},
+	{info_png[96][1].." 1076 "..info_png[96][2], 1076, 1, 96},
+	{info_png[96][1].." 1077 "..info_png[96][2], 1077, 1, 96},
+	{info_png[96][1].." 1078 "..info_png[96][2], 1078, 1, 96},
+	{info_png[96][1].." 1079 "..info_png[96][2], 1079, 1, 96},
+	{info_png[96][1].." 1080 "..info_png[96][2], 1080, 1, 96},
+	{info_png[96][1].." 1081 "..info_png[96][2], 1081, 1, 96},
+	{info_png[96][1].." 1082 "..info_png[96][2], 1082, 1, 96},
+	{info_png[96][1].." 1083 "..info_png[96][2], 1083, 1, 96},
+	{info_png[96][1].." 1084 "..info_png[96][2], 1084, 1, 96},
+	{info_png[96][1].." 1085 "..info_png[96][2], 1085, 1, 96},
+	{info_png[96][1].." 1096 "..info_png[96][2], 1096, 1, 96},
+	{info_png[96][1].." 1097 "..info_png[96][2], 1097, 1, 96},
+	{info_png[96][1].." 1098 "..info_png[96][2], 1098, 1, 96},
+}
+
+for k,v in ipairs(color_table) do
+	table.insert(repair_shop, {info_png[97][1].." "..k.." "..info_png[97][2], k, 0.5, 97})
+end
+
+for k,v in ipairs(color_table) do
+	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.5, 98})
+end
 
 local gas = {
 	[5] = {info_png[5][1].." 25 "..info_png[5][2], 25, 250},
@@ -4032,275 +4100,108 @@ addEventHandler ( "event_auction_buy_sell", getRootElement(), auction_buy_sell )
 
 
 -------------------------------эвенты автомастерской-----------------------------------------------------
-function addVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
+function addVehicleUpgrade_fun( vehicleid, value, playerid, number )
 
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = ""
-		local prod = 1
-		local cash = result[1]["price"]
+	local playername = getPlayerName(playerid)
+	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
+	local plate = getVehiclePlateText ( vehicleid )
+	local text = ""
+	local prod = 1
+	local cash = result[1]["price"]
 
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
-				return
+	if prod <= result[1]["warehouse"] then
+		if cash == 0 then
+			sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
+			return
+		end
+
+		if cash <= array_player_2[playername][1] then
+
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+				if result[1]["tune"] ~= "0" then
+					for k,v in pairs(split(result[1]["tune"], ",")) do
+						local spl = split(v, ":")
+						text = text..spl[1]..":"..spl[2]..":"..spl[3]..":"..spl[4]..":"..spl[5]..":"..spl[6]..":"..spl[7]..","
+					end
+				end
 			end
 
-			if cash <= array_player_2[playername][1] then
+			text = text..value[1]..":"..value[2]..":"..value[3]..":"..value[4]..":"..value[5]..":"..value[6]..":"..value[7]..","
 
-				addVehicleUpgrade ( vehicleid, value )
+			attachElements(createObject(value[1], 0,0,0, 0,0,0), vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
 
-				setElementData(playerid, "car_upgrades_save", getVehicleUpgrades(vehicleid))
+			setElementData(vehicleid, "tune_car", text)
 
-				for k,v in pairs(getVehicleUpgrades(vehicleid)) do
-					text = text..v..","
-				end
+			sendMessage(playerid, "Вы установили апгрейд за "..cash.."$", orange)
 
-				sendMessage(playerid, "Вы установили апгрейд за "..cash.."$", orange)
+			sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 			end
 		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
 		end
+	else
+		sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
 	end
 end
 addEvent( "event_addVehicleUpgrade", true )
 addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
 
-function removeVehicleUpgrade_fun( vehicleid, value, value1, playerid, number )
+function removeVehicleUpgrade_fun( vehicleid, playerid, number )
 
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = ""
-		local prod = 1
-		local cash = result[1]["price"]
+	local playername = getPlayerName(playerid)
+	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
+	local plate = getVehiclePlateText ( vehicleid )
+	local text = "0"
+	local prod = 1
+	local cash = result[1]["price"]
 
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
+	if prod <= result[1]["warehouse"] then
+		if cash == 0 then
+			sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
+			return
+		end
+
+		if cash <= array_player_2[playername][1] then
+			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+			if  result[1]["tune"] == "0" then
+				sendMessage(playerid, "[ERROR] Нет установленного тюнинга", red)
 				return
 			end
 
-			if cash <= array_player_2[playername][1] then
+			for k,v in pairs(getAttachedElements ( vehicleid )) do
+				destroyElement(v)
+			end
 
-				removeVehicleUpgrade ( vehicleid, value )
+			removeVehicleUpgrade(vehicleid, result[1]["hydraulics"])
+			removeVehicleUpgrade(vehicleid, result[1]["wheel"])
 
-				for k,v in pairs(getVehicleUpgrades(vehicleid)) do
-					text = text..v..","
-				end
+			sendMessage(playerid, "Вы удалили все апгрейды за "..cash.."$", orange)
 
-				if text == "" then
-					text = "0"
-				end
+			sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-				sendMessage(playerid, "Вы удалили апгрейд за "..cash.."$", orange)
+			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
+			if result[1]["COUNT()"] == 1 then
+				sqlite( "UPDATE car_db SET tune = '"..text.."', wheel = '0', hydraulics = '0' WHERE number = '"..plate.."'")
 			end
 		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
+			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
 		end
+	else
+		sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
 	end
 end
 addEvent( "event_removeVehicleUpgrade", true )
 addEventHandler ( "event_removeVehicleUpgrade", getRootElement(), removeVehicleUpgrade_fun )
-
-function setVehiclePaintjob_fun( vehicleid, value, value1, playerid, number )
-
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = value
-		local prod = 1
-		local cash = result[1]["price"]/2
-
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
-				return
-			end
-
-			if cash <= array_player_2[playername][1] then
-
-				setVehiclePaintjob ( vehicleid, value )
-
-				setElementData(playerid, "car_upgrades_save", getVehiclePaintjob(vehicleid))
-
-				sendMessage(playerid, "Вы установили покрасочную работу за "..cash.."$", orange)
-
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET paintjob = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-			end
-		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
-		end
-	end
-end
-addEvent( "event_setVehiclePaintjob", true )
-addEventHandler ( "event_setVehiclePaintjob", getRootElement(), setVehiclePaintjob_fun )
-
-function setVehicleStage_fun( vehicleid, value, value1, playerid, number )
-
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = value
-		local prod = 1
-		local cash = result[1]["price"]*text
-
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
-				return
-			end
-
-			for k,v in pairs(car_cash_no) do
-				if v == getElementModel(vehicleid) then
-					sendMessage(playerid, "[ERROR] На это т/с нельзя установить stage", red)
-					return
-				end
-			end
-
-			if cash <= array_player_2[playername][1] then
-
-				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
-				setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(text*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
-
-				sendMessage(playerid, "Вы установили stage "..text.." за "..cash.."$", orange)
-
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET stage = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-			end
-		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
-		end
-	end
-end
-addEvent( "event_setVehicleStage_fun", true )
-addEventHandler ( "event_setVehicleStage_fun", getRootElement(), setVehicleStage_fun )
-
-function setVehicleColor_fun( vehicleid, r, g, b, value1, playerid, number )
-
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = r..","..g..","..b
-		local prod = 1
-		local cash = result[1]["price"]/2
-
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
-				return
-			end
-
-			if cash <= array_player_2[playername][1] then
-
-				setVehicleColor( vehicleid, r, g, b, r, g, b, r, g, b, r, g, b )
-
-				sendMessage(playerid, "Вы перекрасили т/с за "..cash.."$", orange)
-
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET car_rgb = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-			end
-		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
-		end
-	end
-end
-addEvent( "event_setVehicleColor", true )
-addEventHandler ( "event_setVehicleColor", getRootElement(), setVehicleColor_fun )
-
-function setVehicleHeadLightColor_fun( vehicleid, r, g, b, value1, playerid, number )
-
-	if value1 == "save" then
-		local playername = getPlayerName(playerid)
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		local plate = getVehiclePlateText ( vehicleid )
-		local text = r..","..g..","..b
-		local prod = 1
-		local cash = result[1]["price"]/2
-
-		if prod <= result[1]["warehouse"] then
-			if cash == 0 then
-				sendMessage(playerid, "[ERROR] Не установлена стоимость товара", red)
-				return
-			end
-
-			if cash <= array_player_2[playername][1] then
-
-				setVehicleHeadLightColor ( vehicleid, r, g, b )
-
-				sendMessage(playerid, "Вы поменяли цвет фар т/с за "..cash.."$", orange)
-
-				sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
-
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET headlight_rgb = '"..text.."' WHERE number = '"..plate.."'")
-				end
-			else
-				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
-			end
-		else
-			sendMessage(playerid, "[ERROR] На складе недостаточно товаров", red)
-		end
-	end
-end
-addEvent( "event_setVehicleHeadLightColor", true )
-addEventHandler ( "event_setVehicleHeadLightColor", getRootElement(), setVehicleHeadLightColor_fun )
 ------------------------------------------------------------------------------------------------------------
 
 
@@ -4468,6 +4369,25 @@ function buy_subject_fun( playerid, text, number, value )
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
 							if inv_player_empty(playerid, k, v[2]) then
+								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange)
+
+								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
+
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+							else
+								sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+							end
+						else
+							sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+						end
+					end
+				end
+
+			elseif value == 5 then
+				for k,v in pairs(repair_shop) do
+					if v[1] == text then
+						if cash*v[3] <= array_player_2[playername][1] then
+							if inv_player_empty(playerid, v[4], v[2]) then
 								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange)
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
@@ -5088,6 +5008,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 	local playerid = source
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local vehicleid = getPlayerVehicle(playerid)
 
 	if logged[playername] == 1 then
 		for k,v in pairs(sqlite("SELECT * FROM business_db")) do
@@ -5114,6 +5035,10 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		if armour[playername] ~= 0 then
 			destroyElement(armour[playername])
 			armour[playername] = 0
+		end
+
+		if vehicleid then
+			x,y,z = x,y,z+1
 		end
 
 		local heal = getElementHealth( playerid )
@@ -5397,6 +5322,7 @@ function reg_or_login(playerid)
 	setElementData(playerid, "cash_helicopters", cash_helicopters)
 	setElementData(playerid, "quest_select", "0:0")
 	setElementData(playerid, "radar_visible", true)
+	setElementData(playerid, "repair_shop", repair_shop)
 end
 
 ------------------------------------взрыв авто-------------------------------------------
@@ -5515,15 +5441,30 @@ function car_spawn(number)
 	if result[1]["nalog"] ~= 0 then
 		local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
-		setVehicleLocked ( vehicleid, true )
+		setVehicleLocked ( vehicleid, false )
 
 		fuel[plate] = result[1]["fuel"]
 		probeg[plate] = result[1]["probeg"]
-
-		local spl = split(result[1]["tune"], ",")
-		for k,v in pairs(spl) do
-			addVehicleUpgrade ( vehicleid, v )
+		
+		if result[1]["tune"] ~= "0" then
+			for k,v in pairs(split(result[1]["tune"], ",")) do
+				local value = {}
+				for k,v in ipairs(split(v, ":")) do
+					table.insert(value, tonumber(v))
+				end
+				attachElements(createObject(value[1], 0,0,0, 0,0,0), vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
+			end
 		end
+
+		if result[1]["wheel"] ~= 0 then
+			addVehicleUpgrade(vehicleid, result[1]["wheel"])
+		end
+
+		if result[1]["hydraulics"] ~= 0 then
+			addVehicleUpgrade(vehicleid, result[1]["hydraulics"])
+		end
+
+		setElementData(vehicleid, "tune_car", result[1]["tune"])
 
 		local spl = split(result[1]["car_rgb"], ",")
 		setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
@@ -5698,31 +5639,21 @@ function buycar ( playerid, id )
 			return
 		end
 
-
-		local vehicleid = createVehicle(id, x, y, z, 0, 0, rot, val2)
-		local plate = getVehiclePlateText ( vehicleid )
-
-		local color = {getVehicleColor ( vehicleid, true )}
+		local color = {255,255,255}
 		local car_rgb_text = color[1]..","..color[2]..","..color[3]
-		setVehicleColor( vehicleid, color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3] )
 
-		local color = {getVehicleHeadLightColor ( vehicleid )}
+		local color = {255,255,255}
 		local headlight_rgb_text = color[1]..","..color[2]..","..color[3]
 
-		local paintjob_text = getVehiclePaintjob ( vehicleid )
+		local paintjob_text = 3
 
 		local nalog_start = 5
 
-		setVehicleLocked ( vehicleid, true )
-
-		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-		fuel[plate] = max_fuel
-		probeg[plate] = 0
-
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+	
+		car_spawn(tostring(val2))
 	else
 		sendMessage(playerid, "[ERROR] от 400 до 611", red)
 	end
@@ -6113,9 +6044,6 @@ local vehicleid = getPlayerVehicle(playerid)
 
 						if v["nalog"] <= 0 then
 							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", red)
-							return
-						elseif not vehicleid then
-							sendMessage(playerid, "[ERROR] Вы не в т/с", red)
 							return
 						end
 
@@ -7673,6 +7601,189 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif id1 == 91 then--ордер
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..info_png[id1][id2+2])
 			return
+
+		elseif id1 == 95 then--двигло
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local count = false
+				for k,v in pairs(car_cash_no) do
+					if getElementModel(vehicleid) == v then
+						count = true
+						break
+					end
+				end
+
+				if count then
+					sendMessage(playerid, "[ERROR] На это т/с нельзя установить двигатель", red)
+					return
+				end
+
+				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
+				setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
+
+				sqlite( "UPDATE car_db SET stage = '"..id2.."' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." установил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
+
+		elseif id1 == 96 then--колеса
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local count = false
+				for k,v in pairs(car_cash_no) do
+					if getElementModel(vehicleid) == v then
+						count = true
+						break
+					end
+				end
+
+				if count then
+					sendMessage(playerid, "[ERROR] На это т/с нельзя установить колеса", red)
+					return
+				end
+
+				addVehicleUpgrade(vehicleid, id2)
+
+				sqlite( "UPDATE car_db SET wheel = '"..id2.."' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." установил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
+
+		elseif id1 == 97 then--краска
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local spl = color_table[id2]
+				setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
+
+				sqlite( "UPDATE car_db SET car_rgb = '"..spl[1]..","..spl[2]..","..spl[3].."' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
+
+		elseif id1 == 98 then--фара
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local spl = color_table[id2]
+				setVehicleHeadLightColor( vehicleid, spl[1], spl[2], spl[3] )
+
+				sqlite( "UPDATE car_db SET headlight_rgb = '"..spl[1]..","..spl[2]..","..spl[3].."' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." установил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+			end
+
+		elseif id1 == 99 then--винилы
+			if vehicleid then
+				local paint={
+					[483]={"VehiclePaintjob_Camper_0"},-- camper
+					[534]={"VehiclePaintjob_Remington_0","VehiclePaintjob_Remington_1","VehiclePaintjob_Remington_2"},-- remington
+					[535]={"VehiclePaintjob_Slamvan_0","VehiclePaintjob_Slamvan_1","VehiclePaintjob_Slamvan_2"},-- slamvan
+					[536]={"VehiclePaintjob_Blade_0","VehiclePaintjob_Blade_1","VehiclePaintjob_Blade_2"},-- blade
+					[558]={"VehiclePaintjob_Uranus_0","VehiclePaintjob_Uranus_1","VehiclePaintjob_Uranus_2"},-- uranus
+					[559]={"VehiclePaintjob_Jester_0","VehiclePaintjob_Jester_1","VehiclePaintjob_Jester_2"},-- jester
+					[560]={"VehiclePaintjob_Sultan_0","VehiclePaintjob_Sultan_1","VehiclePaintjob_Sultan_2"},-- sultan
+					[561]={"VehiclePaintjob_Stratum_0","VehiclePaintjob_Stratum_1","VehiclePaintjob_Stratum_2"},-- stratum
+					[562]={"VehiclePaintjob_Elegy_0","VehiclePaintjob_Elegy_1","VehiclePaintjob_Elegy_2"},-- elegy
+					[565]={"VehiclePaintjob_Flash_0","VehiclePaintjob_Flash_1","VehiclePaintjob_Flash_2"},-- flash
+					[567]={"VehiclePaintjob_Savanna_0","VehiclePaintjob_Savanna_1","VehiclePaintjob_Savanna_2"},-- savanna
+					[575]={"VehiclePaintjob_Broadway_0","VehiclePaintjob_Broadway_1"},-- broadway
+					[576]={"VehiclePaintjob_Tornado_0","VehiclePaintjob_Tornado_1","VehiclePaintjob_Tornado_2"},-- tornado
+				}
+
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local count = false
+				for k,v in pairs(paint) do
+					if getElementModel(vehicleid) == k then
+						count = true
+						break
+					end
+				end
+
+				if count then
+					setVehiclePaintjob( vehicleid, id2 )
+
+					sqlite( "UPDATE car_db SET paintjob = '"..id2.."' WHERE number = '"..plate.."'")
+
+					me_chat(playerid, playername.." установил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
+
+					id2 = 0
+				else
+					sendMessage(playerid, "[ERROR] На это т/с нельзя установить винилы", red)
+					return
+				end
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
+
+		elseif id1 == 100 then--гидравлика
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				addVehicleUpgrade( vehicleid, 1087 )
+
+				sqlite( "UPDATE car_db SET hydraulics = '1087' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." установил(а) "..info_png[id1][1])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
 
 		else
 			if id1 == 1 then

@@ -3,11 +3,11 @@
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 
-	<include resource="maximap" />
+	<!--<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
 	<include resource="vozle_merii_app" />
-	<include resource="map_gta" />
+	<include resource="map_gta" />-->
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
@@ -220,8 +220,14 @@
 	<file src="image_inventory/91.png"/>
 	<file src="image_inventory/92.png"/>
 	<file src="image_inventory/93.png"/>
-	
-	<file src="upgrade/999_w_s.png"/>	
+	<file src="image_inventory/94.png"/>
+	<file src="image_inventory/95.png"/>
+	<file src="image_inventory/96.png"/>
+	<file src="image_inventory/97.png"/>
+	<file src="image_inventory/98.png"/>
+	<file src="image_inventory/99.png"/>
+	<file src="image_inventory/100.png"/>
+
 
 	<!--замененки-->
 	<file src="dff_and_txd/leyka.txd"/>
@@ -262,6 +268,7 @@
 	<file src="dff_and_txd/wmyplt.dff"/>
 	<file src="dff_and_txd/vitpra.txd"/>
 	<file src="dff_and_txd/vitpra.dff"/>
+	<file src="dff_and_txd/1025.dff"/>
 	
 
 	<!--парашют-->
