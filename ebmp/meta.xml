@@ -3,11 +3,11 @@
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 
-	<!--<include resource="maximap" />
+	<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
 	<include resource="vozle_merii_app" />
-	<include resource="map_gta" />-->
+	<include resource="map_gta" />
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
@@ -227,6 +227,7 @@
 	<file src="image_inventory/98.png"/>
 	<file src="image_inventory/99.png"/>
 	<file src="image_inventory/100.png"/>
+	<file src="image_inventory/101.png"/>
 
 
 	<!--замененки-->
@@ -268,7 +269,23 @@
 	<file src="dff_and_txd/wmyplt.dff"/>
 	<file src="dff_and_txd/vitpra.txd"/>
 	<file src="dff_and_txd/vitpra.dff"/>
-	<file src="dff_and_txd/1025.dff"/>
+	<file src="dff_and_txd/wheel_gn1.dff"/>
+	<file src="dff_and_txd/wheel_gn2.dff"/>
+	<file src="dff_and_txd/wheel_gn3.dff"/>
+	<file src="dff_and_txd/wheel_gn4.dff"/>
+	<file src="dff_and_txd/wheel_gn5.dff"/>
+	<file src="dff_and_txd/wheel_lr1.dff"/>
+	<file src="dff_and_txd/wheel_lr2.dff"/>
+	<file src="dff_and_txd/wheel_lr3.dff"/>
+	<file src="dff_and_txd/wheel_lr4.dff"/>
+	<file src="dff_and_txd/wheel_lr5.dff"/>
+	<file src="dff_and_txd/wheel_or1.dff"/>
+	<file src="dff_and_txd/wheel_sr1.dff"/>
+	<file src="dff_and_txd/wheel_sr2.dff"/>
+	<file src="dff_and_txd/wheel_sr3.dff"/>
+	<file src="dff_and_txd/wheel_sr4.dff"/>
+	<file src="dff_and_txd/wheel_sr5.dff"/>
+	<file src="dff_and_txd/wheel_sr6.dff"/>
 	
 
 	<!--парашют-->

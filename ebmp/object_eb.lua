@@ -19,7 +19,25 @@ local dff_and_txd_table = {
 	{"vitpra", 162},
 }
 
-local wheel = {1025}
+local wheel = {
+	{"wheel_gn1", 1082},
+	{"wheel_gn2", 1085},
+	{"wheel_gn3", 1096},
+	{"wheel_gn4", 1097},
+	{"wheel_gn5", 1098},
+	{"wheel_lr1", 1077},
+	{"wheel_lr2", 1083},
+	{"wheel_lr3", 1078},
+	{"wheel_lr4", 1076},
+	{"wheel_lr5", 1084},
+	{"wheel_or1", 1025},
+	{"wheel_sr1", 1079},
+	{"wheel_sr2", 1075},
+	{"wheel_sr3", 1074},
+	{"wheel_sr4", 1081},
+	{"wheel_sr5", 1080},
+	{"wheel_sr6", 1073},
+}
 
 local car_spawn_value = 0
 addEventHandler( "onClientResourceStart", getRootElement( ),
@@ -40,8 +58,8 @@ function ( startedRes )
 		end
 
 		for k,v in pairs(wheel) do
-			local dff = engineLoadDFF ( "dff_and_txd/"..v..".dff" )
-			engineReplaceModel ( dff, v )
+			local dff = engineLoadDFF ( "dff_and_txd/"..v[1]..".dff" )
+			engineReplaceModel ( dff, v[2] )
 		end
 	end
 end)

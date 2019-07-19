@@ -585,10 +585,11 @@ local info_png = {
 	[94] = {"маска", "шт"},
 	[95] = {"двигатель", "stage"},
 	[96] = {"колесо", "марка"},
-	[97] = {"банка краски", "цвет"},
+	[97] = {"краска для т/с", "цвет"},
 	[98] = {"фара", "цвет"},
 	[99] = {"винилы", "вариант"},
 	[100] = {"гидравлика", "шт"},
+	[101] = {"краска для колес", "цвет"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -683,6 +684,10 @@ end
 
 for k,v in ipairs(color_table) do
 	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.5, 98})
+end
+
+for k,v in ipairs(color_table) do
+	table.insert(repair_shop, {info_png[101][1].." "..k.." "..info_png[101][2], k, 0.5, 101})
 end
 
 local gas = {
@@ -5467,7 +5472,8 @@ function car_spawn(number)
 		setElementData(vehicleid, "tune_car", result[1]["tune"])
 
 		local spl = split(result[1]["car_rgb"], ",")
-		setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
+		local spl2 = split(result[1]["wheel_rgb"], ",")
+		setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl2[1], spl2[2], spl2[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
 
 		local spl = split(result[1]["headlight_rgb"], ",")
 		setVehicleHeadLightColor ( vehicleid, spl[1], spl[2], spl[3] )
@@ -5645,13 +5651,16 @@ function buycar ( playerid, id )
 		local color = {255,255,255}
 		local headlight_rgb_text = color[1]..","..color[2]..","..color[3]
 
+		local color = {255,255,255}
+		local wheel_rgb_text = color[1]..","..color[2]..","..color[3]
+
 		local paintjob_text = 3
 
 		local nalog_start = 5
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	
 		car_spawn(tostring(val2))
 	else
@@ -7646,19 +7655,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					return
 				end
 
-				local count = false
-				for k,v in pairs(car_cash_no) do
-					if getElementModel(vehicleid) == v then
-						count = true
-						break
-					end
-				end
-
-				if count then
-					sendMessage(playerid, "[ERROR] На это т/с нельзя установить колеса", red)
-					return
-				end
-
 				addVehicleUpgrade(vehicleid, id2)
 
 				sqlite( "UPDATE car_db SET wheel = '"..id2.."' WHERE number = '"..plate.."'")
@@ -7778,6 +7774,29 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sqlite( "UPDATE car_db SET hydraulics = '1087' WHERE number = '"..plate.."'")
 
 				me_chat(playerid, playername.." установил(а) "..info_png[id1][1])
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
+			end
+
+		elseif id1 == 101 then--краска колес
+			if vehicleid then
+				local plate = getVehiclePlateText(vehicleid)
+
+				if (getSpeed(vehicleid) > 5) then
+					sendMessage(playerid, "[ERROR] Остановите т/с", red)
+					return
+				end
+
+				local spl = color_table[id2]
+				local r,g,b = getVehicleColor ( vehicleid, true )
+				setVehicleColor( vehicleid, r,g,b, spl[1], spl[2], spl[3], r,g,b, r,g,b )
+
+				sqlite( "UPDATE car_db SET wheel_rgb = '"..spl[1]..","..spl[2]..","..spl[3].."' WHERE number = '"..plate.."'")
+
+				me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
 				id2 = 0
 			else
@@ -8341,7 +8360,7 @@ function blackjack (playerid, cmd, value, ...)
 		local randomize = random(1,#blackjack_card)
 		local spl = blackjack_card[randomize]
 
-		while true do 
+		--[[while true do --не оригинал
 			local count = 0
 			for k,v in pairs(game[playername]) do
 				if split(v, ":")[1] == split(spl, ":")[1] then
@@ -8356,7 +8375,7 @@ function blackjack (playerid, cmd, value, ...)
 				randomize = random(1,#blackjack_card)
 				spl = blackjack_card[randomize]
 			end
-		end
+		end]]
 
 		table.insert(game[playername], blackjack_card[randomize])
 
