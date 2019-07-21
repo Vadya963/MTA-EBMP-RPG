@@ -9711,6 +9711,25 @@ function ( playerid, cmd, id )
 		sendMessage(playerid, "[ERROR] от 400 до 611", red)
 	end
 end)
+
+addCommandHandler ( "delv",--удаление авто для админов
+function ( playerid )
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
+		return
+	end
+
+	local count = 0
+	for k,v in pairs(getElementsByType("vehicle")) do
+		if "0" == getVehiclePlateText(v) then
+			destroyElement(v)
+			count = count+1
+		end
+	end
+
+	sendMessage(playerid, "Удалено "..count.." т/с", lyme)
+end)
 -----------------------------------------------------------------------------------------
 
 function restartAllResources()
