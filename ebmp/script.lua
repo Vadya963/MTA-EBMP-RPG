@@ -50,14 +50,6 @@ addEventHandler ( "event_removePedFromVehicle", getRootElement(), removePedFromV
 addEvent( "event_setElementDimension", true )
 addEventHandler ( "event_setElementDimension", getRootElement(), setElementDimension )
 
-local upgrades_car_table = {}
-local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
-for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
-	local spl = split(v, ",")
-	upgrades_car_table[tonumber(spl[1])] = spl[3]
-end
-fileClose(uc_txt)
-
 local earth = {}--слоты земли
 local earth_true = true--очищать ли землю
 local max_earth = 0--мак-ое кол-во выброшенных предметов на землю
@@ -4128,14 +4120,16 @@ function addVehicleUpgrade_fun( vehicleid, value, playerid, number )
 				if result[1]["tune"] ~= "0" then
 					for k,v in pairs(split(result[1]["tune"], ",")) do
 						local spl = split(v, ":")
-						text = text..spl[1]..":"..spl[2]..":"..spl[3]..":"..spl[4]..":"..spl[5]..":"..spl[6]..":"..spl[7]..","
+						text = text..spl[1]..":"..spl[2]..":"..spl[3]..":"..spl[4]..":"..spl[5]..":"..spl[6]..":"..spl[7]..":"..spl[8]..","
 					end
 				end
 			end
 
-			text = text..value[1]..":"..value[2]..":"..value[3]..":"..value[4]..":"..value[5]..":"..value[6]..":"..value[7]..","
+			text = text..value[1]..":"..value[2]..":"..value[3]..":"..value[4]..":"..value[5]..":"..value[6]..":"..value[7]..":"..value[8]..","
 
-			attachElements(createObject(value[1], 0,0,0, 0,0,0), vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
+			local obj = createObject(value[1], 0,0,0, 0,0,0)
+			attachElements(obj, vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
+			setObjectScale(obj, value[8])
 
 			setElementData(vehicleid, "tune_car", text)
 
@@ -5319,7 +5313,6 @@ function reg_or_login(playerid)
 	setElementData(playerid, "weapon_cops", weapon_cops)
 	setElementData(playerid, "sub_cops", sub_cops)
 	setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
-	setElementData(playerid, "upgrades_car_table", upgrades_car_table)
 	setElementData(playerid, "name_mafia", name_mafia)
 	setElementData(playerid, "interior_job", interior_job)
 	setElementData(playerid, "cash_car", cash_car)
@@ -5457,7 +5450,10 @@ function car_spawn(number)
 				for k,v in ipairs(split(v, ":")) do
 					table.insert(value, tonumber(v))
 				end
-				attachElements(createObject(value[1], 0,0,0, 0,0,0), vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
+				
+				local obj = createObject(value[1], 0,0,0, 0,0,0)
+				attachElements(obj, vehicleid, value[2],value[3],value[4], value[5],value[6],value[7])
+				setObjectScale(obj, value[8])
 			end
 		end
 

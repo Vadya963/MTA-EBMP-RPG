@@ -363,6 +363,14 @@ for i=0,#info_png do
 	image[i] = dxCreateTexture("image_inventory/"..i..".png")
 end
 
+local upgrades_car_table = {}
+local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
+for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
+	local spl = split(v, ",")
+	upgrades_car_table[tonumber(spl[1])] = spl[3]
+end
+fileClose(uc_txt)
+
 local info_tab = nil --положение картинки в табе
 local info1 = -1 --номер картинки
 local info2 = -1 --значение картинки
@@ -1031,13 +1039,13 @@ function tune_window_create (number)--создание окна тюнинга
 	local vehicleid = getPlayerVehicle(playerid)
 
 	local width = 355+70
-	local height = 185.0+(16.0*1)+10
+	local height = 225.0+(16.0*1)+10
 	tune_business = true
 	gui_window = m2gui_window( (screenWidth/2)-(width/2), 20, width, height, number_business.." бизнес, Автомастерская", false, false )
 	local tabPanel = guiCreateTabPanel ( 10.0, 20.0, width, height, false, gui_window )
 	local tab_shop = guiCreateTab( "Детали", tabPanel )
 
-	local shoplist = guiCreateGridList(0, 0, 405, 130, false, tab_shop)
+	local shoplist = guiCreateGridList(0, 0, 405, 170, false, tab_shop)
 	local column_width1 = 0.7
 	local column_width2 = 0.2
 
@@ -1047,7 +1055,7 @@ function tune_window_create (number)--создание окна тюнинга
 		guiGridListAddRow(shoplist, v[1], v[3])
 	end
 
-	local buy_subject = m2gui_button( 10, 135, "Купить", false, tab_shop )
+	local buy_subject = m2gui_button( 10, 175, "Купить", false, tab_shop )
 
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -1061,7 +1069,7 @@ function tune_window_create (number)--создание окна тюнинга
 		local upgrades_table = guiCreateComboBox ( 10, 10, 386, 140, "Апгрейды", false, tab_tune )
 		for i=1000, 1193 do
 			if i ~= 1086 and i ~= 1087 then
-				guiComboBoxAddItem( upgrades_table, getElementData(playerid, "upgrades_car_table")[i].."#"..i )
+				guiComboBoxAddItem( upgrades_table, upgrades_car_table[i].."#"..i )
 			end
 		end
 
@@ -1091,13 +1099,18 @@ function tune_window_create (number)--создание окна тюнинга
 		local tune_rz_edit = guiCreateEdit ( 274, 100, 122, 20, "0", false, tab_tune )
 
 
-		local tune_install_button,m2gui_width = m2gui_button( 10, 130, "Установить", false, tab_tune )
-		local tune_delete_button,m2gui_width = m2gui_button( m2gui_width, 130, "Удалить всё", false, tab_tune )
+		local tune_text = m2gui_label ( 183, 120, 50, 20, "SCALE", false, tab_tune )
+		guiSetFont( tune_text, m2font )
+		local scale = guiCreateEdit ( 10, 140, 386, 20, "1", false, tab_tune )
+
+
+		local tune_install_button,m2gui_width = m2gui_button( 10, 170, "Установить", false, tab_tune )
+		local tune_delete_button,m2gui_width = m2gui_button( m2gui_width, 170, "Удалить всё", false, tab_tune )
 
 		addEventHandler ( "onClientGUIComboBoxAccepted", upgrades_table,
 		function ( comboBox )
 			local item = guiComboBoxGetItemText(upgrades_table, guiComboBoxGetSelected(upgrades_table))
-			for k,v in pairs(getElementData(playerid, "upgrades_car_table")) do
+			for k,v in pairs(upgrades_car_table) do
 				if item == v.."#"..k then
 					if int_upgrades == 0 then
 						int_upgrades = {k,createObject(k, 0,0,0, 0,0,0)}
@@ -1159,9 +1172,18 @@ function tune_window_create (number)--создание окна тюнинга
 			end
 		end)
 
+		addEventHandler("onClientGUIChanged", scale, function(editBox) 
+			if int_upgrades ~= 0 then
+				local sc = tonumber(guiGetText(editBox)) or 1
+				setObjectScale(int_upgrades[2], sc)
+			end
+		end)
+
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			if int_upgrades ~= 0 then
-				triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, {int_upgrades[1], getElementAttachedOffsets ( int_upgrades[2] )}, playerid, number_business )
+				local x,y,z, rx,ry,rz = getElementAttachedOffsets ( int_upgrades[2] )
+				local sc = tonumber(guiGetText(scale)) or 1
+				triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, {int_upgrades[1], x,y,z, rx,ry,rz, sc}, playerid, number_business )
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tune_install_button, complete, false )
