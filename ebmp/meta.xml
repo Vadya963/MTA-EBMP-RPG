@@ -20,7 +20,6 @@
 
 	<!--худ-->
 	<file src="hud/alcohol.png"/>
-	<file src="hud/health.png"/>
 	<file src="hud/hygiene.png"/>
 	<file src="hud/satiety.png"/>
 	<file src="hud/sleep.png"/>

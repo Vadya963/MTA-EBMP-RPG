@@ -1212,8 +1212,8 @@ local interior_job = {--12
 
 --пикапы для работ и фракций
 local interior_job_pickup = {
-	{createPickup ( 292.31268310547,1833.2623291016,18.05459022522, 3, job_icon, 10000 ), 279.1279296875,1833.1435546875,18.08740234375},--кпп1
-	{createPickup ( 279.1279296875,1833.1435546875,18.08740234375, 3, job_icon, 10000 ), 292.31268310547,1833.2623291016,18.05459022522}--кпп2
+	{createPickup ( 292.31268310547,1833.2623291016,18.05459022522, 3, job_icon, 10000 ), {279.1279296875,1833.1435546875,18.08740234375}},--кпп1
+	{createPickup ( 279.1279296875,1833.1435546875,18.08740234375, 3, job_icon, 10000 ), {292.31268310547,1833.2623291016,18.05459022522}},--кпп2
 }
 
 local t_s_salon = {
@@ -3926,12 +3926,12 @@ addEventHandler( "onPickupUse", getRootElement(), pickupUse )
 function pickedUpWeaponCheck( playerid )
 	local pickup = source
 
-    for k,v in pairs(interior_job_pickup) do
-    	if pickup == v[1] then
-    		setElementPosition(playerid, v[2],v[3],v[4])
-    		break
-    	end
-    end
+	for k,v in pairs(interior_job_pickup) do
+		if pickup == v[1] then
+			setElementPosition(playerid, v[2][1],v[2][2],v[2][3])
+			break
+		end
+	end
 end
 addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
 
@@ -4740,7 +4740,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		for k,v in pairs(no_ped_damage[2]) do--заморозка нпс
 			setElementFrozen(v, true)
 		end
-
+		
 
 		local result = sqlite( "SELECT COUNT() FROM account" )
 		print("[account] "..result[1]["COUNT()"])
