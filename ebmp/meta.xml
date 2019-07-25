@@ -49,6 +49,7 @@
 	<file src="comp/auction.png"/>
 	<file src="comp/low_fon.png"/>
 	<file src="comp/low_fon1.png"/>
+	<file src="comp/low_fon2.png"/>
 	<file src="comp/CLOUDY.png"/>
 	<file src="comp/SUNNY.png"/>
 	<file src="comp/FOGGY.png"/>
@@ -125,6 +126,7 @@
 	<file src="comp/card/cd13d.png"/>
 	<file src="comp/card/cd13h.png"/>
 	<file src="comp/card/cd13s.png"/>
+	<file src="comp/roulette.png"/>
 	
 	<file src="image_inventory/0.png"/>
 	<file src="image_inventory/1.png"/>

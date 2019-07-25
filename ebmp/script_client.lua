@@ -1,5 +1,6 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
+local m2font_r = guiCreateFont( "gui/m2font.ttf", 150 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
@@ -208,7 +209,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		end
 	end
 end
-addEventHandler ( "onClientPedDamage", getRootElement(), playerDamage_text )
+addEventHandler ( "onClientPedDamage", root, playerDamage_text )
 
 function setPedOxygenLevel_fun ()--кислородный балон
 	local count = 0
@@ -225,7 +226,7 @@ function setPedOxygenLevel_fun ()--кислородный балон
 	setElementData(playerid, "OxygenLevel", true)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
-addEventHandler ( "event_setPedOxygenLevel_fun", getRootElement(), setPedOxygenLevel_fun )
+addEventHandler ( "event_setPedOxygenLevel_fun", root, setPedOxygenLevel_fun )
 
 function createFire_fun (x,y,z, size, radius, count)--создание огня
 	local r1,r2 = random(radius*-1,radius),random(radius*-1,radius)
@@ -234,13 +235,13 @@ function createFire_fun (x,y,z, size, radius, count)--создание огня
 	end
 end
 addEvent( "event_createFire", true )
-addEventHandler ( "event_createFire", getRootElement(), createFire_fun )
+addEventHandler ( "event_createFire", root, createFire_fun )
 
 function body_hit_sound ()--звук поподания в тело
 	playSound("parachute/body_hit_sound.mp3")
 end
 addEvent( "event_body_hit_sound", true )
-addEventHandler ( "event_body_hit_sound", getRootElement(), body_hit_sound )
+addEventHandler ( "event_body_hit_sound", root, body_hit_sound )
 
 function setElementCollidableWith_fun (value1, element, value)--вкл/откл столкновения тс
 	for index,vehicle in pairs(getElementsByType(value1)) do --LOOP through all Vehicles
@@ -248,19 +249,19 @@ function setElementCollidableWith_fun (value1, element, value)--вкл/откл 
 	end
 end
 addEvent( "event_setElementCollidableWith_fun", true )
-addEventHandler ( "event_setElementCollidableWith_fun", getRootElement(), setElementCollidableWith_fun )
+addEventHandler ( "event_setElementCollidableWith_fun", root, setElementCollidableWith_fun )
 
 addEvent( "event_extinguishFire", true )
-addEventHandler ( "event_extinguishFire", getRootElement(), extinguishFire )
+addEventHandler ( "event_extinguishFire", root, extinguishFire )
 
 addEvent( "event_setPedAimTarget", true )
-addEventHandler ( "event_setPedAimTarget", getRootElement(), setPedAimTarget )
+addEventHandler ( "event_setPedAimTarget", root, setPedAimTarget )
 
 addEvent( "event_setPedControlState", true )
-addEventHandler ( "event_setPedControlState", getRootElement(), setPedControlState )
+addEventHandler ( "event_setPedControlState", root, setPedControlState )
 
 addEvent( "event_givePedWeapon", true )
-addEventHandler ( "event_givePedWeapon", getRootElement(), givePedWeapon )
+addEventHandler ( "event_givePedWeapon", root, givePedWeapon )
 
 addEventHandler( "onClientElementStreamIn", getRootElement( ),
 function ( )
@@ -283,7 +284,7 @@ function logsave_fun (value, name, i, id)--таблица логов
 	end
 end
 addEvent( "event_logsave_fun", true )
-addEventHandler ( "event_logsave_fun", getRootElement(), logsave_fun )
+addEventHandler ( "event_logsave_fun", root, logsave_fun )
 
 function save_logplayer()
 	local newFile = fileCreate("log-"..name_player..".txt")
@@ -310,7 +311,7 @@ function invsave_fun (value, name, text)--таблица inv
 	end
 end
 addEvent( "event_invsave_fun", true )
-addEventHandler ( "event_invsave_fun", getRootElement(), invsave_fun )
+addEventHandler ( "event_invsave_fun", root, invsave_fun )
 
 function save_invplayer()
 	local newFile = fileCreate("inv-"..name_player..".txt")
@@ -1024,7 +1025,7 @@ function createText ()
 		end
 	end
 end
-addEventHandler ( "onClientRender", getRootElement(), createText )
+addEventHandler ( "onClientRender", root, createText )
 
 local number_business = 0
 local tune_business = false
@@ -1055,7 +1056,7 @@ function tune_window_create (number)--создание окна тюнинга
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_buy_subject_fun", getRootElement(), playerid, text, number_business, 5 )
+		triggerServerEvent( "event_buy_subject_fun", root, playerid, text, number_business, 5 )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1178,13 +1179,13 @@ function tune_window_create (number)--создание окна тюнинга
 			if int_upgrades ~= 0 then
 				local x,y,z, rx,ry,rz = getElementAttachedOffsets ( int_upgrades[2] )
 				local sc = tonumber(guiGetText(scale)) or 1
-				triggerServerEvent( "event_addVehicleUpgrade", getRootElement(), vehicleid, {int_upgrades[1], x,y,z, rx,ry,rz, sc}, playerid, number_business )
+				triggerServerEvent( "event_addVehicleUpgrade", root, vehicleid, {int_upgrades[1], x,y,z, rx,ry,rz, sc}, playerid, number_business )
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tune_install_button, complete, false )
 
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-			triggerServerEvent( "event_removeVehicleUpgrade", getRootElement(), vehicleid, playerid, number_business )
+			triggerServerEvent( "event_removeVehicleUpgrade", root, vehicleid, playerid, number_business )
 		end
 		addEventHandler ( "onClientGUIClick", tune_delete_button, complete, false )
 	end
@@ -1193,7 +1194,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 end
 addEvent( "event_tune_create", true )
-addEventHandler ( "event_tune_create", getRootElement(), tune_window_create )
+addEventHandler ( "event_tune_create", root, tune_window_create )
 
 
 function business_menu(number)--создание окна бизнеса
@@ -1218,13 +1219,13 @@ function business_menu(number)--создание окна бизнеса
 
 		if tonumber(text) ~= nil and tonumber(text) >= 1 then
 			if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), playerid, number_business, tonumber(text), "withdraw" )
+				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "withdraw" )
 
 			elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), playerid, number_business, tonumber(text), "deposit" )
+				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "deposit" )
 
 			elseif guiRadioButtonGetSelected( tune_radio_button3 ) == true then
-				triggerServerEvent( "event_till_fun", getRootElement(), playerid, number_business, tonumber(text), "price" )
+				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "price" )
 			end
 		end
 	end
@@ -1232,7 +1233,7 @@ function business_menu(number)--создание окна бизнеса
 
 end
 addEvent( "event_business_menu", true )
-addEventHandler ( "event_business_menu", getRootElement(), business_menu )
+addEventHandler ( "event_business_menu", root, business_menu )
 
 
 function shop_menu(number, value)--создание окна магазина
@@ -1261,7 +1262,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", getRootElement(), playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", root, playerid, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1292,7 +1293,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", getRootElement(), playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", root, playerid, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1318,7 +1319,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", getRootElement(), playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", root, playerid, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1338,7 +1339,7 @@ function shop_menu(number, value)--создание окна магазина
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_buy_subject_fun", getRootElement(), playerid, text, number_business, value )
+		triggerServerEvent( "event_buy_subject_fun", root, playerid, text, number_business, value )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1371,7 +1372,7 @@ function shop_menu(number, value)--создание окна магазина
 	end
 end
 addEvent( "event_shop_menu", true )
-addEventHandler ( "event_shop_menu", getRootElement(), shop_menu )
+addEventHandler ( "event_shop_menu", root, shop_menu )
 
 
 function avto_bikes_menu()--создание окна машин
@@ -1402,13 +1403,13 @@ function avto_bikes_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", getRootElement(), playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", root, playerid, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
 end
 addEvent( "event_avto_bikes_menu", true )
-addEventHandler ( "event_avto_bikes_menu", getRootElement(), avto_bikes_menu )
+addEventHandler ( "event_avto_bikes_menu", root, avto_bikes_menu )
 
 
 function boats_menu()--создание окна машин
@@ -1439,13 +1440,13 @@ function boats_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", getRootElement(), playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", root, playerid, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
 end
 addEvent( "event_boats_menu", true )
-addEventHandler ( "event_boats_menu", getRootElement(), boats_menu )
+addEventHandler ( "event_boats_menu", root, boats_menu )
 
 
 function helicopters_menu()--создание окна машин
@@ -1476,13 +1477,13 @@ function helicopters_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", getRootElement(), playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", root, playerid, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
 end
 addEvent( "event_helicopters_menu", true )
-addEventHandler ( "event_helicopters_menu", getRootElement(), helicopters_menu )
+addEventHandler ( "event_helicopters_menu", root, helicopters_menu )
 
 
 function tablet_fun()--создание планшета
@@ -1517,6 +1518,7 @@ function tablet_fun()--создание планшета
 	local quest = guiCreateStaticImage( 10, 80, 60, 60, "comp/quest.png", false, fon )
 	local slot = guiCreateStaticImage( 80, 80, 63, 60, "comp/slot.png", false, fon )
 	local poker = guiCreateStaticImage( 150, 80, 60, 60, "comp/poker.png", false, fon )
+	local roulette = guiCreateStaticImage( 220, 80, 70, 60, "comp/roulette.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -1552,7 +1554,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить меню аука
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "auc")
+				triggerServerEvent("event_sqlite_load", root, playerid, "auc")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -1571,7 +1573,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 				
-				triggerServerEvent("event_auction_buy_sell", getRootElement(), playerid, "buy", text, 0, 0, 0 )
+				triggerServerEvent("event_auction_buy_sell", root, playerid, "buy", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
 
@@ -1583,7 +1585,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_auction_buy_sell", getRootElement(), playerid, "return", text, 0, 0, 0 )
+				triggerServerEvent("event_auction_buy_sell", root, playerid, "return", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", return_subject, outputEditBox, false )
 
@@ -1638,7 +1640,7 @@ function tablet_fun()--создание планшета
 				end
 
 				if id1 >= 2 and id1 <= #info_png and id2 and money > 0 then
-					triggerServerEvent("event_auction_buy_sell", getRootElement(), playerid, "sell", 0, id1, id2, money, name_buy)
+					triggerServerEvent("event_auction_buy_sell", root, playerid, "sell", 0, id1, id2, money, name_buy)
 				end
 			end
 			addEventHandler ( "onClientGUIClick", sell_subject, outputEditBox, false )
@@ -1748,7 +1750,7 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			triggerServerEvent("event_craft_fun", getRootElement(), playerid, text )
+			triggerServerEvent("event_craft_fun", root, playerid, text )
 		end
 		addEventHandler ( "onClientGUIClick", create, outputEditBox, false )
 	end
@@ -1769,7 +1771,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-			triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "carparking_table")
+			triggerServerEvent("event_sqlite_load", root, playerid, "carparking_table")
 			guiGridListClear(shoplist)
 
 			setTimer(function()
@@ -1788,7 +1790,7 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			triggerServerEvent("event_spawn_carparking", getRootElement(), playerid, text )
+			triggerServerEvent("event_spawn_carparking", root, playerid, text )
 		end
 		addEventHandler ( "onClientGUIClick", return_car, outputEditBox, false )
 
@@ -1815,7 +1817,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
-			triggerServerEvent("event_cow_farms", getRootElement(), playerid, "buy", 0,0 )
+			triggerServerEvent("event_cow_farms", root, playerid, "buy", 0,0 )
 		end
 		addEventHandler ( "onClientGUIClick", buy_ferm, outputEditBox, false )
 
@@ -1833,7 +1835,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_table1")
+				triggerServerEvent("event_sqlite_load", root, playerid, "cow_farms_table1")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -1860,7 +1862,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent( "event_cow_farms", getRootElement(), playerid, "menu", text, text2 )
+				triggerServerEvent( "event_cow_farms", root, playerid, "menu", text, text2 )
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -1887,7 +1889,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_table2")
+				triggerServerEvent("event_sqlite_load", root, playerid, "cow_farms_table2")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -1906,7 +1908,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent( "event_cow_farms", getRootElement(), playerid, "job", tonumber(text), 0 )
+				triggerServerEvent( "event_cow_farms", root, playerid, "job", tonumber(text), 0 )
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -1981,7 +1983,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
-			triggerServerEvent("event_earth_true", getRootElement(), playerid)
+			triggerServerEvent("event_earth_true", root, playerid)
 		end
 		addEventHandler ( "onClientGUIClick", timer_earth_clear, outputEditBox, false )
 
@@ -2025,7 +2027,7 @@ function tablet_fun()--создание планшета
 
 				local x,y,z = getElementPosition(player)
 				setElementPosition(playerid, x,y,z)
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -2042,7 +2044,7 @@ function tablet_fun()--создание планшета
 				end
 
 				setCameraTarget(player)
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", target, complete, false )
 
@@ -2058,7 +2060,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_prisonplayer", getRootElement(), playerid, "", text, 60, "Нарушение правил сервера")
+				triggerServerEvent("event_prisonplayer", root, playerid, "", text, 60, "Нарушение правил сервера")
 			end
 			addEventHandler ( "onClientGUIClick", prison, complete, false )
 
@@ -2132,7 +2134,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "house_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "house_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -2156,9 +2158,9 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
 
-				triggerServerEvent("event_sqlite", getRootElement(), text)
+				triggerServerEvent("event_sqlite", root, text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
@@ -2207,7 +2209,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "business_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "business_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -2231,9 +2233,9 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
 
-				triggerServerEvent("event_sqlite", getRootElement(), text)
+				triggerServerEvent("event_sqlite", root, text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
@@ -2283,7 +2285,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "account_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "account_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
@@ -2307,9 +2309,9 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
 
-				triggerServerEvent("event_sqlite", getRootElement(), text)
+				triggerServerEvent("event_sqlite", root, text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
@@ -2363,17 +2365,17 @@ function tablet_fun()--создание планшета
 
 				local vehicleid = getVehicleidFromPlate( text )
 				for k,v in pairs(getVehicleOccupants(vehicleid)) do
-					triggerServerEvent("event_removePedFromVehicle", getRootElement(), v)
+					triggerServerEvent("event_removePedFromVehicle", root, v)
 				end
 
-				triggerServerEvent("event_destroyElement", getRootElement(), vehicleid)
-				triggerServerEvent("event_car_spawn", getRootElement(), text)
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
+				triggerServerEvent("event_destroyElement", root, vehicleid)
+				triggerServerEvent("event_car_spawn", root, text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
 			end
 			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "car_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "car_db")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
@@ -2397,9 +2399,9 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
 
-				triggerServerEvent("event_sqlite", getRootElement(), text)
+				triggerServerEvent("event_sqlite", root, text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
@@ -2413,9 +2415,9 @@ function tablet_fun()--создание планшета
 
 				local vehicleid = getVehicleidFromPlate( text )
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с с номером "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с с номером "..text)
 
-				triggerServerEvent("event_setElementDimension", getRootElement(), vehicleid, 1)
+				triggerServerEvent("event_setElementDimension", root, vehicleid, 1)
 			end
 			addEventHandler ( "onClientGUIClick", dim_0, complete, false )
 
@@ -2457,7 +2459,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "cow_farms_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "cow_farms_db")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
@@ -2481,9 +2483,9 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", getRootElement(), playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
 
-				triggerServerEvent("event_sqlite", getRootElement(), text)
+				triggerServerEvent("event_sqlite", root, text)
 			end
 			addEventHandler ( "onClientGUIClick", update_db, complete, false )
 
@@ -2517,7 +2519,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-			triggerServerEvent("event_sqlite_load", getRootElement(), playerid, "quest_table")
+			triggerServerEvent("event_sqlite_load", root, playerid, "quest_table")
 			guiGridListClear(shoplist)
 				
 			setTimer(function()
@@ -2616,7 +2618,7 @@ function tablet_fun()--создание планшета
 		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Крутить", false, low_fon )
 		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "укажите ставку", false, low_fon )
-		local start,count,time_slot = false,0,20
+		local start, count, time_slot = false, 0, 20
 		local randomize1 = 0
 		local randomize2 = 0
 		local randomize3 = 0
@@ -2636,10 +2638,13 @@ function tablet_fun()--создание планшета
 			local cash = tonumber(text)
 				
 			if text == "" then
-				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				sendMessage("[ERROR] Укажите ставку", red)
 				return
 			elseif not cash then
 				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif cash < 1 then
+				sendMessage("[ERROR] Число меньше 1", red)
 				return
 			elseif start then
 				sendMessage("[ERROR] Вы играете", red)
@@ -2664,7 +2669,7 @@ function tablet_fun()--создание планшета
 				guiStaticImageLoadImage ( slots_3, "comp/slot_"..randomize3..".png" )
 
 				if count == time_slot then
-					triggerServerEvent("event_slots", getRootElement(), playerid, cash, randomize1, randomize2, randomize3)
+					triggerServerEvent("event_slots", root, playerid, cash, randomize1, randomize2, randomize3)
 					start,count = false,0
 				end
 			end, 500, time_slot)
@@ -2811,7 +2816,7 @@ function tablet_fun()--создание планшета
 					text = text..radiobutton_table[3][i]..","
 				end
 				
-				triggerServerEvent("event_poker_win", getRootElement(), playerid, text, cash, coef, token)
+				triggerServerEvent("event_poker_win", root, playerid, text, cash, coef, token)
 
 				start,count = false,1
 				radiobutton_table[2][1],radiobutton_table[3][1] = false, "0"
@@ -2829,21 +2834,147 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", poker, outputEditBox, false )
+
+	function roulette_fun( button, state, absoluteX, absoluteY )--рулетка
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon2.png", false, fon )
+		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "укажите ставку", false, low_fon )
+		local roulette_number = guiCreateLabel ( 0, 0, 275, height_fon-16, "", false, low_fon )
+		guiSetFont( roulette_number, m2font_r )
+
+		local start, count, time_slot, id = false, 0, 100, ""
+		local roulette_game = {}
+		local Red = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
+		local Black = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
+		local to1 = {1,4,7,10,13,16,19,22,25,28,31,34}
+		local to2 = {2,5,8,11,14,17,20,23,26,29,32,35}
+		local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
+
+		for i,v in ipairs(to3) do
+			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 10, 25, 25, tostring(v), false, low_fon ))
+		end
+		for i,v in ipairs(to2) do
+			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 35, 25, 25, tostring(v), false, low_fon ))
+		end
+		for i,v in ipairs(to1) do
+			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 60, 25, 25, tostring(v), false, low_fon ))
+		end
+		table.insert(roulette_game, guiCreateButton ( 225+(1*25), 10, 25, 25*5, "0", false, low_fon ))
+
+		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 10, 50, 25, "3-3", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 35, 50, 25, "3-2", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 60, 50, 25, "3-1", false, low_fon ))
+
+		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 85, 25*4, 25, "1-12", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 85, 25*4, 25, "2-12", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 85, 25*4, 25, "3-12", false, low_fon ))
+
+		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 110, 25*2, 25, "1-18", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(3*25), 110, 25*2, 25, "EVEN", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 110, 25*2, 25, "RED", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(7*25), 110, 25*2, 25, "BLACK", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 110, 25*2, 25, "ODD", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(11*25), 110, 25*2, 25, "19-36", false, low_fon ))
+
+		local roulette_button = guiCreateButton ( 250+(13*25), 85, 50, 25*2, "", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			guiSetText(edit, "")
+		end
+		addEventHandler ( "onClientGUIClick", edit, outputEditBox, false )
+
+		for k,v in pairs(roulette_game) do
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				if start then
+					sendMessage("[ERROR] Вы играете", red)
+					return
+				end
+				
+				id = guiGetText(source)
+				guiSetText(roulette_button, id)
+			end
+			addEventHandler ( "onClientGUIClick", v, outputEditBox, false )
+		end
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGetText(edit)
+			local cash = tonumber(text)
+				
+			if text == "" then
+				sendMessage("[ERROR] Укажите ставку", red)
+				return
+			elseif id == "" then
+				sendMessage("[ERROR] Вы не сделали ставку", red)
+				return
+			elseif not cash then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif cash < 1 then
+				sendMessage("[ERROR] Число меньше 1", red)
+				return
+			elseif start then
+				sendMessage("[ERROR] Вы играете", red)
+				return
+			end
+
+			start = true
+
+			setTimer(function()
+				if not isElement(low_fon) then
+					return
+				end
+
+				count = count+1
+
+				local randomize = random(0,36)
+				guiSetText(roulette_number, tostring(randomize))
+
+				for k,v in pairs(Red) do
+					if v == randomize then
+						guiLabelSetColor(roulette_number, 255,0,0)
+					end
+				end
+
+				for k,v in pairs(Black) do
+					if v == randomize then
+						guiLabelSetColor(roulette_number, 0,0,0)
+					end
+				end
+
+				if randomize == 0 then
+					guiLabelSetColor(roulette_number, 255,255,255)
+				end
+
+				if count == time_slot then
+					triggerServerEvent("event_roulette_fun", root, playerid, id, cash, randomize)
+					start,count = false,0
+				end
+			end, 100, time_slot)
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+	end
+	addEventHandler ( "onClientGUIClick", roulette, roulette_fun, false )
 end
 addEvent( "event_tablet_fun", true )
-addEventHandler ( "event_tablet_fun", getRootElement(), tablet_fun )
+addEventHandler ( "event_tablet_fun", root, tablet_fun )
 
 
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "player", info3_selection_1, info1, info2, getPlayerName(playerid) )
+		triggerServerEvent( "event_inv_server_load", root, playerid, "player", info3_selection_1, info1, info2, getPlayerName(playerid) )
 
 	elseif info_tab == tab_car then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "car", info3_selection_1, info1, info2, plate )
+		triggerServerEvent( "event_inv_server_load", root, playerid, "car", info3_selection_1, info1, info2, plate )
 
 	elseif info_tab == tab_house then
-		triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "house", info3_selection_1, info1, info2, house )
+		triggerServerEvent( "event_inv_server_load", root, playerid, "house", info3_selection_1, info1, info2, house )
 	end
 end
 
@@ -2932,7 +3063,7 @@ function inv_create ()--создание инв-ря
 					return
 				end]]
 
-				triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(playerid) )
+				triggerServerEvent( "event_inv_server_load", root, playerid, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(playerid) )
 
 				zamena_img()
 
@@ -2990,7 +3121,7 @@ function inv_create ()--создание инв-ря
 
 		function car_trunk( tab )
 			if tab == tab_car then
-				triggerServerEvent("event_setVehicleDoorOpenRatio_fun", getRootElement(), playerid, 1)
+				triggerServerEvent("event_setVehicleDoorOpenRatio_fun", root, playerid, 1)
 			end
 		end
 		addEventHandler( "onClientGUITabSwitched", tab_car, car_trunk, false )
@@ -3038,7 +3169,7 @@ function inv_create ()--создание инв-ря
 						return
 					end]]
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "car", info3, info1_selection_1, info2_selection_1, plate )
+					triggerServerEvent( "event_inv_server_load", root, playerid, "car", info3, info1_selection_1, info2_selection_1, plate )
 
 					zamena_img()
 
@@ -3138,7 +3269,7 @@ function inv_create ()--создание инв-ря
 						return
 					end]]
 
-					triggerServerEvent( "event_inv_server_load", getRootElement(), playerid, "house", info3, info1_selection_1, info2_selection_1, house )
+					triggerServerEvent( "event_inv_server_load", root, playerid, "house", info3, info1_selection_1, info2_selection_1, house )
 
 					zamena_img()
 
@@ -3177,7 +3308,7 @@ function inv_create ()--создание инв-ря
 				end
 
 				if tab_player == guiGetSelectedTab(tabPanel) then
-					triggerServerEvent( "event_use_inv", getRootElement(), playerid, "player", info3, info1, info2 )
+					triggerServerEvent( "event_use_inv", root, playerid, "player", info3, info1, info2 )
 				end
 
 				gui_selection = false
@@ -3197,17 +3328,17 @@ function inv_create ()--создание инв-ря
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
 				if tab_player == info_tab then
-					triggerServerEvent( "event_throw_earth_server", getRootElement(), playerid, "player", info3, info1, info2, getPlayerName ( playerid ) )
+					triggerServerEvent( "event_throw_earth_server", root, playerid, "player", info3, info1, info2, getPlayerName ( playerid ) )
 
 				elseif tab_car == info_tab then
 					local vehicleid = getPlayerVehicle(playerid)
 
 					if vehicleid then
-						triggerServerEvent( "event_throw_earth_server", getRootElement(), playerid, "car", info3, info1, info2, plate )
+						triggerServerEvent( "event_throw_earth_server", root, playerid, "car", info3, info1, info2, plate )
 					end
 
 				elseif tab_house == info_tab then
-					triggerServerEvent( "event_throw_earth_server", getRootElement(), playerid, "house", info3, info1, info2, house )
+					triggerServerEvent( "event_throw_earth_server", root, playerid, "house", info3, info1, info2, house )
 				end
 
 				gui_selection = false
@@ -3219,11 +3350,11 @@ function inv_create ()--создание инв-ря
 			end
 		end
 	end
-	addEventHandler ( "onClientClick", getRootElement(), throw_earth )
+	addEventHandler ( "onClientClick", root, throw_earth )
 
 end
 addEvent( "event_inv_create", true )
-addEventHandler ( "event_inv_create", getRootElement(), inv_create )
+addEventHandler ( "event_inv_create", root, inv_create )
 
 function inv_delet ()--удаление инв-ря
 	if stats_window then
@@ -3261,13 +3392,13 @@ function inv_delet ()--удаление инв-ря
 
 		destroyElement(stats_window)
 
-		triggerServerEvent("event_setVehicleDoorOpenRatio_fun", getRootElement(), playerid, 0)
+		triggerServerEvent("event_setVehicleDoorOpenRatio_fun", root, playerid, 0)
 
 		stats_window = nil
 	end
 end
 addEvent( "event_inv_delet", true )
-addEventHandler ( "event_inv_delet", getRootElement(), inv_delet )
+addEventHandler ( "event_inv_delet", root, inv_delet )
 
 function tune_close ( button, state, absoluteX, absoluteY )--закрытие окна
 local vehicleid = getPlayerVehicle(playerid)
@@ -3289,7 +3420,7 @@ local vehicleid = getPlayerVehicle(playerid)
 	end
 end
 addEvent( "event_gui_delet", true )
-addEventHandler ( "event_gui_delet", getRootElement(), tune_close )
+addEventHandler ( "event_gui_delet", root, tune_close )
 
 function inv_load (value, id3, id1, id2)--загрузка инв-ря
 	if value == "player" then
@@ -3304,7 +3435,7 @@ function inv_load (value, id3, id1, id2)--загрузка инв-ря
 	end
 end
 addEvent( "event_inv_load", true )
-addEventHandler ( "event_inv_load", getRootElement(), inv_load )
+addEventHandler ( "event_inv_load", root, inv_load )
 
 function tab_load (value, text)--загрузка надписей в табе
 	if value == "car" then
@@ -3338,7 +3469,7 @@ function tab_load (value, text)--загрузка надписей в табе
 	end
 end
 addEvent( "event_tab_load", true )
-addEventHandler ( "event_tab_load", getRootElement(), tab_load )
+addEventHandler ( "event_tab_load", root, tab_load )
 
 function change_image (value, id3, filename)--замена картинок в инв-ре
 	if value == "player" then
@@ -3350,9 +3481,9 @@ function change_image (value, id3, filename)--замена картинок в �
 	end
 end
 addEvent( "event_change_image", true )
-addEventHandler ( "event_change_image", getRootElement(), change_image )
+addEventHandler ( "event_change_image", root, change_image )
 
-addEventHandler("onClientMouseLeave", getRootElement(),--покидание картинок в инв-ре
+addEventHandler("onClientMouseLeave", root,--покидание картинок в инв-ре
 function(absoluteX, absoluteY, gui)
 	gui_2dtext = false
 	gui_pos_x = 0

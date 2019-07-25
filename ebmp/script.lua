@@ -32,7 +32,7 @@ function sqlite(text)
 	return result
 end
 addEvent("event_sqlite", true)
-addEventHandler("event_sqlite", getRootElement(), sqlite)
+addEventHandler("event_sqlite", root, sqlite)
 
 function destroyElement_fun( vehicleid )
 	for k,v in pairs(getAttachedElements ( vehicleid )) do
@@ -42,13 +42,13 @@ function destroyElement_fun( vehicleid )
 	destroyElement(vehicleid)
 end
 addEvent( "event_destroyElement", true )
-addEventHandler ( "event_destroyElement", getRootElement(), destroyElement_fun )
+addEventHandler ( "event_destroyElement", root, destroyElement_fun )
 
 addEvent( "event_removePedFromVehicle", true )
-addEventHandler ( "event_removePedFromVehicle", getRootElement(), removePedFromVehicle )
+addEventHandler ( "event_removePedFromVehicle", root, removePedFromVehicle )
 
 addEvent( "event_setElementDimension", true )
-addEventHandler ( "event_setElementDimension", getRootElement(), setElementDimension )
+addEventHandler ( "event_setElementDimension", root, setElementDimension )
 
 local earth = {}--слоты земли
 local earth_true = true--очищать ли землю
@@ -203,7 +203,7 @@ function earth_true(playerid)
 	admin_chat(playerid, "[ADMIN] "..playername.." ["..getElementData(playerid, "player_id")[1].."] использовал function earth_true(playerid) return "..tostring(earth_true).." end")
 end
 addEvent( "event_earth_true", true )
-addEventHandler ( "event_earth_true", getRootElement(), earth_true )
+addEventHandler ( "event_earth_true", root, earth_true )
 
 function player_position( playerid )
 	local x,y,z = getElementPosition(playerid)
@@ -377,7 +377,7 @@ function admin_chat(playerid, text)
 	end
 end
 addEvent("event_admin_chat", true)
-addEventHandler("event_admin_chat", getRootElement(), admin_chat)
+addEventHandler("event_admin_chat", root, admin_chat)
 
 function police_chat(playerid, text)
 	for k,player in pairs(getElementsByType("player")) do
@@ -438,9 +438,10 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 	local objPick = createObject (model, x1, y1, z1)
 
 	attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
+	setElementInterior(objPick, getElementInterior(playerid))
+	setElementDimension(objPick, getElementDimension(playerid))
 
 	setTimer(function ()
-		detachElementFromBone(objPick)
 		destroyElement(objPick)
 	end, time, 1)
 
@@ -1359,12 +1360,6 @@ local station = {
 	{2848.4521484375,1291.462890625,11.390625, 10, "вокзал лв"},
 }
 
-local roulette_pos = {}
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'roulette'" )) do
-	local spl = split(v["pos"], ",")
-	roulette_pos[k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-
 local clear_street_pos = {
 	["Los Santos"] = { [1] = {}, [2] = {} },
 	["San Fierro"] = { [1] = {}, [2] = {} },
@@ -1603,7 +1598,7 @@ function debuginfo ()
 
 				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[3]][2][1], name_mafia[point_guns_zone[3]][2][2], name_mafia[point_guns_zone[3]][2][3], 100 )
 
-				sendMessage(getRootElement(), "[НОВОСТИ] "..name_mafia[point_guns_zone[3]][1].." захватила территорию", green)
+				sendMessage(root, "[НОВОСТИ] "..name_mafia[point_guns_zone[3]][1].." захватила территорию", green)
 
 				sqlite( "UPDATE guns_zone SET mafia = '"..point_guns_zone[3].."' WHERE number = '"..point_guns_zone[2].."'")
 			
@@ -1613,7 +1608,7 @@ function debuginfo ()
 
 				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[5]][2][1], name_mafia[point_guns_zone[5]][2][2], name_mafia[point_guns_zone[5]][2][3], 100 )
 
-				sendMessage(getRootElement(), "[НОВОСТИ] "..name_mafia[point_guns_zone[5]][1].." удержала территорию", green)
+				sendMessage(root, "[НОВОСТИ] "..name_mafia[point_guns_zone[5]][1].." удержала территорию", green)
 			end
 
 			setRadarAreaFlashing ( guns_zone[point_guns_zone[2]][1], false )
@@ -3226,7 +3221,7 @@ function onChat(message, messageType)
 		
 		if (count == 0) then
 		
-			sendMessage( getRootElement(), say, gray )
+			sendMessage( root, say, gray )
 
 			print("[CHAT] "..say)
 		
@@ -3240,9 +3235,9 @@ function onChat(message, messageType)
 		me_chat_player(playerid, playername.." "..message)
 	end
 end
-addEventHandler("onPlayerChat", getRootElement(), onChat)
+addEventHandler("onPlayerChat", root, onChat)
 
-addEventHandler("onPlayerCommand",getRootElement(),
+addEventHandler("onPlayerCommand",root,
 function(command)
 	local playerid = source
 	local playername = getPlayerName(playerid)
@@ -3795,7 +3790,7 @@ function setVehicleDoorOpenRatio_fun(playerid, value)--открывает баг
 	end
 end
 addEvent("event_setVehicleDoorOpenRatio_fun", true)
-addEventHandler("event_setVehicleDoorOpenRatio_fun", getRootElement(), setVehicleDoorOpenRatio_fun)
+addEventHandler("event_setVehicleDoorOpenRatio_fun", root, setVehicleDoorOpenRatio_fun)
 --------------------------------------------------------------------------------------------------------
 
 ---------------------------------------дом-------------------------------------------------------------
@@ -3923,7 +3918,7 @@ function pickupUse( playerid )
 		end
 	end
 end
-addEventHandler( "onPickupUse", getRootElement(), pickupUse )
+addEventHandler( "onPickupUse", root, pickupUse )
 
 function pickedUpWeaponCheck( playerid )
 	local pickup = source
@@ -3935,7 +3930,7 @@ function pickedUpWeaponCheck( playerid )
 		end
 	end
 end
-addEventHandler( "onPickupHit", getRootElement(), pickedUpWeaponCheck )
+addEventHandler( "onPickupHit", root, pickedUpWeaponCheck )
 
 function sqlite_load(playerid, value)
 	if value == "cow_farms_table1" then
@@ -3990,7 +3985,7 @@ function sqlite_load(playerid, value)
 	end
 end
 addEvent("event_sqlite_load", true)
-addEventHandler("event_sqlite_load", getRootElement(), sqlite_load)
+addEventHandler("event_sqlite_load", root, sqlite_load)
 
 function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--продажа покупка вещей
 	local playername = getPlayerName ( playerid )
@@ -4094,7 +4089,7 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 	end
 end
 addEvent( "event_auction_buy_sell", true )
-addEventHandler ( "event_auction_buy_sell", getRootElement(), auction_buy_sell )
+addEventHandler ( "event_auction_buy_sell", root, auction_buy_sell )
 ---------------------------------------------------------------------------------------------------------
 
 
@@ -4153,7 +4148,7 @@ function addVehicleUpgrade_fun( vehicleid, value, playerid, number )
 	end
 end
 addEvent( "event_addVehicleUpgrade", true )
-addEventHandler ( "event_addVehicleUpgrade", getRootElement(), addVehicleUpgrade_fun )
+addEventHandler ( "event_addVehicleUpgrade", root, addVehicleUpgrade_fun )
 
 function removeVehicleUpgrade_fun( vehicleid, playerid, number )
 
@@ -4202,7 +4197,7 @@ function removeVehicleUpgrade_fun( vehicleid, playerid, number )
 	end
 end
 addEvent( "event_removeVehicleUpgrade", true )
-addEventHandler ( "event_removeVehicleUpgrade", getRootElement(), removeVehicleUpgrade_fun )
+addEventHandler ( "event_removeVehicleUpgrade", root, removeVehicleUpgrade_fun )
 ------------------------------------------------------------------------------------------------------------
 
 
@@ -4410,7 +4405,7 @@ function buy_subject_fun( playerid, text, number, value )
 	end	
 end
 addEvent( "event_buy_subject_fun", true )
-addEventHandler ( "event_buy_subject_fun", getRootElement(), buy_subject_fun )
+addEventHandler ( "event_buy_subject_fun", root, buy_subject_fun )
 ------------------------------------------------------------------------------------------------------------
 
 
@@ -4458,7 +4453,7 @@ function till_fun( playerid, number, money, value )
 	end
 end
 addEvent( "event_till_fun", true )
-addEventHandler ( "event_till_fun", getRootElement(), till_fun )
+addEventHandler ( "event_till_fun", root, till_fun )
 
 
 ----------------------------------крафт предметов -----------------------------------------------------------
@@ -4512,7 +4507,7 @@ function craft_fun( playerid, text )
 	sendMessage(playerid, "[ERROR] У вас нет ключа от дома", red)
 end
 addEvent( "event_craft_fun", true )
-addEventHandler ( "event_craft_fun", getRootElement(), craft_fun )
+addEventHandler ( "event_craft_fun", root, craft_fun )
 -------------------------------------------------------------------------------------------------------------
 
 
@@ -4706,7 +4701,7 @@ function cow_farms(playerid, value, val1, val2)
 	end
 end
 addEvent( "event_cow_farms", true )
-addEventHandler ( "event_cow_farms", getRootElement(), cow_farms )
+addEventHandler ( "event_cow_farms", root, cow_farms )
 -------------------------------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
@@ -4900,9 +4895,9 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 	end
 end
-addEventHandler ( "onResourceStart", getRootElement(), displayLoadedRes )
+addEventHandler ( "onResourceStart", root, displayLoadedRes )
 
-addEventHandler("onPlayerJoin", getRootElement(),--конект игрока на сервер
+addEventHandler("onPlayerJoin", root,--конект игрока на сервер
 function()
 	local playerid = source
 	local playername = getPlayerName ( playerid )
@@ -5053,7 +5048,7 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 		
 	end
 end
-addEventHandler ( "onPlayerQuit", getRootElement(), quitPlayer )
+addEventHandler ( "onPlayerQuit", root, quitPlayer )
 
 function player_Spawn (playerid)--спавн игрока
 	if isElement ( playerid ) then
@@ -5070,7 +5065,7 @@ function player_Spawn (playerid)--спавн игрока
 	end
 end
 
-addEventHandler( "onPlayerWasted", getRootElement(),--смерть игрока
+addEventHandler( "onPlayerWasted", root,--смерть игрока
 function(ammo, attacker, weapon, bodypart)
 	local playerid = source
 	local playername = getPlayerName ( playerid )
@@ -5158,9 +5153,9 @@ function(ammo, attacker, weapon, bodypart)
 	setTimer( player_Spawn, 5000, 1, playerid )
 
 	--[[if not playername_a then
-		sendMessage(getRootElement(), "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green )
+		sendMessage(root, "[НОВОСТИ] "..playername.." умер Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green )
 	else
-		sendMessage(getRootElement(), "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green )
+		sendMessage(root, "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green )
 	end]]
 
 	print("[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
@@ -5203,7 +5198,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		me_chat(playerid, playername_attacker.." оглушил(а) "..playername)
 	end
 end
-addEventHandler ( "onPlayerDamage", getRootElement(), playerDamage_text )
+addEventHandler ( "onPlayerDamage", root, playerDamage_text )
 
 function nickChangeHandler(oldNick, newNick)
 	local playerid = source
@@ -5212,12 +5207,12 @@ function nickChangeHandler(oldNick, newNick)
 	--kickPlayer( playerid, "kick for Change Nick" )
 	cancelEvent()
 end
-addEventHandler("onPlayerChangeNick", getRootElement(), nickChangeHandler)
+addEventHandler("onPlayerChangeNick", root, nickChangeHandler)
 
 function onStealthKill(targetPlayer)
 	cancelEvent() -- Aborts the stealth-kill.
 end
-addEventHandler("onPlayerStealthKill", getRootElement(), onStealthKill) -- Adds a handler for the stealth kill event.
+addEventHandler("onPlayerStealthKill", root, onStealthKill) -- Adds a handler for the stealth kill event.
 
 ----------------------------------Регистрация-Авторизация--------------------------------------------
 function reg_or_login(playerid)
@@ -5357,7 +5352,7 @@ function explode_car()
 		end
 	end
 end
-addEventHandler("onVehicleExplode", getRootElement(), explode_car)
+addEventHandler("onVehicleExplode", root, explode_car)
 
 function freez_car()--заморозка авто
 	for k,vehicleid in pairs(getElementsByType("vehicle")) do
@@ -5414,7 +5409,7 @@ function detachTrailer(vehicleid)--прицепка прицепа
 		sqlite( "UPDATE car_db SET evacuate = '1' WHERE number = '"..plate.."'")
 	end
 end
-addEventHandler("onTrailerAttach", getRootElement(), detachTrailer)
+addEventHandler("onTrailerAttach", root, detachTrailer)
 
 function reattachTrailer(vehicleid)--отцепка прицепа
 	local trailer = source
@@ -5432,7 +5427,7 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 		sqlite( "UPDATE car_db SET evacuate = '0' WHERE number = '"..plate.."'")
 	end
 end
-addEventHandler("onTrailerDetach", getRootElement(), reattachTrailer)
+addEventHandler("onTrailerDetach", root, reattachTrailer)
 
 function car_spawn(number)
 	local plate = number
@@ -5490,7 +5485,7 @@ function car_spawn(number)
 	end
 end
 addEvent("event_car_spawn", true)
-addEventHandler("event_car_spawn", getRootElement(), car_spawn)
+addEventHandler("event_car_spawn", root, car_spawn)
 
 function spawn_carparking( playerid, plate )
 	local playername = getPlayerName(playerid)
@@ -5521,7 +5516,7 @@ function spawn_carparking( playerid, plate )
 	end
 end
 addEvent( "event_spawn_carparking", true )
-addEventHandler ( "event_spawn_carparking", getRootElement(), spawn_carparking )
+addEventHandler ( "event_spawn_carparking", root, spawn_carparking )
 
 --addCommandHandler ( "buycar",--покупка авто
 function buycar ( playerid, id )
@@ -5666,7 +5661,7 @@ function buycar ( playerid, id )
 	end
 end
 addEvent( "event_buycar", true )
-addEventHandler ( "event_buycar", getRootElement(), buycar )
+addEventHandler ( "event_buycar", root, buycar )
 
 --------------------------------------вход и выход в авто--------------------------------
 function enter_car ( vehicleid, seat, jacked )--евент входа в авто
@@ -5709,7 +5704,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 		end
 	end
 end
-addEventHandler ( "onPlayerVehicleEnter", getRootElement(), enter_car )
+addEventHandler ( "onPlayerVehicleEnter", root, enter_car )
 
 function exit_car_fun( playerid )
 	local playername = getPlayerName ( playerid )
@@ -5754,7 +5749,7 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 		end
 	end
 end
-addEventHandler ( "onPlayerVehicleExit", getRootElement(), exit_car )
+addEventHandler ( "onPlayerVehicleExit", root, exit_car )
 
 function h_down (playerid, key, keyState)--вкл выкл сирены
 local playername = getPlayerName ( playerid )
@@ -5908,7 +5903,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	--sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow)
 end
 addEvent( "event_throw_earth_server", true )
-addEventHandler ( "event_throw_earth_server", getRootElement(), throw_earth_server )
+addEventHandler ( "event_throw_earth_server", root, throw_earth_server )
 
 function e_down (playerid, key, keyState)--подбор предметов с земли
 	local x,y,z = getElementPosition(playerid)
@@ -6480,7 +6475,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 	end
 end
 addEvent( "event_inv_server_load", true )
-addEventHandler ( "event_inv_server_load", getRootElement(), inv_server_load )
+addEventHandler ( "event_inv_server_load", root, inv_server_load )
 
 function use_inv (playerid, value, id3, id_1, id_2 )--использование предметов
 	local playername = getPlayerName ( playerid )
@@ -7820,7 +7815,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 	end
 end
 addEvent( "event_use_inv", true )
-addEventHandler ( "event_use_inv", getRootElement(), use_inv )
+addEventHandler ( "event_use_inv", root, use_inv )
 
 -------------------------------команды игроков----------------------------------------------------------
 addCommandHandler ( "sms",--смс игроку
@@ -7851,37 +7846,6 @@ function (playerid, cmd, id, ...)
 	end
 end)
 
-
-local Red = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
-local Black = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
-local to1 = {1,4,7,10,13,16,19,22,25,28,31,34}
-local to2 = {2,5,8,11,14,17,20,23,26,29,32,35}
-local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
-
-function roulette(playerid, randomize)
-	for k,v in pairs(Red) do
-		if randomize == v then
-			sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow)
-			sendMessage(playerid, "Выпало "..randomize.." красное", yellow)
-			return
-		end
-	end
-
-	for k,v in pairs(Black) do
-		if randomize == v then
-			sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow)
-			sendMessage(playerid, "Выпало "..randomize.." черное", yellow)
-			return
-		end
-	end
-
-	if randomize == 0 then
-		sendMessage(playerid, "====[ РУЛЕТКА ]====", yellow)
-		sendMessage(playerid, "Выпало ZERO", yellow)
-		return
-	end
-end
-
 function win_roulette( playerid, cash, ratio )
 	local playername = getPlayerName ( playerid )
 	local money = cash*ratio
@@ -7891,30 +7855,14 @@ function win_roulette( playerid, cash, ratio )
 	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 end
 
-addCommandHandler ( "roulette",--играть в рулетку
-function (playerid, cmd, id, cash)
+function roulette_fun (playerid, id, cash, randomize)--играть в рулетку
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
 	local id = tostring(id)
 	local cash = tonumber(cash)
-	local randomize = random(0,36)
-	local roulette_game = {"красное","черное","четное","нечетное","1-18","19-36","1-12","2-12","3-12","3-1","3-2","3-3"}
+	local randomize = tonumber(randomize)
 
 	if logged[playername] == 0 then
-		return
-	end
-
-	if not id or not cash then
-		local text = ""
-		for k,v in pairs(roulette_game) do
-			text = text..v..", "
-		end
-
-		sendMessage(playerid, "[ERROR] /"..cmd.." [режим игры ("..text..")] [сумма]", red)
-		return
-	end
-
-	if cash < 1 then
 		return
 	end
 
@@ -7923,115 +7871,95 @@ function (playerid, cmd, id, cash)
 		return
 	end
 
-	if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
-		for _,j in pairs(roulette_pos) do
-			if isPointInCircle3D(x,y,z, j[1],j[2],j[3], 5) then
-				for k,v in pairs(roulette_game) do
-					if v == id then
-						roulette(playerid, randomize)
+	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-						if id == "красное" then
-							for k,v in pairs(Red) do
-								if randomize == v then
-									win_roulette(playerid, cash, 2)
-									return
-								end
-							end
-
-						elseif id == "черное" then
-							for k,v in pairs(Black) do
-								if randomize == v then
-									win_roulette(playerid, cash, 2)
-									return
-								end
-							end
-
-						elseif id == "четное" and randomize%2 == 0 then
-							win_roulette(playerid, cash, 2)
-							return
-
-						elseif id == "нечетное" and randomize%2 == 1 then
-							win_roulette(playerid, cash, 2)
-							return
-
-						elseif id == "1-18" and randomize >= 1 and randomize <= 18 then
-							win_roulette(playerid, cash, 2)
-							return
-
-						elseif id == "19-36" and randomize >= 19 and randomize <= 36 then
-							win_roulette(playerid, cash, 2)
-							return
-
-						elseif id == "1-12" and randomize >= 1 and randomize <= 12 then
-							win_roulette(playerid, cash, 3)
-							return
-
-						elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
-							win_roulette(playerid, cash, 3)
-							return
-
-						elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
-							win_roulette(playerid, cash, 3)
-							return
-
-						elseif id == "3-1" then
-							for k,v in pairs(to1) do
-								if randomize == v then
-									win_roulette(playerid, cash, 3)
-									return
-								end
-							end
-
-						elseif id == "3-2" then
-							for k,v in pairs(to2) do
-								if randomize == v then
-									win_roulette(playerid, cash, 3)
-									return
-								end
-							end
-
-						elseif id == "3-3" then
-							for k,v in pairs(to3) do
-								if randomize == v then
-									win_roulette(playerid, cash, 3)
-									return
-								end
-							end
-						end
-						return
-					end
-				end
-
+	if id == "RED" then
+		for k,v in pairs(Red) do
+			if randomize == v then
+				win_roulette(playerid, cash, 2)
 				return
 			end
 		end
 
-		sendMessage(playerid, "[ERROR] Вы не у стола", red)
+	elseif id == "BLACK" then
+		for k,v in pairs(Black) do
+			if randomize == v then
+				win_roulette(playerid, cash, 2)
+				return
+			end
+		end
+
+	elseif id == "EVEN" and randomize%2 == 0 then
+		win_roulette(playerid, cash, 2)
+		return
+
+	elseif id == "ODD" and randomize%2 == 1 then
+		win_roulette(playerid, cash, 2)
+		return
+
+	elseif id == "1-18" and randomize >= 1 and randomize <= 18 then
+		win_roulette(playerid, cash, 2)
+		return
+
+	elseif id == "19-36" and randomize >= 19 and randomize <= 36 then
+		win_roulette(playerid, cash, 2)
+		return
+
+	elseif id == "1-12" and randomize >= 1 and randomize <= 12 then
+		win_roulette(playerid, cash, 3)
+		return
+
+	elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
+		win_roulette(playerid, cash, 3)
+		return
+
+	elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
+		win_roulette(playerid, cash, 3)
+		return
+
+	elseif id == "3-1" then
+		for k,v in pairs(to1) do
+			if randomize == v then
+				win_roulette(playerid, cash, 3)
+				return
+			end
+		end
+
+	elseif id == "3-2" then
+		for k,v in pairs(to2) do
+			if randomize == v then
+				win_roulette(playerid, cash, 3)
+				return
+			end
+		end
+
+	elseif id == "3-3" then
+		for k,v in pairs(to3) do
+			if randomize == v then
+				win_roulette(playerid, cash, 3)
+				return
+			end
+		end
+		
 	else
-		sendMessage(playerid, "[ERROR] Вы не в казино", red)
+		id = tonumber(id)
+
+		if id and id >= 0 and id <= 36 then
+			if randomize == id then
+				win_roulette(playerid, cash, 36)
+				return
+			end
+		end
 	end
-end)
+end
+addEvent("event_roulette_fun", true)
+addEventHandler("event_roulette_fun", root, roulette_fun)
 
 function slots (playerid, cash, randomize1, randomize2, randomize3)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
-	--[[local cash = tonumber(cash)
-	local randomize1 = random(1,6)
-	local randomize2 = random(1,6)
-	local randomize3 = random(1,6)]]
 
 	if logged[playername] == 0 then
-		return
-	end
-
-	if not cash then
-		sendMessage(playerid, "[ERROR] /"..cmd.." [сумма]", red)
-		return
-	end
-
-	if cash < 1 then
 		return
 	end
 
@@ -8040,24 +7968,14 @@ function slots (playerid, cash, randomize1, randomize2, randomize3)
 		return
 	end
 
-	--if interior_job[14][1] == getElementInterior(playerid) and interior_job[14][10] == getElementDimension(playerid) or interior_job[13][1] == getElementInterior(playerid) and interior_job[13][10] == getElementDimension(playerid) then
+	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-		--sendMessage(playerid, "====[ ОДНОРУКИЙ БАНДИТ ]====", yellow)
-		--sendMessage(playerid, "Выпало "..randomize1.." - "..randomize2.." - "..randomize3, yellow)
-
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
-
-		if(randomize1 == randomize2 and randomize1 == randomize3) then
-			win_roulette( playerid, cash, 25 )
-		end
-
-	--[[else
-		sendMessage(playerid, "[ERROR] Вы не в казино", red)
-	end]]
+	if(randomize1 == randomize2 and randomize1 == randomize3) then
+		win_roulette( playerid, cash, 25 )
+	end
 end
---addCommandHandler ( "slots", slots)
 addEvent("event_slots", true)
-addEventHandler("event_slots", getRootElement(), slots)
+addEventHandler("event_slots", root, slots)
 
 local poker_coef = {
 	[1] = {0,1,2,3,4,6,9,25,50,250},
@@ -8261,7 +8179,7 @@ function poker_win( playerid, value, cash, coef, token )
 	--print(card_i,card_s)
 end
 addEvent("event_poker_win", true)
-addEventHandler("event_poker_win", getRootElement(), poker_win)
+addEventHandler("event_poker_win", root, poker_win)
 
 local blackjack_card = {"2:2", "3:3", "4:4", "5:5", "6:6", "7:7", "8:8", "9:9", "10:10", "В:10", "Д:10", "К:10", "Т:11"}
 function blackjack (playerid, cmd, value, ...)
@@ -8452,7 +8370,7 @@ function blackjack (playerid, cmd, value, ...)
 end
 addCommandHandler ( "blackjack", blackjack)
 addEvent("event_blackjack", true)
-addEventHandler("event_blackjack", getRootElement(), blackjack)
+addEventHandler("event_blackjack", root, blackjack)
 
 function accept (playerid, cmd, value)
 	local playername = getPlayerName ( playerid )
@@ -8492,7 +8410,7 @@ function accept (playerid, cmd, value)
 end
 addCommandHandler ( "accept", accept)
 addEvent("event_accept", true)
-addEventHandler("event_accept", getRootElement(), accept)
+addEventHandler("event_accept", root, accept)
 
 addCommandHandler( "setchanel",--//сменить канал в рации
 function( playerid, cmd, id )
@@ -9212,7 +9130,7 @@ function (playerid)
 
 			setRadarAreaFlashing ( v[1], true )
 
-			sendMessage(getRootElement(), "[НОВОСТИ] "..playername.." из "..name_mafia[search_inv_player_2_parameter(playerid, 85)][1].." захватывает территорию - "..name_mafia[v[2]][1], green)
+			sendMessage(root, "[НОВОСТИ] "..playername.." из "..name_mafia[search_inv_player_2_parameter(playerid, 85)][1].." захватывает территорию - "..name_mafia[v[2]][1], green)
 			return
 		end
 	end
@@ -9391,7 +9309,7 @@ function ( playerid, cmd, ... )
 		return
 	end
 
-	sendMessage(getRootElement(), "[ADMIN] "..playername..": "..text, lyme)
+	sendMessage(root, "[ADMIN] "..playername..": "..text, lyme)
 end)
 
 addCommandHandler ( "stime",
@@ -9510,7 +9428,7 @@ function prisonplayer (playerid, cmd, id, time, ...)--(посадить игро
 	local id,player = getPlayerId(id)
 		
 	if id then
-		sendMessage( getRootElement(), "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme)
+		sendMessage( root, "Администратор "..playername.." посадил в тюрьму "..id.." на "..time.." мин. Причина: "..reason, lyme)
 
 		arrest[id] = 2
 		inv_server_load (playerid, "player", 24, 92, time, playername)
@@ -9520,7 +9438,7 @@ function prisonplayer (playerid, cmd, id, time, ...)--(посадить игро
 end
 addCommandHandler ( "prisonplayer", prisonplayer)
 addEvent("event_prisonplayer", true)
-addEventHandler("event_prisonplayer", getRootElement(), prisonplayer)
+addEventHandler("event_prisonplayer", root, prisonplayer)
 
 --[[addCommandHandler ( "banplayer",
 function ( playerid, cmd, id, ... )
@@ -9551,7 +9469,7 @@ function ( playerid, cmd, id, ... )
 
 		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
 
-		sendMessage( getRootElement(), "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme)
+		sendMessage( root, "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme)
 
 		local id,player = getPlayerId ( id )
 		if player then
@@ -9586,7 +9504,7 @@ function ( playerid, cmd, id )
 
 		sqlite( "UPDATE account SET ban = '0', reason = '0' WHERE name = '"..id.."'")
 
-		sendMessage( getRootElement(), "Администратор "..playername.." разбанил "..id, lyme)
+		sendMessage( root, "Администратор "..playername.." разбанил "..id, lyme)
 	else
 		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
 	end
@@ -9622,7 +9540,7 @@ function ( playerid, cmd, id, ... )
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		local result = sqlite( "INSERT INTO banserial_list (name, serial, reason) VALUES ('"..id.."', '"..result[1]["reg_serial"].."', '"..reason.."')" )
 
-		sendMessage( getRootElement(), "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme)
+		sendMessage( root, "Администратор "..playername.." забанил "..id.." по серийнику. Причина: "..reason, lyme)
 
 		local id,player = getPlayerId ( id )
 		if player then
@@ -9753,7 +9671,7 @@ function input_Console ( text )
 			for k,v in pairs(getElementsByType("player")) do
 				local x,y,z = getElementPosition(v)
 				local result = sqlite( "INSERT INTO position (description, pos) VALUES ('job_clear_street6', '"..x..","..y..","..z.."')" )
-				sendMessage(getRootElement(), "save pos "..text, lyme)
+				sendMessage(root, "save pos "..text, lyme)
 			end
 		end, 5000, 0)
 
@@ -9774,7 +9692,7 @@ function input_Console ( text )
 		restartAllResources()
 	end
 end
-addEventHandler ( "onConsole", getRootElement(), input_Console )
+addEventHandler ( "onConsole", root, input_Console )
 
 local objPick = 0
 function o_pos( thePlayer )
@@ -9800,7 +9718,7 @@ function (playerid, cmd, id1, id2, id3)
 end)
 
 addEvent("event_server_attach", true)
-addEventHandler ( "event_server_attach", getRootElement(),
+addEventHandler ( "event_server_attach", root,
 function ( playerid, state )
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
@@ -9830,7 +9748,7 @@ function ( playerid, state )
 end)
 
 addEvent("event_server_car_door", true)
-addEventHandler("event_server_car_door", getRootElement(),
+addEventHandler("event_server_car_door", root,
 function ( playerid, state )
 	local x,y,z = getElementPosition(playerid)
 	local playername = getPlayerName ( playerid )
@@ -9853,7 +9771,7 @@ function ( playerid, state )
 end)
 
 addEvent("event_server_car_light", true)
-addEventHandler("event_server_car_light", getRootElement(),
+addEventHandler("event_server_car_light", root,
 function ( playerid, state )
 	local x,y,z = getElementPosition(playerid)
 	local playername = getPlayerName ( playerid )
@@ -9874,7 +9792,7 @@ function ( playerid, state )
 end)
 
 addEvent("event_server_car_engine", true)
-addEventHandler ( "event_server_car_engine", getRootElement(),
+addEventHandler ( "event_server_car_engine", root,
 function ( playerid, state )
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
@@ -9904,7 +9822,7 @@ function ( playerid, state )
 end)
 
 addEvent("event_server_anim_player", true)
-addEventHandler("event_server_anim_player", getRootElement(),
+addEventHandler("event_server_anim_player", root,
 function ( playerid, state )
 	local x,y,z = getElementPosition(playerid)
 	local playername = getPlayerName ( playerid )
