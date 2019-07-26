@@ -7861,6 +7861,11 @@ function roulette_fun (playerid, id, cash, randomize)--играть в руле�
 	local id = tostring(id)
 	local cash = tonumber(cash)
 	local randomize = tonumber(randomize)
+	local Red = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
+	local Black = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
+	local to1 = {1,4,7,10,13,16,19,22,25,28,31,34}
+	local to2 = {2,5,8,11,14,17,20,23,26,29,32,35}
+	local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
 
 	if logged[playername] == 0 then
 		return
@@ -8088,7 +8093,7 @@ function poker_win( playerid, value, cash, coef, token )
 		return
 	end
 
-	if card_i == v and (card_s == "ccccc" or card_s == "ddddd" or card_s == "hhhhh" or card_s == "sssss") then
+	if (card_s == "ccccc" or card_s == "ddddd" or card_s == "hhhhh" or card_s == "sssss") then
 		sendMessage(playerid, poker_name[6], yellow)
 		win_roulette( playerid, token, poker_coef[coef][6] )
 		--print("win 6")
@@ -8303,7 +8308,7 @@ function blackjack (playerid, cmd, value, ...)
 		sendMessage(playerid, "Вы взяли "..split(spl, ":")[1]..", у вас "..point.." очков", yellow)
 
 		if point >= 21 then
-			blackjack(playerid, "/blackjack", "open")
+			blackjack(playerid, "", "open")
 		end
 
 	elseif value == "open" then
