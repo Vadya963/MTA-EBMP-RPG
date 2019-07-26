@@ -7914,11 +7914,11 @@ function roulette_fun (playerid, id, cash, randomize)--играть в руле�
 		win_roulette(playerid, cash, 3)
 		return
 
-	elseif id == "2-12" and randomize >= 13 and randomize <= 24 then
+	elseif id == "13-24" and randomize >= 13 and randomize <= 24 then
 		win_roulette(playerid, cash, 3)
 		return
 
-	elseif id == "3-12" and randomize >= 25 and randomize <= 36 then
+	elseif id == "25-36" and randomize >= 25 and randomize <= 36 then
 		win_roulette(playerid, cash, 3)
 		return
 

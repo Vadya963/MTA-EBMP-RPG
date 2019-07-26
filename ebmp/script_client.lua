@@ -1,6 +1,5 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
-local m2font_r = guiCreateFont( "gui/m2font.ttf", 150 )
 local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
@@ -9,6 +8,7 @@ local car_spawn_value = 0
 local hud = true
 local playerid = 0
 local update_db_rang = 1
+local roulette_number = {false, {0,0,0}, {}}
 
 addEventHandler( "onClientResourceStart", getRootElement( ),
 function ( startedRes )
@@ -795,6 +795,11 @@ function createText ()
 	end
 
 
+	if roulette_number[1] then--рисование цифр рулетки
+		dxDrawText ( tostring(roulette_number[1]), roulette_number[3][1]+roulette_number[3][3], roulette_number[3][2]+roulette_number[3][4]-51, 0.0, 0.0, tocolor ( roulette_number[2][1], roulette_number[2][2], roulette_number[2][3], 255 ), 9, "pricedown", "left", "top", false, false, true )
+	end
+
+
 	if hud then
 		local vehicle = getPlayerVehicle ( playerid )
 		if vehicle then--отображение скорости авто
@@ -1503,6 +1508,8 @@ function tablet_fun()--создание планшета
 	local height_fon_pos = height_fon/12.41--29
 
 	local browser = nil
+
+	roulette_number[3] = {pos_x,pos_Y, width_fon_pos,height_fon_pos}
 
 	gui_window = guiCreateStaticImage( pos_x, pos_Y, width, height, "comp/tablet-display.png", false )
 	local fon = guiCreateStaticImage( width_fon_pos, height_fon_pos, width_fon, height_fon, "comp/low_fon.png", false, gui_window )
@@ -2840,8 +2847,6 @@ function tablet_fun()--создание планшета
 		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
 		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "укажите ставку", false, low_fon )
-		local roulette_number = guiCreateLabel ( 0, 0, 275, height_fon-16, "", false, low_fon )
-		guiSetFont( roulette_number, m2font_r )
 
 		local start, count, time_slot, id = false, 0, 100, ""
 		local roulette_game = {}
@@ -2867,8 +2872,8 @@ function tablet_fun()--создание планшета
 		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 60, 50, 25, "3-1", false, low_fon ))
 
 		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 85, 25*4, 25, "1-12", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 85, 25*4, 25, "2-12", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 85, 25*4, 25, "3-12", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 85, 25*4, 25, "13-24", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 85, 25*4, 25, "25-36", false, low_fon ))
 
 		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 110, 25*2, 25, "1-18", false, low_fon ))
 		table.insert(roulette_game, guiCreateButton ( 250+(3*25), 110, 25*2, 25, "EVEN", false, low_fon ))
@@ -2881,6 +2886,8 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
+
+			roulette_number[1] = false
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
@@ -2933,22 +2940,22 @@ function tablet_fun()--создание планшета
 				count = count+1
 
 				local randomize = random(0,36)
-				guiSetText(roulette_number, tostring(randomize))
+				roulette_number[1] = randomize
 
 				for k,v in pairs(Red) do
 					if v == randomize then
-						guiLabelSetColor(roulette_number, 255,0,0)
+						roulette_number[2] = {255,0,0}
 					end
 				end
 
 				for k,v in pairs(Black) do
 					if v == randomize then
-						guiLabelSetColor(roulette_number, 0,0,0)
+						roulette_number[2] = {0,0,0}
 					end
 				end
 
 				if randomize == 0 then
-					guiLabelSetColor(roulette_number, 255,255,255)
+					roulette_number[2] = {255,255,255}
 				end
 
 				if count == time_slot then
@@ -3408,6 +3415,8 @@ local vehicleid = getPlayerVehicle(playerid)
 
 		gui_window = nil
 		showCursor( false )
+
+		roulette_number[1] = false
 
 		if tune_business then
 			if int_upgrades ~= 0 then
