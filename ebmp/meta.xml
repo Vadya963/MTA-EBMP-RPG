@@ -3,17 +3,17 @@
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 
-	<include resource="maximap" />
+	<!--<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
-	<include resource="vozle_merii_app" />
-	<include resource="map_gta" />
+	<include resource="vozle_merii_app" />-->
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
 	<script src="script_client.lua" type="client" cache="false"/>
 	<script src="menu_m2.lua" type="client" cache="false"/>
 	<script src="object_eb.lua" type="client" cache="false"/>
+	<include resource="map_gta" />
 
 	<file src="parachute/body_hit_sound.mp3"/>
 	<file src="upgrade/upgrades_car.txt"/>
@@ -128,6 +128,56 @@
 	<file src="comp/card/cd13h.png"/>
 	<file src="comp/card/cd13s.png"/>
 	<file src="comp/roulette.png"/>
+	<file src="comp/it/fon_it.png"/>
+	<file src="comp/it/hrs1.png"/>
+	<file src="comp/it/hrs2.png"/>
+	<file src="comp/it/hrs3.png"/>
+	<file src="comp/it/hrs4.png"/>
+	<file src="comp/it/hrs5.png"/>
+	<file src="comp/it/hrs6.png"/>
+	<file src="comp/it/hrs7.png"/>
+	<file src="comp/it/hrs8.png"/>
+	<file src="comp/it/bride1.png"/>
+	<file src="comp/it/bride2.png"/>
+	<file src="comp/it/bride3.png"/>
+	<file src="comp/it/bride4.png"/>
+	<file src="comp/it/bride5.png"/>
+	<file src="comp/it/bride6.png"/>
+	<file src="comp/it/bride7.png"/>
+	<file src="comp/it/bride8.png"/>
+	<file src="comp/it/gride1.png"/>
+	<file src="comp/it/gride2.png"/>
+	<file src="comp/it/gride3.png"/>
+	<file src="comp/it/gride4.png"/>
+	<file src="comp/it/gride5.png"/>
+	<file src="comp/it/gride6.png"/>
+	<file src="comp/it/gride7.png"/>
+	<file src="comp/it/gride8.png"/>
+	<file src="comp/it/pride1.png"/>
+	<file src="comp/it/pride2.png"/>
+	<file src="comp/it/pride3.png"/>
+	<file src="comp/it/pride4.png"/>
+	<file src="comp/it/pride5.png"/>
+	<file src="comp/it/pride6.png"/>
+	<file src="comp/it/pride7.png"/>
+	<file src="comp/it/pride8.png"/>
+	<file src="comp/it/rride1.png"/>
+	<file src="comp/it/rride2.png"/>
+	<file src="comp/it/rride3.png"/>
+	<file src="comp/it/rride4.png"/>
+	<file src="comp/it/rride5.png"/>
+	<file src="comp/it/rride6.png"/>
+	<file src="comp/it/rride7.png"/>
+	<file src="comp/it/rride8.png"/>
+	<file src="comp/it/yride1.png"/>
+	<file src="comp/it/yride2.png"/>
+	<file src="comp/it/yride3.png"/>
+	<file src="comp/it/yride4.png"/>
+	<file src="comp/it/yride5.png"/>
+	<file src="comp/it/yride6.png"/>
+	<file src="comp/it/yride7.png"/>
+	<file src="comp/it/yride8.png"/>
+	<file src="comp/it.png"/>
 	
 	<file src="image_inventory/0.png"/>
 	<file src="image_inventory/1.png"/>

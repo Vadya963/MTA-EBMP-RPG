@@ -497,7 +497,9 @@ end
 function m2gui_radiobutton( x,y, width, height, text, bool_r, parent )
 	local text = guiCreateRadioButton ( x, y, width, height, text, bool_r, parent )
 	guiSetFont( text, m2font )
-	return text
+	local x1,y1 = guiGetSize(text, false)
+	local x2,y2 = guiGetPosition(text, false)
+	return text,x1+x+5,y1+y2
 end
 
 function m2gui_window( x,y, width, height, text, bool_r, movable, sizable )
@@ -1524,6 +1526,7 @@ function tablet_fun()--создание планшета
 	local slot = guiCreateStaticImage( 80, 80, 63, 60, "comp/slot.png", false, fon )
 	local poker = guiCreateStaticImage( 150, 80, 60, 60, "comp/poker.png", false, fon )
 	local roulette = guiCreateStaticImage( 220, 80, 70, 60, "comp/roulette.png", false, fon )
+	local horse = guiCreateStaticImage( 300, 80, 60, 60, "comp/it.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -2993,6 +2996,140 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", roulette, roulette_fun, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--скачки
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local fon_it = guiCreateStaticImage( 0, 0, width_fon, height_fon-25, "comp/it/fon_it.png", false, low_fon )
+		local horse_t = {
+			[1] = {0,0,random(1,2),"b"},
+			[2] = {0,0,random(3,4),"r"},
+			[3] = {0,0,random(5,6),"y"},
+			[4] = {0,0,random(7,8),"p"},
+			[5] = {0,0,random(9,10),"g"},
+		}
+
+		horse_t[1][1] = guiCreateStaticImage( 0, 89, 128, 128, "comp/it/hrs1.png", false, fon_it )
+		horse_t[1][2] = guiCreateStaticImage( 41, 9, 64, 32, "comp/it/bride1.png", false, horse_t[1][1] )
+		
+		horse_t[2][1] = guiCreateStaticImage( 0, 89+30*1, 128, 128, "comp/it/hrs1.png", false, fon_it )
+		horse_t[2][2] = guiCreateStaticImage( 41, 9, 64, 32, "comp/it/rride1.png", false, horse_t[2][1] )
+
+		horse_t[3][1] = guiCreateStaticImage( 0, 89+30*2, 128, 128, "comp/it/hrs1.png", false, fon_it )
+		horse_t[3][2] = guiCreateStaticImage( 41, 9, 64, 32, "comp/it/yride1.png", false, horse_t[3][1] )
+
+		horse_t[4][1] = guiCreateStaticImage( 0, 89+30*3, 128, 128, "comp/it/hrs1.png", false, fon_it )
+		horse_t[4][2] = guiCreateStaticImage( 41, 9, 64, 32, "comp/it/pride1.png", false, horse_t[4][1] )
+
+		horse_t[5][1] = guiCreateStaticImage( 0, 89+30*4, 128, 128, "comp/it/hrs1.png", false, fon_it )
+		horse_t[5][2] = guiCreateStaticImage( 41, 9, 64, 32, "comp/it/gride1.png", false, horse_t[5][1] )
+
+		for i=1,5 do
+			guiSetEnabled ( horse_t[i][1], false )
+		end
+
+		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
+		local start = false
+
+		local rb, width_rb = m2gui_radiobutton ( m2gui_width2, height_fon-16, 60, 15, "1(1/"..horse_t[1][3]..")", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "2(1/"..horse_t[2][3]..")", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "3(1/"..horse_t[3][3]..")", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "4(1/"..horse_t[4][3]..")", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 70, 15, "5(1/"..horse_t[5][3]..")", false, low_fon )
+
+		local edit = guiCreateEdit( width_rb, height_fon-25, width_fon-m2gui_width1-m2gui_width2, 25, "укажите ставку", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			guiSetText(edit, "")
+		end
+		addEventHandler ( "onClientGUIClick", edit, outputEditBox, false )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGetText(edit)
+			local cash = tonumber(text)
+			local horse_player = 0
+
+			for k,v in pairs(getElementsByType("gui-radiobutton")) do
+				if guiRadioButtonGetSelected(v) then
+					horse_player = tonumber(split(guiGetText(v), "(")[1])
+				end
+			end
+
+			if horse_player == 0 then
+				sendMessage("[ERROR] Вы не выбрали лошадь", red)
+				return	
+			elseif text == "" then
+				sendMessage("[ERROR] Укажите ставку", red)
+				return
+			elseif not cash then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif cash < 1 then
+				sendMessage("[ERROR] Число меньше 1", red)
+				return
+			elseif start then
+				sendMessage("[ERROR] Вы играете", red)
+				return
+			end
+
+			for k,v in pairs(horse_t) do
+				guiStaticImageLoadImage ( v[1], "comp/it/hrs1.png" )
+				guiStaticImageLoadImage ( v[2], "comp/it/"..v[4].."ride1.png" )
+				local x,y = guiGetPosition(v[1], false)
+				guiSetPosition(v[1], 0, y, false)
+			end
+
+			start = true
+
+			setTimer(function()
+				if not isElement(low_fon) or not start then
+					killTimer(sourceTimer)
+					return
+				end
+
+				for k,v in pairs(horse_t) do
+					local x,y = guiGetPosition(v[1], false)
+					guiSetPosition(v[1], x+random(1,10), y, false)
+
+					local x,y = guiGetPosition(v[1], false)
+					if x >= 525 then
+						triggerServerEvent( "event_insider_track", root, playerid, cash, v[3], k, horse_player )
+
+						start = false
+						break
+					end
+				end
+			end, 500, 0)
+
+			local count = 0
+			setTimer(function()
+				if not isElement(low_fon) or not start then
+					count = 0
+					killTimer(sourceTimer)
+					return
+				end
+
+				count = count+1
+
+				for k,v in pairs(horse_t) do
+					guiStaticImageLoadImage ( v[1], "comp/it/hrs"..count..".png" )
+					guiStaticImageLoadImage ( v[2], "comp/it/"..v[4].."ride"..count..".png" )
+				end
+
+				if count == 8 then
+					count = 0
+				end
+			end, 100, 0)
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+	end
+	addEventHandler ( "onClientGUIClick", horse, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", root, tablet_fun )

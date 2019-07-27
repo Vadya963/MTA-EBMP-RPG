@@ -7857,6 +7857,8 @@ function win_roulette( playerid, cash, ratio )
 
 	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
 end
+addEvent("event_win_roulette", true)
+addEventHandler("event_win_roulette", root, win_roulette)
 
 function roulette_fun (playerid, id, cash, randomize)--играть в рулетку
 	local playername = getPlayerName ( playerid )
@@ -7978,12 +7980,36 @@ function slots (playerid, cash, randomize1, randomize2, randomize3)
 
 	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
 
-	if(randomize1 == randomize2 and randomize1 == randomize3) then
+	if (randomize1 == randomize2 and randomize1 == randomize3) then
 		win_roulette( playerid, cash, 25 )
 	end
 end
 addEvent("event_slots", true)
 addEventHandler("event_slots", root, slots)
+
+function insider_track (playerid, cash, randomize, horse, horse_player)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if cash > array_player_2[playername][1] then
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+		return
+	end
+
+	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+	sendMessage(playerid, "Финишировала "..horse.." лошадь", yellow)
+
+	if horse == horse_player then
+		win_roulette( playerid, cash, randomize )
+	end
+end
+addEvent("event_insider_track", true)
+addEventHandler("event_insider_track", root, insider_track)
 
 local poker_coef = {
 	[1] = {0,1,2,3,4,6,9,25,50,250},
