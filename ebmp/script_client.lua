@@ -1543,7 +1543,6 @@ function tablet_fun()--создание планшета
 		end
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
-
 		function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
@@ -1710,20 +1709,46 @@ function tablet_fun()--создание планшета
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--вики
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+		local cmd = m2gui_button( 0, 0, "Команды сервера", false, low_fon )
+		local color_car = m2gui_button( 0, 20, "Цвета т/с", false, low_fon )
+		local work_table = m2gui_button( 0, 20*2, "Рабочий стол", false, low_fon )
 
-		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
-
-		function outputEditBox ( button, state, absoluteX, absoluteY )
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться на раб стол
 			destroyElement(low_fon)
 		end
-		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
-		guiGridListAddColumn(shoplist, "Команды сервера", 1.5)
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local color = guiCreateStaticImage( 0, 0, 642, 223, "upgrade/color_car.png", false, low_fon )
 
-		for k,v in pairs(commands) do
-			guiGridListAddRow(shoplist, v)
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 		end
+		addEventHandler ( "onClientGUIClick", color_car, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			guiGridListAddColumn(shoplist, "Команды сервера", 1.5)
+
+			for k,v in pairs(commands) do
+				guiGridListAddRow(shoplist, v)
+			end
+		end
+		addEventHandler ( "onClientGUIClick", cmd, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
 
@@ -2613,6 +2638,7 @@ function tablet_fun()--создание планшета
 	end
 	addEventHandler ( "onClientGUIClick", quest, outputEditBox, false )
 
+
 	function outputEditBox ( button, state, absoluteX, absoluteY )--слоты
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local slots = guiCreateStaticImage( 0, 0, width_fon, height_fon-25, "comp/slot_0.png", false, low_fon )
@@ -2682,6 +2708,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", slot, outputEditBox, false )
+
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--poker
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
@@ -2839,6 +2866,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", poker, outputEditBox, false )
+
 
 	function roulette_fun( button, state, absoluteX, absoluteY )--рулетка
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon2.png", false, fon )
