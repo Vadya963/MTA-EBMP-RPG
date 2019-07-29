@@ -184,6 +184,23 @@ local commands = {
 	"/idpng - ид предметов сервера",
 }
 
+local commandsadm = {
+	"/sub [ид предмета] [количество] - выдать себе предмет",
+	"/subcar [ид предмета] [количество] - выдать предмет в тс",
+	"/subearth [ид предмета] [количество] [количество на земле] - выдать предмет на землю",
+	"/go [и 3 координаты] - тп на заданные координаты",
+	"/pos [текст] - сохранить позицию в бд",
+	"/global [текст] - глобальный чат",
+	"/stime [часов] [минут] - установить время",
+	"/inv [player | car | house] [имя игрока | номер т/с | номер дома] - чекнуть инв-рь",
+	"/prisonplayer [ИД игрока] [время] [причина] - посадить игрока в тюрьму",
+	"/dim [номер виртуального мира] - установить себе виртуальный мир",
+	"/v [ид т/с] - создать тс",
+	"/sellbusiness [номер бизнеса от 1 до 5] - создать бизнес (для риэлторов)",
+	"/delv - удалить тс созданные через /v",
+	"/rc [ИД игрока] - следить за игроком",
+}
+
 -----------эвенты------------------------------------------------------------------------
 math.randomseed(getTickCount())
 function random(min, max)
@@ -193,7 +210,7 @@ end
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local ped = source
 
-	for k,v in pairs(getElementData(playerid, "no_ped_damage")[2]) do
+	for k,v in pairs(getElementData(playerid, "no_ped_damage")) do
 		if v == ped then
 			cancelEvent()
 			break
@@ -473,18 +490,18 @@ function getPlayerId( id )--узнать имя игрока из ид
 end
 
 function getPedMaxHealth(ped)
-    -- Output an error and stop executing the function if the argument is not valid
-    assert(isElement(ped) and (getElementType(ped) == "ped" or getElementType(ped) == "player"), "Bad argument @ 'getPedMaxHealth' [Expected ped/player at argument 1, got " .. tostring(ped) .. "]")
+	-- Output an error and stop executing the function if the argument is not valid
+	assert(isElement(ped) and (getElementType(ped) == "ped" or getElementType(ped) == "player"), "Bad argument @ 'getPedMaxHealth' [Expected ped/player at argument 1, got " .. tostring(ped) .. "]")
 
-    -- Grab his player health stat.
-    local stat = getPedStat(ped, 24)
+	-- Grab his player health stat.
+	local stat = getPedStat(ped, 24)
 
-    -- Do a linear interpolation to get how many health a ped can have.
-    -- Assumes: 100 health = 569 stat, 200 health = 1000 stat.
-    local maxhealth = 100 + (stat - 569) / 4.31
+	-- Do a linear interpolation to get how many health a ped can have.
+	-- Assumes: 100 health = 569 stat, 200 health = 1000 stat.
+	local maxhealth = 100 + (stat - 569) / 4.31
 
-    -- Return the max health. Make sure it can't be below 1
-    return math.max(1, maxhealth)
+	-- Return the max health. Make sure it can't be below 1
+	return math.max(1, maxhealth)
 end
 
 ------------------------------собственное гуи--------------------------------------------
@@ -527,6 +544,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
 	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
 	local text = m2gui_label ( 16+5, 0, dimensions+20, dimensions_h, text, bool_r, m2gui_fon )
+	local x1,y1 = guiGetPosition(m2gui_fon, false)
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
 		guiLabelSetColor ( text, crimson[1], crimson[2], crimson[3] )
@@ -538,7 +556,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	end
 	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
 
-	return text,dimensions+sym+x
+	return text,dimensions+sym+x,20+y1
 end
 -----------------------------------------------------------------------------------------
 
@@ -2000,15 +2018,16 @@ function tablet_fun()--создание планшета
 		end
 
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-		local tp_player = m2gui_button( 0, 0, "Игроки", false, low_fon )
-		local tp_interior_job = m2gui_button( 0, 20*1, "Здания", false, low_fon )
-		local tp_player_db = m2gui_button( 0, 20*2, "account", false, low_fon )
-		local tp_car = m2gui_button( 0, 20*3, "car_db", false, low_fon )
-		local tp_house = m2gui_button( 0, 20*4, "house_db", false, low_fon )
-		local tp_business = m2gui_button( 0, 20*5, "business_db", false, low_fon )
-		local tp_cow_farms = m2gui_button( 0, 20*6, "cow_farms_db", false, low_fon )
-		local timer_earth_clear = m2gui_button( 0, 20*7, "timer_earth_clear", false, low_fon )
-		local work_table = m2gui_button( 0, 20*8, "Рабочий стол", false, low_fon )
+		local tp_player,m2gui_width,m2gui_height = m2gui_button( 0, 0, "Игроки", false, low_fon )
+		local tp_interior_job,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "Здания", false, low_fon )
+		local cmdadm,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "Команды админа", false, low_fon )
+		local tp_player_db,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "account", false, low_fon )
+		local tp_car,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "car_db", false, low_fon )
+		local tp_house,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "house_db", false, low_fon )
+		local tp_business,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "business_db", false, low_fon )
+		local tp_cow_farms,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "cow_farms_db", false, low_fon )
+		local timer_earth_clear,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "timer_earth_clear", false, low_fon )
+		local work_table,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
@@ -2026,7 +2045,6 @@ function tablet_fun()--создание планшета
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 			local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Телепорт", false, low_fon )
-			local target,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Следить", false, low_fon )
 			local prison,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Посадить", false, low_fon )
 			local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
 
@@ -2063,23 +2081,6 @@ function tablet_fun()--создание планшета
 				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
-
-			function complete ( button, state, absoluteX, absoluteY )--следить
-				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
-				local id,player = getPlayerId(text)
-				
-				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
-					return
-				elseif not id then
-					sendMessage("[ERROR] Такого игрока нет", red)
-					return
-				end
-
-				setCameraTarget(player)
-				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] следит за "..id.." ["..getElementData(player, "player_id")[1].."]")
-			end
-			addEventHandler ( "onClientGUIClick", target, complete, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--prison
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
@@ -2150,6 +2151,25 @@ function tablet_fun()--создание планшета
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_interior_job, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--cmdadm
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			guiGridListAddColumn(shoplist, "Команды админа", 1.5)
+
+			for k,v in pairs(commandsadm) do
+				guiGridListAddRow(shoplist, v)
+			end
+		end
+		addEventHandler ( "onClientGUIClick", cmdadm, outputEditBox, false )
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_house
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
@@ -2413,7 +2433,7 @@ function tablet_fun()--создание планшета
 				
 				setTimer(function()
 					for k,v in pairs(getElementData(playerid, "car_db")) do
-						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["inventory"])
+						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["inventory"])
 					end
 				end, 1000, 1)
 			end
@@ -2470,9 +2490,12 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "tune", 0.5)
 			guiGridListAddColumn(shoplist, "stage", 0.1)
 			guiGridListAddColumn(shoplist, "probeg", 0.2)
+			guiGridListAddColumn(shoplist, "wheel", 0.1)
+			guiGridListAddColumn(shoplist, "hydraulics", 0.1)
+			guiGridListAddColumn(shoplist, "wheel_rgb", 0.2)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(playerid, "car_db")) do
-				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["inventory"])
+				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["inventory"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_car, outputEditBox, false )
@@ -2492,11 +2515,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", root, playerid, "cow_farms_db")
+				triggerServerEvent("event_sqlite_load", root, playerid, "cow_farms_table2")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "cow_farms_db")) do
+					for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
 						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 					end
 				end, 1000, 1)
@@ -2529,7 +2552,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "nalog", 0.1)
 			guiGridListAddColumn(shoplist, "warehouse", 0.1)
 			guiGridListAddColumn(shoplist, "prod", 0.1)
-			for k,v in pairs(getElementData(playerid, "cow_farms_db")) do
+			for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
 				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 			end
 		end
