@@ -339,6 +339,34 @@
 	<file src="dff_and_txd/wheel_sr4.dff"/>
 	<file src="dff_and_txd/wheel_sr5.dff"/>
 	<file src="dff_and_txd/wheel_sr6.dff"/>
+	<file src="dff_and_txd/grenade.txd"/>
+	<file src="dff_and_txd/grenade.dff"/>
+	<file src="dff_and_txd/colt45.txd"/>
+	<file src="dff_and_txd/colt45.dff"/>
+	<file src="dff_and_txd/desert_eagle.txd"/>
+	<file src="dff_and_txd/desert_eagle.dff"/>
+	<file src="dff_and_txd/chromegun.txd"/>
+	<file src="dff_and_txd/chromegun.dff"/>
+	<file src="dff_and_txd/nitestick.txd"/>
+	<file src="dff_and_txd/nitestick.dff"/>
+	<file src="dff_and_txd/cuntgun.txd"/>
+	<file src="dff_and_txd/cuntgun.dff"/>
+	<file src="dff_and_txd/ak47.txd"/>
+	<file src="dff_and_txd/ak47.dff"/>
+	<file src="dff_and_txd/m4.txd"/>
+	<file src="dff_and_txd/m4.dff"/>
+	<file src="dff_and_txd/chnsaw.txd"/>
+	<file src="dff_and_txd/chnsaw.dff"/>
+	<file src="dff_and_txd/micro_uzi.txd"/>
+	<file src="dff_and_txd/micro_uzi.dff"/>
+	<file src="dff_and_txd/mp5lng.txd"/>
+	<file src="dff_and_txd/mp5lng.dff"/>
+	<file src="dff_and_txd/silenced.txd"/>
+	<file src="dff_and_txd/silenced.dff"/>
+	<file src="dff_and_txd/spraycan.txd"/>
+	<file src="dff_and_txd/spraycan.dff"/>
+	<file src="dff_and_txd/teargas.txd"/>
+	<file src="dff_and_txd/teargas.dff"/>
 	
 
 	<!--парашют-->

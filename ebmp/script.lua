@@ -5043,8 +5043,6 @@ function()
 	sendMessage(playerid, "[TIPS] Первоначальная работа находится в ЛВ мясокомбинат", color_tips)
 	sendMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips)
 	sendMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips)
-
-	setTimer(reg_or_login, 5000, 1, playerid)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -5367,6 +5365,8 @@ function reg_or_login(playerid)
 	setElementData(playerid, "radar_visible", true)
 	setElementData(playerid, "repair_shop", repair_shop)
 end
+addEvent("event_reg_or_login", true)
+addEventHandler("event_reg_or_login", root, reg_or_login)
 
 ------------------------------------взрыв авто-------------------------------------------
 function fixVehicle_fun( vehicleid )

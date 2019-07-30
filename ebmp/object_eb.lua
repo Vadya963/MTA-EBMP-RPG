@@ -17,6 +17,20 @@ local dff_and_txd_table = {
 	{"wfyclot", 145},
 	{"wmyplt", 62},
 	{"vitpra", 162},
+	{"grenade", 342},
+	{"colt45", 346},
+	{"desert_eagle", 348},
+	{"chromegun", 349},
+	{"nitestick", 334},
+	{"cuntgun", 357},
+	{"ak47", 355},
+	{"m4", 356},
+	{"chnsaw", 341},
+	{"micro_uzi", 352},
+	{"mp5lng", 353},
+	{"silenced", 347},
+	{"spraycan", 365},
+	{"teargas", 343},
 }
 
 local wheel = {
