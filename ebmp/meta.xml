@@ -3,10 +3,11 @@
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 
-	<!--<include resource="maximap" />
+	<!---->
+	<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
-	<include resource="vozle_merii_app" />-->
+	<include resource="vozle_merii_app" />
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
