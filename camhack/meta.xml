@@ -1,0 +1,8 @@
+<meta>
+	<!-- Configuration -->
+	<info author="FornetGear" name="CamHack" description="First ever CamHack in MTA" type="script" version="1.0"/>
+	
+	<!-- Main -->
+	<script src="c_camhack.lua" type="client"/>
+    <script src="s_camhack.lua"/>
+</meta>

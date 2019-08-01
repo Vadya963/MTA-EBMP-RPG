@@ -573,7 +573,7 @@ local info_png = {
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 	[92] = {"наручники", "шт"},
 	[93] = {"колода карт", "шт"},
-	[94] = {"маска", "шт"},
+	[94] = {"квадрокоптер", "шт"},
 	[95] = {"двигатель", "stage"},
 	[96] = {"колесо", "марка"},
 	[97] = {"краска для т/с", "цвет"},
@@ -618,6 +618,26 @@ local weapon = {
 	[49] = {info_png[49][1], 6, 50, 1},
 }
 
+local weapon_shop = {
+	--[9] = {info_png[9][1], 16, 360, 5},
+	[12] = {info_png[12][1], 22, 240, 25},
+	[13] = {info_png[13][1], 24, 1440, 25},
+	[14] = {info_png[14][1], 30, 4200, 25},
+	[15] = {info_png[15][1], 31, 5400, 25},
+	[17] = {info_png[17][1], 29, 2400, 25},
+	[18] = {info_png[18][1], 28, 600, 25},
+	--[19] = {info_png[19][1], 17, 360, 5},
+	[26] = {info_png[26][1], 23, 720, 25},
+	[34] = {info_png[34][1], 25, 720, 25},
+	[35] = {info_png[35][1], 46, 200, 1},
+	--[36] = {info_png[36][1], 3, 150, 1},
+	[37] = {info_png[37][1], 5, 150, 1},
+	[38] = {info_png[38][1], 4, 150, 1},
+	[41] = {info_png[41][1], 33, 6000, 25},
+	--[47] = {info_png[47][1], 41, 50, 25},
+	[49] = {info_png[49][1], 6, 50, 1},
+}
+
 local shop = {
 	[3] = {info_png[3][1], 20, 5},
 	[4] = {info_png[4][1], 1, 250},
@@ -643,6 +663,7 @@ local shop = {
 	[76] = {info_png[76][1], 1, 250},
 	[80] = {info_png[80][1], 10, 500},
 	[93] = {info_png[93][1], 1, 50},
+	[94] = {info_png[94][1], 1, 5000},
 }
 
 local repair_shop = {
@@ -1566,6 +1587,7 @@ local job_object = {}--создан ли объект, 0-нет
 local armour = {}--броня
 local game = {}--карты игрока
 local accept_player = {}--переменная игры
+local drone = {}--дрон
 
 --нужды
 local alcohol = {}
@@ -4942,7 +4964,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		end
 	end
 end
-addEventHandler ( "onResourceStart", root, displayLoadedRes )
+addEventHandler ( "onResourceStart", resourceRoot, displayLoadedRes )
 
 addEventHandler("onPlayerJoin", root,--конект игрока на сервер
 function()
@@ -4980,6 +5002,7 @@ function()
 	armour[playername] = 0
 	game[playername] = {}
 	accept_player[playername] = {false,false,false,false}
+	drone[playername] = 0
 
 	--нужды
 	alcohol[playername] = 0
@@ -5074,6 +5097,7 @@ function()
 	setElementData(playerid, "quest_select", "0:0")
 	setElementData(playerid, "radar_visible", true)
 	setElementData(playerid, "repair_shop", repair_shop)
+	setElementData(playerid, "weapon_shop", weapon_shop)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -7666,6 +7690,22 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..info_png[id1][id2+2])
 			return
 
+		elseif id1 == 94 then-- квадрокоптер
+			if drone[playername] == 0 then
+				drone[playername] = 1
+
+				triggerEvent("event_camhackm_fun", root, playerid)
+
+				me_chat(playerid, playername.." достал(а) "..info_png[id1][1])
+			else
+				drone[playername] = 0
+
+				triggerEvent("event_camhackm_fun", root, playerid)
+
+				me_chat(playerid, playername.." убрал(а) "..info_png[id1][1])
+			end
+			return
+
 		elseif id1 == 95 then--двигло
 			if vehicleid then
 				local plate = getVehiclePlateText(vehicleid)
@@ -9230,21 +9270,6 @@ function (playerid)
 			sendMessage(root, "[НОВОСТИ] "..playername.." из "..name_mafia[search_inv_player_2_parameter(playerid, 85)][1].." захватывает территорию - "..name_mafia[v[2]][1], green)
 			return
 		end
-	end
-end)
-
-addCommandHandler("idpng",
-function (playerid)
-
-	local playername = getPlayerName ( playerid )
-	if (logged[playername] == 0) then
-		return
-	end
-
-	sendMessage(playerid, "====[ ПРЕДМЕТЫ ]====", white)
-
-	for i=1,#info_png do
-		sendMessage(playerid, "["..i.."] "..info_png[i][1].." 0 "..info_png[i][2], white)
 	end
 end)
 

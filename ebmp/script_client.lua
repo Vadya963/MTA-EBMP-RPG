@@ -10,7 +10,7 @@ local playerid = 0
 local update_db_rang = 1
 local roulette_number = {false, {0,0,0}, {}}
 
-addEventHandler( "onClientResourceStart", getRootElement( ),
+addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
 	if car_spawn_value == 0 then
 		car_spawn_value = 1
@@ -152,7 +152,7 @@ local info_png = {
 	[91] = {"ордер на обыск", "", "гражданина", "т/с", "дома"},
 	[92] = {"наручники", "шт"},
 	[93] = {"колода карт", "шт"},
-	[94] = {"маска", "шт"},
+	[94] = {"квадрокоптер", "шт"},
 	[95] = {"двигатель", "stage"},
 	[96] = {"колесо", "марка"},
 	[97] = {"банка краски", "цвет"},
@@ -185,7 +185,6 @@ local commands = {
 	"/b [текст] - ближний OOC чат",
 	"/сс - очистить чат",
 	"/marker [x координата] [y координата] - поставить маркер",
-	"/idpng - ид предметов сервера",
 }
 
 local commandsadm = {
@@ -282,7 +281,7 @@ addEventHandler ( "event_setPedControlState", root, setPedControlState )
 addEvent( "event_givePedWeapon", true )
 addEventHandler ( "event_givePedWeapon", root, givePedWeapon )
 
-addEventHandler( "onClientElementStreamIn", getRootElement( ),
+addEventHandler( "onClientElementStreamIn", root,
 function ( )
 	if getElementType(source) == "vehicle" then
 		--setVehicleComponentVisible(source, "bump_front_dummy", false)
@@ -564,26 +563,6 @@ function m2gui_button( x,y, text, bool_r, parent)
 	return text,dimensions+sym+x,20+y1
 end
 -----------------------------------------------------------------------------------------
-
-local weapon = {
-	--[9] = {info_png[9][1], 16, 360, 5},
-	[12] = {info_png[12][1], 22, 240, 25},
-	[13] = {info_png[13][1], 24, 1440, 25},
-	[14] = {info_png[14][1], 30, 4200, 25},
-	[15] = {info_png[15][1], 31, 5400, 25},
-	[17] = {info_png[17][1], 29, 2400, 25},
-	[18] = {info_png[18][1], 28, 600, 25},
-	--[19] = {info_png[19][1], 17, 360, 5},
-	[26] = {info_png[26][1], 23, 720, 25},
-	[34] = {info_png[34][1], 25, 720, 25},
-	[35] = {info_png[35][1], 46, 200, 1},
-	--[36] = {info_png[36][1], 3, 150, 1},
-	[37] = {info_png[37][1], 5, 150, 1},
-	[38] = {info_png[38][1], 4, 150, 1},
-	[41] = {info_png[41][1], 33, 6000, 25},
-	--[47] = {info_png[47][1], 41, 50, 25},
-	[49] = {info_png[49][1], 6, 50, 1},
-}
 
 local skin = {"мужская одежда", 1, 2, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 57, 58, 59, 60, 61, 62, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 82, 83, 84, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 133, 134, 135, 136, 137, 142, 143, 144, 146, 147, 153, 154, 155, 156, 158, 159, 160, 161, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 175, 176, 177, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 200, 202, 203, 204, 206, 209, 210, 212, 213, 217, 220, 221, 222, 223, 227, 228, 229, 230, 234, 235, 236, 239, 240, 241, 242, 247, 248, 249, 250, 252, 253, 254, 255, 258, 259, 260, 261, 262, 265, 266, 267, 268, 269, 270, 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 296, 297, 299, 300, 301, 302, 303, 305, 306, 307, 308, 309, 310, 312, "женская одежда", 9, 10, 11, 12, 13, 31, 38, 39, 40, 41, 53, 54, 55, 56, 63, 64, 69, 75, 76, 77, 85, 87, 88, 89, 90, 91, 92, 93, 129, 130, 131, 138, 139, 140, 141, 145, 148, 150, 151, 152, 157, 169, 172, 178, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 201, 205, 207, 211, 214, 215, 216, 218, 219, 224, 225, 226, 231, 232, 233, 237, 238, 243, 244, 245, 246, 251, 256, 257, 263, 298, 304}
 
@@ -1374,7 +1353,7 @@ function shop_menu(number, value)--создание окна магазина
 	if value == 1 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(weapon) do
+		for k,v in pairs(getElementData ( playerid, "weapon_shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1737,7 +1716,8 @@ function tablet_fun()--создание планшета
 		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
 		local cmd = m2gui_button( 0, 0, "Команды сервера", false, low_fon )
 		local color_car = m2gui_button( 0, 20, "Цвета т/с", false, low_fon )
-		local work_table = m2gui_button( 0, 20*2, "Рабочий стол", false, low_fon )
+		local idpng = m2gui_button( 0, 20*2, "Предметы", false, low_fon )
+		local work_table = m2gui_button( 0, 20*3, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться на раб стол
 			destroyElement(low_fon)
@@ -1775,6 +1755,27 @@ function tablet_fun()--создание планшета
 			end
 		end
 		addEventHandler ( "onClientGUIClick", cmd, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+			local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16, false, low_fon)
+
+			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
+
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				destroyElement(low_fon)
+			end
+			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+			guiGridListAddColumn(shoplist, "Предметы", 1.5)
+
+			for k,v in ipairs(info_png) do
+				if k ~= 0 then
+					guiGridListAddRow(shoplist, v[1].." 0 "..v[2])
+				end
+			end
+		end
+		addEventHandler ( "onClientGUIClick", idpng, outputEditBox, false )
 	end
 	addEventHandler ( "onClientGUIClick", wiki, outputEditBox, false )
 

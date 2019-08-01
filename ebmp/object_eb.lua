@@ -31,6 +31,7 @@ local dff_and_txd_table = {
 	{"silenced", 347},
 	{"spraycan", 365},
 	{"teargas", 343},
+	--{"rcgoblin", 501},
 }
 
 local wheel = {
@@ -60,19 +61,19 @@ function ( startedRes )
 		car_spawn_value = 1
 
 		for k,v in pairs(dff_and_txd_table) do
-			local txd = engineLoadTXD ( "dff_and_txd/"..v[1]..".txd" )
+			local txd = engineLoadTXD ( ":dff_and_txd/"..v[1]..".txd" )
 			engineImportTXD ( txd, v[2] )
-			local dff = engineLoadDFF ( "dff_and_txd/"..v[1]..".dff" )
+			local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
 			engineReplaceModel ( dff, v[2] )
 
 			if v[3] then
-				local col = engineLoadCOL ( "dff_and_txd/"..v[1]..".col" )
+				local col = engineLoadCOL ( ":dff_and_txd/"..v[1]..".col" )
 				engineReplaceCOL ( col, v[2] )
 			end
 		end
 
 		for k,v in pairs(wheel) do
-			local dff = engineLoadDFF ( "dff_and_txd/"..v[1]..".dff" )
+			local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
 			engineReplaceModel ( dff, v[2] )
 		end
 	end

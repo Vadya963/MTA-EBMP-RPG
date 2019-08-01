@@ -3,18 +3,21 @@
 
 	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
 
-	<!---->
-	<include resource="maximap" />
+	<!--<include resource="maximap" />
 	<include resource="hdhud" />
 	<include resource="gtavradar" />
-	<include resource="vozle_merii_app" />
+	<include resource="vozle_merii_app" />-->
+	
 	
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client" cache="false"/>
 	<script src="script_client.lua" type="client" cache="false"/>
 	<script src="menu_m2.lua" type="client" cache="false"/>
 	<script src="object_eb.lua" type="client" cache="false"/>
+
 	<include resource="map_gta" />
+	<include resource="camhack" />
+	<include resource="dff_and_txd" />
 
 	<file src="parachute/body_hit_sound.mp3"/>
 	<file src="upgrade/upgrades_car.txt"/>
@@ -283,92 +286,6 @@
 	<file src="image_inventory/100.png"/>
 	<file src="image_inventory/101.png"/>
 
-
-	<!--замененки-->
-	<file src="dff_and_txd/leyka.txd"/>
-	<file src="dff_and_txd/leyka.dff"/>
-	<file src="dff_and_txd/horse.txd"/>
-	<file src="dff_and_txd/horse.dff"/>
-	<file src="dff_and_txd/gun_cane.txd"/>
-	<file src="dff_and_txd/gun_cane.dff"/>
-	<file src="dff_and_txd/bat.txd"/>
-	<file src="dff_and_txd/bat.dff"/>
-	<file src="dff_and_txd/knifecur.txd"/>
-	<file src="dff_and_txd/knifecur.dff"/>
-	<file src="dff_and_txd/shovel.txd"/>
-	<file src="dff_and_txd/shovel.dff"/>
-	<file src="dff_and_txd/pig.txd"/>
-	<file src="dff_and_txd/pig.dff"/>
-	<file src="dff_and_txd/pig.col"/>
-	<file src="dff_and_txd/coal.txd"/>
-	<file src="dff_and_txd/coal.dff"/>
-	<file src="dff_and_txd/coal.col"/>
-	<file src="dff_and_txd/armour.txd"/>
-	<file src="dff_and_txd/armour.dff"/>
-	<file src="dff_and_txd/knife.txd"/>
-	<file src="dff_and_txd/knife.dff"/>
-	<file src="dff_and_txd/pumpkin01.txd"/>
-	<file src="dff_and_txd/pumpkin01.dff"/>
-	<file src="dff_and_txd/hfyri.txd"/>
-	<file src="dff_and_txd/hfyri.dff"/>
-	<file src="dff_and_txd/sheriffpolicefemale.txd"/>
-	<file src="dff_and_txd/sheriffpolicefemale.dff"/>
-	<file src="dff_and_txd/sofybu_2.txd"/>
-	<file src="dff_and_txd/sofybu_2.dff"/>
-	<file src="dff_and_txd/wfyclpd.txd"/>
-	<file src="dff_and_txd/wfyclpd.dff"/>
-	<file src="dff_and_txd/wfyclot.txd"/>
-	<file src="dff_and_txd/wfyclot.dff"/>
-	<file src="dff_and_txd/wmyplt.txd"/>
-	<file src="dff_and_txd/wmyplt.dff"/>
-	<file src="dff_and_txd/vitpra.txd"/>
-	<file src="dff_and_txd/vitpra.dff"/>
-	<file src="dff_and_txd/wheel_gn1.dff"/>
-	<file src="dff_and_txd/wheel_gn2.dff"/>
-	<file src="dff_and_txd/wheel_gn3.dff"/>
-	<file src="dff_and_txd/wheel_gn4.dff"/>
-	<file src="dff_and_txd/wheel_gn5.dff"/>
-	<file src="dff_and_txd/wheel_lr1.dff"/>
-	<file src="dff_and_txd/wheel_lr2.dff"/>
-	<file src="dff_and_txd/wheel_lr3.dff"/>
-	<file src="dff_and_txd/wheel_lr4.dff"/>
-	<file src="dff_and_txd/wheel_lr5.dff"/>
-	<file src="dff_and_txd/wheel_or1.dff"/>
-	<file src="dff_and_txd/wheel_sr1.dff"/>
-	<file src="dff_and_txd/wheel_sr2.dff"/>
-	<file src="dff_and_txd/wheel_sr3.dff"/>
-	<file src="dff_and_txd/wheel_sr4.dff"/>
-	<file src="dff_and_txd/wheel_sr5.dff"/>
-	<file src="dff_and_txd/wheel_sr6.dff"/>
-	<file src="dff_and_txd/grenade.txd"/>
-	<file src="dff_and_txd/grenade.dff"/>
-	<file src="dff_and_txd/colt45.txd"/>
-	<file src="dff_and_txd/colt45.dff"/>
-	<file src="dff_and_txd/desert_eagle.txd"/>
-	<file src="dff_and_txd/desert_eagle.dff"/>
-	<file src="dff_and_txd/chromegun.txd"/>
-	<file src="dff_and_txd/chromegun.dff"/>
-	<file src="dff_and_txd/nitestick.txd"/>
-	<file src="dff_and_txd/nitestick.dff"/>
-	<file src="dff_and_txd/cuntgun.txd"/>
-	<file src="dff_and_txd/cuntgun.dff"/>
-	<file src="dff_and_txd/ak47.txd"/>
-	<file src="dff_and_txd/ak47.dff"/>
-	<file src="dff_and_txd/m4.txd"/>
-	<file src="dff_and_txd/m4.dff"/>
-	<file src="dff_and_txd/chnsaw.txd"/>
-	<file src="dff_and_txd/chnsaw.dff"/>
-	<file src="dff_and_txd/micro_uzi.txd"/>
-	<file src="dff_and_txd/micro_uzi.dff"/>
-	<file src="dff_and_txd/mp5lng.txd"/>
-	<file src="dff_and_txd/mp5lng.dff"/>
-	<file src="dff_and_txd/silenced.txd"/>
-	<file src="dff_and_txd/silenced.dff"/>
-	<file src="dff_and_txd/spraycan.txd"/>
-	<file src="dff_and_txd/spraycan.dff"/>
-	<file src="dff_and_txd/teargas.txd"/>
-	<file src="dff_and_txd/teargas.dff"/>
-	
 
 	<!--парашют-->
 	<script src="parachute/utility.lua" type="client"/>
