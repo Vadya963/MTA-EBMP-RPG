@@ -1,22 +1,12 @@
 local dff_and_txd_table = {
+	--оружие
 	{"leyka", 321},
-	{"horse", 264},
 	{"gun_cane", 326},
 	{"bat", 336},
 	{"knifecur", 335},
 	{"shovel", 337},
-	{"pig", 2804, true},
-	{"coal", 3931, true},
-	{"armour", 1242},
 	{"knife", 322},
 	{"pumpkin01", 323},
-	{"hfyri", 311},
-	{"sheriffpolicefemale", 64},
-	{"sofybu_2", 75},
-	{"wfyclpd", 87},
-	{"wfyclot", 145},
-	{"wmyplt", 62},
-	{"vitpra", 162},
 	{"grenade", 342},
 	{"colt45", 346},
 	{"desert_eagle", 348},
@@ -31,7 +21,24 @@ local dff_and_txd_table = {
 	{"silenced", 347},
 	{"spraycan", 365},
 	{"teargas", 343},
+
+	--скины
+	{"horse", 264},
+	{"hfyri", 311},
+	{"sheriffpolicefemale", 64},
+	{"sofybu_2", 75},
+	{"wfyclpd", 87},
+	{"wfyclot", 145},
+	{"wmyplt", 62},
+	{"vitpra", 162},
+
+	--авто
 	--{"rcgoblin", 501},
+
+	--объекты
+	{"pig", 2804, true},
+	{"coal", 3931, true},
+	{"armour", 1242},
 }
 
 local wheel = {
