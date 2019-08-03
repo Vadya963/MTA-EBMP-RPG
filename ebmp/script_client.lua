@@ -1767,11 +1767,12 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
+			guiGridListAddColumn(shoplist, "Ид", 0.1)
 			guiGridListAddColumn(shoplist, "Предметы", 1.5)
 
 			for k,v in ipairs(info_png) do
 				if k ~= 0 then
-					guiGridListAddRow(shoplist, v[1].." 0 "..v[2])
+					guiGridListAddRow(shoplist, k, v[1].." 0 "..v[2])
 				end
 			end
 		end
