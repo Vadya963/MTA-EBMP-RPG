@@ -768,10 +768,10 @@ function createText ()
 		local spl_gz = getElementData(playerid, "guns_zone2")
 		local name_mafia = getElementData(playerid, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
-			dxDrawRectangle( 0.0, screenHeight-16.0*6, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
-			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6, 0.0, 0.0, tocolor( white[1], white[2], white[3] ), 1, m2font_dx1 )
-			dxdrawtext ( "Атака "..name_mafia[spl_gz[1][3]][1]..": "..spl_gz[1][4].." очки", 2.0, screenHeight-16*5, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
-			dxdrawtext ( "Защита "..name_mafia[spl_gz[1][5]][1]..": "..spl_gz[1][6].." очки", 2.0, screenHeight-16*4, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
+			dxDrawRectangle( 0.0, screenHeight-16.0*6-124, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
+			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( white[1], white[2], white[3] ), 1, m2font_dx1 )
+			dxdrawtext ( "Атака "..name_mafia[spl_gz[1][3]][1]..": "..spl_gz[1][4].." очки", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
+			dxdrawtext ( "Защита "..name_mafia[spl_gz[1][5]][1]..": "..spl_gz[1][6].." очки", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
 		end
 	end
 
@@ -2753,7 +2753,7 @@ function tablet_fun()--создание планшета
 		rb[4] = m2gui_radiobutton ( 297, 0, 50, 15, "4", false, low_fon )
 		rb[5] = m2gui_radiobutton ( 349, 0, 50, 15, "5", false, low_fon )
 		local slots = guiCreateStaticImage( 0, 20, 433, 188, "comp/card/cards.png", false, low_fon )
-		local count_card, cash, token = 5, 1000, 1000
+		local count_card,count,coef,money,token = 5,1,0,0,0
 		local radiobutton_table = {
 			[1] = {0,0,0,0,0},
 			[2] = {0,0,0,0,0},
@@ -2773,23 +2773,17 @@ function tablet_fun()--создание планшета
 
 		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
 		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
-		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "ставка "..cash.."$", false, low_fon )
-		guiSetEnabled ( edit, false )
-
-		local start,count,coef = false,1,0
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon-m2gui_width1+m2gui_width2, 25, "укажите ставку", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
-		for i=1,5 do
-			function outputEditBox ( button, state, absoluteX, absoluteY )
-				guiSetText(edit, "ставка "..(token*guiGetText(source)).."$")
-				cash = tonumber(token*guiGetText(source))
-			end
-			addEventHandler ( "onClientGUIClick", rb[i], outputEditBox, false )
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			guiSetText(edit, "")
 		end
+		addEventHandler ( "onClientGUIClick", edit, outputEditBox, false )
 
 		for i=1,count_card do
 			function outputEditBox ( button, state, absoluteX, absoluteY )
@@ -2809,6 +2803,20 @@ function tablet_fun()--создание планшета
 		end
 
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGetText(edit)
+			local cash = tonumber(text)
+				
+			if text == "" then
+				sendMessage("[ERROR] Укажите ставку", red)
+				return
+			elseif not cash then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif cash < 1 then
+				sendMessage("[ERROR] Число меньше 1", red)
+				return
+			end
+
 			if count == 1 then
 				coef = ""
 				for k,v in pairs(getElementsByType("gui-radiobutton")) do
@@ -2822,7 +2830,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				start,count = true,2
+				count,token,money = 2,tonumber(guiGetText(edit))/tonumber(coef),tonumber(guiGetText(edit))
 
 				for i=1,count_card do
 					guiLabelSetColor(radiobutton_table[1][i], green[1], green[2], green[3])
@@ -2882,9 +2890,9 @@ function tablet_fun()--создание планшета
 					text = text..radiobutton_table[3][i]..","
 				end
 				
-				triggerServerEvent("event_poker_win", root, playerid, text, cash, coef, token)
+				triggerServerEvent("event_poker_win", root, playerid, text, money, coef, token)
 
-				start,count = false,1
+				count = 1
 				radiobutton_table[2][1],radiobutton_table[3][1] = false, "0"
 				radiobutton_table[2][2],radiobutton_table[3][2] = false, "0"
 				radiobutton_table[2][3],radiobutton_table[3][3] = false, "0"
