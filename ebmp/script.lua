@@ -163,14 +163,14 @@ local point_guns_zone = {0,0, 0,0, 0,0}--1-идет ли захват, 2-ном�
 local time_gz = 1*60
 local time_guns_zone = time_gz
 local name_mafia = {
-	[0] = {"no", {255,255,255}},
-	[1] = {"Grove Street Familes", {0,255,0}},
-	[2] = {"Vagos", {255,255,0}},
-	[3] = {"Ballas", {175,0,255}},
-	[4] = {"Rifa", {0,0,255}},
-	[5] = {"Varrios Los Aztecas", {0,255,255}},
-	[6] = {"Triads", {50,50,50}},
-	[7] = {"Da Nang Boys", {255,0,0}},
+	[0] = {"no", {255,255,255}, {}},
+	[1] = {"Grove Street Familes", {0,255,0}, {105,106,107}},
+	[2] = {"Vagos", {255,255,0}, {108,109,110}},
+	[3] = {"Ballas", {175,0,255}, {102,103,104}},
+	[4] = {"Rifa", {0,0,255}, {173,174,175}},
+	[5] = {"Varrios Los Aztecas", {0,255,255}, {114,115,116}},
+	[6] = {"Triads", {50,50,50}, {117,118,120}},
+	[7] = {"Da Nang Boys", {255,0,0}, {121,122,123}},
 }
 local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
@@ -716,13 +716,13 @@ local giuseppe = {
 	{info_png[64][1].." Угонщик", 6, 5000, 64},
 	{info_png[83][1], 100, 1000, 83},
 	{info_png[84][1], 10, 500, 84},
-	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},
+	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},--4
 	{info_png[85][1].." "..name_mafia[2][1], 2, 5000, 85},
 	{info_png[85][1].." "..name_mafia[3][1], 3, 5000, 85},
 	{info_png[85][1].." "..name_mafia[4][1], 4, 5000, 85},
 	{info_png[85][1].." "..name_mafia[5][1], 5, 5000, 85},
 	{info_png[85][1].." "..name_mafia[6][1], 6, 5000, 85},
-	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},
+	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},--10
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -2050,6 +2050,10 @@ function job_timer2 (playerid)
 
 							local randomize = random(1,#sell_car_theft)
 
+							local crimes_plus = zakon_car_theft_crimes
+							crimes[playername] = crimes[playername]+crimes_plus
+							sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+
 							sendMessage(playerid, "Езжайте в отстойник", yellow)
 
 							police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
@@ -2074,10 +2078,6 @@ function job_timer2 (playerid)
 
 								job_pos[playername] = 0
 								job_call[playername] = 3
-
-								local crimes_plus = zakon_car_theft_crimes
-								crimes[playername] = crimes[playername]+crimes_plus
-								sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
 
 								car_theft_fun(playername, true)
 
@@ -4390,16 +4390,42 @@ function buy_subject_fun( playerid, text, number, value )
 	elseif value == "giuseppe" then
 		for k,v in pairs(giuseppe) do
 			if v[1] == text then
-				if v[3] <= array_player_2[playername][1] then
-					if inv_player_empty(playerid, v[4], v[2]) then
-						sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange)
+				if k >= 4 and k <= 10 then
+					local count = false
+					local name_mafia_skin = ""
+					for k,j in pairs(name_mafia[v[2]][3]) do
+						name_mafia_skin = name_mafia_skin..j..","
+						if getElementModel(playerid) == j then
+							count = true
+							if v[3] <= array_player_2[playername][1] then
+								if inv_player_empty(playerid, v[4], v[2]) then
+									sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange)
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
-					else
-						sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+								else
+									sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+								end
+							else
+								sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+							end
+						end
+					end
+
+					if not count then
+						sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia_skin, red)
 					end
 				else
-					sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+					if v[3] <= array_player_2[playername][1] then
+						if inv_player_empty(playerid, v[4], v[2]) then
+							sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", orange)
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+						else
+							sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+						end
+					else
+						sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+					end
 				end
 
 				return
