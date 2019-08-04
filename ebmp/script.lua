@@ -582,6 +582,7 @@ local info_png = {
 	[99] = {"винилы", "вариант"},
 	[100] = {"гидравлика", "шт"},
 	[101] = {"краска для колес", "цвет"},
+	[102] = {"уголовное дело", "преступлений"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -2021,11 +2022,10 @@ function job_timer2 (playerid)
 				end
 
 			elseif (job[playername] == 6) then --работа Угонщик
-				local vehicleid = player_car_theft()
+				if (job_call[playername] == 0) then 
+					local vehicleid = player_car_theft()
 
-				if vehicleid then
-					if (job_call[playername] == 0) then 
-					
+					if vehicleid then
 						local pos = {getElementPosition(vehicleid)}
 						local rot = {getElementRotation(vehicleid)}
 
@@ -2039,51 +2039,51 @@ function job_timer2 (playerid)
 
 						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 						job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
-						
-					elseif (job_call[playername] == 1) then
+					end
+
+				elseif (job_call[playername] == 1) then
 					
-						if (job_vehicleid[playername][1] == vehicleid) then
+					if (job_vehicleid[playername][1] == vehicleid) then
 						
-							local x1,y1 = player_position( playerid )
+						local x1,y1 = player_position( playerid )
 
-							job_call[playername] = 2
+						job_call[playername] = 2
 
-							local randomize = random(1,#sell_car_theft)
+						local randomize = random(1,#sell_car_theft)
 
-							local crimes_plus = zakon_car_theft_crimes
-							crimes[playername] = crimes[playername]+crimes_plus
-							sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+						local crimes_plus = zakon_car_theft_crimes
+						crimes[playername] = crimes[playername]+crimes_plus
+						sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
 
-							sendMessage(playerid, "Езжайте в отстойник", yellow)
+						sendMessage(playerid, "Езжайте в отстойник", yellow)
 
-							police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
+						police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-							job_pos[playername] = {sell_car_theft[randomize][1],sell_car_theft[randomize][2],sell_car_theft[randomize][3]}
+						job_pos[playername] = {sell_car_theft[randomize][1],sell_car_theft[randomize][2],sell_car_theft[randomize][3]}
 
-							setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-							setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-						end
+						setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+						setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+					end
 					
-					elseif (job_call[playername] == 2) then
+				elseif (job_call[playername] == 2) then
 					
-						if (isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) and job_vehicleid[playername][1] == vehicleid) then
+					if (isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) and job_vehicleid[playername][1] == vehicleid) then
 						
-							if (getSpeed(vehicleid) < 1) then
+						if (getSpeed(vehicleid) < 1) then
 							
-								local randomize = cash_car[getElementModel(vehicleid)][2]*0.05
+							local randomize = cash_car[getElementModel(vehicleid)][2]*0.05
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-								sendMessage(playerid, "Вы получили "..randomize.."$", green)
+							sendMessage(playerid, "Вы получили "..randomize.."$", green)
 
-								job_pos[playername] = 0
-								job_call[playername] = 3
+							job_pos[playername] = 0
+							job_call[playername] = 3
 
-								car_theft_fun(playername, true)
+							car_theft_fun(playername, true)
 
-								job_blip[playername] = 0
-								job_marker[playername] = 0
-							end
+							job_blip[playername] = 0
+							job_marker[playername] = 0
 						end
 					end
 				end
@@ -2829,20 +2829,22 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 18 then --работа транспортный детектив
-				local vehicleid = player_car_police()
-
-				if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 and vehicleid then
+				if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 then
 					if (job_call[playername] == 0) then
-						local pos = {getElementPosition(vehicleid)}
+						local vehicleid = player_car_police()
 
-						job_call[playername] = {1,vehicleid}
-						job_pos[playername] = {pos[1],pos[2],pos[3]}
+						if vehicleid then
+							local pos = {getElementPosition(vehicleid)}
 
-						sendMessage(playerid, "Найдите т/с гос.номер "..getVehiclePlateText(job_call[playername][2]), yellow)
+							job_call[playername] = {1,vehicleid}
+							job_pos[playername] = {pos[1],pos[2],pos[3]}
 
-						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
-						job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
-						
+							sendMessage(playerid, "Найдите т/с гос.номер "..getVehiclePlateText(job_call[playername][2]), yellow)
+
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
+						end
+
 					elseif (job_call[playername][1] == 1) then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) then
 							local randomize = random(zp_player_police_car/2,zp_player_police_car)
@@ -7739,7 +7741,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					
 					else
 					
-						sendMessage(playerid, "[ERROR] Это не тот т/с", red)
+						sendMessage(playerid, "[ERROR] Это не то т/с", red)
 						return
 					end
 				
@@ -8024,6 +8026,12 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
 				return
 			end
+
+		elseif id1 == 102 then-- уголовное дело
+			local crimes_plus = id2
+			crimes[playername] = crimes[playername]+crimes_plus
+			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+			id2 = 0
 
 		else
 			if id1 == 1 then
