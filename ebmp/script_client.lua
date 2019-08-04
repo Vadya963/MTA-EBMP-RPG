@@ -3071,11 +3071,11 @@ function tablet_fun()--создание планшета
 		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
 		local start = false
 
-		local rb, width_rb = m2gui_radiobutton ( m2gui_width2, height_fon-16, 60, 15, "1(1/"..horse_t[1][3]..")", false, low_fon )
-		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "2(1/"..horse_t[2][3]..")", false, low_fon )
-		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "3(1/"..horse_t[3][3]..")", false, low_fon )
-		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "4(1/"..horse_t[4][3]..")", false, low_fon )
-		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 70, 15, "5(1/"..horse_t[5][3]..")", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( m2gui_width2, height_fon-16, 60, 15, "1("..horse_t[1][3].."/1)", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "2("..horse_t[2][3].."/1)", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "3("..horse_t[3][3].."/1)", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 60, 15, "4("..horse_t[4][3].."/1)", false, low_fon )
+		local rb, width_rb = m2gui_radiobutton ( width_rb, height_fon-16, 70, 15, "5("..horse_t[5][3].."/1)", false, low_fon )
 
 		local edit = guiCreateEdit( width_rb, height_fon-25, width_fon-m2gui_width1-m2gui_width2, 25, "укажите ставку", false, low_fon )
 

@@ -8031,6 +8031,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local crimes_plus = id2
 			crimes[playername] = crimes[playername]+crimes_plus
 			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+			me_chat(playerid, playername.." прочитал(а) "..info_png[id1][1])
 			id2 = 0
 
 		else
