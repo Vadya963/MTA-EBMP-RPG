@@ -80,7 +80,6 @@ local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во убранных растений на ферме
 local ferm_etap_count = 255--кол-во этапов за раз
-local car_theft_dim = 2--вирт мир угнаных тс
 local no_ped_damage = {--таблица нпс по которым не будет проходить дамаг
 	createPed ( 312, 2435.337890625,-2704.7568359375,3, 180.0, true ),
 	createPed ( 312, -1632.9775390625,-2239.0263671875,31.4765625, 90.0, true ),
@@ -1428,7 +1427,7 @@ local plane_job = {
 }
 
 local sell_car_theft = {
-	{-1106.65234375,-1620.943359375,76.3671875},
+	{365.4150390625,2537.072265625,16.664493560791},
 }
 
 local original_business_pos = {
@@ -2831,15 +2830,16 @@ function job_timer2 (playerid)
 			elseif job[playername] == 18 then --работа транспортный детектив
 				if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 then
 					if (job_call[playername] == 0) then
-						local vehicleid = player_car_police()
+						local plate = player_car_police()
 
-						if vehicleid then
-							local pos = {getElementPosition(vehicleid)}
+						if plate then
+							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+							local pos = {result[1]["x"],result[1]["y"],result[1]["z"]}
 
-							job_call[playername] = {1,vehicleid}
+							job_call[playername] = {1,plate}
 							job_pos[playername] = {pos[1],pos[2],pos[3]}
 
-							sendMessage(playerid, "Найдите т/с гос.номер "..getVehiclePlateText(job_call[playername][2]), yellow)
+							sendMessage(playerid, "Найдите т/с гос.номер "..job_call[playername][2], yellow)
 
 							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
@@ -2849,7 +2849,9 @@ function job_timer2 (playerid)
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) then
 							local randomize = random(zp_player_police_car/2,zp_player_police_car)
 
-							setElementDimension(job_call[playername][2], 0)
+							sqlite( "UPDATE car_db SET theft = '0' WHERE number = '"..job_call[playername][2].."'")
+
+							car_spawn(job_call[playername][2])
 
 							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2985,15 +2987,15 @@ function car_theft_fun(playername, car_theft_win)
 			setElementPosition(job_vehicleid[playername][1],job_vehicleid[playername][2],job_vehicleid[playername][3],job_vehicleid[playername][4])
 			setElementRotation(job_vehicleid[playername][1], 0,0,job_vehicleid[playername][5])
 
-			if car_theft_win then
-				setElementDimension(job_vehicleid[playername][1], car_theft_dim)
-			end
-
 			local plate = getVehiclePlateText(job_vehicleid[playername][1])
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if (result[1]["COUNT()"] == 1) then
-			
 				sqlite( "UPDATE car_db SET x = '"..job_vehicleid[playername][2].."', y = '"..job_vehicleid[playername][3].."', z = '"..job_vehicleid[playername][4].."', rot = '"..job_vehicleid[playername][5].."', fuel = '"..fuel[plate].."', probeg = '"..probeg[plate].."' WHERE number = '"..plate.."'")
+			end
+
+			if car_theft_win then
+				sqlite( "UPDATE car_db SET theft = '1' WHERE number = '"..plate.."'")
+				destroyElement(job_vehicleid[playername][1])
 			end
 
 			job_vehicleid[playername] = 0
@@ -3024,7 +3026,7 @@ function player_car_theft()
 	local car_theft_table = {}
 
 	for k,vehicleid in pairs(getElementsByType("vehicle")) do
-		if getElementDimension(vehicleid) == 0 and (getVehicleType(vehicleid) == "Automobile" or getVehicleType(vehicleid) == "Bike" or getVehicleType(vehicleid) == "Monster Truck" or getVehicleType(vehicleid) == "Quad") then
+		if getElementDimension(vehicleid) == 0 and (getVehicleType(vehicleid) == "Automobile" or getVehicleType(vehicleid) == "Bike" or getVehicleType(vehicleid) == "Monster Truck" or getVehicleType(vehicleid) == "Quad" or getVehicleType(vehicleid) == "Helicopter" or getVehicleType(vehicleid) == "Plane") then
 			table.insert(car_theft_table, vehicleid)
 		end
 	end
@@ -3040,10 +3042,8 @@ end
 function player_car_police()
 	local car_theft_table = {}
 
-	for k,vehicleid in pairs(getElementsByType("vehicle")) do
-		if getElementDimension(vehicleid) == car_theft_dim and (getVehicleType(vehicleid) == "Automobile" or getVehicleType(vehicleid) == "Bike" or getVehicleType(vehicleid) == "Monster Truck" or getVehicleType(vehicleid) == "Quad") then
-			table.insert(car_theft_table, vehicleid)
-		end
+	for k,v in pairs(sqlite( "SELECT * FROM car_db WHERE theft = '1'" )) do
+		table.insert(car_theft_table, v["number"])
 	end
 
 	if #car_theft_table > 0 then
@@ -5602,7 +5602,7 @@ function car_spawn(number)
 	local plate = number
 	local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 
-	if result[1]["nalog"] ~= 0 then
+	if result[1]["nalog"] ~= 0 and result[1]["theft"] == 0 then
 		local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
 		setVehicleLocked ( vehicleid, false )
@@ -5822,7 +5822,7 @@ function buycar ( playerid, id )
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	
 		car_spawn(tostring(val2))
 	else
@@ -8792,12 +8792,8 @@ function (playerid, cmd, id)
 							end
 
 							if search_inv_player(playerid, 6, id) ~= 0 then
-								if (player_in_car_theft(tostring(id)) ~= 0) then
-								
-									sendMessage(playerid, "[ERROR] Т/с угнали", red)
-									return
 
-								elseif getElementDimension(vehicleid) == car_theft_dim then
+								if (player_in_car_theft(tostring(id)) ~= 0) then
 									sendMessage(playerid, "[ERROR] Т/с угнали", red)
 									return
 								end
@@ -8834,6 +8830,14 @@ function (playerid, cmd, id)
 					sendMessage(playerid, "[ERROR] Т/с не найдено", red)
 				end
 
+				return
+			end
+		end
+
+		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id.."'" )
+		if result[1] then
+			if result[1]["theft"] == 1 then
+				sendMessage(playerid, "[ERROR] Т/с в угоне", red)
 				return
 			end
 		end
