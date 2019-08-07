@@ -8245,6 +8245,28 @@ end
 addEvent("event_insider_track", true)
 addEventHandler("event_insider_track", root, insider_track)
 
+function fortune_fun (playerid, cash, value, randomize)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+
+	if logged[playername] == 0 then
+		return
+	end
+
+	if cash > array_player_2[playername][1] then
+		sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+		return
+	end
+
+	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+
+	if value == randomize then
+		win_roulette( playerid, cash, randomize )
+	end
+end
+addEvent("event_fortune_fun", true)
+addEventHandler("event_fortune_fun", root, fortune_fun)
+
 local poker_coef = {
 	[1] = {0,1,2,3,4,6,9,25,50,250},
 	[2] = {0,2,4,6,8,12,18,50,100,500},
@@ -9973,6 +9995,7 @@ function input_Console ( text )
 	elseif text == "c" then
 		killTimer(timer)]]
 
+		local wheel_fortune = {40,1,2,1,5,1,2,1,5,1,2,1,10,1,20,1,5,1,2,1,5,2,1,2,1,2,40,1,2,1,5,1,2,1,10,5,2,1,20,1,2,5,1,2,1,10,2,1,5,1,2,1,10,2}
 
 	elseif text == "x" then
 		for k,v in pairs(getElementsByType("player")) do

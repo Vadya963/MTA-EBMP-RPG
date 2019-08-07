@@ -1,5 +1,6 @@
 <meta>
-    <file src="leyka.txd"/>
+	<script src="object_eb.lua" type="client" cache="false"/>
+	<file src="leyka.txd"/>
 	<file src="leyka.dff"/>
 	<file src="horse.txd"/>
 	<file src="horse.dff"/>

@@ -799,7 +799,8 @@ function createText ()
 
 
 	if roulette_number[1] then--рисование цифр рулетки
-		dxDrawText ( tostring(roulette_number[1]), roulette_number[3][1]+roulette_number[3][3], roulette_number[3][2]+roulette_number[3][4]-51, 0.0, 0.0, tocolor ( roulette_number[2][1], roulette_number[2][2], roulette_number[2][3], 255 ), 9, "pricedown", "left", "top", false, false, true )
+		local dimensions = dxGetTextWidth ( tostring(roulette_number[1]), 6, "pricedown" )
+		dxDrawText ( tostring(roulette_number[1]), roulette_number[3][1]+roulette_number[3][3]+(tablet_width/2)-(dimensions/2), roulette_number[3][2]+roulette_number[3][4]-34, 0.0, 0.0, tocolor ( roulette_number[2][1], roulette_number[2][2], roulette_number[2][3], 255 ), 6, "pricedown", "left", "top", false, false, true )
 	end
 
 
@@ -1506,6 +1507,7 @@ function tablet_fun()--создание планшета
 
 	local width_fon = width/1.121--642
 	local height_fon = height/1.194--360
+	tablet_width = width_fon
 
 	local width_fon_pos = width_fon/16.05--40
 	local height_fon_pos = height_fon/12.41--29
@@ -1530,6 +1532,7 @@ function tablet_fun()--создание планшета
 	local poker = guiCreateStaticImage( 150, 80, 60, 60, "comp/poker.png", false, fon )
 	local roulette = guiCreateStaticImage( 220, 80, 70, 60, "comp/roulette.png", false, fon )
 	local horse = guiCreateStaticImage( 300, 80, 60, 60, "comp/it.png", false, fon )
+	local fortune = guiCreateStaticImage( 370, 80, 54, 60, "comp/fortune.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -2035,6 +2038,7 @@ function tablet_fun()--создание планшета
 		local tp_business,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "business_db", false, low_fon )
 		local tp_cow_farms,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "cow_farms_db", false, low_fon )
 		local timer_earth_clear,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "timer_earth_clear", false, low_fon )
+		local log,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "скачать лог", false, low_fon )
 		local work_table,m2gui_width,m2gui_height = m2gui_button( 0, m2gui_height, "Рабочий стол", false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
@@ -2046,6 +2050,12 @@ function tablet_fun()--создание планшета
 			triggerServerEvent("event_earth_true", root, playerid)
 		end
 		addEventHandler ( "onClientGUIClick", timer_earth_clear, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			downloadFile ( "save_sqlite.sql" )
+			triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
+		end
+		addEventHandler ( "onClientGUIClick", log, outputEditBox, false )
 
 		function outputEditBox( button, state, absoluteX, absoluteY )--tp_player
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
@@ -2441,7 +2451,7 @@ function tablet_fun()--создание планшета
 				
 				setTimer(function()
 					for k,v in pairs(getElementData(playerid, "car_db")) do
-						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["inventory"])
+						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 					end
 				end, 1000, 1)
 			end
@@ -2501,9 +2511,10 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "wheel", 0.1)
 			guiGridListAddColumn(shoplist, "hydraulics", 0.1)
 			guiGridListAddColumn(shoplist, "wheel_rgb", 0.2)
+			guiGridListAddColumn(shoplist, "theft", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(playerid, "car_db")) do
-				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["inventory"])
+				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_car, outputEditBox, false )
@@ -2720,6 +2731,7 @@ function tablet_fun()--создание планшета
 
 			setTimer(function()
 				if not isElement(low_fon) then
+					killTimer(sourceTimer)
 					return
 				end
 
@@ -2925,32 +2937,31 @@ function tablet_fun()--создание планшета
 		local to3 = {3,6,9,12,15,18,21,24,27,30,33,36}
 
 		for i,v in ipairs(to3) do
-			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 10, 25, 25, tostring(v), false, low_fon ))
+			table.insert(roulette_game, guiCreateButton ( 6+(i*45), height_fon-25-45*5, 45, 45, tostring(v), false, low_fon ))
 		end
 		for i,v in ipairs(to2) do
-			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 35, 25, 25, tostring(v), false, low_fon ))
+			table.insert(roulette_game, guiCreateButton ( 6+(i*45), height_fon-25-45*4, 45, 45, tostring(v), false, low_fon ))
 		end
 		for i,v in ipairs(to1) do
-			table.insert(roulette_game, guiCreateButton ( 250+(i*25), 60, 25, 25, tostring(v), false, low_fon ))
+			table.insert(roulette_game, guiCreateButton ( 6+(i*45), height_fon-25-45*3, 45, 45, tostring(v), false, low_fon ))
 		end
-		table.insert(roulette_game, guiCreateButton ( 225+(1*25), 10, 25, 25*5, "0", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 0+(0*45), height_fon-25-45*5, 51, 45*5, "0", false, low_fon ))
 
-		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 10, 50, 25, "3-3", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 35, 50, 25, "3-2", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(13*25), 60, 50, 25, "3-1", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(13*45), height_fon-25-45*5, 45+6, 45, "3-3", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(13*45), height_fon-25-45*4, 45+6, 45, "3-2", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(13*45), height_fon-25-45*3, 45+6, 45, "3-1", false, low_fon ))
+		local roulette_button =		guiCreateButton ( 6+(13*45), height_fon-25-45*2, 45+6, 45*2, "", false, low_fon )
 
-		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 85, 25*4, 25, "1-12", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 85, 25*4, 25, "13-24", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 85, 25*4, 25, "25-36", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(1*45), height_fon-25-45*2, 45*4, 45, "1-12", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(5*45), height_fon-25-45*2, 45*4, 45, "13-24", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(9*45), height_fon-25-45*2, 45*4, 45, "25-36", false, low_fon ))
 
-		table.insert(roulette_game, guiCreateButton ( 250+(1*25), 110, 25*2, 25, "1-18", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(3*25), 110, 25*2, 25, "EVEN", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(5*25), 110, 25*2, 25, "RED", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(7*25), 110, 25*2, 25, "BLACK", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(9*25), 110, 25*2, 25, "ODD", false, low_fon ))
-		table.insert(roulette_game, guiCreateButton ( 250+(11*25), 110, 25*2, 25, "19-36", false, low_fon ))
-
-		local roulette_button = guiCreateButton ( 250+(13*25), 85, 50, 25*2, "", false, low_fon )
+		table.insert(roulette_game, guiCreateButton ( 6+(1*45), height_fon-25-45, 45*2, 45, "1-18", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(3*45), height_fon-25-45, 45*2, 45, "EVEN", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(5*45), height_fon-25-45, 45*2, 45, "RED", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(7*45), height_fon-25-45, 45*2, 45, "BLACK", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(9*45), height_fon-25-45, 45*2, 45, "ODD", false, low_fon ))
+		table.insert(roulette_game, guiCreateButton ( 6+(11*45), height_fon-25-45, 45*2, 45, "19-36", false, low_fon ))
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			destroyElement(low_fon)
@@ -3002,6 +3013,7 @@ function tablet_fun()--создание планшета
 
 			setTimer(function()
 				if not isElement(low_fon) then
+					killTimer(sourceTimer)
 					return
 				end
 
@@ -3169,6 +3181,104 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 	end
 	addEventHandler ( "onClientGUIClick", horse, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--колесо удачи
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local home,m2gui_width1 = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width2 = m2gui_button( m2gui_width1, height_fon-16, "Играть", false, low_fon )
+		local edit = guiCreateEdit( m2gui_width2, height_fon-25, width_fon, 25, "укажите ставку", false, low_fon )
+		local start, count, time_slot, id, count2, fishka = false, 0, 0, 0, 0, false
+		local fortune_game = {}
+		local wheel_fortune = {40,1,2,1,5,1,2,1,5,1,2,1,10,1,20,1,5,1,2,1,5,2,1,2,1,2,40,1,2,1,5,1,2,1,10,5,2,1,20,1,2,5,1,2,1,10,2,1,5,1,2,1,10,2}
+
+		table.insert(fortune_game, guiCreateButton ( 0+(214*0), height_fon-25-40*2, 214, 40, "1", false, low_fon ))
+		table.insert(fortune_game, guiCreateButton ( 0+(214*1), height_fon-25-40*2, 214, 40, "2", false, low_fon ))
+		table.insert(fortune_game, guiCreateButton ( 0+(214*2), height_fon-25-40*2, 214, 40, "5", false, low_fon ))
+
+		table.insert(fortune_game, guiCreateButton ( 0+(214*0), height_fon-25-40*1, 214, 40, "10", false, low_fon ))
+		table.insert(fortune_game, guiCreateButton ( 0+(214*1), height_fon-25-40*1, 214, 40, "20", false, low_fon ))
+		table.insert(fortune_game, guiCreateButton ( 0+(214*2), height_fon-25-40*1, 214, 40, "40", false, low_fon ))
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+			roulette_number[1] = false
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			guiSetText(edit, "")
+		end
+		addEventHandler ( "onClientGUIClick", edit, outputEditBox, false )
+
+		for k,v in pairs(fortune_game) do
+			function outputEditBox ( button, state, absoluteX, absoluteY )
+				if start then
+					sendMessage("[ERROR] Вы играете", red)
+					return
+				end
+				
+				id = tonumber(guiGetText(source))
+
+				if fishka then
+					destroyElement(fishka)
+				end
+
+				fishka = guiCreateStaticImage( (214/2)-(36/2), 2, 36, 36, "comp/fishka.png", false, v )
+			end
+			addEventHandler ( "onClientGUIClick", v, outputEditBox, false )
+		end
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGetText(edit)
+			local cash = tonumber(text)
+				
+			if text == "" then
+				sendMessage("[ERROR] Укажите ставку", red)
+				return
+			elseif id == 0 then
+				sendMessage("[ERROR] Вы не сделали ставку", red)
+				return
+			elseif not cash then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			elseif cash < 1 then
+				sendMessage("[ERROR] Число меньше 1", red)
+				return
+			elseif start then
+				sendMessage("[ERROR] Вы играете", red)
+				return
+			end
+
+			start, time_slot = true, random(100,150)
+			roulette_number[2] = {255,255,255}
+
+			setTimer(function()
+				if not isElement(low_fon) then
+					killTimer(sourceTimer)
+					return
+				end
+
+				count = count+1
+
+				count2 = count2+1
+
+				roulette_number[1] = wheel_fortune[count2]
+
+				if count == time_slot then
+					triggerServerEvent("event_fortune_fun", root, playerid, cash, id, wheel_fortune[count2])
+					start,count = false,0
+				end
+
+				if count2 == 54 then
+					count2 = 0
+				end
+			end, 100, time_slot)
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+	end
+	addEventHandler ( "onClientGUIClick", fortune, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", root, tablet_fun )
