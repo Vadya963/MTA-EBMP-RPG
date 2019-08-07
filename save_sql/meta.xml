@@ -1,0 +1,4 @@
+<meta>
+	<script src="restart.lua" type="client"/>
+	<file src="save_sqlite.sql" download="false"/>
+</meta>

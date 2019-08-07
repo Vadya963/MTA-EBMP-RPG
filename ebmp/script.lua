@@ -23,7 +23,7 @@ function sqlite(text)
 		end
 
 		local client_time = "[Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..hour..":"..minute..":"..second.."] "
-		local hFile = fileOpen(":ebmp/save_sqlite.sql")
+		local hFile = fileOpen(":save_sql/save_sqlite.sql")
 		fileSetPos( hFile, fileGetSize( hFile ) )
 		fileWrite(hFile, client_time..text.."\n" )
 		fileClose(hFile)
@@ -49,6 +49,13 @@ addEventHandler ( "event_removePedFromVehicle", root, removePedFromVehicle )
 
 addEvent( "event_setElementDimension", true )
 addEventHandler ( "event_setElementDimension", root, setElementDimension )
+
+function restart_res()
+	local res = getResourceFromName ( "save_sql" )
+	restartResource(res)
+end
+addEvent( "event_restartResource", true )
+addEventHandler ( "event_restartResource", root, restart_res )
 
 local earth = {}--слоты земли
 local earth_true = true--очищать ли землю
@@ -9994,8 +10001,6 @@ function input_Console ( text )
 
 	elseif text == "c" then
 		killTimer(timer)]]
-
-		local wheel_fortune = {40,1,2,1,5,1,2,1,5,1,2,1,10,1,20,1,5,1,2,1,5,2,1,2,1,2,40,1,2,1,5,1,2,1,10,5,2,1,20,1,2,5,1,2,1,10,2,1,5,1,2,1,10,2}
 
 	elseif text == "x" then
 		for k,v in pairs(getElementsByType("player")) do

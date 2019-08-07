@@ -2052,8 +2052,15 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", timer_earth_clear, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
-			downloadFile ( "save_sqlite.sql" )
-			triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
+			local res_t = 2
+
+			triggerServerEvent("event_restartResource", root)
+			sendMessage("лог скачается через "..res_t.." сек", lyme)
+
+			setTimer(function()
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
+				triggerEvent("event_download", root)
+			end, res_t*1000, 1)
 		end
 		addEventHandler ( "onClientGUIClick", log, outputEditBox, false )
 

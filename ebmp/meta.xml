@@ -17,11 +17,11 @@
 
 	<include resource="camhack"/>
 	<include resource="map_gta"/>
+	<include resource="save_sql"/>
 
 	<file src="parachute/body_hit_sound.mp3"/>
 	<file src="upgrade/upgrades_car.txt"/>
 	<file src="upgrade/color_car.png"/>
-	<file src="save_sqlite.sql" download="false"/>
 
 	<!--худ-->
 	<file src="hud/alcohol.png"/>
