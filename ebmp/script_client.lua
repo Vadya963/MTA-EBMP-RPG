@@ -1206,45 +1206,6 @@ addEvent( "event_tune_create", true )
 addEventHandler ( "event_tune_create", root, tune_window_create )
 
 
-function business_menu(number)--создание окна бизнеса
-	number_business = number
-
-	showCursor( true )
-
-	local width = 340+10
-	local height = 140.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, Касса", false )
-	local tune_text = m2gui_label ( 0, 20, width, 20, "Укажите сумму", false, gui_window )
-	guiLabelSetHorizontalAlign ( tune_text, "center" )
-	guiSetFont( tune_text, m2font )
-	local tune_text_edit = guiCreateEdit ( 5, 40, (width-10), 20, "", false, gui_window )
-	local tune_radio_button1 = m2gui_radiobutton ( 5, 65, 220, 15, "Забрать деньги из кассы", false, gui_window )
-	local tune_radio_button2 = m2gui_radiobutton ( 5, 90, 220, 15, "Положить деньги в кассу", false, gui_window )
-	local tune_radio_button3 = m2gui_radiobutton ( 5, 115, 330, 15, "Установить стоимость товара (надбавку в N раз)", false, gui_window )
-	local complete_button = m2gui_button( 5, 140, "Выполнить", false, gui_window )
-
-	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-		local text = guiGetText ( tune_text_edit )
-
-		if tonumber(text) ~= nil and tonumber(text) >= 1 then
-			if guiRadioButtonGetSelected( tune_radio_button1 ) == true then
-				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "withdraw" )
-
-			elseif guiRadioButtonGetSelected( tune_radio_button2 ) == true then
-				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "deposit" )
-
-			elseif guiRadioButtonGetSelected( tune_radio_button3 ) == true then
-				triggerServerEvent( "event_till_fun", root, playerid, number_business, tonumber(text), "price" )
-			end
-		end
-	end
-	addEventHandler ( "onClientGUIClick", complete_button, complete, false )
-
-end
-addEvent( "event_business_menu", true )
-addEventHandler ( "event_business_menu", root, business_menu )
-
-
 function shop_menu(number, value)--создание окна магазина
 	number_business = number
 
@@ -1533,6 +1494,7 @@ function tablet_fun()--создание планшета
 	local roulette = guiCreateStaticImage( 220, 80, 70, 60, "comp/roulette.png", false, fon )
 	local horse = guiCreateStaticImage( 300, 80, 60, 60, "comp/it.png", false, fon )
 	local fortune = guiCreateStaticImage( 370, 80, 54, 60, "comp/fortune.png", false, fon )
+	local menu_business = guiCreateStaticImage( 434, 80, 60, 60, "comp/shopb.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(playerid, "tomorrow_weather_data") == value then
@@ -1902,8 +1864,10 @@ function tablet_fun()--создание планшета
 
 				setTimer(function()
 					if getElementData(playerid, "cow_farms_table1") then
-						for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
-							guiGridListAddRow(shoplist, v[2], v[3])
+						if isElement(shoplist) then
+							for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+								guiGridListAddRow(shoplist, v[2], v[3])
+							end
 						end
 					end
 				end, 1000, 1)
@@ -3286,6 +3250,62 @@ function tablet_fun()--создание планшета
 
 	end
 	addEventHandler ( "onClientGUIClick", fortune, outputEditBox, false )
+
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--меню бизнеса
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local shoplist = guiCreateGridList(0, 0, width_fon, height_fon-16-25, false, low_fon)
+		local edit = guiCreateEdit ( 0, height_fon-16-25, width_fon, 25, "0", false, low_fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local complete_button,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Выполнить", false, low_fon )
+		local refresh,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Обновить", false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
+			triggerServerEvent("event_sqlite_load", root, playerid, "business_table")
+			guiGridListClear(shoplist)
+
+			setTimer(function()
+				if getElementData(playerid, "business_table") then
+					if isElement(shoplist) then
+						for k,v in pairs(getElementData(playerid, "business_table")) do
+							guiGridListAddRow(shoplist, v[2], v[3])
+						end
+					end
+				end
+			end, 1000, 1)
+		end
+		addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
+
+		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
+			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
+			local text2 = tonumber(guiGetText ( edit ))
+				
+			if text == "" then
+				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				return
+			elseif not text2 then
+				sendMessage("[ERROR] Введите число в белое поле", red)
+				return
+			end
+
+			triggerServerEvent( "event_till_fun", root, playerid, text, text2 )
+		end
+		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
+
+		if getElementData(playerid, "business_table") then
+			guiGridListAddColumn(shoplist, "Бизнес "..getElementData(playerid, "business_table")[1][1], 0.5)
+			guiGridListAddColumn(shoplist, "", 0.4)
+			for k,v in pairs(getElementData(playerid, "business_table")) do
+				guiGridListAddRow(shoplist, v[2], v[3])
+			end
+		end
+	end
+	addEventHandler ( "onClientGUIClick", menu_business, outputEditBox, false )
 end
 addEvent( "event_tablet_fun", true )
 addEventHandler ( "event_tablet_fun", root, tablet_fun )

@@ -177,6 +177,7 @@ local name_mafia = {
 	[5] = {"Varrios Los Aztecas", {0,255,255}, {114,115,116}},
 	[6] = {"Triads", {50,50,50}, {117,118,120}},
 	[7] = {"Da Nang Boys", {255,0,0}, {121,122,123}},
+	[8] = {"Russian Mafia", {200,200,200}, {111,112,113}},
 }
 local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
@@ -729,7 +730,8 @@ local giuseppe = {
 	{info_png[85][1].." "..name_mafia[4][1], 4, 5000, 85},
 	{info_png[85][1].." "..name_mafia[5][1], 5, 5000, 85},
 	{info_png[85][1].." "..name_mafia[6][1], 6, 5000, 85},
-	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},--10
+	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},
+	{info_png[85][1].." "..name_mafia[8][1], 8, 5000, 85},--11
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -3692,7 +3694,7 @@ function quest_player(playerid, id)
 				setElementData(playerid, "quest_select", quest..":"..quest_progress)
 			end
 			
-			if quest_table[quest][3] == quest_progress then
+			if quest_table[quest][3] >= quest_progress then
 				if quest_table[quest][7][1] ~= 0 then
 					if not inv_player_empty(playerid, quest_table[quest][7][1], quest_table[quest][7][2]) then
 						sendMessage(playerid, "[ERROR] Для завершения квеста освободите инвентарь", red)
@@ -4080,6 +4082,23 @@ function sqlite_load(playerid, value)
 			}
 			
 			setElementData(playerid, "cow_farms_table1", farms)
+		else
+			setElementData(playerid, "cow_farms_table1", false)
+		end
+
+	elseif value == "business_table" then
+		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, 43).."'" )
+		if result[1] then
+			local farms = {
+				{result[1]["number"], "Цена на товар", result[1]["price"].."$"},
+				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
+				{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
+				{result[1]["number"], "Склад", result[1]["warehouse"].." продуктов"},
+			}
+			
+			setElementData(playerid, "business_table", farms)
+		else
+			setElementData(playerid, "business_table", false)
 		end
 
 	elseif value == "quest_table" then
@@ -4399,7 +4418,7 @@ function buy_subject_fun( playerid, text, number, value )
 	elseif value == "giuseppe" then
 		for k,v in pairs(giuseppe) do
 			if v[1] == text then
-				if k >= 4 and k <= 10 then
+				if k >= 4 and k <= 11 then
 					local count = false
 					local name_mafia_skin = ""
 					for k,j in pairs(name_mafia[v[2]][3]) do
@@ -4566,37 +4585,58 @@ addEventHandler ( "event_buy_subject_fun", root, buy_subject_fun )
 
 
 --------------------------эвент по кассе для бизнесов-------------------------------------------------------
-function till_fun( playerid, number, money, value )
+function till_fun( playerid, value, money )
 	local playername = getPlayerName(playerid)
+	local doc = 43
 
-	if value == "withdraw" then
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		if money <= result[1]["money"] then
-			sqlite( "UPDATE business_db SET money = money - '"..money.."' WHERE number = '"..number.."'")
-
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
-
-			sendMessage(playerid, "Вы забрали из кассы "..money.."$", green)
-		else
-			sendMessage(playerid, "[ERROR] В кассе недостаточно средств", red)
+	if value == "Баланс" then
+		if money == 0 then
+			return
 		end
 
-	elseif value == "deposit" then
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-		if money <= array_player_2[playername][1] then
-			sqlite( "UPDATE business_db SET money = money + '"..money.."' WHERE number = '"..number.."'")
+		if money < 1 then
+			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
+			if not result[1] then
+				return
+			end
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-money, playername )
+			if (money*-1) <= result[1]["money"] then
+				sqlite( "UPDATE business_db SET money = money - '"..(money*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
-			sendMessage(playerid, "Вы положили в кассу "..money.."$", orange)
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(money*-1), playername )
+
+				sendMessage(playerid, "Вы забрали из кассы "..(money*-1).."$", green)
+			else
+				sendMessage(playerid, "[ERROR] В кассе недостаточно средств", red)
+			end
+
 		else
-			sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+			local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
+			if not result[1] then
+				return
+			end
+
+			if money <= array_player_2[playername][1] then
+				sqlite( "UPDATE business_db SET money = money + '"..money.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
+
+				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-money, playername )
+
+				sendMessage(playerid, "Вы положили в кассу "..money.."$", orange)
+			else
+				sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+			end
 		end
 
-	elseif value == "price" then
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
+	elseif value == "Цена на товар" then
+		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-		sqlite( "UPDATE business_db SET price = '"..money.."' WHERE number = '"..number.."'")
+		if not result[1] then
+			return
+		elseif money < 1 then
+			return
+		end
+
+		sqlite( "UPDATE business_db SET price = '"..money.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
 		sendMessage(playerid, "Вы установили стоимость товара "..money.."$", yellow)
 
@@ -5170,12 +5210,6 @@ function()
 	sendMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips)
 	sendMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips)
 
-	sqlite_load(playerid, "quest_table")
-	sqlite_load(playerid, "auc")
-	sqlite_load(playerid, "cow_farms_table1")
-	sqlite_load(playerid, "cow_farms_table2")
-	sqlite_load(playerid, "carparking_table")
-
 	count_player = count_player+1
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
@@ -5485,6 +5519,13 @@ function reg_or_login(playerid)
 	fadeCamera(playerid, true)
 	setCameraTarget(playerid, playerid)
 	setPlayerNametagColor_fun( playerid )
+
+	sqlite_load(playerid, "quest_table")
+	sqlite_load(playerid, "auc")
+	sqlite_load(playerid, "cow_farms_table1")
+	sqlite_load(playerid, "cow_farms_table2")
+	sqlite_load(playerid, "carparking_table")
+	sqlite_load(playerid, "business_table")
 
 	if getElementData(playerid, "admin_data") ~= 0 then
 		sqlite_load(playerid, "account_db")
@@ -6228,15 +6269,6 @@ local vehicleid = getPlayerVehicle(playerid)
 						triggerClientEvent( playerid, "event_tune_create", playerid, v["number"] )
 						state_gui_window[playername] = 1
 						return
-
-					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius*2) and search_inv_player(playerid, 43, v["number"]) ~= 0 then
-						for j,i in pairs(interior_business) do
-							if v["type"] == interior_business[j][2] then
-								triggerClientEvent( playerid, "event_business_menu", playerid, v["number"] )
-								state_gui_window[playername] = 1
-								return
-							end
-						end
 					end
 				end
 
@@ -6612,6 +6644,8 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 
 		if id3+1 ~= 25 then
 			setPlayerNametagColor_fun( playerid )
+			sqlite_load(playerid, "cow_farms_table1")
+			sqlite_load(playerid, "business_table")
 			
 			triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_player_1[playername][id3+1], array_player_2[playername][id3+1] )
 
