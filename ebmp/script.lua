@@ -34,29 +34,6 @@ end
 addEvent("event_sqlite", true)
 addEventHandler("event_sqlite", root, sqlite)
 
-function destroyElement_fun( vehicleid )
-	for k,v in pairs(getAttachedElements ( vehicleid )) do
-		destroyElement(v)
-	end
-
-	destroyElement(vehicleid)
-end
-addEvent( "event_destroyElement", true )
-addEventHandler ( "event_destroyElement", root, destroyElement_fun )
-
-addEvent( "event_removePedFromVehicle", true )
-addEventHandler ( "event_removePedFromVehicle", root, removePedFromVehicle )
-
-addEvent( "event_setElementDimension", true )
-addEventHandler ( "event_setElementDimension", root, setElementDimension )
-
-function restart_res()
-	local res = getResourceFromName ( "save_sql" )
-	restartResource(res)
-end
-addEvent( "event_restartResource", true )
-addEventHandler ( "event_restartResource", root, restart_res )
-
 local earth = {}--слоты земли
 local earth_true = true--очищать ли землю
 local max_earth = 0--мак-ое кол-во выброшенных предметов на землю
@@ -77,6 +54,7 @@ local time_nalog = 12--время когда будет взиматься на�
 local price_hotel = 100--цена в отеле
 local crimes_giuseppe = 25--//прес-ия для джузеппе
 local crimes_capture = crimes_giuseppe*2--прес-ия для захвата
+local crimes_kill = crimes_giuseppe*3--прес-ия для киллера
 local car_theft_time = 10--время для угона
 local day_nalog = 7--кол-во дней для оплаты налога
 local business_pos = {}--позиции бизнесов
@@ -123,6 +101,7 @@ local zp_player_bamby = 5000
 local zp_player_box = 5000
 local zp_player_police_car = 5000
 local zp_player_rescuer = 5000
+local zp_player_kill = 5000
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -177,7 +156,7 @@ local name_mafia = {
 	[5] = {"Varrios Los Aztecas", {0,255,255}, {114,115,116}},
 	[6] = {"Triads", {50,50,50}, {117,118,120}},
 	[7] = {"Da Nang Boys", {255,0,0}, {121,122,123}},
-	[8] = {"Russian Mafia", {200,200,200}, {111,112,113}},
+	[8] = {"Russian Mafia", {100,100,100}, {111,112,113}},
 }
 local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
@@ -211,6 +190,29 @@ function earth_true(playerid)
 end
 addEvent( "event_earth_true", true )
 addEventHandler ( "event_earth_true", root, earth_true )
+
+function destroyElement_fun( vehicleid )
+	for k,v in pairs(getAttachedElements ( vehicleid )) do
+		destroyElement(v)
+	end
+
+	destroyElement(vehicleid)
+end
+addEvent( "event_destroyElement", true )
+addEventHandler ( "event_destroyElement", root, destroyElement_fun )
+
+addEvent( "event_removePedFromVehicle", true )
+addEventHandler ( "event_removePedFromVehicle", root, removePedFromVehicle )
+
+addEvent( "event_setElementDimension", true )
+addEventHandler ( "event_setElementDimension", root, setElementDimension )
+
+function restart_res()
+	local res = getResourceFromName ( "save_sql" )
+	restartResource(res)
+end
+addEvent( "event_restartResource", true )
+addEventHandler ( "event_restartResource", root, restart_res )
 
 function player_position( playerid )
 	local x,y,z = getElementPosition(playerid)
@@ -722,6 +724,7 @@ local gas = {
 
 local giuseppe = {
 	{info_png[64][1].." Угонщик", 6, 5000, 64},
+	{info_png[64][1].." Киллер", 20, 5000, 64},
 	{info_png[83][1], 100, 1000, 83},
 	{info_png[84][1], 10, 500, 84},
 	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},--4
@@ -2030,47 +2033,49 @@ function job_timer2 (playerid)
 				end
 
 			elseif (job[playername] == 6) then --работа Угонщик
-				if (job_call[playername] == 0) then 
-					local vehicleid = player_car_theft()
+				if crimes[playername] >= crimes_giuseppe then
+					if (job_call[playername] == 0) then 
+						local vehicleid = player_car_theft()
 
-					if vehicleid then
-						local pos = {getElementPosition(vehicleid)}
-						local rot = {getElementRotation(vehicleid)}
+						if vehicleid then
+							local pos = {getElementPosition(vehicleid)}
+							local rot = {getElementRotation(vehicleid)}
 
-						job_call[playername] = 1
-						job_pos[playername] = {pos[1],pos[2],pos[3]}
+							job_call[playername] = 1
+							job_pos[playername] = {pos[1],pos[2],pos[3]}
 
-						job_vehicleid[playername] = {vehicleid,pos[1],pos[2],pos[3],rot[3]}
-						job_timer[playername] = setTimer(car_theft_fun, (car_theft_time*60000), 1, playername)
+							job_vehicleid[playername] = {vehicleid,pos[1],pos[2],pos[3],rot[3]}
+							job_timer[playername] = setTimer(car_theft_fun, (car_theft_time*60000), 1, playername)
 
-						sendMessage(playerid, "Угоните т/с гос.номер "..getVehiclePlateText(job_vehicleid[playername][1])..", у вас есть "..car_theft_time.." мин", yellow)
+							sendMessage(playerid, "Угоните т/с гос.номер "..getVehiclePlateText(job_vehicleid[playername][1])..", у вас есть "..car_theft_time.." мин", yellow)
 
-						job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
-						job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
-					end
+							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
+						end
 
-				elseif (job_call[playername] == 1) then
-					
-					if (job_vehicleid[playername][1] == vehicleid) then
+					elseif (job_call[playername] == 1) then
 						
-						local x1,y1 = player_position( playerid )
+						if (job_vehicleid[playername][1] == vehicleid) then
+							
+							local x1,y1 = player_position( playerid )
 
-						job_call[playername] = 2
+							job_call[playername] = 2
 
-						local randomize = random(1,#sell_car_theft)
+							local randomize = random(1,#sell_car_theft)
 
-						local crimes_plus = zakon_car_theft_crimes
-						crimes[playername] = crimes[playername]+crimes_plus
-						sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+							local crimes_plus = zakon_car_theft_crimes
+							crimes[playername] = crimes[playername]+crimes_plus
+							sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
 
-						sendMessage(playerid, "Езжайте в отстойник", yellow)
+							sendMessage(playerid, "Езжайте в отстойник", yellow)
 
-						police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
+							police_chat(playerid, "[ДИСПЕТЧЕР] Угон "..getVehicleNameFromModel(getElementModel(vehicleid)).." гос.номер "..getVehiclePlateText(vehicleid)..", координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
 
-						job_pos[playername] = {sell_car_theft[randomize][1],sell_car_theft[randomize][2],sell_car_theft[randomize][3]}
+							job_pos[playername] = {sell_car_theft[randomize][1],sell_car_theft[randomize][2],sell_car_theft[randomize][3]}
 
-						setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-						setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+							setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+							setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
+						end
 					end
 					
 				elseif (job_call[playername] == 2) then
@@ -2444,6 +2449,11 @@ function job_timer2 (playerid)
 
 								job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
 
+								function died()
+									job_call[playername][1] = job_call[playername][3]+3
+								end
+								addEventHandler("onPedWasted", job_ped[playername], died)
+
 								add_ped_in_no_ped_damage(job_ped[playername])
 
 								me_chat(playerid, playername.." взял(а) мегафон в руку")
@@ -2458,7 +2468,7 @@ function job_timer2 (playerid)
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 							local randomize = random(1,2)
 
-							triggerClientEvent(playerid, "event_givePedWeapon", playerid, job_ped[playername], weapon[18][2], 1000, true)
+							triggerClientEvent(playerid, "event_givePedWeapon", playerid, job_ped[playername], weapon[18][2], 10000, true)
 
 							if randomize == 1 then
 								sendMessage(playerid, "Преступник сдается", yellow)
@@ -2485,11 +2495,6 @@ function job_timer2 (playerid)
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 							triggerClientEvent(playerid, "event_setPedAimTarget", playerid, job_ped[playername], x, y, z)
 						end
-
-						function died()
-							job_call[playername][1] = job_call[playername][3]+3
-						end
-						addEventHandler("onPedWasted", job_ped[playername], died)
 
 					elseif job_call[playername][1] == job_call[playername][3]+3 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
@@ -2940,6 +2945,77 @@ function job_timer2 (playerid)
 						end
 					end
 				end
+
+			elseif job[playername] == 20 then--работа киллер
+				local skin_table = {}
+
+				for k,v in pairs(name_mafia) do
+					if k ~= 0 then
+						for k,v in pairs(v[3]) do
+							table.insert(skin_table, v)
+
+							if getElementModel(playerid) == v and search_inv_player_2_parameter(playerid, 85) ~= 0 and crimes[playername] >= crimes_kill then
+								if job_call[playername] == 0 then
+									local randomize = random(1,#original_business_pos)
+
+									sendMessage(playerid, "Устраните цель", yellow)
+
+									job_call[playername] = 1
+									job_pos[playername] = {original_business_pos[randomize][1],original_business_pos[randomize][2],original_business_pos[randomize][3]-1}
+
+									job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+
+								elseif job_call[playername] == 1 then
+									if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+
+										local random1 = random(1,#skin_table)
+										local randomize_skin = skin_table[random1]
+
+										local x1,y1 = player_position( playerid )
+										police_chat(playerid, "[ДИСПЕТЧЕР] Перестрелка, координаты [X  "..x1..", Y  "..y1.."], подозреваемый "..playername)
+
+										job_call[playername] = 2
+										job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0.0, true )
+
+										triggerClientEvent(playerid, "event_givePedWeapon", playerid, job_ped[playername], weapon[18][2], 10000, true)
+										triggerClientEvent(playerid, "event_setPedControlState", playerid, job_ped[playername], "fire", true)
+
+										function died()
+											job_call[playername] = 3
+
+											local crimes_plus = zakon_kill_crimes
+											crimes[playername] = crimes[playername]+crimes_plus
+											sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+										end
+										addEventHandler("onPedWasted", job_ped[playername], died)
+									end
+
+								elseif job_call[playername] == 2 then
+									if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+										triggerClientEvent(playerid, "event_setPedAimTarget", playerid, job_ped[playername], x, y, z)
+									end
+
+								elseif job_call[playername] == 3 then
+									if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+										local randomize = random(zp_player_kill/2,zp_player_kill)
+
+										inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+
+										sendMessage(playerid, "Вы получили за задание "..randomize.."$", green)
+
+										destroyElement(job_blip[playername])
+										destroyElement(job_ped[playername])
+
+										job_blip[playername] = 0
+										job_pos[playername] = 0
+										job_call[playername] = 0
+										job_ped[playername] = 0
+									end
+								end
+							end
+						end
+					end
+				end	
 			end
 		
 		end
@@ -3356,15 +3432,9 @@ function onChat(message, messageType)
 		end
 		
 		if (count == 0) then
-		
 			sendMessage( root, say, gray )
-
-			print("[CHAT] "..say)
-		
 		else 
-		
 			ic_chat( playerid, say_10_r )
-			print("[CHAT] "..say_10_r)
 		end
 
 	else 
@@ -3989,11 +4059,6 @@ function amount_inv_house_2_parameter(house, id1)--выводит сумму в�
 	return val
 end
 --------------------------------------------------------------------------------------------------------
-
-function info_bisiness( number )
-	local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-	return "[business "..number..", type "..result[1]["type"]..", price "..result[1]["price"]..", money "..result[1]["money"]..", warehouse "..result[1]["warehouse"].."]"
-end
 
 function pickupUse( playerid )
 	local pickup = source
@@ -5314,6 +5379,22 @@ function(ammo, attacker, weapon, bodypart)
 	local playername_a = nil
 	local reason = weapon
 	local cash = 100
+	local time = getRealTime()
+	local hour = time["hour"]
+	local minute = time["minute"]
+	local second = time["second"]
+
+	if time["hour"] < 10 then
+		hour = "0"..hour
+	end
+
+	if time["minute"] < 10 then
+		minute = "0"..minute
+	end
+
+	if time["second"] < 10 then
+		second = "0"..second
+	end
 
 	for k,v in pairs(deathReasons) do
 		if k == reason then
@@ -5399,7 +5480,7 @@ function(ammo, attacker, weapon, bodypart)
 		sendMessage(root, "[НОВОСТИ] "..playername_a.." убил "..playername.." Причина: "..tostring(reason).." Часть тела: "..tostring(getBodyPartName ( bodypart )), green )
 	end]]
 
-	print("[onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
+	outputConsole("["..hour..":"..minute..":"..second.."] [onPlayerWasted] "..playername.." [ammo - "..tostring(ammo)..", attacker - "..tostring(playername_a)..", reason - "..tostring(reason)..", bodypart - "..tostring(getBodyPartName ( bodypart )).."]")
 end)
 
 function frozen_false_fun( playerid )
@@ -7239,7 +7320,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					end
 				end
 
-				if isPointInCircle3D(2144.18359375,1635.2705078125,993.57611083984, x,y,z, 5) and robbery_player[playername] == 0 then
+				if isPointInCircle3D(2144.18359375,1635.2705078125,993.57611083984, x,y,z, 7) and robbery_player[playername] == 0 then
 					local time_rob = 1--время для ограбления
 
 					id2 = id2 - 1
@@ -7255,7 +7336,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
-					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 5, "Casino Caligulas")
+					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 7, "Casino Caligulas")
 				end
 
 				if count == 0 then
@@ -7661,6 +7742,29 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					job[playername] = 19
 
 					me_chat(playerid, playername.." вышел(ла) на работу Спасатель")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
+			elseif id2 == 20 then
+				local mafia = search_inv_player_2_parameter(playerid, 85)
+
+				if crimes[playername] < crimes_kill then
+					sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_kill.." преступлений", red)
+					return
+				elseif mafia == 0 then
+					sendMessage(playerid, "[ERROR] Вы не член банды", red)
+					return
+				elseif getElementModel(playerid) ~= name_mafia[mafia][3][1] and getElementModel(playerid) ~= name_mafia[mafia][3][2] and getElementModel(playerid) ~= name_mafia[mafia][3][3] then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia[mafia][3][1]..","..name_mafia[mafia][3][2]..","..name_mafia[mafia][3][3], red)
+					return
+				end
+
+				if job[playername] == 0 then
+					job[playername] = 20
+
+					me_chat(playerid, playername.." вышел(ла) на работу Киллер")
 				else
 					job[playername] = 0
 
@@ -8682,12 +8786,10 @@ function blackjack (playerid, cmd, value, ...)
 				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-accept_player[playername][3], playername )
 
 				win_roulette(accept_player[playername][2], accept_player[playername][3], 1)
-				print("win point2")
 			elseif point > point2 and point <= 21 or point == 21 then
 				inv_server_load( accept_player[playername][2], "player", 0, 1, array_player_2[getPlayerName(accept_player[playername][2])][1]-accept_player[playername][3], playername )
 
 				win_roulette(playerid, accept_player[playername][3], 1)
-				print("win point")
 			else
 
 			end
@@ -10018,7 +10120,6 @@ function input_Console ( text )
 
 	if text == "z" then
 		--pay_nalog()
-		--print(string.find("UPDATE", "UPDATE"))
 
 		--[[timer = setTimer(function (  )
 			for k,v in pairs(getElementsByType("player")) do
