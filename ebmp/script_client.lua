@@ -741,7 +741,7 @@ function createText ()
 
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
+		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getElementData(playerid, "player_id")[1].." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
 		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		--нужды
@@ -1241,10 +1241,6 @@ function shop_menu(number, value)--создание окна магазина
 	elseif value == "mer" then
 		local column_width1 = 0.7
 		local column_width2 = 0.2
-
-		local zakon_nalog_car = getElementData ( playerid, "zakon_nalog_car_data" )
-		local zakon_nalog_house = getElementData ( playerid, "zakon_nalog_house_data" )
-		local zakon_nalog_business = getElementData ( playerid, "zakon_nalog_business_data" )
 
 		local width = 400+10
 		local height = 320.0+(16.0*1)+10

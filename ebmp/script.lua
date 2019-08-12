@@ -720,6 +720,7 @@ end
 
 local gas = {
 	[5] = {info_png[5][1].." 25 "..info_png[5][2], 25, 250},
+	[23] = {info_png[23][1], 1, 100},
 }
 
 local giuseppe = {
@@ -3372,7 +3373,7 @@ end
 function pay_nalog()
 	local time = getRealTime()
 
-	if time["hour"] == time_nalog then
+	if time["hour"] == time_nalog and time["minute"] == 0 then
 		local result = sqlite( "SELECT * FROM car_db" )
 		for k,v in pairs(result) do
 			if v["nalog"] > 0 then
@@ -3402,6 +3403,52 @@ function pay_nalog()
 		end
 
 		print("[pay_nalog]")
+	end
+
+	if time["minute"] == 0 then
+		pay_money_gz()
+
+		print("[pay_money_gz]")
+	end
+end
+
+function pay_money_gz()
+	for k1,v1 in pairs(name_mafia) do
+		if k1 ~= 0 then
+			local count = 0
+			local count2 = 0
+			local count_mafia = select_sqlite_t(85, k1)
+
+			if count_mafia then
+				for k,v in pairs(guns_zone) do
+					if(v[2] == k1) then
+						count = count+1
+
+						for k1,v1 in pairs(sqlite( "SELECT * FROM business_db" )) do	
+							if(isInsideRadarArea(v[1], v1["x"],v1["y"])) then
+								count2 = count2+1
+							end
+						end
+					end
+				end
+
+				local money_gz = tonumber(split(money_guns_zone*count/#count_mafia, ".")[1])
+				local money_gzb = tonumber(split(money_guns_zone_business*count2/#count_mafia, ".")[1])
+
+				for k,v in pairs(count_mafia) do
+					local playerid = getPlayerFromName(v)
+					local playername = v
+
+					if playerid and logged[playername] == 1 then
+						sendMessage(playerid, "Вы получили "..money_gz.."$ за удержание территорий", green)
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money_gz, playername )
+
+						sendMessage(playerid, "Вы получили "..money_gzb.."$ за крышивание бизнесов", green)
+						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money_gzb, playername )
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -3642,6 +3689,25 @@ function select_sqlite(id1, id2)--выводит имя владельца лю�
 	end
 
 	return false
+end
+
+function select_sqlite_t(id1, id2)--выводит таблицу имен владельцев любого предмета
+	local table_name = {}
+
+	for k,result in pairs(sqlite( "SELECT * FROM account" )) do
+		for k,v in pairs(split(result["inventory"], ",")) do
+			local spl = split(v, ":")
+			if tonumber(spl[1]) == id1 and tonumber(spl[2]) == id2 then
+				table.insert(table_name, result["name"])
+			end
+		end
+	end
+
+	if #table_name ~= 0 then
+		return table_name
+	else
+		return false
+	end
 end
 
 function player_hotel (playerid, id)
@@ -4988,7 +5054,7 @@ function displayLoadedRes ( res )--старт ресурсов
 		setTimer(set_weather, 1000, 0)--погода сервера
 		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
 		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
-		setTimer(pay_nalog, (60*60000), 0)--списание налогов
+		setTimer(pay_nalog, 60000, 0)--списание налогов
 
 		setWeather(tomorrow_weather)
 		setGlitchEnabled ( "quickreload", true )
@@ -5279,9 +5345,6 @@ function()
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
-	setElementData(playerid, "zakon_nalog_car_data", zakon_nalog_car)
-	setElementData(playerid, "zakon_nalog_house_data", zakon_nalog_house)
-	setElementData(playerid, "zakon_nalog_business_data", zakon_nalog_business)
 	setElementData(playerid, "zakon_alcohol", zakon_alcohol)
 	setElementData(playerid, "zakon_drugs", zakon_drugs)
 	setElementData(playerid, "craft_table", craft_table)
@@ -5498,7 +5561,7 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 	local reason = weapon
 
 	if attacker then
-		if getElementType ( attacker ) == "player" then
+		if getElementType ( attacker ) == "player" and getPlayerName(attacker) ~= playername then
 			triggerClientEvent( attacker, "event_body_hit_sound", playerid )
 
 		elseif getElementType ( attacker ) == "vehicle" then
@@ -5518,6 +5581,10 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 		setElementFrozen( playerid, true )
 		setTimer(frozen_false_fun, 15000, 1, playerid)--разморозка
 		me_chat(playerid, playername_attacker.." оглушил(а) "..playername)
+	end
+
+	if bodypart == 9 then
+		killPed(playerid, attacker, weapon, bodypart)
 	end
 end
 addEventHandler ( "onPlayerDamage", root, playerDamage_text )
@@ -10119,8 +10186,6 @@ end
 function input_Console ( text )
 
 	if text == "z" then
-		--pay_nalog()
-
 		--[[timer = setTimer(function (  )
 			for k,v in pairs(getElementsByType("player")) do
 				local x,y,z = getElementPosition(v)
@@ -10143,6 +10208,9 @@ function input_Console ( text )
 		end
 
 		restartAllResources()
+
+	elseif text == "n" then
+		pay_nalog()
 	end
 end
 addEventHandler ( "onConsole", root, input_Console )
