@@ -50,7 +50,6 @@ local max_heal = 200--макс здоровье игрока
 local house_icon = 1273--пикап дома
 local business_icon = 1274--пикап бизнеса
 local job_icon = 1318--пикап работ
-local time_nalog = 12--время когда будет взиматься налог
 local price_hotel = 100--цена в отеле
 local crimes_giuseppe = 25--//прес-ия для джузеппе
 local crimes_capture = crimes_giuseppe*2--прес-ия для захвата
@@ -3373,7 +3372,7 @@ end
 function pay_nalog()
 	local time = getRealTime()
 
-	if time["hour"] == time_nalog and time["minute"] == 0 then
+	if time["hour"] == 12 and time["minute"] == 0 then
 		local result = sqlite( "SELECT * FROM car_db" )
 		for k,v in pairs(result) do
 			if v["nalog"] > 0 then
@@ -3409,6 +3408,16 @@ function pay_nalog()
 		pay_money_gz()
 
 		print("[pay_money_gz]")
+	end
+
+	if time["hour"] == 23 and time["minute"] == 50 then
+		for i=1,10 do
+			sendMessage(root, "РЕСТАРТ СЕРВЕРА ЧЕРЕЗ 10 МИНУТ", red)
+		end
+	end
+
+	if time["hour"] == 0 and time["minute"] == 0 then
+		restartAllResources()
 	end
 end
 
@@ -10171,6 +10180,10 @@ end)
 -----------------------------------------------------------------------------------------
 
 function restartAllResources()
+	for k,v in pairs(getElementsByType("player")) do
+		kickPlayer(v, "restartAllResources")
+	end
+
 	-- we store a table of resources
 	local allResources = getResources()
 	-- for each one of them,
@@ -10203,10 +10216,6 @@ function input_Console ( text )
 		killTimer(timer)]]
 
 	elseif text == "x" then
-		for k,v in pairs(getElementsByType("player")) do
-			kickPlayer(v, "restartAllResources")
-		end
-
 		restartAllResources()
 
 	elseif text == "n" then
