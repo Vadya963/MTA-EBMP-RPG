@@ -1851,7 +1851,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 3 then--работа инкассатора
-				if vehicleid then
+				if vehicleid and crimes[playername] == 0 then
 					if getElementModel(vehicleid) == down_car_subject_pos[2][6] then
 						if getSpeed(vehicleid) < 1 then
 
@@ -2076,27 +2076,27 @@ function job_timer2 (playerid)
 							setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 							setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
 						end
-					end
 					
-				elseif (job_call[playername] == 2) then
-					
-					if (isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) and job_vehicleid[playername][1] == vehicleid) then
+					elseif (job_call[playername] == 2) then
 						
-						if (getSpeed(vehicleid) < 1) then
+						if (isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) and job_vehicleid[playername][1] == vehicleid) then
 							
-							local randomize = cash_car[getElementModel(vehicleid)][2]*0.05
+							if (getSpeed(vehicleid) < 1) then
+								
+								local randomize = cash_car[getElementModel(vehicleid)][2]*0.05
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
-							sendMessage(playerid, "Вы получили "..randomize.."$", green)
+								sendMessage(playerid, "Вы получили "..randomize.."$", green)
 
-							job_pos[playername] = 0
-							job_call[playername] = 3
+								job_pos[playername] = 0
+								job_call[playername] = 3
 
-							car_theft_fun(playername, true)
+								car_theft_fun(playername, true)
 
-							job_blip[playername] = 0
-							job_marker[playername] = 0
+								job_blip[playername] = 0
+								job_marker[playername] = 0
+							end
 						end
 					end
 				end
@@ -2148,7 +2148,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 8 then--работа перевозчика оружия
-				if vehicleid then
+				if vehicleid and crimes[playername] == 0 then
 					if getElementModel(vehicleid) == up_car_subject[5][6] then
 						if getSpeed(vehicleid) < 1 then
 
@@ -2239,7 +2239,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 10 then--работа парамедик
-				if vehicleid then
+				if vehicleid and crimes[playername] == 0 then
 					if getElementModel(vehicleid) == 416 and (getElementModel(playerid) == 274 or getElementModel(playerid) == 275 or getElementModel(playerid) == 276 or getElementModel(playerid) == 145) then
 						if getSpeed(vehicleid) < 1 then
 
@@ -2357,7 +2357,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 12 then--работа пожарный
-				if vehicleid then
+				if vehicleid and crimes[playername] == 0 then
 					if getElementModel(vehicleid) == 407 and (getElementModel(playerid) == 277 or getElementModel(playerid) == 278 or getElementModel(playerid) == 279) then
 						if getSpeed(vehicleid) < 1 then
 
@@ -2407,7 +2407,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 13 then--работа swat
-				if (getElementModel(playerid) == 285 or getElementModel(playerid) == 75) and search_inv_player(playerid, 10, 3) ~= 0 then
+				if (getElementModel(playerid) == 285 or getElementModel(playerid) == 75) and search_inv_player(playerid, 10, 3) ~= 0 and crimes[playername] == 0 then
 					if job_call[playername] == 0 then
 						local randomize = random(1,#fire_pos)
 
@@ -2842,7 +2842,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 18 then --работа транспортный детектив
-				if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 then
+				if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 and crimes[playername] == 0 then
 					if (job_call[playername] == 0) then
 						local plate = player_car_police()
 
@@ -2883,7 +2883,7 @@ function job_timer2 (playerid)
 				end
 
 			elseif job[playername] == 19 then--работа спасатель
-				if vehicleid then
+				if vehicleid and crimes[playername] == 0 then
 					if getElementModel(vehicleid) == 563 and (getElementModel(playerid) == 277 or getElementModel(playerid) == 278 or getElementModel(playerid) == 279) then
 						if job_call[playername] == 0 then
 							local ped_pos = {random(-3000,3000), random(-5000,-4000), 0}
@@ -9722,7 +9722,7 @@ function (playerid, cmd, id1, id2 )
 	end
 
 	if inv_car_empty(playerid, val1, val2, true) then
-		admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] создал "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
+		admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] создал для "..getVehiclePlateText(vehicleid).." "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
 	else
 		sendMessage(playerid, "[ERROR] Инвентарь полон", red)
 	end
