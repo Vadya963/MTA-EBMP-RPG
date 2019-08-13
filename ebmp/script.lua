@@ -5078,11 +5078,8 @@ function displayLoadedRes ( res )--старт ресурсов
 		print("[account] "..result[1]["COUNT()"])
 
 
-		local banned = 0
-		for k,v in pairs(sqlite( "SELECT * FROM account WHERE ban = '1'" )) do
-			banned = banned+1
-		end
-		print("[account_banned] "..banned)
+		local result = sqlite( "SELECT COUNT() FROM account WHERE ban = '1'" )
+		print("[account_banned] "..result[1]["COUNT()"])
 
 
 		local result = sqlite( "SELECT COUNT() FROM banserial_list" )
@@ -9615,12 +9612,13 @@ addCommandHandler("capture",--захват территории
 function (playerid)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
+	local mafia = search_inv_player_2_parameter(playerid, 85)
 
 	if (logged[playername] == 0) then
 	
 		return
 	
-	elseif(search_inv_player_2_parameter(playerid, 85) == 0) then
+	elseif(mafia == 0) then
 	
 		sendMessage(playerid, "[ERROR] Вы не состоите в банде", red)
 		return
@@ -9633,6 +9631,10 @@ function (playerid)
 	elseif(crimes[playername] < crimes_capture) then
 	
 		sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_capture.." преступлений", red)
+		return
+
+	elseif getElementModel(playerid) ~= name_mafia[mafia][3][1] and getElementModel(playerid) ~= name_mafia[mafia][3][2] and getElementModel(playerid) ~= name_mafia[mafia][3][3] then
+		sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia[mafia][3][1]..","..name_mafia[mafia][3][2]..","..name_mafia[mafia][3][3], red)
 		return
 	end
 

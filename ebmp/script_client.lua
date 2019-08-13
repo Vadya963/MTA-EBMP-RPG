@@ -976,19 +976,20 @@ function createText ()
 	for i,v in pairs(getElementData(playerid, "earth")) do--отображение предметов на земле
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 		local area2 = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 10 )
+		local dist = getDistanceBetweenPoints3D(v[1], v[2], v[3]-1, x,y,z)
 
 		if area then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1, 0, false ) }
 			if coords[1] and coords[2] then
-				dxDrawImage ( coords[1]-(57/2), coords[2], 57, 57, image[ v[4] ] )
+				dxDrawImage ( coords[1]-((57-dist*2.85)/2), coords[2], 57-dist*2.85, 57-dist*2.85, image[ v[4] ], 0, 0,0, tocolor(255,255,255,255-dist*12.75) )
 			end
 		end
 
 		if area2 then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( "Нажмите E", 1, m2font_dx1 )
-				dxdrawtext ( "Нажмите E", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( "Нажмите E", 1-dist*0.05, m2font_dx1 )
+				dxdrawtext ( "Нажмите E", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1-dist*0.05, m2font_dx1 )
 			end
 		end
 	end
