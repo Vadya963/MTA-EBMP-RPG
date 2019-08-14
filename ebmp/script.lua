@@ -599,7 +599,7 @@ local craft_table = {--[предмет 1, рецепт 2, предметы дл�
 }
 
 for i,v in ipairs(craft_table) do
-	craft_table[i][1] = info_png[tonumber(split(v[5], ",")[1])][1].." "..split(v[5], ",")[2].." "..info_png[tonumber(split(v[5], ",")[1])][2].." "
+	craft_table[i][1] = info_png[tonumber(split(v[5], ",")[1])][1].." "..split(v[5], ",")[2].." "..info_png[tonumber(split(v[5], ",")[1])][2]
 	craft_table[i][2] = info_png[tonumber(split(v[3], ",")[1])][1].." "..split(v[4], ",")[1].." "..info_png[tonumber(split(v[3], ",")[1])][2].." + "..info_png[tonumber(split(v[3], ",")[2])][1].." "..split(v[4], ",")[2].." "..info_png[tonumber(split(v[3], ",")[2])][2]
 end
 
