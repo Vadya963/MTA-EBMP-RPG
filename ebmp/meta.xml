@@ -41,6 +41,8 @@
 	<file src="gui/window-arrow-off-up.png"/>
 	<file src="gui/window-arrow-on-up.png"/>
 	<file src="gui/window-m2.png"/>
+	<file src="gui/timer.png"/>
+	<file src="gui/timer_arrow.png"/>
 
 	<file src="speedometer/speed_v.png"/>
 	<file src="speedometer/arrow_speed_v.png"/>

@@ -2051,6 +2051,8 @@ function job_timer2 (playerid)
 
 							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
+						
+							triggerClientEvent( playerid, "createHudTimer", playerid, (car_theft_time*60))
 						end
 
 					elseif (job_call[playername] == 1) then
@@ -3104,6 +3106,8 @@ function car_theft_fun(playername, car_theft_win)
 
 		job_blip[playername] = 0
 		job_marker[playername] = 0
+
+		triggerClientEvent( getPlayerFromName(playername), "destroyHudTimer", getPlayerFromName(playername) )
 	end
 end
 
@@ -7366,6 +7370,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "house - "..v["number"])
 
+						triggerClientEvent( playerid, "createHudTimer", playerid, (time_rob*10))
 						break
 					end
 				end
@@ -7389,6 +7394,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 						robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 1000, v["x"],v["y"],v["z"], house_bussiness_radius, "business - "..v["number"])
 
+						triggerClientEvent( playerid, "createHudTimer", playerid, (time_rob*10))
 						break
 					end
 				end
@@ -7410,6 +7416,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
 					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 7, "Casino Caligulas")
+					
+					triggerClientEvent( playerid, "createHudTimer", playerid, (time_rob*10))
 				end
 
 				if count == 0 then

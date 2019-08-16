@@ -9,6 +9,7 @@ local hud = true
 local playerid = 0
 local update_db_rang = 1
 local roulette_number = {false, {0,0,0}, {}}
+local timer = {false, 10, 10}
 
 addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
@@ -370,6 +371,14 @@ setTimer(function ()
 		afk = 0
 		setElementData(localPlayer, "afk", afk)
 	end
+
+	if timer[1] then
+		timer[3] = timer[3]-1
+
+		if timer[3] == -1 then
+			timer[1] = false
+		end
+	end
 end, 1000, 0)
 
 setTimer(function ()
@@ -440,6 +449,20 @@ function sendMessage(text, color)
 
 	outputChatBox("["..hour..":"..minute..":"..second.."] "..text, color[1], color[2], color[3])
 end
+
+function timerm2(time)
+	timer[1] = true
+	timer[2] = time
+	timer[3] = time
+end
+addEvent("createHudTimer", true)
+addEventHandler("createHudTimer", root, timerm2)
+
+function timerm2off()
+	timer[1] = false
+end
+addEvent("destroyHudTimer", true)
+addEventHandler("destroyHudTimer", root, timerm2off)
 
 function getPlayerVehicle( playerid )
 	local vehicle = getPedOccupiedVehicle ( playerid )
@@ -765,6 +788,29 @@ function createText ()
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
 
+		local vehicle = getPlayerVehicle ( playerid )
+		if vehicle then--отображение скорости авто
+			local speed_table = split(getSpeed(vehicle), ".")
+			local heal_vehicle = split(getElementHealth(vehicle), ".")
+			local fuel = getElementData ( playerid, "fuel_data" )
+			local fuel_table = split(fuel, ".")
+			local speed_car = 0
+
+			if getSpeed(vehicle) >= 240 then
+				speed_car = 240*1.125+43
+			else
+				speed_car = getSpeed(vehicle)*1.125+43
+			end
+
+			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
+
+			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+
+			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
+			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
+			dxDrawImage ( (screenWidth-250), screenHeight-250, 210, 210, "speedometer/fuel_v.png", 35.0-(fuel*1.4) )
+		end
+
 		local spl_gz = getElementData(playerid, "guns_zone2")
 		local name_mafia = getElementData(playerid, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
@@ -772,6 +818,12 @@ function createText ()
 			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( white[1], white[2], white[3] ), 1, m2font_dx1 )
 			dxdrawtext ( "Атака "..name_mafia[spl_gz[1][3]][1]..": "..spl_gz[1][4].." очки", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
 			dxdrawtext ( "Защита "..name_mafia[spl_gz[1][5]][1]..": "..spl_gz[1][6].." очки", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
+		end
+
+		if timer[1] then
+			dxDrawImage ( (screenWidth-85), 238, 85, 85, "gui/timer.png" )
+			dxDrawCircle ( (screenWidth-85)+(85/2), 238+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,200 ), tocolor( 255,50,50,200 ) )
+			dxDrawImage ( (screenWidth-85), 238, 85, 85, "gui/timer_arrow.png", (360.0/timer[2])*timer[3] )
 		end
 	end
 
@@ -801,32 +853,6 @@ function createText ()
 	if roulette_number[1] then--рисование цифр рулетки
 		local dimensions = dxGetTextWidth ( tostring(roulette_number[1]), 6, "pricedown" )
 		dxDrawText ( tostring(roulette_number[1]), roulette_number[3][1]+roulette_number[3][3]+(tablet_width/2)-(dimensions/2), roulette_number[3][2]+roulette_number[3][4]-34, 0.0, 0.0, tocolor ( roulette_number[2][1], roulette_number[2][2], roulette_number[2][3], 255 ), 6, "pricedown", "left", "top", false, false, true )
-	end
-
-
-	if hud then
-		local vehicle = getPlayerVehicle ( playerid )
-		if vehicle then--отображение скорости авто
-			local speed_table = split(getSpeed(vehicle), ".")
-			local heal_vehicle = split(getElementHealth(vehicle), ".")
-			local fuel = getElementData ( playerid, "fuel_data" )
-			local fuel_table = split(fuel, ".")
-			local speed_car = 0
-
-			if getSpeed(vehicle) >= 240 then
-				speed_car = 240*1.125+43
-			else
-				speed_car = getSpeed(vehicle)*1.125+43
-			end
-
-			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
-
-			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-
-			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
-			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
-			dxDrawImage ( (screenWidth-250), screenHeight-250, 210, 210, "speedometer/fuel_v.png", 35.0-(fuel*1.4) )
-		end
 	end
 
 
