@@ -7399,7 +7399,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					end
 				end
 
-				if isPointInCircle3D(2144.18359375,1635.2705078125,993.57611083984, x,y,z, 7) and robbery_player[playername] == 0 then
+				if isPointInCircle3D(2144.18359375,1635.2705078125,993.57611083984, x,y,z, 10) and robbery_player[playername] == 0 then
 					local time_rob = 1--время для ограбления
 
 					id2 = id2 - 1
@@ -7415,7 +7415,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					police_chat(playerid, "[ДИСПЕТЧЕР] Ограбление Казино Калигула, подозреваемый "..playername)
 
-					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 7, "Casino Caligulas")
+					robbery_timer[playername] = setTimer(robbery, (time_rob*10000), 1, playerid, zakon_robbery_crimes, 2000, 2144.18359375,1635.2705078125,993.57611083984, 10, "Casino Caligulas")
 					
 					triggerClientEvent( playerid, "createHudTimer", playerid, (time_rob*10))
 				end
