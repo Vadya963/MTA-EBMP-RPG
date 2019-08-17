@@ -961,7 +961,6 @@ function createText ()
 		local width,height = guiGetPosition ( stats_window, false )
 		local x,y = guiGetPosition ( tabPanel, false )
 		y = y+24
-		local offset = dxGetFontHeight(1,m2font_dx1)
 		if info1_png ~= 0 then
 
 			if info1_png == 6 and info2_png ~= 0 and getVehicleNameFromPlate( info2_png ) then
