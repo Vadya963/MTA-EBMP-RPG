@@ -402,7 +402,7 @@ function radio_chat(playerid, text, color)
 		local playername = getPlayerName(player)
 
 		if search_inv_player(player, 80, search_inv_player_2_parameter(playerid, 80)) ~= 0 then
-			sendMessage(player, text, color[1], color[2], color[3])
+			sendMessage(player, text, color)
 		end
 	end
 end
