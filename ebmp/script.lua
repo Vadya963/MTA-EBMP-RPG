@@ -605,7 +605,7 @@ end
 
 local quest_table = {--1 название, 2 описание, 3 кол-во, 5 предмет засчитывания, 6 награда $, 7 награда предметом, 8 массив имен кто выполнил квест
 	[1] = {"Мясник", "Обработать ", math.random(1,5), " кусков мяса", 48, math.random(1000,5000), {79,10000}, {}},
-	[2] = {"Рудокоп", "Добыть ", math.random(1,5), " кг железной руды", 71, math.random(1000,5000), {0,0}, {}},
+	[2] = {"Рудокоп", "Добыть ", math.random(1,5), " раз железную руду", 71, math.random(1000,5000), {0,0}, {}},
 }
 
 local weapon = {
@@ -3635,7 +3635,7 @@ function inv_player_empty(playerid, id1, id2)--выдача предмета и�
 	return false
 end
 
-function inv_player_delet(playerid, id1, id2, delet_inv)--удаления предмета игрока
+function inv_player_delet(playerid, id1, id2, delet_inv, quest_bool)--удаления предмета игрока
 	local playername = getPlayerName ( playerid )
 
 	if delet_inv then
@@ -3646,6 +3646,10 @@ function inv_player_delet(playerid, id1, id2, delet_inv)--удаления пр�
 	for i=0,max_inv do
 		if array_player_1[playername][i+1] == id1 and array_player_2[playername][i+1] == id2 then
 			inv_server_load( playerid, "player", i, 0, 0, playername )
+
+			if quest_bool then
+				quest_player(playerid, id1)
+			end
 
 			return true
 		end
@@ -3843,7 +3847,7 @@ function quest_player(playerid, id)
 				setElementData(playerid, "quest_select", quest..":"..quest_progress)
 			end
 			
-			if quest_table[quest][3] >= quest_progress then
+			if quest_table[quest][3] <= quest_progress then
 				if quest_table[quest][7][1] ~= 0 then
 					if not inv_player_empty(playerid, quest_table[quest][7][1], quest_table[quest][7][2]) then
 						sendMessage(playerid, "[ERROR] Для завершения квеста освободите инвентарь", red)
@@ -3860,6 +3864,8 @@ function quest_player(playerid, id)
 				sendMessage(playerid, "[QUEST] Вы получили "..quest_table[quest][6].."$", green)
 
 				table.insert(quest_table[quest][8], playername)
+
+				sqlite_load(playerid, "quest_table")
 			end
 		end
 	end
@@ -3981,7 +3987,7 @@ function inv_car_empty(playerid, id1, id2, load_value)--выдача предм�
 	return count
 end
 
-function inv_car_delet(playerid, id1, id2, delet_inv, unload_value)--удаления предмета в авто
+function inv_car_delet(playerid, id1, id2, delet_inv, unload_value, quest_bool)--удаления предмета в авто
 	local playername = getPlayerName ( playerid )
 	local vehicleid = getPlayerVehicle(playerid)
 	local plate = getVehiclePlateText ( vehicleid )
@@ -3992,12 +3998,20 @@ function inv_car_delet(playerid, id1, id2, delet_inv, unload_value)--удале�
 	end
 
 	if unload_value then
+		local count = false
 		for i=0,max_inv do
 			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
 				array_car_1[plate][i+1] = 0
 				array_car_2[plate][i+1] = 0
+				count = true
 
 				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
+			end
+		end
+
+		if count then
+			if quest_bool then
+				quest_player(playerid, id1)
 			end
 		end
 	else
@@ -4005,6 +4019,10 @@ function inv_car_delet(playerid, id1, id2, delet_inv, unload_value)--удале�
 			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
 				array_car_1[plate][i+1] = 0
 				array_car_2[plate][i+1] = 0
+
+				if quest_bool then
+					quest_player(playerid, id1)
+				end
 
 				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 				break
@@ -6213,9 +6231,8 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	if value == "player" then
 		for k,v in pairs(down_player_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] then--получение прибыли за предметы
-				inv_player_delet( playerid, id1, id2 )
+				inv_player_delet( playerid, id1, id2, false, true )
 				inv_server_load( playerid, value, 0, 1, array_player_2[playername][1]+id2, tabpanel )
-				quest_player(playerid, id1)
 
 				sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], yellow)
 
@@ -6757,7 +6774,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 						return
 					end
 
-					inv_car_delet(playerid, id, sic2p, true, true)
+					inv_car_delet(playerid, id, sic2p, true, true, true)
 
 					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
 
@@ -6772,7 +6789,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 				if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then--места разгрузки
 					if not cow_farms(playerid, "unload", count, sic2p) and not cow_farms(playerid, "unload_prod", count, sic2p) then
 
-						inv_car_delet(playerid, id, sic2p, true, true)
+						inv_car_delet(playerid, id, sic2p, true, true, true)
 
 						money = count*sic2p
 
