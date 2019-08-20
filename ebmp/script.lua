@@ -156,6 +156,7 @@ local name_mafia = {
 	[6] = {"Triads", {50,50,50}, {117,118,120}},
 	[7] = {"Da Nang Boys", {255,0,0}, {121,122,123}},
 	[8] = {"Russian Mafia", {100,100,100}, {111,112,113}},
+	[9] = {"Bikers", {150,75,0}, {100,247,248,254}},
 }
 local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
@@ -727,14 +728,15 @@ local giuseppe = {
 	{info_png[64][1].." Киллер", 20, 5000, 64},
 	{info_png[83][1], 100, 1000, 83},
 	{info_png[84][1], 10, 500, 84},
-	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},--4
+	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},--5
 	{info_png[85][1].." "..name_mafia[2][1], 2, 5000, 85},
 	{info_png[85][1].." "..name_mafia[3][1], 3, 5000, 85},
 	{info_png[85][1].." "..name_mafia[4][1], 4, 5000, 85},
 	{info_png[85][1].." "..name_mafia[5][1], 5, 5000, 85},
 	{info_png[85][1].." "..name_mafia[6][1], 6, 5000, 85},
 	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},
-	{info_png[85][1].." "..name_mafia[8][1], 8, 5000, 85},--11
+	{info_png[85][1].." "..name_mafia[8][1], 8, 5000, 85},
+	{info_png[85][1].." "..name_mafia[9][1], 9, 5000, 85},--13
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -4580,7 +4582,7 @@ function buy_subject_fun( playerid, text, number, value )
 	elseif value == "giuseppe" then
 		for k,v in pairs(giuseppe) do
 			if v[1] == text then
-				if k >= 4 and k <= 11 then
+				if k >= 5 and k <= 13 then
 					local count = false
 					local name_mafia_skin = ""
 					for k,j in pairs(name_mafia[v[2]][3]) do
@@ -7854,8 +7856,18 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				elseif mafia == 0 then
 					sendMessage(playerid, "[ERROR] Вы не член банды", red)
 					return
-				elseif getElementModel(playerid) ~= name_mafia[mafia][3][1] and getElementModel(playerid) ~= name_mafia[mafia][3][2] and getElementModel(playerid) ~= name_mafia[mafia][3][3] then
-					sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia[mafia][3][1]..","..name_mafia[mafia][3][2]..","..name_mafia[mafia][3][3], red)
+				end
+
+				local skin = false
+				for k,v in pairs(name_mafia[mafia][3]) do
+					if v == getElementModel(playerid) then
+						skin = true
+						break
+					end
+				end
+
+				if not skin then
+					sendMessage(playerid, "[ERROR] Вы должны быть в одежде своей банды", red)
 					return
 				end
 
@@ -9657,9 +9669,18 @@ function (playerid)
 	
 		sendMessage(playerid, "[ERROR] Нужно иметь "..crimes_capture.." преступлений", red)
 		return
+	end
 
-	elseif getElementModel(playerid) ~= name_mafia[mafia][3][1] and getElementModel(playerid) ~= name_mafia[mafia][3][2] and getElementModel(playerid) ~= name_mafia[mafia][3][3] then
-		sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia[mafia][3][1]..","..name_mafia[mafia][3][2]..","..name_mafia[mafia][3][3], red)
+	local skin = false
+	for k,v in pairs(name_mafia[mafia][3]) do
+		if v == getElementModel(playerid) then
+			skin = true
+			break
+		end
+	end
+
+	if not skin then
+		sendMessage(playerid, "[ERROR] Вы должны быть в одежде своей банды", red)
 		return
 	end
 
