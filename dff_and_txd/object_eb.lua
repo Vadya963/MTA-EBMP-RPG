@@ -31,6 +31,7 @@ local dff_and_txd_table = {
 	{"wfyclot", 145},
 	{"wmyplt", 62},
 	{"vitpra", 162},
+	{"punker_chick", 254},
 
 	--авто
 	--{"rcgoblin", 501},
