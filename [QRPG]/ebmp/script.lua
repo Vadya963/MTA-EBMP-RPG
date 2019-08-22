@@ -10409,7 +10409,11 @@ function ( playerid, state )
 	if spl[1] ~= "nil" then
 		if spl[3] == "true" then
 			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, true, false, false, false)
-		else
+		elseif spl[3] == "one" then
+			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, false)
+		elseif spl[3] == "walk" then
+			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, true, true, false, false)
+		elseif spl[3] == "false" then
 			setPedAnimation(playerid, tostring(spl[1]), tostring(spl[2]), -1, false, false, false, true)
 		end
 	else
