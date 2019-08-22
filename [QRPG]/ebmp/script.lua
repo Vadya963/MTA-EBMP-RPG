@@ -2498,6 +2498,9 @@ function job_timer2 (playerid)
 					elseif job_call[playername][1] == job_call[playername][3]+2 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 							triggerClientEvent(playerid, "event_setPedAimTarget", playerid, job_ped[playername], x, y, z)
+
+							local angle = math.deg(math.atan2(x-job_pos[playername][1],y-job_pos[playername][2]))*-1
+							setElementRotation(job_ped[playername], 0,0,angle)
 						end
 
 					elseif job_call[playername][1] == job_call[playername][3]+3 then
