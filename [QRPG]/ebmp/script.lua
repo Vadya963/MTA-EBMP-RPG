@@ -7352,9 +7352,11 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-			armour[playername] = createObject (1242, x, y, z)
-			setObjectScale(armour[playername], 1.7)
-			attachElementToBone (armour[playername], playerid, 3, 0,0.04,0.06, 5,0,0)
+			if armour[playername] == 0 then
+				armour[playername] = createObject (1242, x, y, z)
+				setObjectScale(armour[playername], 1.7)
+				attachElementToBone (armour[playername], playerid, 3, 0,0.04,0.06, 5,0,0)
+			end
 
 			setPedArmor(playerid, 100)
 
