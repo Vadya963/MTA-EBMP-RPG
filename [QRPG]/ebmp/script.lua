@@ -2913,16 +2913,18 @@ function job_timer2 (playerid)
 							job_pos[playername] = {ped_pos[1],ped_pos[2],ped_pos[3]}
 
 							job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
+							job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
+							add_ped_in_no_ped_damage(job_ped[playername])
 
 						elseif job_call[playername] == 1 then
 							if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
 								sendMessage(playerid, "Отвезите пострадавшего в ближайшую больницу", yellow)
 
-								job_ped[playername] = createPed ( randomize_skin, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
-
 								if not getVehicleOccupant ( vehicleid, 1 ) then
 									warpPedIntoVehicle ( job_ped[playername], vehicleid, 1 )
 								end
+									
+								delet_ped_in_no_ped_damage(job_ped[playername])
 
 								job_call[playername] = 2
 
