@@ -64,6 +64,7 @@ local car_stage_coef = 0.33--коэф-нт прокачки двигла
 local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во убранных растений на ферме
 local ferm_etap_count = 255--кол-во этапов за раз
+local loto = {0, {}, false}--лотерея
 local no_ped_damage = {--таблица нпс по которым не будет проходить дамаг
 	createPed ( 312, 2435.337890625,-2704.7568359375,3, 180.0, true ),
 	createPed ( 312, -1632.9775390625,-2239.0263671875,31.4765625, 90.0, true ),
@@ -101,6 +102,7 @@ local zp_player_box = 5000
 local zp_player_police_car = 5000
 local zp_player_rescuer = 5000
 local zp_player_kill = 5000
+local zp_loto = 10000
 --вместимость складов бизнесов
 local max_business = 100
 local max_cf = 1000
@@ -417,6 +419,11 @@ function set_weather()
 		tomorrow_weather = random(0,22)
 		print("[tomorrow_weather] "..tomorrow_weather)
 
+		loto[1],loto[3] = random(1,1000),true
+		print("[loto] "..loto[1])
+
+		sendMessage(root, "[НОВОСТИ] Лотерея объявляется открытой, быстрее трите свои билеты", green)
+
 		timer_earth_clear()--очистка земли от предметов
 	end
 end
@@ -592,6 +599,8 @@ local info_png = {
 	[100] = {"гидравлика", "шт"},
 	[101] = {"краска для колес", "цвет"},
 	[102] = {"уголовное дело", "преступлений"},
+	[103] = {"водка сталкер", "шт"},
+	[104] = {"лотерейный билет с номером", ""},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -675,6 +684,8 @@ local shop = {
 	[80] = {info_png[80][1], 10, 500},
 	[93] = {info_png[93][1], 1, 50},
 	[94] = {info_png[94][1], 1, 5000},
+	[103] = {info_png[103][1], 1, 250},
+	[104] = {info_png[104][1], 1, 100},
 }
 
 local repair_shop = {
@@ -4522,13 +4533,25 @@ function buy_subject_fun( playerid, text, number, value )
 	local playername = getPlayerName(playerid)
 
 	if value == "pd" then
-		if search_inv_player(playerid, 50, 1) == 0 then
-			sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red)
-			return
+
+		for k,v in pairs(sub_cops) do
+			if v[1] == text then
+				if 1 <= k and k <= 5 and search_inv_player(playerid, 10, 6) == 0 then
+					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red)
+					return
+				end
+
+				if inv_player_empty(playerid, v[3], v[2]) then
+					sendMessage(playerid, "Вы получили "..text, orange)
+				else
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+				end
+				return
+			end
 		end
 
 		if text == weapon_cops[39][1] then
-			if inv_player_empty(playerid, 39, 1) then
+			if inv_player_empty(playerid, 39, 1*search_inv_player_2_parameter(playerid, 10)) then
 				sendMessage(playerid, "Вы получили "..text, orange)
 			else
 				sendMessage(playerid, "[ERROR] Инвентарь полон", red)
@@ -4536,24 +4559,14 @@ function buy_subject_fun( playerid, text, number, value )
 			return
 		end
 
-		for k,v in pairs(weapon_cops) do
-			if v[1] == text then
-				if inv_player_empty(playerid, k, v[4]) then
-					sendMessage(playerid, "Вы получили "..text, orange)
-				else
-					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
-				end
-			end
+		if search_inv_player(playerid, 50, 1) == 0 then
+			sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", red)
+			return
 		end
 
-		for k,v in pairs(sub_cops) do
+		for k,v in pairs(weapon_cops) do
 			if v[1] == text then
-				if search_inv_player(playerid, 10, 6) == 0 then
-					sendMessage(playerid, "[ERROR] Вы не Шеф полиции", red)
-					return
-				end
-
-				if inv_player_empty(playerid, v[3], v[2]) then
+				if inv_player_empty(playerid, k, v[4]*search_inv_player_2_parameter(playerid, 10)) then
 					sendMessage(playerid, "Вы получили "..text, orange)
 				else
 					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
@@ -4684,6 +4697,42 @@ function buy_subject_fun( playerid, text, number, value )
 				end
 
 			elseif value == 3 then
+				local v,k = {shop[104][1], shop[104][2], shop[104][3]},104
+				local randomize,count = random(1,1000),false
+
+				while true do
+					for k,v in pairs(loto[2]) do
+						if v == randomize then
+							count = true
+						end
+					end
+
+					if not count then
+						break
+					else
+						randomize,count = random(1,1000),false
+					end
+				end
+
+				if v[1] == text then
+					if cash*v[3] <= array_player_2[playername][1] then
+						if inv_player_empty(playerid, k, randomize) then
+							sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange)
+
+							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+
+							table.insert(loto[2], randomize)
+						else
+							sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+						end
+					else
+						sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+					end
+					return
+				end
+
 				for k,v in pairs(shop) do
 					if v[1] == text then
 						if cash*v[3] <= array_player_2[playername][1] then
@@ -7022,7 +7071,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
 
-		elseif id1 == 72 then--виски
+		elseif id1 == 72 or id1 == 103 then--виски,водка
 
 			if id1 == 72 then
 				local alcohol_plus = 100
@@ -7040,6 +7089,43 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				local satiety_plus = 10
 				local hp = max_heal*0.50
+				setElementHealth(playerid, getElementHealth(playerid)+hp)
+				sendMessage(playerid, "+"..hp.." хп", yellow)
+
+				if satiety[playername]+satiety_plus <= max_satiety then
+					satiety[playername] = satiety[playername]+satiety_plus
+					sendMessage(playerid, "+"..satiety_plus.." ед. сытости", yellow)
+				end
+
+				alcohol[playername] = alcohol[playername]+alcohol_plus
+				sendMessage(playerid, "+"..(alcohol_plus/100).." промилле", yellow)
+
+				if hygiene[playername]-hygiene_minys >= 0 then
+					hygiene[playername] = hygiene[playername]-hygiene_minys
+					sendMessage(playerid, "-"..hygiene_minys.." ед. чистоплотности", yellow)
+				end
+
+				object_attach(playerid, 1484, 11, 0.1,-0.02,0.13, 0,130,0, 2000)
+				setPedAnimation(playerid, "vending", "vend_drink2_p", -1, false, false, false, false)
+
+				me_chat(playerid, playername.." выпил(а) "..info_png[id1][1])
+
+			elseif id1 == 103 then
+				local alcohol_plus = 50
+				local hygiene_minys = 10
+
+				if getElementHealth(playerid) == max_heal then
+					sendMessage(playerid, "[ERROR] У вас полное здоровье", red)
+					return
+				elseif alcohol[playername]+alcohol_plus > max_alcohol then
+					sendMessage(playerid, "[ERROR] Вы сильно пьяны", red)
+					return
+				end
+
+				id2 = id2 - 1
+
+				local satiety_plus = 10
+				local hp = max_heal*0.40
 				setElementHealth(playerid, getElementHealth(playerid)+hp)
 				sendMessage(playerid, "+"..hp.." хп", yellow)
 
@@ -8293,6 +8379,25 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
 			me_chat(playerid, playername.." прочитал(а) "..info_png[id1][1])
 			id2 = 0
+
+		elseif id1 == 104 then-- лотерея
+			if loto[3] then
+				me_chat(playerid, playername.." потер(ла) лотерейный билет")
+
+				if loto[1] == id2 then
+					local randomize = random(zp_loto/2,zp_loto)
+					loto[3] = false
+
+					me_chat(playerid, playername.." выиграл(а) в лотереи "..randomize.."$")
+					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+					sendMessage(root, "[НОВОСТИ] Лотерея объявляется закрытой, победителем стал "..playername..", выигрыш составил "..randomize.."$", green)
+				end
+
+				id2 = 0
+			else
+				sendMessage(playerid, "[ERROR] Лотерея закончилась", red)
+				return
+			end
 
 		else
 			if id1 == 1 then

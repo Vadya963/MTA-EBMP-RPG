@@ -162,6 +162,8 @@ local info_png = {
 	[100] = {"гидравлика", "шт"},
 	[101] = {"краска для колес", "цвет"},
 	[102] = {"уголовное дело", "преступлений"},
+	[103] = {"водка сталкер", "шт"},
+	[104] = {"лотерейный билет с номером", ""},
 }
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
@@ -282,6 +284,9 @@ addEventHandler ( "event_setPedControlState", root, setPedControlState )
 
 addEvent( "event_givePedWeapon", true )
 addEventHandler ( "event_givePedWeapon", root, givePedWeapon )
+
+addEvent( "event_setPedCameraRotation", true )
+addEventHandler ( "event_setPedCameraRotation", root, setPedCameraRotation )
 
 addEventHandler( "onClientElementStreamIn", root,
 function ( )
