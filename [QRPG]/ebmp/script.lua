@@ -10416,7 +10416,7 @@ function ( playerid )
 
 	local count = 0
 	for k,v in pairs(getElementsByType("vehicle")) do
-		if "0" == getVehiclePlateText(v) then
+		if "0" == getVehiclePlateText(v) and not isElementFrozen(v) then
 			destroyElement(v)
 			count = count+1
 		end
