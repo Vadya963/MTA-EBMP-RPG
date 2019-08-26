@@ -6,7 +6,7 @@ overboardTime = 400
 openingChutes = {}
 
 function openChute ( object, player, time )
-	sound = playSound3D ( "parachute/parachuteopen.mp3", getElementPosition(player) )
+	sound = playSound3D ( "parachuteopen.mp3", getElementPosition(player) )
 	setSoundMinDistance ( sound, 25 )
 	setObjectScale ( object, 0 )
 	openingChutes[object]  = {}

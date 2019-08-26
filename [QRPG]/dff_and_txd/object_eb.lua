@@ -63,7 +63,7 @@ local wheel = {
 }
 
 local car_spawn_value = 0
-addEventHandler( "onClientResourceStart", getRootElement( ),
+addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
 	if car_spawn_value == 0 then
 		car_spawn_value = 1

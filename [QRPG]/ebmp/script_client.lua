@@ -260,7 +260,7 @@ addEvent( "event_createFire", true )
 addEventHandler ( "event_createFire", root, createFire_fun )
 
 function body_hit_sound ()--звук поподания в тело
-	playSound("parachute/body_hit_sound.mp3")
+	playSound("other/body_hit_sound.mp3")
 end
 addEvent( "event_body_hit_sound", true )
 addEventHandler ( "event_body_hit_sound", root, body_hit_sound )
@@ -398,7 +398,7 @@ for i=0,#info_png do
 end
 
 local upgrades_car_table = {}
-local uc_txt = fileOpen(":ebmp/upgrade/upgrades_car.txt")
+local uc_txt = fileOpen(":ebmp/other/upgrades_car.txt")
 for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), "|")) do
 	local spl = split(v, ",")
 	upgrades_car_table[tonumber(spl[1])] = spl[3]
@@ -1719,7 +1719,7 @@ function tablet_fun()--создание планшета
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
 			local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
-			local color = guiCreateStaticImage( 0, 0, 642, 223, "upgrade/color_car.png", false, low_fon )
+			local color = guiCreateStaticImage( 0, 0, 642, 223, "other/color_car.png", false, low_fon )
 
 			local home,m2gui_width = m2gui_button( 0, height_fon-16, "Главная", false, low_fon )
 
