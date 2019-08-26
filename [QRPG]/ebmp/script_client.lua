@@ -4,7 +4,6 @@ local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = false
-local car_spawn_value = 0
 local hud = true
 local playerid = 0
 local update_db_rang = 1
@@ -13,19 +12,15 @@ local timer = {false, 10, 10}
 
 addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
-	if car_spawn_value == 0 then
-		car_spawn_value = 1
+	bindKey ( "F1", "down", showcursor_b )
+	bindKey ( "F2", "down", showdebuginfo_b )
+	bindKey ( "F3", "down", menu_mafia_2 )
+	bindKey ( "F11", "down", showdebuginfo_b )
+	bindKey( "vehicle_fire", "down", toggleNOS )
 
-		bindKey ( "F1", "down", showcursor_b )
-		bindKey ( "F2", "down", showdebuginfo_b )
-		bindKey ( "F3", "down", menu_mafia_2 )
-		bindKey ( "F11", "down", showdebuginfo_b )
-		bindKey( "vehicle_fire", "down", toggleNOS )
-
-		setTimer(function()
-			triggerServerEvent("event_reg_or_login", root, playerid)
-		end, 5000, 1)
-	end
+	setTimer(function()
+		triggerServerEvent("event_reg_or_login", root, playerid)
+	end, 5000, 1)
 end)
 
 ----цвета----

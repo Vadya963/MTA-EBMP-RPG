@@ -41,7 +41,6 @@ local count_player = 0--кол-во подключенных игроков
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
 local max_fuel = 50--объем бака авто
-local car_spawn_value = 0--чтобы ресурсы не запускались два раза
 local max_blip = 250--радиус блипов
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
 local tomorrow_weather = 0--погода
@@ -5210,207 +5209,203 @@ addEventHandler ( "event_cow_farms", root, cow_farms )
 -------------------------------------------------------------------------------------------------------------
 
 function displayLoadedRes ( res )--старт ресурсов
-	if car_spawn_value == 0 then
-		car_spawn_value = 1
+	setTime(0,0)
+	setGameType ( "discord.gg/000000" )--ссылка на дискорд
+	removeWorldModel(1283, 999999, 0, 0, 0)
+	removeWorldModel(1315, 999999, 0, 0, 0)
+	removeWorldModel(1284, 999999, 0, 0, 0)
+	removeWorldModel(1350, 999999, 0, 0, 0)
+	removeWorldModel(1351, 999999, 0, 0, 0)
+	removeWorldModel(3516, 999999, 0, 0, 0)
+	removeWorldModel(1352, 999999, 0, 0, 0)
+	removeWorldModel(3855, 999999, 0, 0, 0)
 
-		setTime(0,0)
-		setGameType ( "discord.gg/000000" )--ссылка на дискорд
-		removeWorldModel(1283, 999999, 0, 0, 0)
-		removeWorldModel(1315, 999999, 0, 0, 0)
-		removeWorldModel(1284, 999999, 0, 0, 0)
-		removeWorldModel(1350, 999999, 0, 0, 0)
-		removeWorldModel(1351, 999999, 0, 0, 0)
-		removeWorldModel(3516, 999999, 0, 0, 0)
-		removeWorldModel(1352, 999999, 0, 0, 0)
-		removeWorldModel(3855, 999999, 0, 0, 0)
+	setTimer(debuginfo, 1000, 0)--дебагинфа
+	setTimer(freez_car, 1000, 0)--заморозка авто и не только
+	setTimer(need, 60000, 0)--уменьшение потребностей
+	setTimer(need_1, 10000, 0)--смена скина на бомжа
+	setTimer(fuel_down, 1000, 0)--система топлива
+	setTimer(set_weather, 1000, 0)--погода сервера
+	setTimer(prison, 60000, 0)--таймер заключения в тюрьме
+	setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
+	setTimer(pay_nalog, 60000, 0)--списание налогов
 
-		setTimer(debuginfo, 1000, 0)--дебагинфа
-		setTimer(freez_car, 1000, 0)--заморозка авто и не только
-		setTimer(need, 60000, 0)--уменьшение потребностей
-		setTimer(need_1, 10000, 0)--смена скина на бомжа
-		setTimer(fuel_down, 1000, 0)--система топлива
-		setTimer(set_weather, 1000, 0)--погода сервера
-		setTimer(prison, 60000, 0)--таймер заключения в тюрьме
-		setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
-		setTimer(pay_nalog, 60000, 0)--списание налогов
-
-		setWeather(tomorrow_weather)
-		setGlitchEnabled ( "quickreload", true )
+	setWeather(tomorrow_weather)
+	setGlitchEnabled ( "quickreload", true )
 
 
-		for k,v in pairs(no_ped_damage) do--заморозка нпс
-			setElementFrozen(v, true)
-		end
+	for k,v in pairs(no_ped_damage) do--заморозка нпс
+		setElementFrozen(v, true)
+	end
 		
 
-		local result = sqlite( "SELECT COUNT() FROM account" )
-		print("[account] "..result[1]["COUNT()"])
+	local result = sqlite( "SELECT COUNT() FROM account" )
+	print("[account] "..result[1]["COUNT()"])
 
 
-		local result = sqlite( "SELECT COUNT() FROM account WHERE ban = '1'" )
-		print("[account_banned] "..result[1]["COUNT()"])
+	local result = sqlite( "SELECT COUNT() FROM account WHERE ban = '1'" )
+	print("[account_banned] "..result[1]["COUNT()"])
 
 
-		local result = sqlite( "SELECT COUNT() FROM banserial_list" )
-		print("[account_banserial] "..result[1]["COUNT()"])
+	local result = sqlite( "SELECT COUNT() FROM banserial_list" )
+	print("[account_banserial] "..result[1]["COUNT()"])
 
 
-		carnumber_number = 0
-		for k,v in pairs(sqlite( "SELECT * FROM car_db" )) do
-			car_spawn(v["number"])
-		end
-		print("[number_car_spawn] "..carnumber_number)
+	carnumber_number = 0
+	for k,v in pairs(sqlite( "SELECT * FROM car_db" )) do
+		car_spawn(v["number"])
+	end
+	print("[number_car_spawn] "..carnumber_number)
 
 
-		local house_number = 0
-		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
-			local h = v["number"]
-			house_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip ), createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )}
+	local house_number = 0
+	for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
+		local h = v["number"]
+		house_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], 32, 0, 0,0,0,0, 0, max_blip ), createPickup (  v["x"], v["y"], v["z"], 3, house_icon, 10000 )}
 
-			array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_house_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_house_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
-			load_inv(h, "house", v["inventory"])
+		load_inv(h, "house", v["inventory"])
 
-			house_number = house_number+1
-		end
-		print("[house_number] "..house_number)
+		house_number = house_number+1
+	end
+	print("[house_number] "..house_number)
 
 
-		local business_number = 0
-		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-			business_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip ), createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )}
+	local business_number = 0
+	for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
+		business_pos[v["number"]] = {v["x"], v["y"], v["z"], createBlip ( v["x"], v["y"], v["z"], interior_business[v["interior"]][6], 0, 0,0,0,0, 0, max_blip ), createPickup ( v["x"], v["y"], v["z"], 3, business_icon, 10000 )}
 
-			business_number = business_number+1
-		end
-		print("[business_number] "..business_number)
+		business_number = business_number+1
+	end
+	print("[business_number] "..business_number)
 		
 
-		local cow_farms_db = 0
-		for k,v in pairs(sqlite( "SELECT * FROM cow_farms_db" )) do
-			cow_farms_db = cow_farms_db+1
+	local cow_farms_db = 0
+	for k,v in pairs(sqlite( "SELECT * FROM cow_farms_db" )) do
+		cow_farms_db = cow_farms_db+1
+	end
+	print("[cow_farms_db] "..cow_farms_db)
+	print("")
+
+
+	for k,v in pairs(sqlite( "SELECT * FROM guns_zone" )) do
+		guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x2"], v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
+	end
+
+
+	--загрузка позиций для работ
+	for k,v in pairs(house_pos) do
+		table.insert(taxi_pos, {v[1],v[2],v[3]})
+		table.insert(fire_pos, {v[1],v[2],v[3]})
+	end
+
+	for k,v in pairs(interior_job) do
+		if k ~= 23 then
+			table.insert(taxi_pos, {v[6],v[7],v[8]})
 		end
-		print("[cow_farms_db] "..cow_farms_db)
-		print("")
+	end
+
+	for k,v in pairs(original_business_pos) do
+		table.insert(taxi_pos, {v[1],v[2],v[3]})
+		table.insert(fire_pos, {v[1],v[2],v[3]})
+	end
 
 
-		for k,v in pairs(sqlite( "SELECT * FROM guns_zone" )) do
-			guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x2"], v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
+	--создание блипов
+	for k,v in pairs(interior_job) do 
+		createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, max_blip )
+		createPickup ( v[6], v[7], v[8], 3, job_icon, 10000 )
+	end
+
+	createBlip ( 2308.81640625,-13.25,26.7421875, 8, 0, 0,0,0,0, 0, max_blip )--банк штата
+
+	for k,v in pairs(up_car_subject) do
+		createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+	end
+
+	for k,v in pairs(down_car_subject) do
+		createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+	end
+
+	for k,v in pairs(down_car_subject_pos) do
+		createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+	end
+
+	for k,v in pairs(t_s_salon) do
+		createBlip ( v[1], v[2], v[3], v[4], 0, 0,0,0,0, 0, max_blip )--салоны продажи
+	end
+
+	for k,v in pairs(station) do
+		createBlip ( v[1], v[2], v[3], 42, 0, 0,0,0,0, 0, max_blip )--вокзалы
+	end
+
+	for k,v in pairs(hospital_spawn) do
+		createBlip ( v[1], v[2], v[3], 22, 0, 0,0,0,0, 0, max_blip )--больницы
+	end
+
+	for j=0,1 do
+		for i=0,4 do
+			local obj = createObject(2804, 954.90002+(j*6.5),2143.5-(3*i),1010.9, 0,180,270)
+			setElementInterior(obj, interior_job[1][1])
+			setElementDimension(obj, interior_job[1][10])
+
+			local obj = createObject(941, 955.79999+(j*6.5),2143.6001-(3*i),1010.5, 0,0,0)
+			setElementInterior(obj, interior_job[1][1])
+			setElementDimension(obj, interior_job[1][10])
+
+			anim_player_subject[#anim_player_subject+1] = {956.0166015625+(j*6.5),2142.6650390625-(3*i),1011.0181274414, 1, 30, 48, 100, "knife", "knife_4", 1, 1, 10}
 		end
+	end
 
 
-		--загрузка позиций для работ
-		for k,v in pairs(house_pos) do
-			table.insert(taxi_pos, {v[1],v[2],v[3]})
-			table.insert(fire_pos, {v[1],v[2],v[3]})
-		end
+	--создание маркеров
+	for k,v in pairs(up_player_subject) do
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+		setElementInterior(marker, v[7])
+		setElementDimension(marker, v[8])
 
-		for k,v in pairs(interior_job) do
-			if k ~= 23 then
-				table.insert(taxi_pos, {v[6],v[7],v[8]})
-			end
-		end
-
-		for k,v in pairs(original_business_pos) do
-			table.insert(taxi_pos, {v[1],v[2],v[3]})
-			table.insert(fire_pos, {v[1],v[2],v[3]})
-		end
-
-
-		--создание блипов
-		for k,v in pairs(interior_job) do 
-			createBlip ( v[6], v[7], v[8], v[9], 0, 0,0,0,0, 0, max_blip )
-			createPickup ( v[6], v[7], v[8], 3, job_icon, 10000 )
-		end
-
-		createBlip ( 2308.81640625,-13.25,26.7421875, 8, 0, 0,0,0,0, 0, max_blip )--банк штата
-
-		for k,v in pairs(up_car_subject) do
+		if v[7] == 0 then
 			createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
 		end
+	end
 
-		for k,v in pairs(down_car_subject) do
+	for k,v in pairs(down_player_subject) do
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+		setElementInterior(marker, v[6])
+		setElementDimension(marker, v[7])
+
+		if v[6] == 0 then
 			createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
 		end
+	end
 
-		for k,v in pairs(down_car_subject_pos) do
-			createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
-		end
+	for k,v in pairs(anim_player_subject) do
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+		setElementInterior(marker, v[10])
+		setElementDimension(marker, v[11])
+	end
 
-		for k,v in pairs(t_s_salon) do
-			createBlip ( v[1], v[2], v[3], v[4], 0, 0,0,0,0, 0, max_blip )--салоны продажи
-		end
+	for k,v in pairs(t_s_salon) do
+		local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
+	end
 
-		for k,v in pairs(station) do
-			createBlip ( v[1], v[2], v[3], 42, 0, 0,0,0,0, 0, max_blip )--вокзалы
-		end
+	for i=1,50 do
+		local x,y,z = math.random(-1189,-1007), math.random(-1061,-916), 129.51875
+		local obj = createObject(16442, x,y,z, 0,0,math.random(0,360))
+		setObjectScale (obj, 0.7)
+		korovi_pos[i] = {x,y,z}
+	end
 
-		for k,v in pairs(hospital_spawn) do
-			createBlip ( v[1], v[2], v[3], 22, 0, 0,0,0,0, 0, max_blip )--больницы
-		end
-
-		for j=0,1 do
-			for i=0,4 do
-				local obj = createObject(2804, 954.90002+(j*6.5),2143.5-(3*i),1010.9, 0,180,270)
-				setElementInterior(obj, interior_job[1][1])
-				setElementDimension(obj, interior_job[1][10])
-
-				local obj = createObject(941, 955.79999+(j*6.5),2143.6001-(3*i),1010.5, 0,0,0)
-				setElementInterior(obj, interior_job[1][1])
-				setElementDimension(obj, interior_job[1][10])
-
-				anim_player_subject[#anim_player_subject+1] = {956.0166015625+(j*6.5),2142.6650390625-(3*i),1011.0181274414, 1, 30, 48, 100, "knife", "knife_4", 1, 1, 10}
-			end
-		end
-
-
-		--создание маркеров
-		for k,v in pairs(up_player_subject) do
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
-			setElementInterior(marker, v[7])
-			setElementDimension(marker, v[8])
-
-			if v[7] == 0 then
-				createBlip ( v[1], v[2], v[3], 51, 0, 0,0,0,0, 0, max_blip )
-			end
-		end
-
-		for k,v in pairs(down_player_subject) do
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
-			setElementInterior(marker, v[6])
-			setElementDimension(marker, v[7])
-
-			if v[6] == 0 then
-				createBlip ( v[1], v[2], v[3], 52, 0, 0,0,0,0, 0, max_blip )
-			end
-		end
-
-		for k,v in pairs(anim_player_subject) do
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
-			setElementInterior(marker, v[10])
-			setElementDimension(marker, v[11])
-		end
-
-		for k,v in pairs(t_s_salon) do
-			local marker = createMarker ( v[1], v[2], v[3]-1, "cylinder", 1.0, yellow[1],yellow[2],yellow[3] )
-		end
-
-		for i=1,50 do
-			local x,y,z = math.random(-1189,-1007), math.random(-1061,-916), 129.51875
-			local obj = createObject(16442, x,y,z, 0,0,math.random(0,360))
-			setObjectScale (obj, 0.7)
-			korovi_pos[i] = {x,y,z}
-		end
-
-		for j=0,29 do
-			for i=0,16 do
-				local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),3.11-1.5
-				local obj = createObject(323, x,y,z, 0,180,0)
-				grass_pos[#grass_pos+1] = {obj, x,y,z}
-			end
+	for j=0,29 do
+		for i=0,16 do
+			local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),3.11-1.5
+			local obj = createObject(323, x,y,z, 0,180,0)
+			grass_pos[#grass_pos+1] = {obj, x,y,z}
 		end
 	end
 end

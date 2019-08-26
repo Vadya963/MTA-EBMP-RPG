@@ -62,27 +62,22 @@ local wheel = {
 	{"wheel_sr6", 1073},
 }
 
-local car_spawn_value = 0
 addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
-	if car_spawn_value == 0 then
-		car_spawn_value = 1
+	for k,v in pairs(dff_and_txd_table) do
+		local txd = engineLoadTXD ( ":dff_and_txd/"..v[1]..".txd" )
+		engineImportTXD ( txd, v[2] )
+		local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
+		engineReplaceModel ( dff, v[2] )
 
-		for k,v in pairs(dff_and_txd_table) do
-			local txd = engineLoadTXD ( ":dff_and_txd/"..v[1]..".txd" )
-			engineImportTXD ( txd, v[2] )
-			local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
-			engineReplaceModel ( dff, v[2] )
-
-			if v[3] then
-				local col = engineLoadCOL ( ":dff_and_txd/"..v[1]..".col" )
-				engineReplaceCOL ( col, v[2] )
-			end
+		if v[3] then
+			local col = engineLoadCOL ( ":dff_and_txd/"..v[1]..".col" )
+			engineReplaceCOL ( col, v[2] )
 		end
+	end
 
-		for k,v in pairs(wheel) do
-			local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
-			engineReplaceModel ( dff, v[2] )
-		end
+	for k,v in pairs(wheel) do
+		local dff = engineLoadDFF ( ":dff_and_txd/"..v[1]..".dff" )
+		engineReplaceModel ( dff, v[2] )
 	end
 end)
