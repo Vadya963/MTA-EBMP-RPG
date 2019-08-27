@@ -613,8 +613,8 @@ for i,v in ipairs(craft_table) do
 end
 
 local quest_table = {--1 название, 2 описание, 3 кол-во, 5 предмет засчитывания, 6 награда $, 7 награда предметом, 8 массив имен кто выполнил квест
-	[1] = {"Мясник", "Обработать ", math.random(1,5), " кусков мяса", 48, math.random(1000,5000), {79,10000}, {}},
-	[2] = {"Рудокоп", "Добыть ", math.random(1,5), " раз железную руду", 71, math.random(1000,5000), {0,0}, {}},
+	[1] = {"Мясник", "Обработать ", math.random(5,10), " кусков мяса", 48, math.random(1000,5000), {79,10000}, {}},
+	[2] = {"Рудокоп", "Добыть ", math.random(5,10), " раз железную руду", 71, math.random(1000,5000), {0,0}, {}},
 }
 
 local weapon = {
@@ -2638,7 +2638,7 @@ local table_job = {
 									if isElement(playerid) then
 										setPedAnimation(playerid, nil, nil)
 									end
-								end, (5*1000), 1)
+								end, (10*1000), 1)
 
 								grass_pos_count = grass_pos_count+ferm_etap_count
 
@@ -2710,7 +2710,7 @@ local table_job = {
 									if isElement(playerid) then
 										setPedAnimation(playerid, nil, nil)
 									end
-								end, (5*1000), 1)
+								end, (10*1000), 1)
 
 								grass_pos_count = grass_pos_count+ferm_etap_count
 
@@ -2765,7 +2765,7 @@ local table_job = {
 									if isElement(playerid) then
 										setPedAnimation(playerid, nil, nil)
 									end
-								end, (5*1000), 1)
+								end, (10*1000), 1)
 
 								job_call[playername][1] = 2
 
@@ -5858,9 +5858,11 @@ addEventHandler("event_reg_or_login", root, reg_or_login)
 
 ------------------------------------взрыв авто-------------------------------------------
 function fixVehicle_fun( vehicleid )
-	fixVehicle(vehicleid)
-	fixVehicle(vehicleid)
-	setElementHealth(vehicleid, 300)
+	if isElement(vehicleid) then
+		fixVehicle(vehicleid)
+		fixVehicle(vehicleid)
+		setElementHealth(vehicleid, 300)
+	end
 end
 
 function explode_car()
@@ -8477,7 +8479,6 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					local randomize = random(zp_loto/2,zp_loto)
 					loto[3] = false
 
-					me_chat(playerid, playername.." выиграл(а) в лотереи "..randomize.."$")
 					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 					sendMessage(root, "[НОВОСТИ] Лотерея объявляется закрытой, победителем стал "..playername..", выигрыш составил "..randomize.."$", green)
 				end
