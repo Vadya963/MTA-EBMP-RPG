@@ -1,5 +1,5 @@
 <meta>
-	<script src="object_eb.lua" type="client" cache="false"/>
+	<script src="object_eb.lua" type="client"/>
 	<file src="leyka.txd"/>
 	<file src="leyka.dff"/>
 	<file src="horse.txd"/>
@@ -14,7 +14,6 @@
 	<file src="shovel.dff"/>
 	<file src="pig.txd"/>
 	<file src="pig.dff"/>
-	<file src="pig.col"/>
 	<file src="coal.txd"/>
 	<file src="coal.dff"/>
 	<file src="coal.col"/>

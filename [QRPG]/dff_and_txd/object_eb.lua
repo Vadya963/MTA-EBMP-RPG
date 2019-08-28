@@ -37,7 +37,7 @@ local dff_and_txd_table = {
 	--{"rcgoblin", 501},
 
 	--объекты
-	{"pig", 2804, true},
+	{"pig", 2804},
 	{"coal", 3931, true},
 	{"armour", 1242},
 }

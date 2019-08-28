@@ -6,21 +6,22 @@
 	<!--<include resource="maximap"/>
 	<include resource="hdhud"/>
 	<include resource="gtavradar"/>
+	<include resource="dff_and_txd"/>
+	<include resource="map_gta"/>
 	<include resource="vozle_merii_app"/>-->
 	
 	
 	<script src="script.lua" type="server"/>
-	<script src="client_pos.lua" type="client" cache="false"/>
-	<script src="script_client.lua" type="client" cache="false"/>
-	<script src="menu_m2.lua" type="client" cache="false"/>
+	<script src="client_pos.lua" type="client"/>
+	<script src="script_client.lua" type="client"/>
+	<script src="menu_m2.lua" type="client"/>
 
 	<include resource="camhack"/>
-	<include resource="map_gta"/>
 	<include resource="save_sql"/>
 	<include resource="bone_attach"/>
 	<include resource="parachute"/>
 	<include resource="realdriveby"/>
-	<include resource="dff_and_txd"/>
+	<include resource="map_mafia2"/>
 
 	<file src="other/body_hit_sound.mp3"/>
 	<file src="other/upgrades_car.txt"/>
