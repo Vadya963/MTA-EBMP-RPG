@@ -941,4 +941,4 @@ BambyPosition.X[934],BambyPosition.Y[934],BambyPosition.Z[934] = -1304.622802734
 BambyPosition.X[935],BambyPosition.Y[935],BambyPosition.Z[935] = -1304.5969238281,-2329.7282714844,34.430526733398
 BambyPosition.X[936],BambyPosition.Y[936],BambyPosition.Z[936] = -1305.1976318359,-2332.3449707031,34.275508880615
 
-setElementData(localPlayer, "BambyPosition", BambyPosition)
+setElementData(resourceRoot, "BambyPosition", BambyPosition)

@@ -2824,7 +2824,7 @@ local table_job = {
 		local x,y,z = getElementPosition(playerid)
 		if (getElementModel(playerid) == 312) then
 					if job_call[playername] == 0 then
-						local bamby_pos = getElementData(playerid, "BambyPosition")
+						local bamby_pos = getElementData(resourceRoot, "BambyPosition")
 						local randomize = random(1,#bamby_pos.X)
 
 						sendMessage(playerid, "Найдите оленя", yellow)
