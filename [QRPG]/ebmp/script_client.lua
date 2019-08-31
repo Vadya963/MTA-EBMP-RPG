@@ -19,7 +19,7 @@ function ( startedRes )
 	bindKey( "vehicle_fire", "down", toggleNOS )
 
 	setTimer(function()
-		triggerServerEvent("event_reg_or_login", root, playerid)
+		triggerServerEvent("event_reg_or_login", root, localPlayer)
 	end, 5000, 1)
 end)
 
