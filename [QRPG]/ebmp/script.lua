@@ -452,7 +452,7 @@ function object_attach( playerid, model, bone, x,y,z, rx,ry,rz, time )--прик
 	local x1, y1, z1 = getElementPosition (playerid)
 	local objPick = createObject (model, x1, y1, z1)
 
-	attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
+	exports["bone_attach"]:attachElementToBone (objPick, playerid, bone, x,y,z, rx,ry,rz)
 	setElementInterior(objPick, getElementInterior(playerid))
 	setElementDimension(objPick, getElementDimension(playerid))
 
