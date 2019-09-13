@@ -3529,7 +3529,7 @@ function pay_nalog()
 	end
 
 	if time["hour"] == 0 and time["minute"] == 0 then
-		restartAllResources()
+		--restartAllResources()
 	end
 end
 
@@ -5222,7 +5222,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 	setTimer(debuginfo, 1000, 0)--дебагинфа
 	setTimer(freez_car, 1000, 0)--заморозка авто и не только
-	setTimer(need, 60000, 0)--уменьшение потребностей
+	--setTimer(need, 60000, 0)--уменьшение потребностей
 	setTimer(need_1, 10000, 0)--смена скина на бомжа
 	setTimer(fuel_down, 1000, 0)--система топлива
 	setTimer(set_weather, 1000, 0)--погода сервера
@@ -5536,6 +5536,7 @@ function()
 	setElementData(playerid, "radar_visible", true)
 	setElementData(playerid, "repair_shop", repair_shop)
 	setElementData(playerid, "weapon_shop", weapon_shop)
+	setElementData(playerid, "task", false)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -6386,7 +6387,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 		end
 
 		for k,v in pairs(anim_player_subject) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] and not vehicleid then--обработка предметов
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] and not vehicleid and getElementData(playerid, "task") == "TASK_SIMPLE_PLAYER_ON_FOOT" then--обработка предметов
 				local randomize = random(1,v[7])
 
 				inv_player_delet( playerid, id1, id2, true )
@@ -10437,7 +10438,7 @@ function restartAllResources()
 	-- for each one of them,
 	for index, res in ipairs(allResources) do
 		-- if it's running,
-		if getResourceState(res) == "running" then
+		if getResourceState(res) == "running" and getResourceName(res) == "map_mafia2" then
 			-- then restart it
 			restartResource(res)
 		end

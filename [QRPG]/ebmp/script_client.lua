@@ -20,7 +20,7 @@ function ( startedRes )
 
 	setTimer(function()
 		triggerServerEvent("event_reg_or_login", root, localPlayer)
-	end, 5000, 1)
+	end, 1000, 1)
 end)
 
 ----цвета----
@@ -767,7 +767,7 @@ function createText ()
 		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getElementData(playerid, "player_id")[1].." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
 		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
-		--нужды
+		--[[нужды
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*0, 30, 30, "hud/alcohol.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*0, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*0, (width_need/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
@@ -786,7 +786,7 @@ function createText ()
 
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/sleep.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )]]
 
 		local vehicle = getPlayerVehicle ( playerid )
 		if vehicle then--отображение скорости авто
@@ -3696,6 +3696,7 @@ function inv_create ()--создание инв-ря
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
 				if tab_player == info_tab then
+					setElementData(playerid, "task", getPedSimplestTask(playerid))
 					triggerServerEvent( "event_throw_earth_server", root, playerid, "player", info3, info1, info2, getPlayerName ( playerid ) )
 
 				elseif tab_car == info_tab then
