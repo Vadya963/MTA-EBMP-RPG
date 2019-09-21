@@ -2837,7 +2837,7 @@ local table_job = {
 						setElementData(playerid, "deer", false)
 
 					elseif job_call[playername] == 1 then
-						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 100) then
 							sendMessage(playerid, "Убейте оленя", yellow)
 
 							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "cylinder", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
