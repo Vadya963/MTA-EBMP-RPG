@@ -2,8 +2,6 @@
 	<script src="object_eb.lua" type="client"/>
 	<file src="leyka.txd"/>
 	<file src="leyka.dff"/>
-	<file src="horse.txd"/>
-	<file src="horse.dff"/>
 	<file src="gun_cane.txd"/>
 	<file src="gun_cane.dff"/>
 	<file src="bat.txd"/>
@@ -86,4 +84,7 @@
 	<file src="rcgoblin.dff"/>
 	<file src="punker_chick.txd"/>
 	<file src="punker_chick.dff"/>
+	<file src="deer.col"/>
+	<file src="deer.txd"/>
+	<file src="deer.dff"/>
 </meta>

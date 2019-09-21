@@ -6,9 +6,11 @@
 	<!--<include resource="maximap"/>
 	<include resource="hdhud"/>
 	<include resource="gtavradar"/>
-	<include resource="dff_and_txd"/>
-	<include resource="map_gta"/>
-	<include resource="vozle_merii_app"/>-->
+	<include resource="map_mafia2"/>
+	<include resource="vozle_merii_app"/>
+	
+	
+	-->
 	
 	
 	<script src="script.lua" type="server"/>
@@ -16,12 +18,13 @@
 	<script src="script_client.lua" type="client"/>
 	<script src="menu_m2.lua" type="client"/>
 
-	<include resource="camhack"/>
-	<include resource="save_sql"/>
+	<include resource="dff_and_txd"/>
+	<include resource="map_gta"/>
 	<include resource="bone_attach"/>
 	<include resource="parachute"/>
 	<include resource="realdriveby"/>
-	<include resource="map_mafia2"/>
+	<include resource="camhack"/>
+	<include resource="save_sql"/>
 
 	<file src="other/body_hit_sound.mp3"/>
 	<file src="other/upgrades_car.txt"/>

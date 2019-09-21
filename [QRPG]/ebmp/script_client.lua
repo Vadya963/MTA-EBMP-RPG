@@ -218,15 +218,19 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 			break
 		end
 	end
+end
+addEventHandler ( "onClientPedDamage", root, playerDamage_text )
 
-	if getElementData(playerid, "job_player") == 15 and getElementModel(ped) == 264 then
-		if weapon == 33 then
-		else
-			cancelEvent()
+function outputLoss(loss, attacker)
+	local object = source
+
+	if getElementType(attacker) == "player" and getElementData(playerid, "job_player") == 15 and getElementModel(object) == 1851 then
+		if getPedWeapon(playerid) == 33 then
+			setElementData(playerid, "deer", true)
 		end
 	end
 end
-addEventHandler ( "onClientPedDamage", root, playerDamage_text )
+addEventHandler("onClientObjectDamage", root, outputLoss)
 
 function setPedOxygenLevel_fun ()--кислородный балон
 	local count = 0
@@ -767,7 +771,7 @@ function createText ()
 		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getElementData(playerid, "player_id")[1].." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
 		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
-		--[[нужды
+		--нужды
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*0, 30, 30, "hud/alcohol.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*0, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*0, (width_need/500)*alcohol, 15, tocolor ( 90, 151, 107, 255 ) )
@@ -786,7 +790,7 @@ function createText ()
 
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/sleep.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
-		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )]]
+		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
 
 		local vehicle = getPlayerVehicle ( playerid )
 		if vehicle then--отображение скорости авто

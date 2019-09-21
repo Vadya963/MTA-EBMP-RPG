@@ -2830,34 +2830,39 @@ local table_job = {
 						sendMessage(playerid, "Найдите оленя", yellow)
 
 						job_call[playername] = 1
-						job_pos[playername] = {bamby_pos.X[randomize],bamby_pos.Y[randomize],bamby_pos.Z[randomize]+0.5}
+						job_pos[playername] = {bamby_pos.X[randomize],bamby_pos.Y[randomize],bamby_pos.Z[randomize]-1}
 
-						job_ped[playername] = createPed ( 264, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0.0, true )
-						setElementFrozen(job_ped[playername], true)
-						setPedAnimation(job_ped[playername], "crack", "crckidle4", -1, true, false, false, false)
-						add_ped_in_no_ped_damage(job_ped[playername])
+						job_object[playername] = createObject ( 1851, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 90,0,0 )
+						setElementFrozen(job_object[playername], true)
+						setElementData(playerid, "deer", false)
 
 					elseif job_call[playername] == 1 then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) then
 							sendMessage(playerid, "Убейте оленя", yellow)
 
-							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]-1.5, "cylinder", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
-						
-							delet_ped_in_no_ped_damage(job_ped[playername])
+							job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "cylinder", 1.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							job_call[playername] = 2
 						end
 
-					elseif job_call[playername] == 2 then
-						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and isPedDead ( job_ped[playername] ) then
+					elseif job_call[playername] == 2 and getElementData(playerid, "deer") then
+						sendMessage(playerid, "Заберите тушку оленя", yellow)
+
+						setElementPosition(job_object[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+0.5)
+						setElementRotation(job_object[playername], 0, 90, 0)
+
+						job_call[playername] = 3
+
+					elseif job_call[playername] == 3 then
+						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
 							local randomize = random(zp_player_bamby/2,zp_player_bamby)
 
 							give_subject(playerid, "player", down_player_subject[5][5], randomize)
 
-							destroyElement(job_ped[playername])
+							destroyElement(job_object[playername])
 							destroyElement(job_marker[playername])
 
-							job_ped[playername] = 0
+							job_object[playername] = 0
 							job_pos[playername] = 0
 							job_call[playername] = 0
 							job_marker[playername] = 0
@@ -5222,7 +5227,7 @@ function displayLoadedRes ( res )--старт ресурсов
 
 	setTimer(debuginfo, 1000, 0)--дебагинфа
 	setTimer(freez_car, 1000, 0)--заморозка авто и не только
-	--setTimer(need, 60000, 0)--уменьшение потребностей
+	--setTimer(need, 60000, 0)--уменьшение потребностей(временно выкл)
 	setTimer(need_1, 10000, 0)--смена скина на бомжа
 	setTimer(fuel_down, 1000, 0)--система топлива
 	setTimer(set_weather, 1000, 0)--погода сервера

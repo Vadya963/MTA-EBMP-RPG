@@ -23,7 +23,6 @@ local dff_and_txd_table = {
 	{"teargas", 343},
 
 	--скины
-	{"horse", 264},
 	{"hfyri", 311},
 	{"sheriffpolicefemale", 64},
 	{"sofybu_2", 75},
@@ -40,6 +39,7 @@ local dff_and_txd_table = {
 	{"pig", 2804},
 	{"coal", 3931, true},
 	{"armour", 1242},
+	{"deer", 1851, true},
 }
 
 local wheel = {
