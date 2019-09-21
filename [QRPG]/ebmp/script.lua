@@ -418,6 +418,8 @@ function set_weather()
 		tomorrow_weather = random(0,22)
 		print("[tomorrow_weather] "..tomorrow_weather)
 
+		setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
+
 		loto[1],loto[3] = random(1,1000),true
 		print("[loto] "..loto[1])
 
@@ -1705,17 +1707,11 @@ function debuginfo ()
 		setElementData(playerid, "hygiene_data", hygiene[playername])
 		setElementData(playerid, "sleep_data", sleep[playername])
 		setElementData(playerid, "drugs_data", drugs[playername])
-		setElementData(playerid, "tomorrow_weather_data", tomorrow_weather)
 		setElementData(playerid, "speed_car_device_data", speed_car_device[playername])
 		setElementData(playerid, "gps_device_data", gps_device[playername])
-		setElementData(playerid, "timeserver", hour..":"..minute)
-		setElementData(playerid, "earth", earth)
 		setElementData(playerid, "no_ped_damage", no_ped_damage)
 		setElementData(playerid, "job_player", job[playername])
-
-		--позиции домов, бизнесов, зданий
-		setElementData(playerid, "house_pos", house_pos)
-		setElementData(playerid, "business_pos", business_pos)
+		setElementData(playerid, "timeserver", hour..":"..minute)
 
 		local vehicleid = getPlayerVehicle(playerid)
 		if (vehicleid) then
@@ -3391,6 +3387,8 @@ function timer_earth_clear()--очистка земли
 		earth = {}
 		max_earth = 0
 
+		setElementData(resourceRoot, "earth_data", earth)
+
 		for k,playerid in pairs(getElementsByType("player")) do
 			sendMessage(playerid, "[НОВОСТИ] Улицы очищенны от мусора", green)
 		end
@@ -4196,6 +4194,8 @@ function inv_car_throw_earth(vehicleid, id1, id2)--выброс предмета
 		if result[1]["COUNT()"] == 1 then
 			sqlite( "UPDATE car_db SET inventory = '"..save_inv(plate, "car").."' WHERE number = '"..plate.."'")
 		end
+
+		setElementData(resourceRoot, "earth_data", earth)
 	end
 end
 
@@ -5413,6 +5413,30 @@ function displayLoadedRes ( res )--старт ресурсов
 			grass_pos[#grass_pos+1] = {obj, x,y,z}
 		end
 	end
+
+
+	setElementData(resourceRoot, "zakon_alcohol", zakon_alcohol)
+	setElementData(resourceRoot, "zakon_drugs", zakon_drugs)
+	setElementData(resourceRoot, "craft_table", craft_table)
+	setElementData(resourceRoot, "shop", shop)
+	setElementData(resourceRoot, "gas", gas)
+	setElementData(resourceRoot, "giuseppe", giuseppe)
+	setElementData(resourceRoot, "interior_business", interior_business)
+	setElementData(resourceRoot, "mayoralty_shop", mayoralty_shop)
+	setElementData(resourceRoot, "weapon_cops", weapon_cops)
+	setElementData(resourceRoot, "sub_cops", sub_cops)
+	setElementData(resourceRoot, "house_bussiness_radius", house_bussiness_radius)
+	setElementData(resourceRoot, "name_mafia", name_mafia)
+	setElementData(resourceRoot, "interior_job", interior_job)
+	setElementData(resourceRoot, "cash_car", cash_car)
+	setElementData(resourceRoot, "cash_boats", cash_boats)
+	setElementData(resourceRoot, "cash_helicopters", cash_helicopters)
+	setElementData(resourceRoot, "repair_shop", repair_shop)
+	setElementData(resourceRoot, "weapon_shop", weapon_shop)
+	setElementData(resourceRoot, "house_pos", house_pos)
+	setElementData(resourceRoot, "business_pos", business_pos)
+	setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
+	setElementData(resourceRoot, "earth_data", earth)
 end
 addEventHandler ( "onResourceStart", resourceRoot, displayLoadedRes )
 
@@ -5521,27 +5545,11 @@ function()
 	setElementData(playerid, "player_id", { count_player, 0 })
 	setElementData(playerid, "fuel_data", 0)
 	setElementData(playerid, "probeg_data", 0)
-	setElementData(playerid, "zakon_alcohol", zakon_alcohol)
-	setElementData(playerid, "zakon_drugs", zakon_drugs)
-	setElementData(playerid, "craft_table", craft_table)
-	setElementData(playerid, "shop", shop)
-	setElementData(playerid, "gas", gas)
-	setElementData(playerid, "giuseppe", giuseppe)
-	setElementData(playerid, "interior_business", interior_business)
-	setElementData(playerid, "mayoralty_shop", mayoralty_shop)
-	setElementData(playerid, "weapon_cops", weapon_cops)
-	setElementData(playerid, "sub_cops", sub_cops)
-	setElementData(playerid, "house_bussiness_radius", house_bussiness_radius)
-	setElementData(playerid, "name_mafia", name_mafia)
-	setElementData(playerid, "interior_job", interior_job)
-	setElementData(playerid, "cash_car", cash_car)
-	setElementData(playerid, "cash_boats", cash_boats)
-	setElementData(playerid, "cash_helicopters", cash_helicopters)
 	setElementData(playerid, "quest_select", "0:0")
 	setElementData(playerid, "radar_visible", true)
-	setElementData(playerid, "repair_shop", repair_shop)
-	setElementData(playerid, "weapon_shop", weapon_shop)
 	setElementData(playerid, "task", false)
+	setElementData(playerid, "is_chat_open", 0)
+	setElementData(playerid, "afk", 0)
 end)
 
 function quitPlayer ( quitType )--дисконект игрока с сервера
@@ -6427,6 +6435,8 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	max_earth = max_earth+1
 	earth[max_earth] = {x,y,z,id1,id2}
 
+	setElementData(resourceRoot, "earth_data", earth)
+
 	--[[if enter_house[playername][2] == id2 and id1 == 25 then--когда выбрасываешь ключ в инв-ре исчезают картинки(выкл из-за фичи)
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 		enter_house[playername][2] = 0
@@ -6535,6 +6545,8 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 					--sendMessage(playerid, "Вы подняли "..info_png[ v[4] ][1].." "..v[5].." "..info_png[ v[4] ][2], svetlo_zolotoy)
 
 					earth[i] = nil
+
+					setElementData(resourceRoot, "earth_data", earth)
 				else
 					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
 				end
@@ -9651,7 +9663,7 @@ function (playerid)
 			local house_door = 0
 
 			house_pos[dim] = {x, y, z, createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, house_icon, 10000 )}
-
+			setElementData(resourceRoot, "house_pos", house_pos)
 			table.insert(taxi_pos, {x, y, z})
 			table.insert(fire_pos, {x, y, z})
 
@@ -9726,6 +9738,7 @@ function (playerid, cmd, id)
 
 			if inv_player_empty(playerid, 43, dim) then
 				business_pos[dim] = {x, y, z, createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, business_icon, 10000 )}
+				setElementData(resourceRoot, "business_pos", business_pos)
 
 				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
@@ -9948,6 +9961,38 @@ function (playerid, cmd, id1, id2 )
 	end
 end)
 
+addCommandHandler ( "subdel",--удалить предмет
+function (playerid, cmd, id, id1, id2 )
+	local val1, val2 = tonumber(id1), tonumber(id2)
+	local playername = getPlayerName ( playerid )
+
+	if logged[playername] == 0 or search_inv_player(playerid, 44, 1) == 0 then
+		return
+	end
+
+	if not val1 or not val2  then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [ид предмета] [количество]", red)
+		return
+	end
+
+	if val1 > #info_png or val1 < 2 then
+		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, red)
+		return
+	end
+
+	local id,player = getPlayerId(id)
+		
+	if id then
+		if inv_player_delet(player, val1, val2, true) then
+			admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] удалил у "..id.." ["..getElementData(player, "player_id")[1].."] "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
+		else
+			sendMessage(playerid, "[ERROR] Предмет не найден", red)
+		end
+	else
+		sendMessage(playerid, "[ERROR] Такого игрока нет", red)
+	end
+end)
+
 addCommandHandler ( "subcar",--выдача предметов с числом
 function (playerid, cmd, id1, id2 )
 	local val1, val2 = tonumber(id1), tonumber(id2)
@@ -10004,6 +10049,8 @@ function (playerid, cmd, id1, id2, count )
 		max_earth = max_earth+1
 		earth[max_earth] = {x,y,z,val1,val2}
 	end
+
+	setElementData(resourceRoot, "earth_data", earth)
 
 	admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] создал на земле "..info_png[val1][1].." "..val2.." "..info_png[val1][2].." "..count.." шт")
 end)

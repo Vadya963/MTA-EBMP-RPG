@@ -46,8 +46,9 @@ local afk = 0--сколько минут в афк
 local pos_timer = 0--задержка для евента
 
 local no_use_subject = {-1,0}--нельзя использовать
-local no_select_subject = {-1,0,1}--нельзя выделить
-local no_change_subject = {-1,1}--нельзя заменить
+local no_select_subject = {-1,0,1,10}--нельзя выделить
+local no_change_subject = {-1,1,10}--нельзя заменить
+local no_sell_auc = {10}--нельзя продать
 
 --выделение картинки
 local gui_2dtext = false
@@ -188,6 +189,7 @@ local commands = {
 
 local commandsadm = {
 	"/sub [ид предмета] [количество] - выдать себе предмет",
+	"/subdel [ИД игрока] [ид предмета] [количество] - удалить предмет",
 	"/subcar [ид предмета] [количество] - выдать предмет в тс",
 	"/subearth [ид предмета] [количество] [количество на земле] - выдать предмет на землю",
 	"/go [и 3 координаты] - тп на заданные координаты",
@@ -198,7 +200,6 @@ local commandsadm = {
 	"/prisonplayer [ИД игрока] [время] [причина] - посадить игрока в тюрьму",
 	"/dim [номер виртуального мира] - установить себе виртуальный мир",
 	"/v [ид т/с] - создать тс",
-	"/sellbusiness [номер бизнеса от 1 до 5] - создать бизнес (для риэлторов)",
 	"/delv - удалить тс созданные через /v",
 	"/rc [ИД игрока] - следить за игроком",
 }
@@ -362,7 +363,7 @@ end, 5000, 1)
 setTimer(function ()
 	if isChatBoxInputActive() or isConsoleActive() then
 		setElementData(localPlayer, "is_chat_open", 1)
-	else
+	elseif getElementData(localPlayer, "is_chat_open") == 1 then
 		setElementData(localPlayer, "is_chat_open", 0)
 	end
 end, 500, 0)
@@ -371,7 +372,7 @@ setTimer(function ()
 	if isMainMenuActive() then
 		afk = afk+1
 		setElementData(localPlayer, "afk", afk)
-	else
+	elseif getElementData(localPlayer, "afk") > 0 then
 		afk = 0
 		setElementData(localPlayer, "afk", afk)
 	end
@@ -905,8 +906,8 @@ function createText ()
 	if pos_timer == 1 then
 		setCameraShakeLevel ( (alcohol/2) )
 
-		for k,v in pairs(getElementData(playerid, "house_pos")) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(playerid, "house_bussiness_radius")) then
+		for k,v in pairs(getElementData(resourceRoot, "house_pos")) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
@@ -919,8 +920,8 @@ function createText ()
 		end
 
 
-		for k,v in pairs(getElementData(playerid, "business_pos")) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(playerid, "house_bussiness_radius")) then	
+		for k,v in pairs(getElementData(resourceRoot, "business_pos")) do
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then	
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
@@ -933,7 +934,7 @@ function createText ()
 		end
 
 
-		for k,v in pairs(getElementData(playerid, "interior_job")) do
+		for k,v in pairs(getElementData(resourceRoot, "interior_job")) do
 			if isPointInCircle3D(x,y,z, v[6],v[7],v[8], v[12]) then				
 				local coords = { getScreenFromWorldPosition( v[6],v[7],v[8]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
@@ -1002,7 +1003,7 @@ function createText ()
 	end
 
 
-	for i,v in pairs(getElementData(playerid, "earth")) do--отображение предметов на земле
+	for i,v in pairs(getElementData(resourceRoot, "earth_data")) do--отображение предметов на земле
 		local area = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 20 )
 		local area2 = isPointInCircle3D( x, y, z, v[1], v[2], v[3], 10 )
 		local dist = getDistanceBetweenPoints3D(v[1], v[2], v[3]-1, x,y,z)
@@ -1030,12 +1031,12 @@ function createText ()
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
 
 			if player ~= playerid and coords[1] and coords[2] and isLineOfSightClear(x, y, z, x1,y1,z1) then
-				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(player, "zakon_drugs") then
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(resourceRoot, "zakon_drugs") then
 					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
 					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
 
-				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(player, "zakon_alcohol") then
+				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(resourceRoot, "zakon_alcohol") then
 					local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
 					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 				end
@@ -1086,7 +1087,7 @@ function tune_window_create (number)--создание окна тюнинга
 
 	guiGridListAddColumn(shoplist, "Товары", column_width1)
 	guiGridListAddColumn(shoplist, "Цена", column_width2)
-	for k,v in pairs(getElementData ( playerid, "repair_shop" )) do
+	for k,v in pairs(getElementData ( resourceRoot, "repair_shop" )) do
 		guiGridListAddRow(shoplist, v[1], v[3])
 	end
 
@@ -1249,11 +1250,11 @@ function shop_menu(number, value)--создание окна магазина
 		local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 
 		guiGridListAddColumn(shoplist, "Товары", 0.9)
-		for k,v in pairs(getElementData ( playerid, "weapon_cops" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "weapon_cops" )) do
 			guiGridListAddRow(shoplist, v[1])
 		end
 
-		for k,v in pairs(getElementData ( playerid, "sub_cops" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "sub_cops" )) do
 			guiGridListAddRow(shoplist, v[1])
 		end
 
@@ -1280,7 +1281,7 @@ function shop_menu(number, value)--создание окна магазина
 
 		guiGridListAddColumn(shoplist, "Услуги", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(getElementData ( playerid, "mayoralty_shop" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "mayoralty_shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1306,7 +1307,7 @@ function shop_menu(number, value)--создание окна магазина
 
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(getElementData ( playerid, "giuseppe" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "giuseppe" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1324,7 +1325,7 @@ function shop_menu(number, value)--создание окна магазина
 
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
-	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..getElementData(playerid, "interior_business")[value][2], false )
+	gui_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, number_business.." бизнес, "..getElementData(resourceRoot, "interior_business")[value][2], false )
 
 	local shoplist = guiCreateGridList(5, 20, width-10, 320-30, false, gui_window)
 	local column_width1 = 0.7
@@ -1342,7 +1343,7 @@ function shop_menu(number, value)--создание окна магазина
 	if value == 1 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(getElementData ( playerid, "weapon_shop" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "weapon_shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
@@ -1355,14 +1356,14 @@ function shop_menu(number, value)--создание окна магазина
 	elseif value == 3 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(getElementData ( playerid, "shop" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "shop" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 
 	elseif value == 4 then
 		guiGridListAddColumn(shoplist, "Товары", column_width1)
 		guiGridListAddColumn(shoplist, "Цена", column_width2)
-		for k,v in pairs(getElementData ( playerid, "gas" )) do
+		for k,v in pairs(getElementData ( resourceRoot, "gas" )) do
 			guiGridListAddRow(shoplist, v[1], v[3])
 		end
 	end
@@ -1375,7 +1376,7 @@ function avto_bikes_menu()--создание окна машин
 
 	showCursor( true )
 
-	local vehicleIds = getElementData(playerid, "cash_car")
+	local vehicleIds = getElementData(resourceRoot, "cash_car")
 
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
@@ -1412,7 +1413,7 @@ function boats_menu()--создание окна машин
 
 	showCursor( true )
 
-	local vehicleIds = getElementData(playerid, "cash_boats")
+	local vehicleIds = getElementData(resourceRoot, "cash_boats")
 
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
@@ -1449,7 +1450,7 @@ function helicopters_menu()--создание окна машин
 
 	showCursor( true )
 
-	local vehicleIds = getElementData(playerid, "cash_helicopters")
+	local vehicleIds = getElementData(resourceRoot, "cash_helicopters")
 
 	local width = 400+10
 	local height = 320.0+(16.0*1)+10
@@ -1523,7 +1524,7 @@ function tablet_fun()--создание планшета
 	local menu_business = guiCreateStaticImage( 434, 80, 60, 60, "comp/shopb.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
-		if getElementData(playerid, "tomorrow_weather_data") == value then
+		if getElementData(resourceRoot, "tomorrow_weather_data") == value then
 			local set_weather = guiCreateStaticImage( width_fon-weather[2], height_fon-weather[3], weather[2], weather[3], "comp/"..weather[1]..".png", false, fon )
 			break
 		end
@@ -1611,7 +1612,17 @@ function tablet_fun()--создание планшета
 			local edit_id1 = guiCreateComboBox ( 0, 20, 200, 300, "", false, low_fon )
 
 			for i=2,#info_png do
-				guiComboBoxAddItem( edit_id1, info_png[i][1] )
+				local count = false
+				for k,v in pairs(no_sell_auc) do 
+					if v == i then
+						count = true
+					end
+				end
+
+				if count then
+				else
+					guiComboBoxAddItem( edit_id1, info_png[i][1] )
+				end
 			end
 
 			local text_id2 = m2gui_label ( 0, 50, 200, 15, "Введите количество предмета", false, low_fon )
@@ -1788,7 +1799,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Предмет", 0.2)
 		guiGridListAddColumn(shoplist, "Ресурсы", 1.0)
 
-		for k,v in pairs(getElementData(playerid, "craft_table")) do
+		for k,v in pairs(getElementData(resourceRoot, "craft_table")) do
 			guiGridListAddRow(shoplist, v[1], v[2])
 		end
 
@@ -2139,7 +2150,7 @@ function tablet_fun()--создание планшета
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 				guiGridListClear(shoplist)
-				for k,v in pairs(getElementData(playerid, "interior_job")) do
+				for k,v in pairs(getElementData(resourceRoot, "interior_job")) do
 					guiGridListAddRow(shoplist, k, v[2])
 				end
 			end
@@ -2153,7 +2164,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				local name,x,y,z = getElementData(playerid, "interior_job")[tonumber(text)][2],getElementData(playerid, "interior_job")[tonumber(text)][6],getElementData(playerid, "interior_job")[tonumber(text)][7],getElementData(playerid, "interior_job")[tonumber(text)][8]
+				local name,x,y,z = getElementData(resourceRoot, "interior_job")[tonumber(text)][2],getElementData(resourceRoot, "interior_job")[tonumber(text)][6],getElementData(resourceRoot, "interior_job")[tonumber(text)][7],getElementData(resourceRoot, "interior_job")[tonumber(text)][8]
 				setElementPosition(playerid, x,y,z)
 				sendMessage("Вы телепортировались к "..name, lyme)
 			end
@@ -2161,7 +2172,7 @@ function tablet_fun()--создание планшета
 
 			guiGridListAddColumn(shoplist, "Номер", 0.15)
 			guiGridListAddColumn(shoplist, "Название", 0.8)
-			for k,v in pairs(getElementData(playerid, "interior_job")) do
+			for k,v in pairs(getElementData(resourceRoot, "interior_job")) do
 				guiGridListAddRow(shoplist, k, v[2])
 			end
 		end
