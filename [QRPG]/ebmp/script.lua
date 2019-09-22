@@ -148,18 +148,30 @@ local point_guns_zone = {0,0, 0,0, 0,0}--1-идет ли захват, 2-ном�
 local time_gz = 1*60
 local time_guns_zone = time_gz
 local name_mafia = {
-	[0] = {"no", {255,255,255}, {}},
-	[1] = {"Grove Street Familes", {0,255,0}, {105,106,107}},
-	[2] = {"Vagos", {255,255,0}, {108,109,110}},
-	[3] = {"Ballas", {175,0,255}, {102,103,104}},
-	[4] = {"Rifa", {65,131,215}, {173,174,175}},
-	[5] = {"Varrios Los Aztecas", {137,196,244}, {114,115,116}},
-	[6] = {"Triads", {50,50,50}, {117,118,120}},
-	[7] = {"Da Nang Boys", {255,0,0}, {121,122,123}},
-	[8] = {"Russian Mafia", {100,100,100}, {111,112,113}},
-	[9] = {"Bikers", {150,75,0}, {100,247,248,254}},
+	[0] = {createTeam("no", 255,255,255), {}},
+	[1] = {createTeam("Grove Street Familes", 0,255,0), {105,106,107}},
+	[2] = {createTeam("Vagos", 255,255,0), {108,109,110}},
+	[3] = {createTeam("Ballas", 175,0,255), {102,103,104}},
+	[4] = {createTeam("Rifa", 65,131,215), {173,174,175}},
+	[5] = {createTeam("Varrios Los Aztecas", 137,196,244), {114,115,116}},
+	[6] = {createTeam("Triads", 50,50,50), {117,118,120}},
+	[7] = {createTeam("Da Nang Boys", 255,0,0), {121,122,123}},
+	[8] = {createTeam("Russian Mafia", 100,100,100), {111,112,113}},
+	[9] = {createTeam("Bikers", 150,75,0), {100,247,248,254}},
 }
+for k,v in pairs(name_mafia) do
+	setTeamFriendlyFire ( v[1], false )
+end
 local guns_zone = {}
+------------------------------------------------------------------------------------------------------------------
+
+--фракции---------------------------------------------------------------------------------------------------------
+local fraction = {
+	[1] = {createTeam("SAPD", blue[1],blue[2],blue[3]), {64,75,87,265,266,267,280,281,282,283,284,285,288}},
+}
+for k,v in pairs(fraction) do
+	setTeamFriendlyFire ( v[1], false )
+end
 ------------------------------------------------------------------------------------------------------------------
 
 -------------------пользовательские функции----------------------------------------------
@@ -740,15 +752,15 @@ local giuseppe = {
 	{info_png[64][1].." Киллер", 20, 5000, 64},
 	{info_png[83][1], 100, 1000, 83},
 	{info_png[84][1], 10, 500, 84},
-	{info_png[85][1].." "..name_mafia[1][1], 1, 5000, 85},--5
-	{info_png[85][1].." "..name_mafia[2][1], 2, 5000, 85},
-	{info_png[85][1].." "..name_mafia[3][1], 3, 5000, 85},
-	{info_png[85][1].." "..name_mafia[4][1], 4, 5000, 85},
-	{info_png[85][1].." "..name_mafia[5][1], 5, 5000, 85},
-	{info_png[85][1].." "..name_mafia[6][1], 6, 5000, 85},
-	{info_png[85][1].." "..name_mafia[7][1], 7, 5000, 85},
-	{info_png[85][1].." "..name_mafia[8][1], 8, 5000, 85},
-	{info_png[85][1].." "..name_mafia[9][1], 9, 5000, 85},--13
+	{info_png[85][1].." "..getTeamName (name_mafia[1][1]), 1, 5000, 85},--5
+	{info_png[85][1].." "..getTeamName (name_mafia[2][1]), 2, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[3][1]), 3, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[4][1]), 4, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[5][1]), 5, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[6][1]), 6, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[7][1]), 7, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[8][1]), 8, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[9][1]), 9, 5000, 85},--13
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -1665,9 +1677,11 @@ function debuginfo ()
 			
 				guns_zone[point_guns_zone[2]][2] = point_guns_zone[3]
 
-				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[3]][2][1], name_mafia[point_guns_zone[3]][2][2], name_mafia[point_guns_zone[3]][2][3], 100 )
+				local r,g,b = getTeamColor ( name_mafia[point_guns_zone[3]][1] )
 
-				sendMessage(root, "[НОВОСТИ] "..name_mafia[point_guns_zone[3]][1].." захватила территорию", green)
+				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], r, g, b, 100 )
+
+				sendMessage(root, "[НОВОСТИ] "..getTeamName (name_mafia[point_guns_zone[3]][1]).." захватила территорию", green)
 
 				sqlite( "UPDATE guns_zone SET mafia = '"..point_guns_zone[3].."' WHERE number = '"..point_guns_zone[2].."'")
 			
@@ -1675,9 +1689,11 @@ function debuginfo ()
 			
 				guns_zone[point_guns_zone[2]][2] = point_guns_zone[5]
 
-				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], name_mafia[point_guns_zone[5]][2][1], name_mafia[point_guns_zone[5]][2][2], name_mafia[point_guns_zone[5]][2][3], 100 )
+				local r,g,b = getTeamColor ( name_mafia[point_guns_zone[3]][1] )
 
-				sendMessage(root, "[НОВОСТИ] "..name_mafia[point_guns_zone[5]][1].." удержала территорию", green)
+				setRadarAreaColor ( guns_zone[point_guns_zone[2]][1], r, g, b, 100 )
+
+				sendMessage(root, "[НОВОСТИ] "..getTeamName (name_mafia[point_guns_zone[5]][1]).." удержала территорию", green)
 			end
 
 			setRadarAreaFlashing ( guns_zone[point_guns_zone[2]][1], false )
@@ -3054,7 +3070,7 @@ local table_job = {
 
 				for k,v in pairs(name_mafia) do
 					if k ~= 0 then
-						for k,v in pairs(v[3]) do
+						for k,v in pairs(v[2]) do
 							table.insert(skin_table, v)
 
 							if getElementModel(playerid) == v and search_inv_player_2_parameter(playerid, 85) ~= 0 and crimes[playername] >= crimes_kill then
@@ -3931,14 +3947,22 @@ end
 function setPlayerNametagColor_fun( playerid )
 	if (search_inv_player_2_parameter(playerid, 44) ~= 0) then
 		setPlayerNametagColor(playerid, lyme[1],lyme[2],lyme[3])
+
 	elseif (search_inv_player(playerid, 45, 1) ~= 0) then
 		setPlayerNametagColor(playerid, green[1],green[2],green[3])
+
 	elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
 		setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
+		setPlayerTeam ( playerid, fraction[1][1] )
+
 	elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
-		setPlayerNametagColor(playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][2][1],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][2],name_mafia[search_inv_player_2_parameter(playerid, 85)][2][3])
+		local r,g,b = getTeamColor ( name_mafia[search_inv_player_2_parameter(playerid, 85)][1] )
+		setPlayerNametagColor(playerid, r,g,b)
+		setPlayerTeam ( playerid, name_mafia[search_inv_player_2_parameter(playerid, 85)][1] )
+
 	else 
 		setPlayerNametagColor(playerid, white[1],white[2],white[3])
+		setPlayerTeam ( playerid, nil )
 	end
 
 	setElementData(playerid, "admin_data", search_inv_player_2_parameter(playerid, 44))
@@ -4698,7 +4722,7 @@ function buy_subject_fun( playerid, text, number, value )
 				if k >= 5 and k <= 13 then
 					local count = false
 					local name_mafia_skin = ""
-					for k,j in pairs(name_mafia[v[2]][3]) do
+					for k,j in pairs(name_mafia[v[2]][2]) do
 						name_mafia_skin = name_mafia_skin..j..","
 						if getElementModel(playerid) == j then
 							count = true
@@ -5296,7 +5320,8 @@ function displayLoadedRes ( res )--старт ресурсов
 
 
 	for k,v in pairs(sqlite( "SELECT * FROM guns_zone" )) do
-		guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x2"], v["y2"], name_mafia[v["mafia"]][2][1],name_mafia[v["mafia"]][2][2],name_mafia[v["mafia"]][2][3], 100), v["mafia"]}
+		local r,g,b = getTeamColor ( name_mafia[v["mafia"]][1] )
+		guns_zone[v["number"]] = {createRadarArea (v["x1"], v["y1"], v["x2"], v["y2"], r,g,b, 100), v["mafia"]}
 	end
 
 
@@ -8059,7 +8084,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				local skin = false
-				for k,v in pairs(name_mafia[mafia][3]) do
+				for k,v in pairs(name_mafia[mafia][2]) do
 					if v == getElementModel(playerid) then
 						skin = true
 						break
@@ -8233,9 +8258,9 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 		elseif(id1 == 85)then--повязка
 			local count = 0
 			local count2 = 0
-			do_chat(playerid, "на шее "..info_png[id1][1].." "..name_mafia[id2][1].." - "..playername)
+			do_chat(playerid, "на шее "..info_png[id1][1].." "..getTeamName(name_mafia[id2][1]).." - "..playername)
 
-			sendMessage(playerid, "====[ ПОД КОНТРОЛЕМ "..name_mafia[id2][1].." ]====", yellow)
+			sendMessage(playerid, "====[ ПОД КОНТРОЛЕМ "..getTeamName(name_mafia[id2][1]).." ]====", yellow)
 
 			for k,v in pairs(guns_zone) do
 				if(v[2] == id2) then
@@ -9891,7 +9916,7 @@ function (playerid)
 	end
 
 	local skin = false
-	for k,v in pairs(name_mafia[mafia][3]) do
+	for k,v in pairs(name_mafia[mafia][2]) do
 		if v == getElementModel(playerid) then
 			skin = true
 			break
@@ -9917,7 +9942,7 @@ function (playerid)
 
 			setRadarAreaFlashing ( v[1], true )
 
-			sendMessage(root, "[НОВОСТИ] "..playername.." из "..name_mafia[search_inv_player_2_parameter(playerid, 85)][1].." захватывает территорию - "..name_mafia[v[2]][1], green)
+			sendMessage(root, "[НОВОСТИ] "..playername.." из "..getTeamName(name_mafia[search_inv_player_2_parameter(playerid, 85)][1]).." захватывает территорию - "..getTeamName(name_mafia[v[2]][1]), green)
 			return
 		end
 	end

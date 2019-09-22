@@ -817,12 +817,12 @@ function createText ()
 		end
 
 		local spl_gz = getElementData(playerid, "guns_zone2")
-		local name_mafia = getElementData(playerid, "name_mafia")
+		local name_mafia = getElementData(resourceRoot, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
 			dxDrawRectangle( 0.0, screenHeight-16.0*6-124, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
 			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( white[1], white[2], white[3] ), 1, m2font_dx1 )
-			dxdrawtext ( "Атака "..name_mafia[spl_gz[1][3]][1]..": "..spl_gz[1][4].." очков", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
-			dxdrawtext ( "Защита "..name_mafia[spl_gz[1][5]][1]..": "..spl_gz[1][6].." очков", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
+			dxdrawtext ( "Атака "..getTeamName(name_mafia[spl_gz[1][3]][1])..": "..spl_gz[1][4].." очков", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
+			dxdrawtext ( "Защита "..getTeamName(name_mafia[spl_gz[1][5]][1])..": "..spl_gz[1][6].." очков", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
 		end
 
 		if timer[1] then
