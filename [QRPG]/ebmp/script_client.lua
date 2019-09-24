@@ -1952,12 +1952,18 @@ function tablet_fun()--создание планшета
 			local res_t = 2
 
 			triggerServerEvent("event_restartResource", root)
-			sendMessage("лог скачается через "..res_t.." сек", lyme)
+			triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] начал скачивание лога")
 
 			setTimer(function()
-				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
 				triggerEvent("event_download", root)
 			end, res_t*1000, 1)
+
+			function onDownloadFinish ( file, success )
+				if file == "save_sqlite.sql" then
+					triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
+				end
+			end
+			addEventHandler ( "onClientFileDownloadComplete", root, onDownloadFinish )
 		end
 		addEventHandler ( "onClientGUIClick", log, outputEditBox, false )
 
