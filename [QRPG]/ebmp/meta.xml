@@ -6,8 +6,9 @@
 	<!--<include resource="maximap"/>
 	<include resource="hdhud"/>
 	<include resource="gtavradar"/>
-	<include resource="map_mafia2"/>
 	<include resource="vozle_merii_app"/>
+	
+	<include resource="map_mafia2"/>
 	
 	
 	-->
@@ -301,5 +302,10 @@
 	<file src="image_inventory/102.png"/>
 	<file src="image_inventory/103.png"/>
 	<file src="image_inventory/104.png"/>
+	<file src="image_inventory/105.png"/>
+	<file src="image_inventory/106.png"/>
+	<file src="image_inventory/107.png"/>
+	<file src="image_inventory/108.png"/>
+	<file src="image_inventory/109.png"/>
 
 </meta>

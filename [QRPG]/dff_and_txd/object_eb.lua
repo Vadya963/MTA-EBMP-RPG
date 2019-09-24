@@ -40,6 +40,7 @@ local dff_and_txd_table = {
 	{"coal", 3931, true},
 	{"armour", 1242},
 	{"deer", 1851, true},
+	{"vagon", 1852, true},
 }
 
 local wheel = {

@@ -87,4 +87,7 @@
 	<file src="deer.col"/>
 	<file src="deer.txd"/>
 	<file src="deer.dff"/>
+	<file src="vagon.col"/>
+	<file src="vagon.txd"/>
+	<file src="vagon.dff"/>
 </meta>

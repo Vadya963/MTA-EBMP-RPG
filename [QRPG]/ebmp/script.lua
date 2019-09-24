@@ -166,10 +166,10 @@ local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
 
 --фракции---------------------------------------------------------------------------------------------------------
-local fraction = {
+local fraction_table = {
 	[1] = {createTeam("SAPD", blue[1],blue[2],blue[3]), {64,75,87,265,266,267,280,281,282,283,284,285,288}},
 }
-for k,v in pairs(fraction) do
+for k,v in pairs(fraction_table) do
 	setTeamFriendlyFire ( v[1], false )
 end
 ------------------------------------------------------------------------------------------------------------------
@@ -515,7 +515,7 @@ local info_png = {
 	[3] = {"сигареты Big Break Red", "сигарет"},
 	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "лит."},
-	[6] = {"ключ от автомобиля с номером", ""},
+	[6] = {"ключ от т/с с номером", ""},
 	[7] = {"сигареты Big Break Blue", "сигарет"},
 	[8] = {"сигареты Big Break White", "сигарет"},
 	[9] = {"Граната", "боеприпасов"},
@@ -614,6 +614,11 @@ local info_png = {
 	[102] = {"уголовное дело", "преступлений"},
 	[103] = {"водка сталкер", "шт"},
 	[104] = {"лотерейный билет с номером", ""},
+	[105] = {"паспорт", "номер"},
+	[106] = {"документы на дом с номером", ""},
+	[107] = {"документы на т/с с номером", ""},
+	[108] = {"пустой бланк", ""},
+	[109] = {"заявление на пропажу т/с с номером", ""},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -3952,8 +3957,9 @@ function setPlayerNametagColor_fun( playerid )
 		setPlayerNametagColor(playerid, green[1],green[2],green[3])
 
 	elseif (search_inv_player_2_parameter(playerid, 10) ~= 0) then
-		setPlayerNametagColor(playerid, blue[1],blue[2],blue[3])
-		setPlayerTeam ( playerid, fraction[1][1] )
+		local r,g,b = getTeamColor ( fraction_table[1][1] )
+		setPlayerNametagColor(playerid, r,g,b)
+		setPlayerTeam ( playerid, fraction_table[1][1] )
 
 	elseif (search_inv_player_2_parameter(playerid, 85) ~= 0) then
 		local r,g,b = getTeamColor ( name_mafia[search_inv_player_2_parameter(playerid, 85)][1] )
@@ -5462,6 +5468,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	setElementData(resourceRoot, "business_pos", business_pos)
 	setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
 	setElementData(resourceRoot, "earth_data", earth)
+	setElementData(resourceRoot, "info_png", info_png)
 end
 addEventHandler ( "onResourceStart", resourceRoot, displayLoadedRes )
 
@@ -5564,7 +5571,7 @@ function()
 	sendMessage(playerid, "[TIPS] Команды сервера находятся в WIKI в планшете", color_tips)
 	sendMessage(playerid, "[TIPS] Первоначальная работа находится в ЛВ мясокомбинат", color_tips)
 	sendMessage(playerid, "[TIPS] Граждане не имеющий дом, могут помыться и выспаться в отелях", color_tips)
-	sendMessage(playerid, "[TIPS] Права можно купить в Мэрии", color_tips)
+	sendMessage(playerid, "[TIPS] Права можно получить в Мэрии", color_tips)
 
 	count_player = count_player+1
 	setElementData(playerid, "player_id", { count_player, 0 })
@@ -5828,11 +5835,13 @@ function reg_or_login(playerid)
 			return
 		end
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '1:500,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
 		load_inv(playername, "player", result[1]["inventory"])
+		inv_player_empty(playerid, 1, 500)
+		inv_player_empty(playerid, 105, getElementData(playerid, "player_id")[1])
 
 		logged[playername] = 1
 		alcohol[playername] = result[1]["alcohol"]
@@ -5857,6 +5866,10 @@ function reg_or_login(playerid)
 		end
 
 		load_inv(playername, "player", result[1]["inventory"])
+
+		if inv_player_delet(playerid, 105, search_inv_player_2_parameter(playerid, 105)) then
+			inv_player_empty(playerid, 105, getElementData(playerid, "player_id")[1])
+		end
 
 		logged[playername] = 1
 		arrest[playername] = result[1]["arrest"]
@@ -6230,7 +6243,7 @@ function buycar ( playerid, id )
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..max_fuel.."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '107:"..val2..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	
 		car_spawn(tostring(val2))
 	else
@@ -7447,7 +7460,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id2.."'" )
 
-				me_chat(playerid, playername.." показал(а) документы на т/с с номером "..id2)
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2)
 
 				do_chat(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней - "..playername)
 				do_chat(playerid, "Установлен "..result[1]["stage"].." stage - "..playername)
@@ -8531,6 +8544,13 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				sendMessage(playerid, "[ERROR] Лотерея закончилась", red)
 				return
 			end
+
+		elseif id1 == 105 then--паспорт
+			local id,player = getPlayerId(id2)
+			if id then
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." на имя "..id)
+			end
+			return
 
 		else
 			if id1 == 1 then
@@ -9692,7 +9712,7 @@ function (playerid)
 			table.insert(taxi_pos, {x, y, z})
 			table.insert(fire_pos, {x, y, z})
 
-			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '106:"..dim..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 			sendMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], orange)
 
