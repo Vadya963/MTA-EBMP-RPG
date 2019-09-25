@@ -8566,6 +8566,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local id,player = getPlayerId(id2)
 			if id then
 				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." на имя "..id)
+			else
+				me_chat(playerid, playername.." показал(а) чужой "..info_png[id1][1])
 			end
 			return
 
