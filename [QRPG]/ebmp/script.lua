@@ -617,7 +617,7 @@ local info_png = {
 	[105] = {"паспорт", "номер"},
 	[106] = {"документы на дом с номером", ""},
 	[107] = {"документы на т/с с номером", ""},
-	[108] = {"пустой бланк", ""},
+	[108] = {"пустой бланк", "шт"},
 	[109] = {"заявление на пропажу т/с с номером", ""},
 }
 
@@ -818,6 +818,7 @@ local sub_cops = {
 	{info_png[10][1].." Капитана", 5, 10},
 	{info_png[57][1], 1, 57},
 	{info_png[58][1], 1, 58},
+	{info_png[108][1], 1, 108},
 }
 
 local deathReasons = {
@@ -2130,7 +2131,13 @@ local table_job = {
 							
 							if (getSpeed(vehicleid) < 1) then
 								
-								local randomize = cash_car[getElementModel(vehicleid)][2]*0.05
+								local randomize = 0
+
+								if getVehicleType(vehicleid) == "Plane" or getVehicleType(vehicleid) == "Helicopter" then
+									randomize = cash_helicopters[getElementModel(vehicleid)][2]*0.05
+								else
+									randomize = cash_car[getElementModel(vehicleid)][2]*0.05
+								end
 
 								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -2440,9 +2447,6 @@ local table_job = {
 
 									local vehicleid = createVehicle(vehicle_pos[randomize][1], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3]+1, 0, 0, vehicle_pos[randomize][5], "0")
 									local plate = getVehiclePlateText ( vehicleid )
-
-									setElementInterior(vehicleid, getElementInterior(playerid))
-									setElementDimension(vehicleid, getElementDimension(playerid))
 
 									array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 									array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -2960,9 +2964,9 @@ local table_job = {
 	[18] = function(playerid,playername)--работа транспортный детектив
 		local vehicleid = getPlayerVehicle(playerid)
 		local x,y,z = getElementPosition(playerid)
-		if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 and crimes[playername] == 0 then
+		if (getElementModel(playerid) == 284) and search_inv_player(playerid, 10, 2) ~= 0 and crimes[playername] == 0 and search_inv_player_2_parameter(playerid, 109) ~= 0 then
 					if (job_call[playername] == 0) then
-						local plate = player_car_police()
+						local plate = search_inv_player_2_parameter(playerid, 109)--player_car_police()
 
 						if plate then
 							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
@@ -2980,6 +2984,8 @@ local table_job = {
 					elseif (job_call[playername][1] == 1) then
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) then
 							local randomize = random(zp_player_police_car/2,zp_player_police_car)
+
+							inv_player_delet(playerid, 109, job_call[playername][2])
 
 							sqlite( "UPDATE car_db SET theft = '0' WHERE number = '"..job_call[playername][2].."'")
 
@@ -7455,7 +7461,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
-		elseif id1 == 6 then
+		elseif id1 == 107 then--документы тс
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..id2.."'" )
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id2.."'" )
@@ -7464,6 +7470,17 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				do_chat(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней - "..playername)
 				do_chat(playerid, "Установлен "..result[1]["stage"].." stage - "..playername)
+			end
+			return
+
+		elseif id1 == 106 then--документы дома
+			local result = sqlite( "SELECT COUNT() FROM house_db WHERE number = '"..id2.."'" )
+			if result[1]["COUNT()"] == 1 then
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..id2.."'" )
+
+				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2)
+
+				do_chat(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней - "..playername)
 			end
 			return
 
@@ -7588,7 +7605,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			if armour[playername] == 0 then
 				armour[playername] = createObject (1242, x, y, z)
 				setObjectScale(armour[playername], 1.7)
-				attachElementToBone (armour[playername], playerid, 3, 0,0.04,0.06, 5,0,0)
+				exports["bone_attach"]:attachElementToBone (armour[playername], playerid, 3, 0,0.04,0.06, 5,0,0)
 			end
 
 			setPedArmor(playerid, 100)
@@ -9418,6 +9435,38 @@ function (playerid, cmd, cash)
 	end
 end)
 
+addCommandHandler("searchcar",--заявление на поиск тс
+function (playerid, cmd, plate)
+	local playername = getPlayerName ( playerid )
+	local x,y,z = getElementPosition(playerid)
+	local plate = tonumber(plate)
+
+	if not plate then
+		sendMessage(playerid, "[ERROR] /"..cmd.." [номер т/с]", red)
+		return
+	end
+
+	local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+
+	if logged[playername] == 0 then
+		return
+	elseif not result[1] then
+		sendMessage(playerid, "[ERROR] Т/с не найдено", red)
+		return
+	elseif result[1]["theft"] == 0 then
+		sendMessage(playerid, "[ERROR] Т/с не в угоне", red)
+		return
+	end
+
+	if(inv_player_delet(playerid, 108, 1, true)) then
+		inv_player_empty(playerid, 109, plate)
+
+		me_chat(playerid, playername.." написал(а) "..info_png[109][1].." "..plate)
+	else
+		sendMessage(playerid, "[ERROR] У вас нет "..info_png[108][1], red)
+	end
+end)
+
 addCommandHandler ( "prison",--команда для копов (посадить игрока в тюрьму)
 function (playerid, cmd, id)
 	local playername = getPlayerName ( playerid )
@@ -10576,7 +10625,7 @@ function o_pos( thePlayer )
 	objPick = createObject (322, x, y, z)
 	setObjectScale(objPick, 1.7)
 
-	attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
+	exports["bone_attach"]:attachElementToBone (objPick, thePlayer, 12, 0,0,0, 0,0,0)
 end
 
 addCommandHandler ("orot",
