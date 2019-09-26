@@ -5284,7 +5284,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	print("[account] "..result[1]["COUNT()"])
 
 
-	local result = sqlite( "SELECT COUNT() FROM account WHERE ban = '1'" )
+	local result = sqlite( "SELECT COUNT() FROM account WHERE ban != '0'" )
 	print("[account_banned] "..result[1]["COUNT()"])
 
 
@@ -5536,7 +5536,7 @@ function()
 	if result[1]["COUNT()"] == 1 then
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 		if result[1]["ban"] ~= "0" then
-			kickPlayer(playerid, "ban player reason: "..result[1]["reason"])
+			kickPlayer(playerid, "ban player reason: "..result[1]["ban"])
 			return
 		end
 	end
@@ -5841,7 +5841,7 @@ function reg_or_login(playerid)
 			return
 		end
 		
-		local result = sqlite( "INSERT INTO account (name, ban, reason, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '0', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		local result = sqlite( "INSERT INTO account (name, ban, settings, x, y, z, reg_ip, reg_serial, heal, alcohol, satiety, hygiene, sleep, drugs, skin, arrest, crimes, inventory) VALUES ('"..playername.."', '0', '400', '"..spawnX.."', '"..spawnY.."', '"..spawnZ.."', '"..ip.."', '"..serial.."', '"..max_heal.."', '0', '100', '100', '100', '0', '26', '0', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..playername.."'" )
 
@@ -5876,6 +5876,9 @@ function reg_or_login(playerid)
 		if inv_player_delet(playerid, 105, search_inv_player_2_parameter(playerid, 105)) then
 			inv_player_empty(playerid, 105, getElementData(playerid, "player_id")[1])
 		end
+
+		triggerClientEvent( playerid, "event_setFarClipDistance", playerid, tonumber(result[1]["settings"]) )
+		setElementData(playerid, "settings", result[1]["settings"])
 
 		logged[playername] = 1
 		arrest[playername] = result[1]["arrest"]
@@ -10388,12 +10391,12 @@ function ( playerid, cmd, id, ... )
 	if result[1]["COUNT()"] == 1 then
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
-		if result[1]["ban"] == "1" then
+		if result[1]["ban"] ~= "0" then
 			sendMessage(playerid, "[ERROR] Игрок уже забанен", red)
 			return
 		end
 
-		sqlite( "UPDATE account SET ban = '1', reason = '"..reason.."' WHERE name = '"..id.."'")
+		sqlite( "UPDATE account SET ban = '"..reason.."' WHERE name = '"..id.."'")
 
 		sendMessage( root, "Администратор "..playername.." забанил "..id..". Причина: "..reason, lyme)
 
@@ -10428,7 +10431,7 @@ function ( playerid, cmd, id )
 			return
 		end
 
-		sqlite( "UPDATE account SET ban = '0', reason = '0' WHERE name = '"..id.."'")
+		sqlite( "UPDATE account SET ban = '0' WHERE name = '"..id.."'")
 
 		sendMessage( root, "Администратор "..playername.." разбанил "..id, lyme)
 	else

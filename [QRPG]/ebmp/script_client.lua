@@ -189,6 +189,9 @@ addEventHandler ( "event_givePedWeapon", root, givePedWeapon )
 addEvent( "event_setPedCameraRotation", true )
 addEventHandler ( "event_setPedCameraRotation", root, setPedCameraRotation )
 
+addEvent( "event_setFarClipDistance", true )
+addEventHandler ( "event_setFarClipDistance", root, setFarClipDistance )
+
 addEventHandler( "onClientElementStreamIn", root,
 function ( )
 	if getElementType(source) == "vehicle" then
@@ -1418,6 +1421,7 @@ function tablet_fun()--создание планшета
 	local horse = guiCreateStaticImage( 300, 80, 60, 60, "comp/it.png", false, fon )
 	local fortune = guiCreateStaticImage( 370, 80, 54, 60, "comp/fortune.png", false, fon )
 	local menu_business = guiCreateStaticImage( 434, 80, 60, 60, "comp/shopb.png", false, fon )
+	local services = guiCreateStaticImage( 494, 80, 60, 60, "comp/services.png", false, fon )
 
 	for value,weather in pairs(weather_list) do
 		if getElementData(resourceRoot, "tomorrow_weather_data") == value then
@@ -1425,6 +1429,42 @@ function tablet_fun()--создание планшета
 			break
 		end
 	end
+
+	function outputEditBox ( button, state, absoluteX, absoluteY )--настройки
+		local low_fon = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
+		local home,m2gui_width = m2gui_button( 0, height_fon-16, "Рабочий стол", false, low_fon )
+		local save,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Сохранить", false, low_fon )
+
+		local text = m2gui_label ( 0, 5, 200, 15, "Дальность прорисовки", false, low_fon )
+		local dist = guiCreateEdit ( 200, 0, 2000, 25, getElementData(playerid, "settings"), false, low_fon )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
+			destroyElement(low_fon)
+		end
+		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
+
+		function outputEditBox ( button, state, absoluteX, absoluteY )--сохранить настройки
+			local text1 = guiGetText(dist)
+				
+			if text1 == "" then
+				sendMessage("[ERROR] Вы ничего не написали", red)
+				return
+			elseif not tonumber(text1) then
+				sendMessage("[ERROR] Укажите число", red)
+				return
+			end
+
+			sendMessage("Настройки сохранены", yellow)
+
+			setFarClipDistance(tonumber(text1))
+
+			setElementData(playerid, "settings", text1)
+
+			triggerServerEvent("event_sqlite", root, "UPDATE account SET settings = '"..getElementData(playerid, "settings").."' WHERE name = '"..getPlayerName(playerid).."'")
+		end
+		addEventHandler ( "onClientGUIClick", save, outputEditBox, false )
+	end
+	addEventHandler ( "onClientGUIClick", services, outputEditBox, false )
 
 	function outputEditBox ( button, state, absoluteX, absoluteY )--аук предметов меню
 		local auc_menu = guiCreateStaticImage( 0, 0, width_fon, height_fon, "comp/low_fon1.png", false, fon )
