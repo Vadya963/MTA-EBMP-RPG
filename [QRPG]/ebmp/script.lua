@@ -634,6 +634,7 @@ end
 local quest_table = {--1 название, 2 описание, 3 кол-во, 5 предмет засчитывания, 6 награда $, 7 награда предметом, 8 массив имен кто выполнил квест
 	[1] = {"Мясник", "Обработать ", math.random(5,10), " кусков мяса", 48, math.random(1000,5000), {79,10000}, {}},
 	[2] = {"Рудокоп", "Добыть ", math.random(5,10), " раз железную руду", 71, math.random(1000,5000), {0,0}, {}},
+	[3] = {"Нефтебарон", "Перевезти ", math.random(1,2), " раз бочки с нефтью", 73, math.random(1000,5000), {5,25}, {}},
 }
 
 local weapon = {
@@ -3988,7 +3989,7 @@ function quest_player(playerid, id)
 		local quest = tonumber(spl[1])
 		local quest_progress = tonumber(spl[2])
 
-		if 1 <= quest and quest <= 2 then
+		if 1 <= quest and quest <= 3 then
 			if id == quest_table[quest][5] then
 				quest_progress = quest_progress+1
 				setElementData(playerid, "quest_select", quest..":"..quest_progress)
