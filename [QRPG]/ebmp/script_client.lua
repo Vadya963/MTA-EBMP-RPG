@@ -1436,7 +1436,7 @@ function tablet_fun()--создание планшета
 		local save,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Сохранить", false, low_fon )
 
 		local text = m2gui_label ( 0, 5, 200, 15, "Дальность прорисовки", false, low_fon )
-		local dist = guiCreateEdit ( 200, 0, 2000, 25, getElementData(playerid, "settings"), false, low_fon )
+		local dist = guiCreateEdit ( 200, 0, width_fon, 25, getElementData(playerid, "settings"), false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 			destroyElement(low_fon)
