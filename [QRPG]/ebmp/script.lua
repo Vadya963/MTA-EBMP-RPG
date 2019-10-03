@@ -2908,10 +2908,10 @@ local table_job = {
 								job_call[playername] = 1
 								job_pos[playername] = {house_pos[randomize][1],house_pos[randomize][2],house_pos[randomize][3]-1}
 								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, yellow[1],yellow[2],yellow[3], 255, 0, 16383.0, playerid )
-								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 40.0, yellow[1],yellow[2],yellow[3], 255, playerid )
+								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, yellow[1],yellow[2],yellow[3], 255, playerid )
 
 							elseif job_call[playername] == 1 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 40) and amount_inv_car_1_parameter(vehicleid, up_car_subject[6][5]) ~= 0 then
+								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and amount_inv_car_1_parameter(vehicleid, up_car_subject[6][5]) ~= 0 then
 									local randomize = random(1,#house_pos)
 									local sic2p = search_inv_car_2_parameter(vehicleid, up_car_subject[6][5])
 
