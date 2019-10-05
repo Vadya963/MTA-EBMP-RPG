@@ -4146,18 +4146,18 @@ function inv_car_delet(playerid, id1, id2, delet_inv, unload_value, quest_bool)-
 	end
 
 	if unload_value then
-		local count = false
+		local count = 0
 		for i=0,max_inv do
 			if array_car_1[plate][i+1] == id1 and array_car_2[plate][i+1] == id2 then
 				array_car_1[plate][i+1] = 0
 				array_car_2[plate][i+1] = 0
-				count = true
+				count = count+1
 
 				triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 			end
 		end
 
-		if count then
+		if count >= 20 then
 			if quest_bool then
 				quest_player(playerid, id1)
 			end
@@ -7524,9 +7524,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				if getSpeed(vehicleid) > 5 then
 					sendMessage(playerid, "[ERROR] Остановите т/с", red)
 					return
-				end
-
-				if getElementHealth(vehicleid) == 1000 then
+				elseif getElementHealth(vehicleid) == 1000 or getElementInterior(vehicleid) ~= 0 or getElementDimension(vehicleid) ~= 0 then
 					sendMessage(playerid, "[ERROR] Т/с не нуждается в ремонте", red)
 					return
 				end
