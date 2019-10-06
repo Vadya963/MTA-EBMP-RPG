@@ -5722,6 +5722,10 @@ function(ammo, attacker, weapon, bodypart)
 						sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green )
 
 						inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+					else
+						local crimes_plus = zakon_kill_crimes
+						crimes[playername_a] = crimes[playername_a]+crimes_plus
+						sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
 					end
 				end
 
@@ -5758,6 +5762,10 @@ function(ammo, attacker, weapon, bodypart)
 								sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green )
 
 								inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+							else
+								local crimes_plus = zakon_kill_crimes
+								crimes[playername_a] = crimes[playername_a]+crimes_plus
+								sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
 							end
 						end
 					end
