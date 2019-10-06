@@ -10019,7 +10019,7 @@ function (playerid, cmd, id, id1, id2 )
 		
 	if id then
 		if inv_player_empty(playerid, val1, val2) then
-			admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] выдал "..id.." "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
+			admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id")[1].."] выдал "..id.." ["..getElementData(player, "player_id")[1].."] "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
 		else
 			sendMessage(playerid, "[ERROR] Инвентарь полон", red)
 		end
