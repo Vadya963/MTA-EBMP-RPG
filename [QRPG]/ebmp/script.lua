@@ -9068,6 +9068,9 @@ function blackjack (playerid, cmd, value, ...)
 				elseif accept_player[playername][1] then
 					sendMessage(playerid, "[ERROR] Вы играете", red)
 					return
+				elseif cash > array_player_2[id][1] then
+					sendMessage(playerid, "[ERROR] У игрока недостаточно средств", red)
+					return
 				elseif playername == id then
 					sendMessage(playerid, "[ERROR] На столько всё плохо?", red)
 					return
