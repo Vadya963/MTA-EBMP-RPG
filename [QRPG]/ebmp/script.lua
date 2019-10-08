@@ -595,7 +595,7 @@ local info_png = {
 	[83] = {"тратил", "гр"},
 	[84] = {"отмычка", "процентов"},
 	[85] = {"повязка", "опг"},
-	[86] = {"документы на скотобойню под номером", ""},
+	[86] = {"документы на скотобойню с номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
 	[88] = {"тушка коровы", "$ за штуку"},
 	[89] = {"мешок с кормом", "$ за штуку"},
@@ -741,11 +741,11 @@ for k,v in ipairs(color_table) do
 end
 
 for k,v in ipairs(color_table) do
-	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.5, 98})
+	table.insert(repair_shop, {info_png[101][1].." "..k.." "..info_png[101][2], k, 0.5, 101})
 end
 
 for k,v in ipairs(color_table) do
-	table.insert(repair_shop, {info_png[101][1].." "..k.." "..info_png[101][2], k, 0.5, 101})
+	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.5, 98})
 end
 
 local gas = {
@@ -1096,15 +1096,15 @@ local cash_car = {
 	[605] = {"Damaged Sadler", 5000},
 
 	--тачки копов
-	[596] = {"Police LS", 25000},
-	[597] = {"Police SF", 25000},
-	[598] = {"Police LV", 25000},
-	[599] = {"Police Ranger", 25000},
+	[596] = {"Police LS", 2500},
+	[597] = {"Police SF", 2500},
+	[598] = {"Police LV", 2500},
+	[599] = {"Police Ranger", 2500},
 	--[427] = {"ENFORCER", 40000},--пол-ий грузовик
 	--[601] = {"S.W.A.T.", 40000},
 	--[490] = {"FBIRANCH", 40000},
 	--[525] = {"TOWTRUCK", 20000},--эвакуатор для копов
-	[523] = {"HPV1000", 10000},--мотик полиции
+	[523] = {"HPV1000", 2000},--мотик полиции
 	--[528] = {"FBITRUCK", 40000},
 
 	--bikes
@@ -1160,7 +1160,7 @@ local cash_airplanes = {
 }
 
 local car_cash_coef = 10
-local car_cash_no = {456,428,420,574,416,408,437,453,593,407,448,563,596,597,598,599,523}
+local car_cash_no = {456,428,420,574,416,408,437,453,593,407,448,563}
 for k,v in pairs(cash_car) do
 	local count = 0
 	for _,v1 in pairs(car_cash_no) do
@@ -8430,7 +8430,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				end
 
 				local spl = color_table[id2]
-				setVehicleColor( vehicleid, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
+				local r1,g1,b1, r2,g2,b2, r3,g3,b3, r4,g4,b4 = getVehicleColor ( vehicleid, true )
+				setVehicleColor( vehicleid, spl[1], spl[2], spl[3], r2,g2,b2, spl[1], spl[2], spl[3], spl[1], spl[2], spl[3] )
 
 				sqlite( "UPDATE car_db SET car_rgb = '"..spl[1]..","..spl[2]..","..spl[3].."' WHERE number = '"..plate.."'")
 

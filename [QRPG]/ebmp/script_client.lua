@@ -987,7 +987,7 @@ function tune_window_create (number)--создание окна тюнинга
 	guiGridListAddColumn(shoplist, "Товары", column_width1)
 	guiGridListAddColumn(shoplist, "Цена", column_width2)
 	for k,v in pairs(getElementData ( resourceRoot, "repair_shop" )) do
-		guiGridListAddRow(shoplist, v[1], v[3])
+		guiGridListAddRow(shoplist, v[1], (v[3]*100).."%")
 	end
 
 	local buy_subject = m2gui_button( 10, 175, "Купить", false, tab_shop )

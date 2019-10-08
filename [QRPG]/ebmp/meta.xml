@@ -1,7 +1,7 @@
 <meta>
 	<info author="Paolo_Ricchi" type="gamemode" name="discord.gg/000000" description="My first MTA server"/>
 
-	<min_mta_version client="1.5.6-9.16068.0" server="1.5.6-9.16068.0"/>
+	<min_mta_version client="1.5.7-9.20308.0" server="1.5.7-9.20308.0"/>
 
 	<!--<include resource="maximap"/>
 	<include resource="hdhud"/>
