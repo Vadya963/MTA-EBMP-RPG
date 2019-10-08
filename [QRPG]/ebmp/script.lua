@@ -708,44 +708,44 @@ local shop = {
 }
 
 local repair_shop = {
-	{info_png[95][1].." 0 "..info_png[95][2], 0, 0.1, 95},
+	{info_png[95][1].." 0 "..info_png[95][2], 0, 0.5, 95},
 	{info_png[95][1].." 1 "..info_png[95][2], 1, 1, 95},
 	{info_png[95][1].." 2 "..info_png[95][2], 2, 2, 95},
 	{info_png[95][1].." 3 "..info_png[95][2], 3, 3, 95},
-	{info_png[99][1].." 0 "..info_png[99][2], 0, 0.5, 99},
-	{info_png[99][1].." 1 "..info_png[99][2], 1, 0.5, 99},
-	{info_png[99][1].." 2 "..info_png[99][2], 2, 0.5, 99},
-	{info_png[99][1].." 3 "..info_png[99][2], 3, 0.5, 99},
+	{info_png[99][1].." 0 "..info_png[99][2], 0, 0.1, 99},
+	{info_png[99][1].." 1 "..info_png[99][2], 1, 0.1, 99},
+	{info_png[99][1].." 2 "..info_png[99][2], 2, 0.1, 99},
+	{info_png[99][1].." 3 "..info_png[99][2], 3, 0.1, 99},
 	{info_png[100][1], 1, 1, 100},
-	{info_png[96][1].." 1025 "..info_png[96][2], 1025, 1, 96},
-	{info_png[96][1].." 1073 "..info_png[96][2], 1073, 1, 96},
-	{info_png[96][1].." 1074 "..info_png[96][2], 1074, 1, 96},
-	{info_png[96][1].." 1075 "..info_png[96][2], 1075, 1, 96},
-	{info_png[96][1].." 1076 "..info_png[96][2], 1076, 1, 96},
-	{info_png[96][1].." 1077 "..info_png[96][2], 1077, 1, 96},
-	{info_png[96][1].." 1078 "..info_png[96][2], 1078, 1, 96},
-	{info_png[96][1].." 1079 "..info_png[96][2], 1079, 1, 96},
-	{info_png[96][1].." 1080 "..info_png[96][2], 1080, 1, 96},
-	{info_png[96][1].." 1081 "..info_png[96][2], 1081, 1, 96},
-	{info_png[96][1].." 1082 "..info_png[96][2], 1082, 1, 96},
-	{info_png[96][1].." 1083 "..info_png[96][2], 1083, 1, 96},
-	{info_png[96][1].." 1084 "..info_png[96][2], 1084, 1, 96},
-	{info_png[96][1].." 1085 "..info_png[96][2], 1085, 1, 96},
-	{info_png[96][1].." 1096 "..info_png[96][2], 1096, 1, 96},
-	{info_png[96][1].." 1097 "..info_png[96][2], 1097, 1, 96},
-	{info_png[96][1].." 1098 "..info_png[96][2], 1098, 1, 96},
+	{info_png[96][1].." 1025 "..info_png[96][2], 1025, 0.4, 96},
+	{info_png[96][1].." 1073 "..info_png[96][2], 1073, 0.4, 96},
+	{info_png[96][1].." 1074 "..info_png[96][2], 1074, 0.4, 96},
+	{info_png[96][1].." 1075 "..info_png[96][2], 1075, 0.4, 96},
+	{info_png[96][1].." 1076 "..info_png[96][2], 1076, 0.4, 96},
+	{info_png[96][1].." 1077 "..info_png[96][2], 1077, 0.4, 96},
+	{info_png[96][1].." 1078 "..info_png[96][2], 1078, 0.4, 96},
+	{info_png[96][1].." 1079 "..info_png[96][2], 1079, 0.4, 96},
+	{info_png[96][1].." 1080 "..info_png[96][2], 1080, 0.4, 96},
+	{info_png[96][1].." 1081 "..info_png[96][2], 1081, 0.4, 96},
+	{info_png[96][1].." 1082 "..info_png[96][2], 1082, 0.4, 96},
+	{info_png[96][1].." 1083 "..info_png[96][2], 1083, 0.4, 96},
+	{info_png[96][1].." 1084 "..info_png[96][2], 1084, 0.4, 96},
+	{info_png[96][1].." 1085 "..info_png[96][2], 1085, 0.4, 96},
+	{info_png[96][1].." 1096 "..info_png[96][2], 1096, 0.4, 96},
+	{info_png[96][1].." 1097 "..info_png[96][2], 1097, 0.4, 96},
+	{info_png[96][1].." 1098 "..info_png[96][2], 1098, 0.4, 96},
 }
 
 for k,v in ipairs(color_table) do
-	table.insert(repair_shop, {info_png[97][1].." "..k.." "..info_png[97][2], k, 0.5, 97})
+	table.insert(repair_shop, {info_png[97][1].." "..k.." "..info_png[97][2], k, 0.05, 97})
 end
 
 for k,v in ipairs(color_table) do
-	table.insert(repair_shop, {info_png[101][1].." "..k.." "..info_png[101][2], k, 0.5, 101})
+	table.insert(repair_shop, {info_png[101][1].." "..k.." "..info_png[101][2], k, 0.05, 101})
 end
 
 for k,v in ipairs(color_table) do
-	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.5, 98})
+	table.insert(repair_shop, {info_png[98][1].." "..k.." "..info_png[98][2], k, 0.05, 98})
 end
 
 local gas = {
