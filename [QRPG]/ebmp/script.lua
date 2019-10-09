@@ -4335,7 +4335,6 @@ function pickupUse( playerid )
 				sendMessage(playerid, "Тип "..v["type"], yellow)
 				sendMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow)
 				sendMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green)
-				--sendMessage(playerid, "Цена закупки товара "..v["buyprod"].."$", green)
 
 				if search_inv_player(playerid, 43, v["number"]) ~= 0 then
 					sendMessage(playerid, "Состояние кассы "..split(v["money"],".")[1].."$", green)
@@ -4410,7 +4409,7 @@ function sqlite_load(playerid, value)
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, 43).."'" )
 		if result[1] then
 			local farms = {
-				{result[1]["number"], "Цена на товар", result[1]["price"].."$"},
+				{result[1]["number"], "Цена на товар (надбавка в N раз)", result[1]["price"].."$"},
 				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
 				{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
 				{result[1]["number"], "Склад", result[1]["warehouse"].." продуктов"},
@@ -5003,12 +5002,6 @@ function till_fun( playerid, value, money )
 
 		sendMessage(playerid, "Вы установили стоимость товара "..money.."$", yellow)
 
-	--[[elseif value == "buyprod" then
-		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..number.."'" )
-
-		sqlite( "UPDATE business_db SET buyprod = '"..money.."' WHERE number = '"..number.."'")
-
-		sendMessage(playerid, "Вы установили цену закупки товара "..money.."$", yellow)]]
 	end
 end
 addEvent( "event_till_fun", true )
@@ -6992,11 +6985,6 @@ function delet_subject(playerid, id)--удаление предметов из �
 						sendMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], red)
 						return
 					end
-
-					--[[if v["buyprod"] == 0 then
-						sendMessage(playerid, "[ERROR] Цена покупки не указана", red)
-						return
-					end]]
 
 					if v["warehouse"] >= max_business then
 						sendMessage(playerid, "[ERROR] Склад полон", red)
