@@ -5269,7 +5269,6 @@ function displayLoadedRes ( res )--старт ресурсов
 	removeWorldModel(3855, 999999, 0, 0, 0)
 
 	setTimer(debuginfo, 1000, 0)--дебагинфа
-	setTimer(freez_car, 1000, 0)--заморозка авто и не только
 	--setTimer(need, 60000, 0)--уменьшение потребностей(временно выкл)
 	setTimer(need_1, 10000, 0)--смена скина на бомжа
 	setTimer(fuel_down, 1000, 0)--система топлива
@@ -5942,6 +5941,7 @@ function fixVehicle_fun( vehicleid )
 		fixVehicle(vehicleid)
 		fixVehicle(vehicleid)
 		setElementHealth(vehicleid, 300)
+		vehicle_sethandling(vehicleid)
 	end
 end
 
@@ -5972,43 +5972,18 @@ function explode_car()
 end
 addEventHandler("onVehicleExplode", root, explode_car)
 
-function freez_car()--заморозка авто
-	for k,vehicleid in pairs(getElementsByType("vehicle")) do
-		local x,y,z = getElementPosition( vehicleid )
-		local plate = getVehiclePlateText ( vehicleid )
-
-		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
-		if result[1]["COUNT()"] == 1 then
-			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-			for k,v in pairs(result) do
-				if v["frozen"] == 1 then
-					setElementFrozen(vehicleid, true)
-				else
-					setElementFrozen(vehicleid, false)
-				end
-			end
-		end
-
-		local table_no_damage_car = {528,432,601,428}
-		for k,v in pairs(table_no_damage_car) do
-			if getElementModel(vehicleid) == v then
-				setVehicleDamageProof(vehicleid, true)
-			end
-		end
-
-		--[[if getVehicleType (vehicleid) == "Plane" or getVehicleType (vehicleid) == "Helicopter" then
-			if isInsideColShape(lv_airport, x,y,z) or isInsideColShape(sf_airport, x,y,z) or isInsideColShape(ls_airport, x,y,z) then
-				for k,playerid in pairs(getElementsByType("player")) do
-					triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, false )
-				end
-			else
-				for k,playerid in pairs(getElementsByType("player")) do
-					triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, true )
-				end
-			end
-		end]]
-	end
+function vehicle_sethandling(vehicleid)
+	local a = getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(getElementHealth(vehicleid)/1000)
+	local v = getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(getElementHealth(vehicleid)/1000)
+	setVehicleHandling(vehicleid, "engineAcceleration", a)
+	setVehicleHandling(vehicleid, "maxVelocity", v)
 end
+
+function handleVehicleDamage(loss)
+	local vehicleid = source
+	vehicle_sethandling(vehicleid)
+end
+addEventHandler("onVehicleDamage", root, handleVehicleDamage)
 
 function detachTrailer(vehicleid)--прицепка прицепа
 	local trailer = source
@@ -6022,6 +5997,7 @@ function detachTrailer(vehicleid)--прицепка прицепа
 
 		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
 			sqlite( "UPDATE car_db SET frozen = '0', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
+			setElementFrozen(trailer, false)
 		end
 
 		sqlite( "UPDATE car_db SET evacuate = '1' WHERE number = '"..plate.."'")
@@ -6032,6 +6008,7 @@ addEventHandler("onTrailerAttach", root, detachTrailer)
 function reattachTrailer(vehicleid)--отцепка прицепа
 	local trailer = source
 	local plate = getVehiclePlateText ( trailer )
+	local playerid = getVehicleController ( vehicleid )
 
 	local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 	if result[1]["COUNT()"] == 1 and getElementModel(vehicleid) == 525 and search_inv_player_2_parameter(playerid, 10) ~= 0 then
@@ -6040,6 +6017,7 @@ function reattachTrailer(vehicleid)--отцепка прицепа
 
 		if isInsideColShape(car_shtraf_stoyanka, x,y,z) then
 			sqlite( "UPDATE car_db SET frozen = '1', x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
+			setElementFrozen(trailer, true)
 		end
 
 		sqlite( "UPDATE car_db SET evacuate = '0' WHERE number = '"..plate.."'")
@@ -7538,6 +7516,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				id2 = id2 - 1
 
 				fixVehicle ( vehicleid )
+				vehicle_sethandling(vehicleid)
 
 				me_chat(playerid, playername.." починил(а) т/с")
 			else

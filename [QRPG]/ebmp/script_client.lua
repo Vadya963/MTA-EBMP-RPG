@@ -200,6 +200,30 @@ function ( )
 	end
 end)
 
+function handleVehicleDamage(theAttacker, theWeapon, loss, damagePosX, damagePosY, damagePosZ, tireID)
+	local vehicleid = source
+	local table_no_damage_car = {528,432,601,428}
+	for k,v in pairs(table_no_damage_car) do
+		if getElementModel(vehicleid) == v then
+			setElementHealth(vehicleid, 999)
+			cancelEvent()
+		end
+	end
+
+	--[[if getVehicleType (vehicleid) == "Plane" or getVehicleType (vehicleid) == "Helicopter" then
+		if isInsideColShape(lv_airport, x,y,z) or isInsideColShape(sf_airport, x,y,z) or isInsideColShape(ls_airport, x,y,z) then
+			for k,playerid in pairs(getElementsByType("player")) do
+				triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, false )
+			end
+		else
+			for k,playerid in pairs(getElementsByType("player")) do
+				triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, true )
+			end
+		end
+	end]]
+end
+addEventHandler("onClientVehicleDamage", root, handleVehicleDamage)
+
 
 local name_player = 0
 local logplayer = {}
@@ -2605,7 +2629,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
 		guiGridListAddColumn(shoplist, "Номер", 0.1)
-		guiGridListAddColumn(shoplist, "Название", 0.1)
+		guiGridListAddColumn(shoplist, "Название", 0.2)
 		guiGridListAddColumn(shoplist, "Описание", 0.5)
 		guiGridListAddColumn(shoplist, "Прогресс", 0.1)
 		guiGridListAddColumn(shoplist, "Награда $", 0.1)
