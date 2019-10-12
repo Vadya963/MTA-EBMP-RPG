@@ -2391,7 +2391,7 @@ function tablet_fun()--создание планшета
 
 				triggerServerEvent("event_destroyElement", root, vehicleid)
 				triggerServerEvent("event_car_spawn", root, text)
-				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с с номером "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с под номером "..text)
 			end
 			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
@@ -2436,7 +2436,7 @@ function tablet_fun()--создание планшета
 
 				local vehicleid = getVehicleidFromPlate( text )
 
-				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с с номером "..text)
+				triggerServerEvent("event_admin_chat", root, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с под номером "..text)
 
 				triggerServerEvent("event_setElementDimension", root, vehicleid, 1)
 			end
