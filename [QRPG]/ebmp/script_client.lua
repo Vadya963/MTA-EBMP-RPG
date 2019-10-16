@@ -54,9 +54,9 @@ local afk = 0--сколько минут в афк
 local pos_timer = 0--задержка для евента
 
 local no_use_subject = {-1,0}--нельзя использовать
-local no_select_subject = {-1,0,1,105}--нельзя выделить
-local no_change_subject = {-1,1,105}--нельзя заменить
-local no_sell_auc = {105}--нельзя продать
+local no_select_subject = {-1,0,1}--нельзя выделить
+local no_change_subject = {-1,1}--нельзя заменить
+local no_sell_auc = {}--нельзя продать
 
 --выделение картинки
 local gui_2dtext = false

@@ -5633,6 +5633,16 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 			x,y,z = x,y,z+1
 		end
 
+		local pass = search_inv_player_2_parameter(playerid, 105)
+		if pass ~= 0 and getElementData(playerid, "player_id")[1] ~= pass then
+			inv_player_delet(playerid, 105, pass)
+		end
+
+		local policetoken = search_inv_player_2_parameter(playerid, 10)
+		if policetoken ~= 0 and getElementData(playerid, "player_id")[1] ~= policetoken then
+			inv_player_delet(playerid, 10, policetoken)
+		end
+
 		local heal = getElementHealth( playerid )
 		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."', arrest = '"..arrest[playername].."', crimes = '"..crimes[playername].."', alcohol = '"..alcohol[playername].."', satiety = '"..satiety[playername].."', hygiene = '"..hygiene[playername].."', sleep = '"..sleep[playername].."', drugs = '"..drugs[playername].."' WHERE name = '"..playername.."'")
 
@@ -5973,10 +5983,23 @@ end
 addEventHandler("onVehicleExplode", root, explode_car)
 
 function vehicle_sethandling(vehicleid)
-	local a = getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(getElementHealth(vehicleid)/1000)
-	local v = getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(getElementHealth(vehicleid)/1000)
+	local plate = getVehiclePlateText(vehicleid)
+	local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
+
+	local a = getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]
+	local v = getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]
+
+	if result[1] then
+		a = a + getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)
+		v = v + getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)
+	end
+
+	a = a * (getElementHealth(vehicleid)/1000)
+	v = v * (getElementHealth(vehicleid)/1000)
+
 	setVehicleHandling(vehicleid, "engineAcceleration", a)
 	setVehicleHandling(vehicleid, "maxVelocity", v)
+	--print(plate,a,v)
 end
 
 function handleVehicleDamage(loss)
@@ -8357,6 +8380,8 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
 
 				sqlite( "UPDATE car_db SET stage = '"..id2.."' WHERE number = '"..plate.."'")
+
+				vehicle_sethandling(vehicleid)
 
 				me_chat(playerid, playername.." установил(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2])
 
