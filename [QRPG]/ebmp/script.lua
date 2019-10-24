@@ -7026,7 +7026,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 				end
 			end
 		else
-			sendMessage(playerid, "[ERROR] Багажник пуст", red)
+			--sendMessage(playerid, "[ERROR] Багажник пуст", red)
 		end
 	else
 		sendMessage(playerid, "[ERROR] Вы не в т/с", red)
