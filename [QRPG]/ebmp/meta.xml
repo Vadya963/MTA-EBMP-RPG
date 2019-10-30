@@ -7,9 +7,9 @@
 	<include resource="hdhud"/>
 	<include resource="gtavradar"/>
 	<include resource="vozle_merii_app"/>
-	
+	<include resource="dff_and_txd"/>
 	<include resource="map_mafia2"/>
-	
+	<include resource="map_gta"/>
 	
 	-->
 	
@@ -19,8 +19,7 @@
 	<script src="script_client.lua" type="client"/>
 	<script src="menu_m2.lua" type="client"/>
 
-	<include resource="dff_and_txd"/>
-	<include resource="map_gta"/>
+	
 	<include resource="bone_attach"/>
 	<include resource="parachute"/>
 	<include resource="realdriveby"/>
