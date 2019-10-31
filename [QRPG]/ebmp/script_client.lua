@@ -300,7 +300,7 @@ setTimer(function ()
 	if isMainMenuActive() then
 		afk = afk+1
 		setElementData(localPlayer, "afk", afk)
-	elseif getElementData(localPlayer, "afk") > 0 then
+	elseif getElementData(localPlayer, "afk") and getElementData(localPlayer, "afk") > 0 then
 		afk = 0
 		setElementData(localPlayer, "afk", afk)
 	end
@@ -460,6 +460,15 @@ function getPedMaxHealth(ped)
 
 	-- Return the max health. Make sure it can't be below 1
 	return math.max(1, maxhealth)
+end
+
+function getPlayer_Id ()
+	local id = getElementData(playerid, "player_id")[1]
+	if id then
+		return id
+	else
+		return 0
+	end
 end
 
 ------------------------------собственное гуи--------------------------------------------
@@ -694,7 +703,7 @@ function createText ()
 
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getElementData(playerid, "player_id")[1].." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
+		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getPlayer_Id().." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
 		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		--нужды
