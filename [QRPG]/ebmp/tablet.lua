@@ -1,6 +1,5 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
 local roulette_number = {false, {0,0,0}, {}}
-local playerid = false
 local info_png = {}
 local no_sell_auc = {}--нельзя продать
 local gui_window = nil
@@ -31,6 +30,46 @@ local weather_list = {
 	[22] = {"CLOUDY", 107,60},
 }
 
+local commands = {
+	"/sms [ИД игрока] [текст] - отправить смс игроку",
+	"/blackjack [invite | take | open] - сыграть в блэкджек",
+	"/r [текст] - рация",
+	"/setchanel [канал] - сменить канал в рации",
+	"/ec [номер т/с] - эвакуция т/с",
+	"/wc [сумма] - выписать чек",
+	"/prison [ИД игрока] - посадить игрока в тюрьму (для полицейских)",
+	"/lawyer [ИД игрока] - заплатить залог за игрока",
+	"/search [player | car | house] [ИД игрока | номер т/с | номер дома] - обыскать игрока, т/с или дом (для полицейских)",
+	"/searchcar [номер т/с] - написать заявление о пропаже т/с",
+	"/sellhouse - создать дом (для риэлторов)",
+	"/sellbusiness [номер бизнеса от 1 до 5] - создать бизнес (для риэлторов)",
+	"/buyinthouse [номер интерьера от 1 до 29] - сменить интерьер дома",
+	"/capture - захват территории (для банд)",
+	"/me [текст] - описание действия от 1 лица",
+	"/do [текст] - описание от 3 лица",
+	"/try [текст] - попытка действия",
+	"/b [текст] - ближний OOC чат",
+	"/сс - очистить чат",
+	"/marker [x координата] [y координата] - поставить маркер",
+}
+
+local commandsadm = {
+	"/sub [ИД игрока] [ид предмета] [количество] - выдать предмет",
+	"/subdel [ИД игрока] [ид предмета] [количество] - удалить предмет",
+	"/subcar [ид предмета] [количество] - выдать предмет в тс",
+	"/subearth [ид предмета] [количество] [количество на земле] - выдать предмет на землю",
+	"/go [и 3 координаты] - тп на заданные координаты",
+	"/pos [текст] - сохранить позицию в бд",
+	"/global [текст] - глобальный чат",
+	"/stime [часов] [минут] - установить время",
+	"/inv [player | car | house] [имя игрока | номер т/с | номер дома] - чекнуть инв-рь",
+	"/prisonplayer [ИД игрока] [время] [причина] - посадить игрока в тюрьму",
+	"/dim [номер виртуального мира] - установить себе виртуальный мир",
+	"/v [ид т/с] - создать тс",
+	"/delv - удалить тс созданные через /v",
+	"/rc [ИД игрока] - следить за игроком",
+}
+
 ----цвета----
 local color_tips = {168,228,160}--бабушкины яблоки
 local yellow = {255,255,0}--желтый
@@ -55,8 +94,6 @@ function ( startedRes )
 end)
 
 function roulette_number_Text ()
-	playerid = localPlayer
-
 	if roulette_number[1] then--рисование цифр рулетки
 		local dimensions = dxGetTextWidth ( tostring(roulette_number[1]), 6, "pricedown" )
 		dxDrawText ( tostring(roulette_number[1]), roulette_number[3][1]+roulette_number[3][3]+(tablet_width/2)-(dimensions/2), roulette_number[3][2]+roulette_number[3][4]-34, 0.0, 0.0, tocolor ( roulette_number[2][1], roulette_number[2][2], roulette_number[2][3], 255 ), 6, "pricedown", "left", "top", false, false, true )
@@ -118,7 +155,7 @@ function tablet_fun()--создание планшета
 		local save,m2gui_width = m2gui_button( m2gui_width, height_fon-16, "Сохранить", false, low_fon )
 
 		local text = m2gui_label ( 0, 5, 200, 15, "Дальность прорисовки", false, low_fon )
-		local dist = guiCreateEdit ( 200, 0, width_fon, 25, getElementData(playerid, "settings"), false, low_fon )
+		local dist = guiCreateEdit ( 200, 0, width_fon, 25, getElementData(localPlayer, "settings"), false, low_fon )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--вернуться в меню аука
 			destroyElement(low_fon)
@@ -140,9 +177,9 @@ function tablet_fun()--создание планшета
 
 			setFarClipDistance(tonumber(text1))
 
-			setElementData(playerid, "settings", text1)
+			setElementData(localPlayer, "settings", text1)
 
-			triggerServerEvent("event_sqlite", resourceRoot, "UPDATE account SET settings = '"..getElementData(playerid, "settings").."' WHERE name = '"..getPlayerName(playerid).."'")
+			triggerServerEvent("event_sqlite", resourceRoot, "UPDATE account SET settings = '"..getElementData(localPlayer, "settings").."' WHERE name = '"..getPlayerName(localPlayer).."'")
 		end
 		addEventHandler ( "onClientGUIClick", save, outputEditBox, false )
 	end
@@ -174,11 +211,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить меню аука
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "auc")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "auc")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "auc")) do
+					for k,v in pairs(getElementData(localPlayer, "auc")) do
 						guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
 					end
 				end, 1000, 1)
@@ -193,7 +230,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 				
-				triggerServerEvent("event_auction_buy_sell", resourceRoot, playerid, "buy", text, 0, 0, 0 )
+				triggerServerEvent("event_auction_buy_sell", resourceRoot, localPlayer, "buy", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", buy_subject, outputEditBox, false )
 
@@ -205,17 +242,17 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_auction_buy_sell", resourceRoot, playerid, "return", text, 0, 0, 0 )
+				triggerServerEvent("event_auction_buy_sell", resourceRoot, localPlayer, "return", text, 0, 0, 0 )
 			end
 			addEventHandler ( "onClientGUIClick", return_subject, outputEditBox, false )
 
-			if getElementData(playerid, "auc") then
+			if getElementData(localPlayer, "auc") then
 				guiGridListAddColumn(shoplist, "№", 0.1)
 				guiGridListAddColumn(shoplist, "Продавец", 0.20)
 				guiGridListAddColumn(shoplist, "Товар", 0.30)
 				guiGridListAddColumn(shoplist, "Стоимость", 0.15)
 				guiGridListAddColumn(shoplist, "Покупатель", 0.2)
-				for k,v in pairs(getElementData(playerid, "auc")) do
+				for k,v in pairs(getElementData(localPlayer, "auc")) do
 					guiGridListAddRow(shoplist, v["i"], v["name_sell"], info_png[v["id1"]][1].." "..v["id2"].." "..info_png[v["id1"]][2], v["money"], v["name_buy"])
 				end
 			end
@@ -270,7 +307,7 @@ function tablet_fun()--создание планшета
 				end
 
 				if id1 >= 2 and id1 <= #info_png and id2 and money > 0 then
-					triggerServerEvent("event_auction_buy_sell", resourceRoot, playerid, "sell", 0, id1, id2, money, name_buy)
+					triggerServerEvent("event_auction_buy_sell", resourceRoot, localPlayer, "sell", 0, id1, id2, money, name_buy)
 				end
 			end
 			addEventHandler ( "onClientGUIClick", sell_subject, outputEditBox, false )
@@ -429,7 +466,7 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			triggerServerEvent("event_craft_fun", resourceRoot, playerid, text )
+			triggerServerEvent("event_craft_fun", resourceRoot, localPlayer, text )
 		end
 		addEventHandler ( "onClientGUIClick", create, outputEditBox, false )
 	end
@@ -450,11 +487,11 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-			triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "carparking_table")
+			triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "carparking_table")
 			guiGridListClear(shoplist)
 
 			setTimer(function()
-				for k,v in pairs(getElementData(playerid, "carparking_table")) do
+				for k,v in pairs(getElementData(localPlayer, "carparking_table")) do
 					guiGridListAddRow(shoplist, v)
 				end
 			end, 1000, 1)
@@ -469,13 +506,13 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			triggerServerEvent("event_spawn_carparking", resourceRoot, playerid, text )
+			triggerServerEvent("event_spawn_carparking", resourceRoot, localPlayer, text )
 		end
 		addEventHandler ( "onClientGUIClick", return_car, outputEditBox, false )
 
-		if getElementData(playerid, "carparking_table") then
+		if getElementData(localPlayer, "carparking_table") then
 			guiGridListAddColumn(shoplist, "Номер т/с", 0.95)
-			for k,v in pairs(getElementData(playerid, "carparking_table")) do
+			for k,v in pairs(getElementData(localPlayer, "carparking_table")) do
 				guiGridListAddRow(shoplist, v)
 			end
 		end
@@ -496,7 +533,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
-			triggerServerEvent("event_cow_farms", resourceRoot, playerid, "buy", 0,0 )
+			triggerServerEvent("event_cow_farms", resourceRoot, localPlayer, "buy", 0,0 )
 		end
 		addEventHandler ( "onClientGUIClick", buy_ferm, outputEditBox, false )
 
@@ -514,13 +551,13 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "cow_farms_table1")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "cow_farms_table1")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					if getElementData(playerid, "cow_farms_table1") then
+					if getElementData(localPlayer, "cow_farms_table1") then
 						if isElement(shoplist) then
-							for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+							for k,v in pairs(getElementData(localPlayer, "cow_farms_table1")) do
 								guiGridListAddRow(shoplist, v[2], v[3])
 							end
 						end
@@ -543,14 +580,14 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent( "event_cow_farms", resourceRoot, playerid, "menu", text, text2 )
+				triggerServerEvent( "event_cow_farms", resourceRoot, localPlayer, "menu", text, text2 )
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
-			if getElementData(playerid, "cow_farms_table1") then
-				guiGridListAddColumn(shoplist, "Ферма "..getElementData(playerid, "cow_farms_table1")[1][1], 0.5)
+			if getElementData(localPlayer, "cow_farms_table1") then
+				guiGridListAddColumn(shoplist, "Ферма "..getElementData(localPlayer, "cow_farms_table1")[1][1], 0.5)
 				guiGridListAddColumn(shoplist, "", 0.4)
-				for k,v in pairs(getElementData(playerid, "cow_farms_table1")) do
+				for k,v in pairs(getElementData(localPlayer, "cow_farms_table1")) do
 					guiGridListAddRow(shoplist, v[2], v[3])
 				end
 			end
@@ -570,11 +607,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "cow_farms_table2")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "cow_farms_table2")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+					for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
 						guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
 					end
 				end, 1000, 1)
@@ -589,15 +626,15 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent( "event_cow_farms", resourceRoot, playerid, "job", tonumber(text), 0 )
+				triggerServerEvent( "event_cow_farms", resourceRoot, localPlayer, "job", tonumber(text), 0 )
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
-			if getElementData(playerid, "cow_farms_table2") then
+			if getElementData(localPlayer, "cow_farms_table2") then
 				guiGridListAddColumn(shoplist, "Скотобойни", 0.15)
 				guiGridListAddColumn(shoplist, "Зарплата", 0.4)
 				guiGridListAddColumn(shoplist, "Доход от продаж", 0.4)
-				for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+				for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
 					guiGridListAddRow(shoplist, v["number"], v["price"].."$", v["coef"].." процентов")
 				end
 			end
@@ -623,7 +660,7 @@ function tablet_fun()--создание планшета
 			guiGridListClear(shoplist)
 			for k,v in pairs(getElementsByType("player")) do
 				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
-				local r,g,b = getPlayerNametagColor(playerid)
+				local r,g,b = getPlayerNametagColor(localPlayer)
 				guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 			end
 		end
@@ -634,7 +671,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "ОП", 0.1)
 		for k,v in pairs(getElementsByType("player")) do
 			local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
-			local r,g,b = getPlayerNametagColor(playerid)
+			local r,g,b = getPlayerNametagColor(localPlayer)
 			guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 		end
 	end
@@ -642,7 +679,7 @@ function tablet_fun()--создание планшета
 
 
 	function outputEditBox( button, state, absoluteX, absoluteY )--админ панель
-		if getElementData(playerid, "admin_data") ~= 1 then
+		if getElementData(localPlayer, "admin_data") ~= 1 then
 			sendMessage("[ERROR] Вы не админ", red)
 			return
 		end
@@ -666,7 +703,7 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", work_table, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )
-			triggerServerEvent("event_earth_true", resourceRoot, playerid)
+			triggerServerEvent("event_earth_true", resourceRoot, localPlayer)
 		end
 		addEventHandler ( "onClientGUIClick", timer_earth_clear, outputEditBox, false )
 
@@ -674,7 +711,7 @@ function tablet_fun()--создание планшета
 			local res_t = 2
 
 			triggerServerEvent("event_restartResource", resourceRoot)
-			triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] начал скачивание лога")
+			triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] начал скачивание лога")
 
 			setTimer(function()
 				triggerEvent("event_download", root)
@@ -682,7 +719,7 @@ function tablet_fun()--создание планшета
 
 			function onDownloadFinish ( file, success )
 				if file == "save_sqlite.sql" then
-					triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] скачал лог сервера")
+					triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] скачал лог сервера")
 				end
 			end
 			addEventHandler ( "onClientFileDownloadComplete", root, onDownloadFinish )
@@ -700,7 +737,7 @@ function tablet_fun()--создание планшета
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				destroyElement(low_fon)
-				setCameraTarget(playerid)
+				setCameraTarget(localPlayer)
 			end
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
@@ -708,7 +745,7 @@ function tablet_fun()--создание планшета
 				guiGridListClear(shoplist)
 				for k,v in pairs(getElementsByType("player")) do
 					local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
-					local r,g,b = getPlayerNametagColor(playerid)
+					local r,g,b = getPlayerNametagColor(localPlayer)
 					guiGridListSetItemColor (shoplist, row,2, r,g,b)
 				end
 			end
@@ -727,8 +764,8 @@ function tablet_fun()--создание планшета
 				end
 
 				local x,y,z = getElementPosition(player)
-				setElementPosition(playerid, x,y,z)
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
+				setElementPosition(localPlayer, x,y,z)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -744,7 +781,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_prisonplayer", resourceRoot, playerid, "", text, 60, "Нарушение правил сервера")
+				triggerServerEvent("event_prisonplayer", resourceRoot, localPlayer, "", text, 60, "Нарушение правил сервера")
 			end
 			addEventHandler ( "onClientGUIClick", prison, complete, false )
 
@@ -753,7 +790,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "ОП", 0.1)
 			for k,v in pairs(getElementsByType("player")) do
 				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
-				local r,g,b = getPlayerNametagColor(playerid)
+				local r,g,b = getPlayerNametagColor(localPlayer)
 				guiGridListSetItemColor (shoplist, row,2, r,g,b)
 			end
 		end
@@ -789,7 +826,7 @@ function tablet_fun()--создание планшета
 				end
 
 				local name,x,y,z = getElementData(resourceRoot, "interior_job")[tonumber(text)][2],getElementData(resourceRoot, "interior_job")[tonumber(text)][6],getElementData(resourceRoot, "interior_job")[tonumber(text)][7],getElementData(resourceRoot, "interior_job")[tonumber(text)][8]
-				setElementPosition(playerid, x,y,z)
+				setElementPosition(localPlayer, x,y,z)
 				sendMessage("Вы телепортировались к "..name, lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
@@ -837,11 +874,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "house_db")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "house_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "house_db")) do
+					for k,v in pairs(getElementData(localPlayer, "house_db")) do
 						guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
 					end
 				end, 1000, 1)
@@ -849,7 +886,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
-				if getElementData(playerid, "admin_data") ~= update_db_rang then
+				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
 					sendMessage("[ERROR] Вы не админ", red)
 					return
 				end
@@ -861,7 +898,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -875,8 +912,8 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				local x,y,z = getElementData(playerid, "house_db")[tonumber(text)]["x"],getElementData(playerid, "house_db")[tonumber(text)]["y"],getElementData(playerid, "house_db")[tonumber(text)]["z"]
-				setElementPosition(playerid, x,y,z)
+				local x,y,z = getElementData(localPlayer, "house_db")[tonumber(text)]["x"],getElementData(localPlayer, "house_db")[tonumber(text)]["y"],getElementData(localPlayer, "house_db")[tonumber(text)]["z"]
+				setElementPosition(localPlayer, x,y,z)
 				sendMessage("Вы телепортировались к "..text.." дому", lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
@@ -890,7 +927,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "interior", 0.1)
 			guiGridListAddColumn(shoplist, "world", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
-			for k,v in pairs(getElementData(playerid, "house_db")) do
+			for k,v in pairs(getElementData(localPlayer, "house_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
 			end
 		end
@@ -912,11 +949,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "business_db")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "business_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "business_db")) do
+					for k,v in pairs(getElementData(localPlayer, "business_db")) do
 						guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
 					end
 				end, 1000, 1)
@@ -924,7 +961,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
-				if getElementData(playerid, "admin_data") ~= update_db_rang then
+				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
 					sendMessage("[ERROR] Вы не админ", red)
 					return
 				end
@@ -936,7 +973,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -950,8 +987,8 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				local x,y,z = getElementData(playerid, "business_db")[tonumber(text)]["x"],getElementData(playerid, "business_db")[tonumber(text)]["y"],getElementData(playerid, "business_db")[tonumber(text)]["z"]
-				setElementPosition(playerid, x,y,z)
+				local x,y,z = getElementData(localPlayer, "business_db")[tonumber(text)]["x"],getElementData(localPlayer, "business_db")[tonumber(text)]["y"],getElementData(localPlayer, "business_db")[tonumber(text)]["z"]
+				setElementPosition(localPlayer, x,y,z)
 				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
@@ -967,7 +1004,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "z", 0.2)
 			guiGridListAddColumn(shoplist, "interior", 0.1)
 			guiGridListAddColumn(shoplist, "world", 0.1)
-			for k,v in pairs(getElementData(playerid, "business_db")) do
+			for k,v in pairs(getElementData(localPlayer, "business_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
 			end
 		end
@@ -988,11 +1025,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "account_db")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "account_db")
 				guiGridListClear(shoplist)
 
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "account_db")) do
+					for k,v in pairs(getElementData(localPlayer, "account_db")) do
 						guiGridListAddRow(shoplist, v["name"], v["ban"], v["reason"], v["x"], v["y"], v["z"], v["reg_ip"], v["reg_serial"], v["heal"], v["alcohol"], v["satiety"], v["hygiene"], v["sleep"], v["drugs"], v["skin"], v["arrest"], v["crimes"], v["inventory"])
 					end
 				end, 1000, 1)
@@ -1000,7 +1037,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
-				if getElementData(playerid, "admin_data") ~= update_db_rang then
+				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
 					sendMessage("[ERROR] Вы не админ", red)
 					return
 				end
@@ -1012,7 +1049,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1036,7 +1073,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "arrest", 0.1)
 			guiGridListAddColumn(shoplist, "crimes", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
-			for k,v in pairs(getElementData(playerid, "account_db")) do
+			for k,v in pairs(getElementData(localPlayer, "account_db")) do
 				guiGridListAddRow(shoplist, v["name"], v["ban"], v["reason"], v["x"], v["y"], v["z"], v["reg_ip"], v["reg_serial"], v["heal"], v["alcohol"], v["satiety"], v["hygiene"], v["sleep"], v["drugs"], v["skin"], v["arrest"], v["crimes"], v["inventory"])
 			end
 		end
@@ -1073,16 +1110,16 @@ function tablet_fun()--создание планшета
 
 				triggerServerEvent("event_destroyElement", resourceRoot, vehicleid)
 				triggerServerEvent("event_car_spawn", resourceRoot, text)
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] пересоздал т/с под номером "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] пересоздал т/с под номером "..text)
 			end
 			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "car_db")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "car_db")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "car_db")) do
+					for k,v in pairs(getElementData(localPlayer, "car_db")) do
 						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 					end
 				end, 1000, 1)
@@ -1090,7 +1127,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
-				if getElementData(playerid, "admin_data") ~= update_db_rang then
+				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
 					sendMessage("[ERROR] Вы не админ", red)
 					return
 				end
@@ -1102,7 +1139,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1118,7 +1155,7 @@ function tablet_fun()--создание планшета
 
 				local vehicleid = getVehicleidFromPlate( text )
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] убрал т/с под номером "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] убрал т/с под номером "..text)
 
 				triggerServerEvent("event_setElementDimension", resourceRoot, vehicleid, 1)
 			end
@@ -1145,7 +1182,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "wheel_rgb", 0.2)
 			guiGridListAddColumn(shoplist, "theft", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
-			for k,v in pairs(getElementData(playerid, "car_db")) do
+			for k,v in pairs(getElementData(localPlayer, "car_db")) do
 				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 			end
 		end
@@ -1166,11 +1203,11 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-				triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "cow_farms_table2")
+				triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "cow_farms_table2")
 				guiGridListClear(shoplist)
 				
 				setTimer(function()
-					for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+					for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
 						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 					end
 				end, 1000, 1)
@@ -1178,7 +1215,7 @@ function tablet_fun()--создание планшета
 			addEventHandler ( "onClientGUIClick", refresh, outputEditBox, false )
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
-				if getElementData(playerid, "admin_data") ~= update_db_rang then
+				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
 					sendMessage("[ERROR] Вы не админ", red)
 					return
 				end
@@ -1190,7 +1227,7 @@ function tablet_fun()--создание планшета
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, playerid, getPlayerName(playerid).." ["..getElementData(playerid, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1203,7 +1240,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "nalog", 0.1)
 			guiGridListAddColumn(shoplist, "warehouse", 0.1)
 			guiGridListAddColumn(shoplist, "prod", 0.1)
-			for k,v in pairs(getElementData(playerid, "cow_farms_table2")) do
+			for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
 				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
 			end
 		end
@@ -1226,21 +1263,21 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-			triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "quest_table")
+			triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "quest_table")
 			guiGridListClear(shoplist)
 				
 			setTimer(function()
-				for k,v in pairs(getElementData(playerid, "quest_table")) do
+				for k,v in pairs(getElementData(localPlayer, "quest_table")) do
 					local count = 0
 					for k,v in pairs(v[8]) do
-						if v ~= getPlayerName(playerid) then
+						if v ~= getPlayerName(localPlayer) then
 							count = count+1
 						end
 					end
 
 					if count == #v[8] then
-						if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
-							local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+						if tonumber(split(getElementData(localPlayer, "quest_select"), ":")[1]) == k then
+							local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(localPlayer, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 						
 							for i=1,guiGridListGetColumnCount (shoplist) do
 								guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
@@ -1262,8 +1299,8 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			for k,v in pairs(getElementData(playerid, "quest_table")[tonumber(text)][8]) do
-				if v == getPlayerName(playerid) then
+			for k,v in pairs(getElementData(localPlayer, "quest_table")[tonumber(text)][8]) do
+				if v == getPlayerName(localPlayer) then
 					sendMessage("[ERROR] Вы выполнили этот квест", red)
 					return
 				end
@@ -1280,9 +1317,9 @@ function tablet_fun()--создание планшета
 				guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
 			end
 
-			sendMessage("Вы взяли квест "..getElementData(playerid, "quest_table")[tonumber(text)][1], yellow)
+			sendMessage("Вы взяли квест "..getElementData(localPlayer, "quest_table")[tonumber(text)][1], yellow)
 
-			setElementData(playerid, "quest_select", text..":0")
+			setElementData(localPlayer, "quest_select", text..":0")
 		end
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -1292,17 +1329,17 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Прогресс", 0.1)
 		guiGridListAddColumn(shoplist, "Награда $", 0.1)
 		guiGridListAddColumn(shoplist, "Награда предметом", 0.3)
-		for k,v in pairs(getElementData(playerid, "quest_table")) do
+		for k,v in pairs(getElementData(localPlayer, "quest_table")) do
 			local count = 0
 			for k,v in pairs(v[8]) do
-				if v ~= getPlayerName(playerid) then
+				if v ~= getPlayerName(localPlayer) then
 					count = count+1
 				end
 			end
 
 			if count == #v[8] then
-				if tonumber(split(getElementData(playerid, "quest_select"), ":")[1]) == k then
-					local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(playerid, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
+				if tonumber(split(getElementData(localPlayer, "quest_select"), ":")[1]) == k then
+					local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(localPlayer, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 					
 					for i=1,guiGridListGetColumnCount (shoplist) do
 						guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
@@ -1378,7 +1415,7 @@ function tablet_fun()--создание планшета
 				guiStaticImageLoadImage ( slots_3, "comp/slot_"..randomize3..".png" )
 
 				if count == time_slot then
-					triggerServerEvent("event_slots", resourceRoot, playerid, cash, randomize1, randomize2, randomize3)
+					triggerServerEvent("event_slots", resourceRoot, localPlayer, cash, randomize1, randomize2, randomize3)
 					start,count = false,0
 				end
 			end, 500, time_slot)
@@ -1534,7 +1571,7 @@ function tablet_fun()--создание планшета
 					text = text..radiobutton_table[3][i]..","
 				end
 				
-				triggerServerEvent("event_poker_win", resourceRoot, playerid, text, money, coef, token)
+				triggerServerEvent("event_poker_win", resourceRoot, localPlayer, text, money, coef, token)
 
 				count = 1
 				radiobutton_table[2][1],radiobutton_table[3][1] = false, "0"
@@ -1671,7 +1708,7 @@ function tablet_fun()--создание планшета
 				end
 
 				if count == time_slot then
-					triggerServerEvent("event_roulette_fun", resourceRoot, playerid, id, cash, randomize)
+					triggerServerEvent("event_roulette_fun", resourceRoot, localPlayer, id, cash, randomize)
 					start,count = false,0
 				end
 			end, 100, time_slot)
@@ -1782,7 +1819,7 @@ function tablet_fun()--создание планшета
 
 					local x,y = guiGetPosition(v[1], false)
 					if x >= 525 then
-						triggerServerEvent( "event_insider_track", resourceRoot, playerid, cash, v[3], k, horse_player )
+						triggerServerEvent( "event_insider_track", resourceRoot, localPlayer, cash, v[3], k, horse_player )
 
 						start = false
 						break
@@ -1898,7 +1935,7 @@ function tablet_fun()--создание планшета
 				roulette_number[1] = wheel_fortune[count2]
 
 				if count == time_slot then
-					triggerServerEvent("event_fortune_fun", resourceRoot, playerid, cash, id, wheel_fortune[count2])
+					triggerServerEvent("event_fortune_fun", resourceRoot, localPlayer, cash, id, wheel_fortune[count2])
 					start,count = false,0
 				end
 
@@ -1927,13 +1964,13 @@ function tablet_fun()--создание планшета
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
-			triggerServerEvent("event_sqlite_load", resourceRoot, playerid, "business_table")
+			triggerServerEvent("event_sqlite_load", resourceRoot, localPlayer, "business_table")
 			guiGridListClear(shoplist)
 
 			setTimer(function()
-				if getElementData(playerid, "business_table") then
+				if getElementData(localPlayer, "business_table") then
 					if isElement(shoplist) then
-						for k,v in pairs(getElementData(playerid, "business_table")) do
+						for k,v in pairs(getElementData(localPlayer, "business_table")) do
 							guiGridListAddRow(shoplist, v[2], v[3])
 						end
 					end
@@ -1954,14 +1991,14 @@ function tablet_fun()--создание планшета
 				return
 			end
 
-			triggerServerEvent( "event_till_fun", resourceRoot, playerid, text, text2 )
+			triggerServerEvent( "event_till_fun", resourceRoot, localPlayer, text, text2 )
 		end
 		addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
-		if getElementData(playerid, "business_table") then
-			guiGridListAddColumn(shoplist, "Бизнес "..getElementData(playerid, "business_table")[1][1], 0.5)
+		if getElementData(localPlayer, "business_table") then
+			guiGridListAddColumn(shoplist, "Бизнес "..getElementData(localPlayer, "business_table")[1][1], 0.5)
 			guiGridListAddColumn(shoplist, "", 0.4)
-			for k,v in pairs(getElementData(playerid, "business_table")) do
+			for k,v in pairs(getElementData(localPlayer, "business_table")) do
 				guiGridListAddRow(shoplist, v[2], v[3])
 			end
 		end

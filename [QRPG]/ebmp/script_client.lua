@@ -5,7 +5,6 @@ local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = false
 local hud = true
-local playerid = 0
 local update_db_rang = 1
 local timer = {false, 10, 10}
 local info_png = {}
@@ -65,46 +64,6 @@ local gui_pos_y = 0 --положение картинки y
 local info1_png = -1 --номер картинки
 local info2_png = -1 --значение картинки
 
-local commands = {
-	"/sms [ИД игрока] [текст] - отправить смс игроку",
-	"/blackjack [invite | take | open] - сыграть в блэкджек",
-	"/r [текст] - рация",
-	"/setchanel [канал] - сменить канал в рации",
-	"/ec [номер т/с] - эвакуция т/с",
-	"/wc [сумма] - выписать чек",
-	"/prison [ИД игрока] - посадить игрока в тюрьму (для полицейских)",
-	"/lawyer [ИД игрока] - заплатить залог за игрока",
-	"/search [player | car | house] [ИД игрока | номер т/с | номер дома] - обыскать игрока, т/с или дом (для полицейских)",
-	"/searchcar [номер т/с] - написать заявление о пропаже т/с",
-	"/sellhouse - создать дом (для риэлторов)",
-	"/sellbusiness [номер бизнеса от 1 до 5] - создать бизнес (для риэлторов)",
-	"/buyinthouse [номер интерьера от 1 до 29] - сменить интерьер дома",
-	"/capture - захват территории (для банд)",
-	"/me [текст] - описание действия от 1 лица",
-	"/do [текст] - описание от 3 лица",
-	"/try [текст] - попытка действия",
-	"/b [текст] - ближний OOC чат",
-	"/сс - очистить чат",
-	"/marker [x координата] [y координата] - поставить маркер",
-}
-
-local commandsadm = {
-	"/sub [ИД игрока] [ид предмета] [количество] - выдать предмет",
-	"/subdel [ИД игрока] [ид предмета] [количество] - удалить предмет",
-	"/subcar [ид предмета] [количество] - выдать предмет в тс",
-	"/subearth [ид предмета] [количество] [количество на земле] - выдать предмет на землю",
-	"/go [и 3 координаты] - тп на заданные координаты",
-	"/pos [текст] - сохранить позицию в бд",
-	"/global [текст] - глобальный чат",
-	"/stime [часов] [минут] - установить время",
-	"/inv [player | car | house] [имя игрока | номер т/с | номер дома] - чекнуть инв-рь",
-	"/prisonplayer [ИД игрока] [время] [причина] - посадить игрока в тюрьму",
-	"/dim [номер виртуального мира] - установить себе виртуальный мир",
-	"/v [ид т/с] - создать тс",
-	"/delv - удалить тс созданные через /v",
-	"/rc [ИД игрока] - следить за игроком",
-}
-
 -----------эвенты------------------------------------------------------------------------
 math.randomseed(getTickCount())
 function random(min, max)
@@ -114,7 +73,7 @@ end
 function playerDamage_text ( attacker, weapon, bodypart, loss )--получение урона
 	local ped = source
 
-	for k,v in pairs(getElementData(playerid, "no_ped_damage")) do
+	for k,v in pairs(getElementData(localPlayer, "no_ped_damage")) do
 		if v == ped then
 			cancelEvent()
 			break
@@ -126,9 +85,9 @@ addEventHandler ( "onClientPedDamage", root, playerDamage_text )
 function outputLoss(loss, attacker)
 	local object = source
 
-	if getElementType(attacker) == "player" and getElementData(playerid, "job_player") == 15 and getElementModel(object) == 1851 then
-		if getPedWeapon(playerid) == 33 then
-			setElementData(playerid, "deer", true)
+	if getElementType(attacker) == "player" and getElementData(localPlayer, "job_player") == 15 and getElementModel(object) == 1851 then
+		if getPedWeapon(localPlayer) == 33 then
+			setElementData(localPlayer, "deer", true)
 		end
 	end
 end
@@ -138,15 +97,15 @@ function setPedOxygenLevel_fun ()--кислородный балон
 	local count = 0
 	
 	setTimer(function()
-		setPedOxygenLevel ( playerid, 4000 )
+		setPedOxygenLevel ( localPlayer, 4000 )
 		count = count+1
 
 		if count == 300 then
-			setElementData(playerid, "OxygenLevel", false)
+			setElementData(localPlayer, "OxygenLevel", false)
 		end
 	end, 1000, 300)
 
-	setElementData(playerid, "OxygenLevel", true)
+	setElementData(localPlayer, "OxygenLevel", true)
 end
 addEvent( "event_setPedOxygenLevel_fun", true )
 addEventHandler ( "event_setPedOxygenLevel_fun", root, setPedOxygenLevel_fun )
@@ -212,12 +171,12 @@ function handleVehicleDamage(theAttacker, theWeapon, loss, damagePosX, damagePos
 
 	--[[if getVehicleType (vehicleid) == "Plane" or getVehicleType (vehicleid) == "Helicopter" then
 		if isInsideColShape(lv_airport, x,y,z) or isInsideColShape(sf_airport, x,y,z) or isInsideColShape(ls_airport, x,y,z) then
-			for k,playerid in pairs(getElementsByType("player")) do
-				triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, false )
+			for k,localPlayer in pairs(getElementsByType("player")) do
+				triggerClientEvent( localPlayer, "event_setElementCollidableWith_fun", localPlayer, "vehicle", vehicleid, false )
 			end
 		else
-			for k,playerid in pairs(getElementsByType("player")) do
-				triggerClientEvent( playerid, "event_setElementCollidableWith_fun", playerid, "vehicle", vehicleid, true )
+			for k,localPlayer in pairs(getElementsByType("player")) do
+				triggerClientEvent( localPlayer, "event_setElementCollidableWith_fun", localPlayer, "vehicle", vehicleid, true )
 			end
 		end
 	end]]
@@ -394,8 +353,8 @@ end
 addEvent("destroyHudTimer", true)
 addEventHandler("destroyHudTimer", root, timerm2off)
 
-function getPlayerVehicle( playerid )
-	local vehicle = getPedOccupiedVehicle ( playerid )
+function getPlayerVehicle( localPlayer )
+	local vehicle = getPedOccupiedVehicle ( localPlayer )
 	return vehicle
 end
 
@@ -462,10 +421,10 @@ function getPedMaxHealth(ped)
 	return math.max(1, maxhealth)
 end
 
-function getPlayer_Id ()
-	local id = getElementData(playerid, "player_id")[1]
-	if id then
-		return id
+function getPlayer_Id (localPlayer)
+	local id = getElementData(localPlayer, "player_id")
+	if id and id[1] then
+		return id[1]
 	else
 		return 0
 	end
@@ -653,7 +612,7 @@ end
 
 local lastTick, framesRendered, FPS = getTickCount(), 0, 0
 function createText ()
-	playerid = localPlayer
+
 	local currentTick = getTickCount()
 	local elapsedTime = currentTick - lastTick
 
@@ -667,17 +626,17 @@ function createText ()
 
 	local time = getRealTime()
 
-	local alcohol = getElementData ( playerid, "alcohol_data" )--макс 500
-	local satiety = getElementData ( playerid, "satiety_data" )--макс 100
-	local hygiene = getElementData ( playerid, "hygiene_data" )--макс 100
-	local sleep = getElementData ( playerid, "sleep_data" )--макс 100
-	local drugs = getElementData ( playerid, "drugs_data" )--макс 100
+	local alcohol = getElementData ( localPlayer, "alcohol_data" ) or 0--макс 500
+	local satiety = getElementData ( localPlayer, "satiety_data" ) or 0--макс 100
+	local hygiene = getElementData ( localPlayer, "hygiene_data" ) or 0--макс 100
+	local sleep = getElementData ( localPlayer, "sleep_data" ) or 0--макс 100
+	local drugs = getElementData ( localPlayer, "drugs_data" ) or 0--макс 100
 	local width_need = (screenWidth/5.04)--ширина нужд 271
 	local height_need = (screenHeight/5.68)--высота нужд 135
 
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
-		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(playerid).." | ID: "..getPlayer_Id().." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
+		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(localPlayer).." | ID: "..getPlayer_Id(localPlayer).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
 		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		--нужды
@@ -701,11 +660,11 @@ function createText ()
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
 
-		local vehicle = getPlayerVehicle ( playerid )
+		local vehicle = getPlayerVehicle ( localPlayer )
 		if vehicle then--отображение скорости авто
 			local speed_table = split(getSpeed(vehicle), ".")
 			local heal_vehicle = split(getElementHealth(vehicle), ".")
-			local fuel = getElementData ( playerid, "fuel_data" )
+			local fuel = getElementData ( localPlayer, "fuel_data" )
 			local fuel_table = split(fuel, ".")
 			local speed_car = 0
 
@@ -715,7 +674,7 @@ function createText ()
 				speed_car = getSpeed(vehicle)*1.125+43
 			end
 
-			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( playerid, "probeg_data" ), ".")[1]
+			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( localPlayer, "probeg_data" ), ".")[1]
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
@@ -724,7 +683,7 @@ function createText ()
 			dxDrawImage ( (screenWidth-250), screenHeight-250, 210, 210, "speedometer/fuel_v.png", 35.0-(fuel*1.4) )
 		end
 
-		local spl_gz = getElementData(playerid, "guns_zone2")
+		local spl_gz = getElementData(localPlayer, "guns_zone2")
 		local name_mafia = getElementData(resourceRoot, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
 			dxDrawRectangle( 0.0, screenHeight-16.0*6-124, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
@@ -740,15 +699,15 @@ function createText ()
 		end
 	end
 
-	local x,y,z = getElementPosition(playerid)
-	local rx,ry,rz = getElementRotation(playerid)
-	local heal_player = split(getElementHealth(playerid), ".")
+	local x,y,z = getElementPosition(localPlayer)
+	local rx,ry,rz = getElementRotation(localPlayer)
+	local heal_player = split(getElementHealth(localPlayer), ".")
 
 
 	if isCursorShowing() then
 		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( "skin "..getElementModel(playerid)..", interior "..getElementInterior(playerid)..", dimension "..getElementDimension(playerid), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( "skin "..getElementModel(localPlayer)..", interior "..getElementInterior(localPlayer)..", dimension "..getElementDimension(localPlayer), 300.0, 70.0, 0.0, 0.0, tocolor ( white[1], white[2], white[3], 255 ), 1, m2font_dx1 )
 
 		if isCursorShowing() then
 			local screenx, screeny, worldx, worldy, worldz = getCursorPosition()
@@ -771,7 +730,7 @@ function createText ()
 			local plate = getVehiclePlateText(vehicle)
 
 			if coords[1] and coords[2] then
-				if getElementData(playerid, "speed_car_device_data") == 1 then
+				if getElementData(localPlayer, "speed_car_device_data") == 1 then
 					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 					local speed_table = split(getSpeed(vehicle), ".")
 					local dimensions = dxGetTextWidth ( speed_table[1].." km/h", 1, m2font_dx1 )
@@ -793,7 +752,7 @@ function createText ()
 		end
 	end
 
-	if getElementData(playerid, "gps_device_data") == 1 then
+	if getElementData(localPlayer, "gps_device_data") == 1 then
 		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
 		local x_table = split(x, ".")
 		local y_table = split(y, ".")
@@ -932,7 +891,7 @@ function createText ()
 			local x1,y1,z1 = getElementPosition(player)
 			local coords = { getScreenFromWorldPosition( x1,y1,z1+1.0, 0, false ) }
 
-			if player ~= playerid and coords[1] and coords[2] and isLineOfSightClear(x, y, z, x1,y1,z1) then
+			if player ~= localPlayer and coords[1] and coords[2] and isLineOfSightClear(x, y, z, x1,y1,z1) then
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(resourceRoot, "zakon_drugs") then
 					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
 					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
@@ -974,7 +933,7 @@ local tune_business = false
 local int_upgrades = 0
 function tune_window_create (number)--создание окна тюнинга
 	number_business = number
-	local vehicleid = getPlayerVehicle(playerid)
+	local vehicleid = getPlayerVehicle(localPlayer)
 
 	local width = 355+70
 	local height = 225.0+(16.0*1)+10
@@ -998,7 +957,7 @@ function tune_window_create (number)--создание окна тюнинга
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_buy_subject_fun", resourceRoot, playerid, text, number_business, 5 )
+		triggerServerEvent( "event_buy_subject_fun", resourceRoot, localPlayer, text, number_business, 5 )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1121,13 +1080,13 @@ function tune_window_create (number)--создание окна тюнинга
 			if int_upgrades ~= 0 then
 				local x,y,z, rx,ry,rz = getElementAttachedOffsets ( int_upgrades[2] )
 				local sc = tonumber(guiGetText(scale)) or 1
-				triggerServerEvent( "event_addVehicleUpgrade", resourceRoot, vehicleid, {int_upgrades[1], x,y,z, rx,ry,rz, sc}, playerid, number_business )
+				triggerServerEvent( "event_addVehicleUpgrade", resourceRoot, vehicleid, {int_upgrades[1], x,y,z, rx,ry,rz, sc}, localPlayer, number_business )
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tune_install_button, complete, false )
 
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
-			triggerServerEvent( "event_removeVehicleUpgrade", resourceRoot, vehicleid, playerid, number_business )
+			triggerServerEvent( "event_removeVehicleUpgrade", resourceRoot, vehicleid, localPlayer, number_business )
 		end
 		addEventHandler ( "onClientGUIClick", tune_delete_button, complete, false )
 	end
@@ -1165,7 +1124,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", resourceRoot, playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", resourceRoot, localPlayer, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1192,7 +1151,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", resourceRoot, playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", resourceRoot, localPlayer, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1218,7 +1177,7 @@ function shop_menu(number, value)--создание окна магазина
 		function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-			triggerServerEvent( "event_buy_subject_fun", resourceRoot, playerid, text, number_business, value )
+			triggerServerEvent( "event_buy_subject_fun", resourceRoot, localPlayer, text, number_business, value )
 		end
 		addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1238,7 +1197,7 @@ function shop_menu(number, value)--создание окна магазина
 	function complete ( button, state, absoluteX, absoluteY )--выполнение операции
 		local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
-		triggerServerEvent( "event_buy_subject_fun", resourceRoot, playerid, text, number_business, value )
+		triggerServerEvent( "event_buy_subject_fun", resourceRoot, localPlayer, text, number_business, value )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1302,7 +1261,7 @@ function avto_bikes_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", resourceRoot, playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", resourceRoot, localPlayer, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1339,7 +1298,7 @@ function boats_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", resourceRoot, playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", resourceRoot, localPlayer, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1376,7 +1335,7 @@ function helicopters_menu()--создание окна машин
 			return
 		end
 
-		triggerServerEvent( "event_buycar", resourceRoot, playerid, getVehicleModelFromName (text) )
+		triggerServerEvent( "event_buycar", resourceRoot, localPlayer, getVehicleModelFromName (text) )
 	end
 	addEventHandler ( "onClientGUIClick", buy_subject, complete, false )
 
@@ -1388,13 +1347,13 @@ addEventHandler ( "event_helicopters_menu", root, helicopters_menu )
 function zamena_img()
 --------------------------------------------------------------замена куда нажал 1 раз----------------------------------------------------------------------------
 	if info_tab == tab_player then
-		triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "player", info3_selection_1, info1, info2, getPlayerName(playerid) )
+		triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "player", info3_selection_1, info1, info2, getPlayerName(localPlayer) )
 
 	elseif info_tab == tab_car then
-		triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "car", info3_selection_1, info1, info2, plate )
+		triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "car", info3_selection_1, info1, info2, plate )
 
 	elseif info_tab == tab_house then
-		triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "house", info3_selection_1, info1, info2, house )
+		triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "house", info3_selection_1, info1, info2, house )
 	end
 end
 
@@ -1408,7 +1367,7 @@ function inv_create ()--создание инв-ря
 	stats_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 
 	tabPanel = guiCreateTabPanel ( 10.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
-	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( playerid ), tabPanel )
+	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( localPlayer ), tabPanel )
 
 	showCursor( true )
 
@@ -1483,7 +1442,7 @@ function inv_create ()--создание инв-ря
 					return
 				end]]
 
-				triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(playerid) )
+				triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
 
 				zamena_img()
 
@@ -1541,7 +1500,7 @@ function inv_create ()--создание инв-ря
 
 		function car_trunk( tab )
 			if tab == tab_car then
-				triggerServerEvent("event_setVehicleDoorOpenRatio_fun", resourceRoot, playerid, 1)
+				triggerServerEvent("event_setVehicleDoorOpenRatio_fun", resourceRoot, localPlayer, 1)
 			end
 		end
 		addEventHandler( "onClientGUITabSwitched", tab_car, car_trunk, false )
@@ -1589,7 +1548,7 @@ function inv_create ()--создание инв-ря
 						return
 					end]]
 
-					triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "car", info3, info1_selection_1, info2_selection_1, plate )
+					triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "car", info3, info1_selection_1, info2_selection_1, plate )
 
 					zamena_img()
 
@@ -1689,7 +1648,7 @@ function inv_create ()--создание инв-ря
 						return
 					end]]
 
-					triggerServerEvent( "event_inv_server_load", resourceRoot, playerid, "house", info3, info1_selection_1, info2_selection_1, house )
+					triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "house", info3, info1_selection_1, info2_selection_1, house )
 
 					zamena_img()
 
@@ -1728,7 +1687,7 @@ function inv_create ()--создание инв-ря
 				end
 
 				if tab_player == guiGetSelectedTab(tabPanel) then
-					triggerServerEvent( "event_use_inv", resourceRoot, playerid, "player", info3, info1, info2 )
+					triggerServerEvent( "event_use_inv", resourceRoot, localPlayer, "player", info3, info1, info2 )
 				end
 
 				gui_selection = false
@@ -1748,18 +1707,18 @@ function inv_create ()--создание инв-ря
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
 				if tab_player == info_tab then
-					setElementData(playerid, "task", getPedSimplestTask(playerid))
-					triggerServerEvent( "event_throw_earth_server", resourceRoot, playerid, "player", info3, info1, info2, getPlayerName ( playerid ) )
+					setElementData(localPlayer, "task", getPedSimplestTask(localPlayer))
+					triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "player", info3, info1, info2, getPlayerName ( localPlayer ) )
 
 				elseif tab_car == info_tab then
-					local vehicleid = getPlayerVehicle(playerid)
+					local vehicleid = getPlayerVehicle(localPlayer)
 
 					if vehicleid then
-						triggerServerEvent( "event_throw_earth_server", resourceRoot, playerid, "car", info3, info1, info2, plate )
+						triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "car", info3, info1, info2, plate )
 					end
 
 				elseif tab_house == info_tab then
-					triggerServerEvent( "event_throw_earth_server", resourceRoot, playerid, "house", info3, info1, info2, house )
+					triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "house", info3, info1, info2, house )
 				end
 
 				gui_selection = false
@@ -1813,7 +1772,7 @@ function inv_delet ()--удаление инв-ря
 
 		destroyElement(stats_window)
 
-		triggerServerEvent("event_setVehicleDoorOpenRatio_fun", resourceRoot, playerid, 0)
+		triggerServerEvent("event_setVehicleDoorOpenRatio_fun", resourceRoot, localPlayer, 0)
 
 		stats_window = nil
 	end
@@ -1822,7 +1781,7 @@ addEvent( "event_inv_delet", true )
 addEventHandler ( "event_inv_delet", root, inv_delet )
 
 function tune_close ( button, state, absoluteX, absoluteY )--закрытие окна
-local vehicleid = getPlayerVehicle(playerid)
+local vehicleid = getPlayerVehicle(localPlayer)
 
 	if gui_window then
 		destroyElement(gui_window)
@@ -1922,7 +1881,7 @@ function showcursor_b (key, keyState)
 end
 
 function toggleNOS( key, state )
-	local vehicleid = getPlayerVehicle(playerid)
+	local vehicleid = getPlayerVehicle(localPlayer)
 
 	if vehicleid then
 		if getElementData(vehicleid, "tune_car") ~= "0" and getElementData(vehicleid, "tune_car") then
@@ -1945,7 +1904,7 @@ function showdebuginfo_b (key, keyState)
 		setPlayerHudComponentVisible ( "ammo", hud )
 		setPlayerHudComponentVisible ( "clock", hud )
 		setPlayerHudComponentVisible ( "weapon", hud )
-		setElementData(playerid, "radar_visible", hud)
+		setElementData(localPlayer, "radar_visible", hud)
 		showChat(hud)
 	end
 end
@@ -1953,7 +1912,7 @@ end
 local addCommandHandler_marker = 0
 addCommandHandler ( "marker",
 function ( cmd, x,y )
-	local playername = getPlayerName ( playerid )
+	local playername = getPlayerName ( localPlayer )
 	local x,y = tonumber(x),tonumber(y)
 
 	if not x or not y then
