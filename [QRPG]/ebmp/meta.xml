@@ -17,6 +17,7 @@
 	<script src="script.lua" type="server"/>
 	<script src="client_pos.lua" type="client"/>
 	<script src="script_client.lua" type="client"/>
+	<script src="tablet.lua" type="client"/>
 	<script src="menu_m2.lua" type="client"/>
 
 	
