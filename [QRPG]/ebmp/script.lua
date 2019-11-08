@@ -4687,7 +4687,7 @@ function buy_subject_fun( playerid, text, number, value )
 		end
 
 		if text == weapon_cops[39][1] then
-			if inv_player_empty(playerid, 39, 1*search_inv_player_2_parameter(playerid, 10)) then
+			if inv_player_empty(playerid, 39, 1) then
 				sendMessage(playerid, "Вы получили "..text, orange)
 			else
 				sendMessage(playerid, "[ERROR] Инвентарь полон", red)
@@ -4702,7 +4702,7 @@ function buy_subject_fun( playerid, text, number, value )
 
 		for k,v in pairs(weapon_cops) do
 			if v[1] == text then
-				if inv_player_empty(playerid, k, v[4]*search_inv_player_2_parameter(playerid, 10)) then
+				if inv_player_empty(playerid, k, v[4]) then
 					sendMessage(playerid, "Вы получили "..text, orange)
 				else
 					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
