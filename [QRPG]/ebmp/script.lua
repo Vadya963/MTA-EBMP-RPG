@@ -64,6 +64,7 @@ local ferm_etap = 1--этап фермы, всего 3
 local grass_pos_count = 0--кол-во убранных растений на ферме
 local ferm_etap_count = 255--кол-во этапов за раз
 local loto = {0, {}, false}--лотерея
+local update_db_rang = 2--ранг основателя
 local no_ped_damage = {--таблица нпс по которым не будет проходить дамаг
 	createPed ( 312, 2435.337890625,-2704.7568359375,3, 180.0, true ),
 	createPed ( 312, -1632.9775390625,-2239.0263671875,31.4765625, 90.0, true ),
@@ -5548,6 +5549,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	setElementData(resourceRoot, "earth_data", earth)
 	setElementData(resourceRoot, "info_png", info_png)
 	setElementData(resourceRoot, "harvest", harvest)
+	setElementData(resourceRoot, "update_db_rang", update_db_rang)
 end
 addEventHandler ( "onResourceStart", resourceRoot, displayLoadedRes )
 
@@ -10135,13 +10137,18 @@ function (playerid, cmd, id, id1, id2 )
 		return
 	end
 
-	if not val1 or not val2  then
+	if not val1 or not val2 then
 		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [ид предмета] [количество]", red)
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
 		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, red)
+		return
+	end
+
+	if val2 == 44 and val2 == update_db_rang and not hasObjectPermissionTo("user."..playername, "command.shutdown") then
+		sendMessage(playerid, "Вы не основатель", red)
 		return
 	end
 
@@ -10167,7 +10174,7 @@ function (playerid, cmd, id, id1, id2 )
 		return
 	end
 
-	if not val1 or not val2  then
+	if not val1 or not val2 then
 		sendMessage(playerid, "[ERROR] /"..cmd.." [ИД игрока] [ид предмета] [количество]", red)
 		return
 	end
@@ -10200,7 +10207,7 @@ function (playerid, cmd, id1, id2 )
 		return
 	end
 
-	if not val1 or not val2  then
+	if not val1 or not val2 then
 		sendMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество]", red)
 		return
 	end
@@ -10232,7 +10239,7 @@ function (playerid, cmd, id1, id2, count )
 		return
 	end
 
-	if not val1 or not val2  then
+	if not val1 or not val2 then
 		sendMessage(playerid, "[ERROR] /"..cmd.." [ид предмета] [количество] [количество на земле]", red)
 		return
 	end

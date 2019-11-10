@@ -3,7 +3,7 @@ local roulette_number = {false, {0,0,0}, {}}
 local info_png = {}
 local no_sell_auc = {}--нельзя продать
 local gui_window = nil
-local update_db_rang = 1
+local update_db_rang = 0
 
 local weather_list = {
 	[0] = {"SUNNY", 101,60},
@@ -92,6 +92,7 @@ addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
 	info_png = getElementData(resourceRoot, "info_png")
 	no_sell_auc = getElementData(resourceRoot, "no_sell_auc")
+	update_db_rang = getElementData(resourceRoot, "update_db_rang")
 end)
 
 function roulette_number_Text ()
