@@ -427,7 +427,7 @@ function set_weather()
 	if hour == 0 and minute == 0 then
 		setWeatherBlended(tomorrow_weather)
 
-		tomorrow_weather = random(0,22)
+		tomorrow_weather = random(0,1)
 		print("[tomorrow_weather] "..tomorrow_weather)
 
 		setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
@@ -619,11 +619,17 @@ local info_png = {
 	[107] = {"документы на т/с под номером", ""},
 	[108] = {"пустой бланк", "шт"},
 	[109] = {"заявление на пропажу т/с под номером", ""},
+	[110] = {"тыквенный пирог", "$ за штуку"},
+	[111] = {"тыква", "шт"},
+	[112] = {"семена тыквы", "шт"},
+	[113] = {"лейка", "%"},
+	[114] = {"тесто", "шт"},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
 	{"", "", "82,83", "1,100", "81,1"},
 	{"", "", "90,90", "3,78", "20,1"},
+	{"", "", "111,114", "1,1", "110,250"},
 }
 
 for i,v in ipairs(craft_table) do
@@ -636,6 +642,16 @@ local quest_table = {--1 название, 2 описание, 3 кол-во, 5 
 	[2] = {"Рудокоп", "Добыть ", math.random(5,10), " раз железную руду", 71, math.random(1000,5000), {0,0}, {}},
 	[3] = {"Нефтебарон", "Перевезти ", math.random(1,2), " раз бочки с нефтью", 73, math.random(1000,5000), {5,25}, {}},
 }
+
+--фермы
+local harvest = {}--растения игроков
+local harvest_time = {--время роста в минутах 1, защита мин, сокращение роста после полива 3, ид объекта 4, ид предмета 5
+	[112] = {5, 1, 0, 811, 111},
+}
+for k,v in pairs(harvest_time) do
+	harvest_time[k][3] = split(tostring(v[1]*0.5), ".")[1]
+end
+local harvest_icon_complete = 2228
 
 local weapon = {
 	[9] = {info_png[9][1], 16, 360, 5},
@@ -705,6 +721,9 @@ local shop = {
 	[94] = {info_png[94][1], 1, 5000},
 	[103] = {info_png[103][1], 1, 250},
 	[104] = {info_png[104][1], 1, 100},
+	[112] = {info_png[112][1], 10, 100},
+	[113] = {info_png[113][1], 100, 500},
+	[114] = {info_png[114][1], 1, 200},
 }
 
 local repair_shop = {
@@ -786,7 +805,7 @@ local mayoralty_shop = {
 	{info_png[64][1].." Уборщик улиц", 11, 5000, 64},
 	{info_png[64][1].." Пожарный", 12, 5000, 64},
 	{info_png[64][1].." SWAT", 13, 5000, 64},
-	{info_png[64][1].." Фермер", 14, 5000, 64},
+	--{info_png[64][1].." Фермер", 14, 5000, 64},
 	{info_png[64][1].." Охотник", 15, 5000, 64},
 	{info_png[64][1].." Развозчик пиццы", 16, 5000, 64},
 	{info_png[64][1].." Уборщик морского дна", 17, 5000, 64},
@@ -1342,6 +1361,7 @@ local down_player_subject = {--{x,y,z, радиус 4, ид пнг 5, интер
 	{-1633.845703125,-2239.08984375,31.4765625, 5, 28, 0, 0},--охотничий дом
 	{681.7744140625,823.8447265625,-26.840600967407, 5, 16, 0, 0},--рудник лв
 	{2435.361328125,-2705.46484375,3, 5, 32, 0, 0},--доки лc
+	{2564.779296875,-1293.0673828125,1044.125, 2, 110, 2, 6},--завод продуктов
 }
 
 local anim_player_subject = {--{x,y,z, радиус 4, ид пнг1 5, ид пнг2 6, зп 7, анимация1 8, анимация2 9, интерьер 10, мир 11, время работы анимации 12} также нужно прописать ид пнг 
@@ -2120,9 +2140,7 @@ local table_job = {
 
 							local randomize = random(1,#sell_car_theft)
 
-							local crimes_plus = zakon_car_theft_crimes
-							crimes[playername] = crimes[playername]+crimes_plus
-							sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+							addcrimes(playerid, zakon_car_theft_crimes)
 
 							sendMessage(playerid, "Езжайте в отстойник", yellow)
 
@@ -2740,7 +2758,7 @@ local table_job = {
 									if isElement(playerid) then
 										setPedAnimation(playerid, nil, nil)
 									end
-								end, (10*1000), 1)
+								end, (5*1000), 1)
 
 								grass_pos_count = grass_pos_count+ferm_etap_count
 
@@ -3122,9 +3140,7 @@ local table_job = {
 										function died()
 											job_call[playername] = 3
 
-											local crimes_plus = zakon_kill_crimes
-											crimes[playername] = crimes[playername]+crimes_plus
-											sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+											addcrimes(playerid, zakon_kill_crimes)
 										end
 										addEventHandler("onPedWasted", job_ped[playername], died)
 									end
@@ -3570,6 +3586,23 @@ function pay_nalog()
 	if time["hour"] == 0 and time["minute"] == 0 then
 		--restartAllResources()
 	end
+
+	for k,v in pairs(harvest) do
+		if v[2] > 0 then
+			harvest[k][2] = v[2]-1
+
+		elseif v[3] == 0 then
+			destroyElement(v[6])
+			destroyElement(v[7])
+
+			harvest[k] = nil
+
+		elseif v[2] == 0 then
+			harvest[k][3] = v[3]-1
+		end
+	end
+
+	setElementData(resourceRoot, "harvest", harvest)
 end
 
 function pay_money_gz()
@@ -3811,12 +3844,10 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 	if isElement ( playerid ) then
 		if robbery_player[playername] == 1 then
 			local x,y,z = getElementPosition(playerid)
-			local crimes_plus = zakon
 			local cash = random(money/2,money)
 
 			if isPointInCircle3D(x1,y1,z1, x,y,z, radius) then
-				crimes[playername] = crimes[playername]+crimes_plus
-				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+				addcrimes(playerid, zakon)
 
 				sendMessage(playerid, "Вы унесли "..cash.."$", green )
 
@@ -4025,6 +4056,13 @@ function quest_player(playerid, id)
 			end
 		end
 	end
+end
+
+function addcrimes(playerid, value)
+	local crimes_plus = value
+	local playername = getPlayerName(playerid)
+	crimes[playername] = crimes[playername]+crimes_plus
+	sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
 end
 --------------------------------------------------------------------------------------------------------
 
@@ -4319,6 +4357,7 @@ function pickupUse( playerid )
 	local pickup = source
 	local x,y,z = getElementPosition(playerid)
 	local px,py,pz = getElementPosition(pickup)
+	local playername = getPlayerName(playerid)
 
 	if getElementModel(pickup) == business_icon then
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
@@ -4369,6 +4408,33 @@ function pickupUse( playerid )
 				sendMessage(playerid, " ", yellow)
 				sendMessage(playerid, v[2], yellow)
 				return
+			end
+		end
+
+	elseif getElementModel(pickup) == harvest_icon_complete then
+		for k,v in pairs(harvest) do
+			if v[6] == pickup and v[2] == 0 then
+				if inv_player_empty( playerid, v[9], 1 ) then
+					setPedAnimation(playerid, "BOMBER", "BOM_Plant", -1, true, false, false, false)
+
+					setTimer(function ()
+						if isElement(playerid) then
+							setPedAnimation(playerid, nil, nil)
+						end
+					end, (10*1000), 1)
+
+					destroyElement(v[6])
+					destroyElement(v[7])
+
+					harvest[k] = nil
+
+					me_chat(playerid, playername.." собрал(а) "..info_png[v[9]][1])
+
+					setElementData(resourceRoot, "harvest", harvest)
+				else
+					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+				end
+				break
 			end
 		end
 	end
@@ -5449,13 +5515,13 @@ function displayLoadedRes ( res )--старт ресурсов
 		korovi_pos[i] = {x,y,z}
 	end
 
-	for j=0,29 do
+	--[[for j=0,29 do
 		for i=0,16 do
 			local x,y,z = -181.125-(i*5)+(j*1.92),-83.888671875+(1.66*i)+(j*5),3.11-1.5
 			local obj = createObject(323, x,y,z, 0,180,0)
 			grass_pos[#grass_pos+1] = {obj, x,y,z}
 		end
-	end
+	end]]
 
 
 	setElementData(resourceRoot, "zakon_alcohol", zakon_alcohol)
@@ -5481,6 +5547,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
 	setElementData(resourceRoot, "earth_data", earth)
 	setElementData(resourceRoot, "info_png", info_png)
+	setElementData(resourceRoot, "harvest", harvest)
 end
 addEventHandler ( "onResourceStart", resourceRoot, displayLoadedRes )
 
@@ -5714,9 +5781,7 @@ function(ammo, attacker, weapon, bodypart)
 
 			if playername_a ~= playername then
 				if search_inv_player_2_parameter(attacker, 10) == 0 then
-					local crimes_plus = zakon_kill_crimes
-					crimes[playername_a] = crimes[playername_a]+crimes_plus
-					sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
+					addcrimes(attacker, zakon_kill_crimes)
 				else
 					if crimes[playername] ~= 0 then
 						arrest[playername] = 1
@@ -5725,9 +5790,7 @@ function(ammo, attacker, weapon, bodypart)
 
 						inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 					else
-						local crimes_plus = zakon_kill_crimes
-						crimes[playername_a] = crimes[playername_a]+crimes_plus
-						sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
+						addcrimes(attacker, zakon_kill_crimes)
 					end
 				end
 
@@ -5754,20 +5817,16 @@ function(ammo, attacker, weapon, bodypart)
 
 					if playername_a ~= playername then
 						if search_inv_player_2_parameter(player_id, 10) == 0 then
-							local crimes_plus = zakon_kill_crimes
-							crimes[playername_a] = crimes[playername_a]+crimes_plus
-							sendMessage(player_id, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
+							addcrimes(player_id, zakon_kill_crimes)
 						else
 							if crimes[playername] ~= 0 then
 								arrest[playername] = 1
 
-								sendMessage(attacker, "Вы получили премию "..(cash*(crimes[playername])).."$", green )
+								sendMessage(player_id, "Вы получили премию "..(cash*(crimes[playername])).."$", green )
 
-								inv_server_load( attacker, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
+								inv_server_load( player_id, "player", 0, 1, array_player_2[playername_a][1]+(cash*(crimes[playername])), playername_a )
 							else
-								local crimes_plus = zakon_kill_crimes
-								crimes[playername_a] = crimes[playername_a]+crimes_plus
-								sendMessage(attacker, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername_a], blue)
+								addcrimes(player_id, zakon_kill_crimes)
 							end
 						end
 					end
@@ -5988,18 +6047,23 @@ function vehicle_sethandling(vehicleid)
 
 	local a = getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]
 	local v = getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]
+	local b = getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"]
 
 	if result[1] then
 		a = a + getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)
 		v = v + getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)
+		b = b + getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"]*(result[1]["stage"]*car_stage_coef)
 	end
 
-	a = a * (getElementHealth(vehicleid)/1000)
-	v = v * (getElementHealth(vehicleid)/1000)
+	local hp = getElementHealth(vehicleid)/1000
+	a = a * hp
+	v = v * hp
+	b = b * hp
 
 	setVehicleHandling(vehicleid, "engineAcceleration", a)
 	setVehicleHandling(vehicleid, "maxVelocity", v)
-	--print(plate,a,v)
+	setVehicleHandling(vehicleid, "brakeDeceleration", b)
+	--print(plate,a,v,b)
 end
 
 function handleVehicleDamage(loss)
@@ -6094,6 +6158,7 @@ function car_spawn(number)
 
 		setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
 		setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
+		setVehicleHandling(vehicleid, "brakeDeceleration", getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"]*(result[1]["stage"]*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"])
 			
 		array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -7757,9 +7822,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			do_chat(playerid, info_png[id1][1].." показал "..alcohol_test.." промилле - "..playername)
 
 			if alcohol_test >= zakon_alcohol then
-				local crimes_plus = zakon_alcohol_crimes
-				crimes[playername] = crimes[playername]+crimes_plus
-				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+				addcrimes(playerid, zakon_alcohol_crimes)
 			end
 
 		elseif id1 == 58 then--наркостестер
@@ -7770,9 +7833,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			do_chat(playerid, info_png[id1][1].." показал "..drugs_test.."% зависимости - "..playername)
 
 			if drugs_test >= zakon_drugs then
-				local crimes_plus = zakon_drugs_crimes
-				crimes[playername] = crimes[playername]+crimes_plus
-				sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+				addcrimes(playerid, zakon_drugs_crimes)
 			end
 
 		elseif id1 == 59 then--налог дома
@@ -8165,9 +8226,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			sendMessage(playerid, "Вы получили "..randomize.."$", green)
 
-			local crimes_plus = zakon_65_crimes
-			crimes[playername] = crimes[playername]+crimes_plus
-			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+			addcrimes(playerid, zakon_65_crimes)
 
 			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
 
@@ -8181,9 +8240,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			inv_player_delet(playerid, id1, id2)
 			inv_player_empty(playerid, array_weapon[randomize], 25)
 
-			local crimes_plus = zakon_66_crimes
-			crimes[playername] = crimes[playername]+crimes_plus
-			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+			addcrimes(playerid, zakon_66_crimes)
 
 			return
 
@@ -8378,6 +8435,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				setVehicleHandling(vehicleid, "engineAcceleration", getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["engineAcceleration"])
 				setVehicleHandling(vehicleid, "maxVelocity", getOriginalHandling(getElementModel(vehicleid))["maxVelocity"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["maxVelocity"])
+				setVehicleHandling(vehicleid, "brakeDeceleration", getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"]*(id2*car_stage_coef)+getOriginalHandling(getElementModel(vehicleid))["brakeDeceleration"])
 
 				sqlite( "UPDATE car_db SET stage = '"..id2.."' WHERE number = '"..plate.."'")
 
@@ -8454,6 +8512,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				id2 = 0
 			else
 				sendMessage(playerid, "[ERROR] Вы не в т/с", red)
+				return
 			end
 
 		elseif id1 == 99 then--винилы
@@ -8551,9 +8610,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 
 		elseif id1 == 102 then-- уголовное дело
-			local crimes_plus = id2
-			crimes[playername] = crimes[playername]+crimes_plus
-			sendMessage(playerid, "+"..crimes_plus.." преступление, всего преступлений "..crimes[playername], blue)
+			addcrimes(playerid, id2)
 			me_chat(playerid, playername.." прочитал(а) "..info_png[id1][1])
 			id2 = 0
 
@@ -8575,6 +8632,83 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				return
 			end
 
+		elseif id1 == 112 then--овощи
+			local count, count_harvest = 0, 0
+			for h,v in pairs(harvest) do
+				if not isPointInCircle3D(v[1][1],v[1][2],v[1][3], x,y,z, 2) then
+					count = count+1
+				end
+
+				count_harvest = count_harvest+1
+			end
+
+			if getElementData(playerid, "task") ~= "TASK_SIMPLE_PLAYER_ON_FOOT" then
+				sendMessage(playerid, "[ERROR] Вы заняты другим делом", red)
+				return
+			end
+
+			if count == count_harvest then
+				local v = harvest_time[id1]
+				
+				id2 = id2-1
+
+				table.insert( harvest, { {x,y,z}, v[1], v[2], id1, playername, createPickup ( x, y, z, 3, harvest_icon_complete, 10000 ), createObject(v[4], x, y, z), false, v[5]} )
+
+				setPedAnimation(playerid, "BOMBER", "BOM_Plant", -1, true, false, false, false)
+
+				setTimer(function ()
+					if isElement(playerid) then
+						setPedAnimation(playerid, nil, nil)
+					end
+				end, (10*1000), 1)
+
+				me_chat(playerid, playername.." посадил(а) "..info_png[id1][1])
+
+				inv_player_delet( playerid, id1, id2, true, false )
+
+				setElementData(resourceRoot, "harvest", harvest)
+			else
+				sendMessage(playerid, "[ERROR] Вы слишком близко к другим растениям", red)
+				return
+			end
+
+		elseif id1 == 113 then--лейка
+			local count, count2 = false, 0
+			for k,v in pairs(harvest) do
+				if isPointInCircle3D(v[1][1],v[1][2],v[1][3], x,y,z, 2) and not v[8] and v[2] > harvest_time[v[4]][3] then
+					count, count2 = true, k
+					break
+				end
+			end
+
+			if getElementData(playerid, "task") ~= "TASK_SIMPLE_PLAYER_ON_FOOT" then
+				sendMessage(playerid, "[ERROR] Вы заняты другим делом", red)
+				return
+			end
+
+			if count then
+				id2 = id2-1
+
+				harvest[count2][2] = harvest[count2][2]-harvest_time[harvest[count2][4]][3]
+				harvest[count2][8] = true
+
+				object_attach(playerid, 321, 12, 0.15,0,0.3, 0,-90,0, (5*1000))
+
+				setPedAnimation(playerid, "camera", "camstnd_idleloop", -1, true, false, false, false)
+
+				setTimer(function ()
+					if isElement(playerid) then
+						setPedAnimation(playerid, nil, nil)
+					end
+				end, (5*1000), 1)
+
+				me_chat(playerid, playername.." использовал(а) "..info_png[id1][1])
+
+				setElementData(resourceRoot, "harvest", harvest)
+			else
+				sendMessage(playerid, "[ERROR] Рядом нет растения, которое можно полить", red)
+				return
+			end
 
 		else
 			if id1 == 1 then
@@ -10553,7 +10687,7 @@ function restartAllResources()
 	-- for each one of them,
 	for index, res in ipairs(allResources) do
 		-- if it's running,
-		if getResourceState(res) == "running" and getResourceName(res) == "map_mafia2" then
+		if getResourceState(res) == "running" then
 			-- then restart it
 			restartResource(res)
 		end

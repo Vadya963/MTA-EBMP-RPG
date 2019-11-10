@@ -5,7 +5,6 @@ local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = false
 local hud = true
-local update_db_rang = 1
 local timer = {false, 10, 10}
 local info_png = {}
 local image = {}--загрузка картинок для отображения на земле
@@ -271,6 +270,8 @@ setTimer(function ()
 			timer[1] = false
 		end
 	end
+
+	setElementData(localPlayer, "task", getPedSimplestTask(localPlayer))
 end, 1000, 0)
 
 setTimer(function ()
@@ -504,7 +505,7 @@ local text_3d = {--3d text
 	
 	--down_player_subject
 	{942.4775390625,2117.900390625,1011.0302734375, 5, "Выбросите мясо, чтобы получить прибыль"},
-	{2564.779296875,-1293.0673828125,1044.125, 2, "Выбросите коробку с продуктами, чтобы получить прибыль"},
+	{2564.779296875,-1293.0673828125,1044.125, 2, "Выбросите продукты, чтобы получить прибыль"},
 	{681.7744140625,823.8447265625,-26.840600967407, 5, "Выбросите руду, чтобы получить прибыль"},
 	{-488.2119140625,-176.8603515625,78.2109375, 5, "Выбросите дрова, чтобы получить прибыль"},--склад бревен
 	{-1633.845703125,-2239.08984375,31.4765625, 5, "Выбросите тушку оленя, чтобы получить прибыль"},--охотничий дом
@@ -861,6 +862,37 @@ function createText ()
 		local x,y = guiGetPosition ( tabPanel, false )
 		y = y+24
 		dxDrawRectangle( width+gui_selection_pos_x+x, height+gui_selection_pos_y+y, 50.0, 50.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 100 ), true )
+	end
+
+
+	for i,v in pairs(getElementData(resourceRoot, "harvest")) do--отображение растений на земле
+		local area2 = isPointInCircle3D( v[1][1], v[1][2], v[1][3], x, y, z, 2 )
+		if area2 then
+			local coords = { getScreenFromWorldPosition( v[1][1], v[1][2], v[1][3]-1, 0, false ) }
+			if coords[1] and coords[2] then
+				local dimensions = dxGetTextWidth ( info_png[v[9]][1], 1, m2font_dx1 )
+				dxdrawtext ( info_png[v[9]][1], coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+
+				if v[8] then
+					local dimensions = dxGetTextWidth ( "полито", 1, m2font_dx1 )
+					dxdrawtext ( "полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				else
+					local dimensions = dxGetTextWidth ( "не полито", 1, m2font_dx1 )
+					dxdrawtext ( "не полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
+
+				if v[2] > 0 then
+					local dimensions = dxGetTextWidth ( "созреет через "..v[2].." мин", 1, m2font_dx1 )
+					dxdrawtext ( "созреет через "..v[2].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				elseif v[2] == 0 then
+					local dimensions = dxGetTextWidth ( "исчезнет через "..v[3].." мин", 1, m2font_dx1 )
+					dxdrawtext ( "исчезнет через "..v[3].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				end
+			
+				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx1 )
+				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2]-15*0, 0.0, 0.0, tocolor ( svetlo_zolotoy[1], svetlo_zolotoy[2], svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			end
+		end
 	end
 
 
@@ -1707,7 +1739,6 @@ function inv_create ()--создание инв-ря
 
 			if absoluteX < x or absoluteX > (x+width) or absoluteY < y or absoluteY > (y+height) then
 				if tab_player == info_tab then
-					setElementData(localPlayer, "task", getPedSimplestTask(localPlayer))
 					triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "player", info3, info1, info2, getPlayerName ( localPlayer ) )
 
 				elseif tab_car == info_tab then

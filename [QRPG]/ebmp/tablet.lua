@@ -3,6 +3,7 @@ local roulette_number = {false, {0,0,0}, {}}
 local info_png = {}
 local no_sell_auc = {}--нельзя продать
 local gui_window = nil
+local update_db_rang = 1
 
 local weather_list = {
 	[0] = {"SUNNY", 101,60},
@@ -451,7 +452,7 @@ function tablet_fun()--создание планшета
 		end
 		addEventHandler ( "onClientGUIClick", home, outputEditBox, false )
 
-		guiGridListAddColumn(shoplist, "Предмет", 0.2)
+		guiGridListAddColumn(shoplist, "Предмет", 0.4)
 		guiGridListAddColumn(shoplist, "Ресурсы", 1.0)
 
 		for k,v in pairs(getElementData(resourceRoot, "craft_table")) do
