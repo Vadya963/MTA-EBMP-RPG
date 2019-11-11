@@ -10147,7 +10147,7 @@ function (playerid, cmd, id, id1, id2 )
 		return
 	end
 
-	if val2 == 44 and val2 == update_db_rang and not hasObjectPermissionTo("user."..playername, "command.shutdown") then
+	if val2 == 44 and val1 == update_db_rang and not hasObjectPermissionTo("user."..playername, "command.shutdown") then
 		sendMessage(playerid, "Вы не основатель", red)
 		return
 	end
