@@ -40,6 +40,7 @@ local max_earth = 0--мак-ое кол-во выброшенных предме
 local count_player = 0--кол-во подключенных игроков
 local me_radius = 10--радиус отображения действий игрока в чате
 local max_inv = 23--слоты инв-ря
+local max_inv_additional = 1--дополнительные слоты
 local max_fuel = 50--объем бака авто
 local max_blip = 250--радиус блипов
 local house_bussiness_radius = 5--радиус размещения бизнесов и домов
@@ -3719,7 +3720,7 @@ end
 function save_inv(val, value)
 	if value == "player" then
 		local text = ""
-		for i=0,max_inv+1 do
+		for i=0,max_inv+max_inv_additional do
 			text = text..array_player_1[val][i+1]..":"..array_player_2[val][i+1]..","
 		end
 		return text
