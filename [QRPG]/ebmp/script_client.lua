@@ -275,8 +275,9 @@ setTimer(function ()
 end, 1000, 0)
 
 setTimer(function ()
-	local timeserver = split(getElementData(localPlayer, "timeserver"), ":")
-	if timeserver and timeserver[1] and timeserver[2] then
+	local timeserver = getElementData(localPlayer, "timeserver")
+	if timeserver then
+		timeserver = split(getElementData(localPlayer, "timeserver"), ":")
 		setTime(timeserver[1], timeserver[2])
 	end
 end, 60000, 0)
