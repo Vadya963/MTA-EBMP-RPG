@@ -302,22 +302,26 @@ local tabPanel = nil
 local tab_player = nil
 local tab_car = nil
 local tab_house = nil
+local tab_box = nil
 
 --окно тюнинга
 local gui_window = nil
 
 local plate = ""
 local house = ""
+local box = ""
 
 local max_inv = 23
 local inv_slot_player = {} -- инв-рь игрока
 local inv_slot_car = {} -- инв-рь авто
 local inv_slot_house = {} -- инв-рь дома
+local inv_slot_box = {} -- инв-рь ящика
 
 for i=0,max_inv do
 	inv_slot_player[i] = {0,0,0}
 	inv_slot_car[i] = {0,0,0}
 	inv_slot_house[i] = {0,0,0}
+	inv_slot_box[i] = {0,0,0}
 end
 
 function sendMessage(text, color)
@@ -1387,6 +1391,9 @@ function zamena_img()
 
 	elseif info_tab == tab_house then
 		triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "house", info3_selection_1, info1, info2, house )
+
+	elseif info_tab == tab_box then
+		triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "box", info3_selection_1, info1, info2, box )
 	end
 end
 
@@ -1708,6 +1715,106 @@ function inv_create ()--создание инв-ря
 		end
 	end
 
+	if box ~= "" then
+		tab_box = guiCreateTab( "Ящик "..box, tabPanel )
+		inv_slot_box[0][1] = guiCreateStaticImage( 10.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[0][2]..".png", false, tab_box )
+		inv_slot_box[1][1] = guiCreateStaticImage( 70.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[1][2]..".png", false, tab_box )
+		inv_slot_box[2][1] = guiCreateStaticImage( 130.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[2][2]..".png", false, tab_box )
+		inv_slot_box[3][1] = guiCreateStaticImage( 190.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[3][2]..".png", false, tab_box )
+		inv_slot_box[4][1] = guiCreateStaticImage( 250.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[4][2]..".png", false, tab_box )
+		inv_slot_box[5][1] = guiCreateStaticImage( 310.0, 10.0, text_width, text_height, "image_inventory/"..inv_slot_box[5][2]..".png", false, tab_box )
+
+		inv_slot_box[6][1] = guiCreateStaticImage( 10.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[6][2]..".png", false, tab_box )
+		inv_slot_box[7][1] = guiCreateStaticImage( 70.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[7][2]..".png", false, tab_box )
+		inv_slot_box[8][1] = guiCreateStaticImage( 130.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[8][2]..".png", false, tab_box )
+		inv_slot_box[9][1] = guiCreateStaticImage( 190.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[9][2]..".png", false, tab_box )
+		inv_slot_box[10][1] = guiCreateStaticImage( 250.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[10][2]..".png", false, tab_box )
+		inv_slot_box[11][1] = guiCreateStaticImage( 310.0, 70.0, text_width, text_height, "image_inventory/"..inv_slot_box[11][2]..".png", false, tab_box )
+
+		inv_slot_box[12][1] = guiCreateStaticImage( 10.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[12][2]..".png", false, tab_box )
+		inv_slot_box[13][1] = guiCreateStaticImage( 70.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[13][2]..".png", false, tab_box )
+		inv_slot_box[14][1] = guiCreateStaticImage( 130.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[14][2]..".png", false, tab_box )
+		inv_slot_box[15][1] = guiCreateStaticImage( 190.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[15][2]..".png", false, tab_box )
+		inv_slot_box[16][1] = guiCreateStaticImage( 250.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[16][2]..".png", false, tab_box )
+		inv_slot_box[17][1] = guiCreateStaticImage( 310.0, 130.0, text_width, text_height, "image_inventory/"..inv_slot_box[17][2]..".png", false, tab_box )
+
+		inv_slot_box[18][1] = guiCreateStaticImage( 10.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[18][2]..".png", false, tab_box )
+		inv_slot_box[19][1] = guiCreateStaticImage( 70.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[19][2]..".png", false, tab_box )
+		inv_slot_box[20][1] = guiCreateStaticImage( 130.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[20][2]..".png", false, tab_box )
+		inv_slot_box[21][1] = guiCreateStaticImage( 190.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[21][2]..".png", false, tab_box )
+		inv_slot_box[22][1] = guiCreateStaticImage( 250.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[22][2]..".png", false, tab_box )
+		inv_slot_box[23][1] = guiCreateStaticImage( 310.0, 190.0, text_width, text_height, "image_inventory/"..inv_slot_box[23][2]..".png", false, tab_box )
+
+		for i=0,max_inv do
+			function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
+				local x,y = guiGetPosition ( inv_slot_box[i][1], false )
+
+				info3 = i
+				info1 = inv_slot_box[i][2]
+				info2 = inv_slot_box[i][3]
+
+				if lmb == 0 then
+					for k,v in pairs(no_select_subject) do 
+						if v == info1 then
+							return
+						end
+					end
+
+					gui_selection = true
+					info_tab = tab_box
+					gui_selection_pos_x = x
+					gui_selection_pos_y = y
+					info3_selection_1 = info3
+					info1_selection_1 = info1
+					info2_selection_1 = info2
+					lmb = 1
+				else
+					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+					--if inv_slot_box[info3][2] ~= 0 then
+						
+						
+						for k,v in pairs(no_change_subject) do 
+							if v == info1 then
+								return
+							end
+						end
+						
+						--[[info_tab = tab_box
+						gui_selection_pos_x = x
+						gui_selection_pos_y = y
+						info3_selection_1 = info3
+						info1_selection_1 = info1
+						info2_selection_1 = info2
+						return
+					end]]
+
+					triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "box", info3, info1_selection_1, info2_selection_1, box )
+
+					zamena_img()
+
+					gui_selection = false
+					info_tab = nil
+					lmb = 0
+				end
+
+				--sendMessage(info3.." "..info1.." "..info2)
+			end
+			addEventHandler ( "onClientGUIClick", inv_slot_box[i][1], outputEditBox, false )
+		end
+
+		for i=0,max_inv do
+			function outputEditBox ( absoluteX, absoluteY, gui )--наведение на картинки в инв-ре
+				gui_2dtext = true
+				local x,y = guiGetPosition ( inv_slot_box[i][1], false )
+				gui_pos_x = x
+				gui_pos_y = y
+				info1_png = inv_slot_box[i][2]
+				info2_png = inv_slot_box[i][3]
+			end
+			addEventHandler( "onClientMouseEnter", inv_slot_box[i][1], outputEditBox, false )
+		end
+	end
+
 	---------------------кнопки--------------------------------------------------
 	for i=0,max_inv do
 		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
@@ -1751,6 +1858,9 @@ function inv_create ()--создание инв-ря
 
 				elseif tab_house == info_tab then
 					triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "house", info3, info1, info2, house )
+
+				elseif tab_box == info_tab then
+					triggerServerEvent( "event_throw_earth_server", resourceRoot, localPlayer, "box", info3, info1, info2, box )
 				end
 
 				gui_selection = false
@@ -1776,9 +1886,11 @@ function inv_delet ()--удаление инв-ря
 			inv_slot_player[i] = {0,0,0}
 			inv_slot_car[i] = {0,0,0}
 			inv_slot_house[i] = {0,0,0}
+			inv_slot_box[i] = {0,0,0}
 		end
 
 		house = ""
+		box = ""
 
 		gui_2dtext = false
 		gui_pos_x = 0
@@ -1846,6 +1958,9 @@ function inv_load (value, id3, id1, id2)--загрузка инв-ря
 	elseif value == "house" then
 		inv_slot_house[id3][2] = id1
 		inv_slot_house[id3][3] = id2
+	elseif value == "box" then
+		inv_slot_box[id3][2] = id1
+		inv_slot_box[id3][3] = id2
 	end
 end
 addEvent( "event_inv_load", true )
@@ -1880,6 +1995,20 @@ function tab_load (value, text)--загрузка надписей в табе
 		info3 = -1
 		tab_house = nil
 		lmb = 0
+	elseif value == "box" then
+
+		if text == "" and tab_box then
+			destroyElement(tab_box)
+		end
+
+		box = text
+		gui_selection = false
+		info_tab = nil
+		info1 = -1
+		info2 = -1
+		info3 = -1
+		tab_box = nil
+		lmb = 0
 	end
 end
 addEvent( "event_tab_load", true )
@@ -1892,6 +2021,8 @@ function change_image (value, id3, filename)--замена картинок в �
 		guiStaticImageLoadImage ( inv_slot_car[id3][1], "image_inventory/"..filename..".png" )
 	elseif value == "house" then
 		guiStaticImageLoadImage ( inv_slot_house[id3][1], "image_inventory/"..filename..".png" )
+	elseif value == "box" then
+		guiStaticImageLoadImage ( inv_slot_box[id3][1], "image_inventory/"..filename..".png" )
 	end
 end
 addEvent( "event_change_image", true )

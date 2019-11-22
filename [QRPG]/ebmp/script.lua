@@ -626,6 +626,8 @@ local info_png = {
 	[112] = {"семена тыквы", "шт"},
 	[113] = {"лейка", "%"},
 	[114] = {"тесто", "шт"},
+	[115] = {"ящик под номером", ""},
+	[116] = {"ключ от ящика под номером", ""},
 }
 
 local craft_table = {--[предмет 1, рецепт 2, предметы для крафта 3, кол-во предметов для крафта 4, предмет который скрафтится 5]
@@ -722,10 +724,11 @@ local shop = {
 	[93] = {info_png[93][1], 1, 50},
 	[94] = {info_png[94][1], 1, 5000},
 	[103] = {info_png[103][1], 1, 250},
-	[104] = {info_png[104][1], 1, 100},
+	[104] = {info_png[104][1], 0, 100},
 	[112] = {info_png[112][1], 10, 100},
 	[113] = {info_png[113][1], 100, 500},
 	[114] = {info_png[114][1], 1, 200},
+	[115] = {info_png[115][1], 0, 2500},
 }
 
 local repair_shop = {
@@ -1689,6 +1692,10 @@ local probeg = {}--пробег
 --инв-рь дома
 local array_house_1 = {}
 local array_house_2 = {}
+
+--инв-рь ящика
+local array_box_1 = {}
+local array_box_2 = {}
 
 -------------------пользовательские функции 2----------------------------------------------
 function debuginfo ()
@@ -3714,6 +3721,12 @@ function load_inv(val, value, text)
 			array_house_1[val][k] = tonumber(spl[1])
 			array_house_2[val][k] = tonumber(spl[2])
 		end
+	elseif value == "box" then
+		for k,v in pairs(split(text, ",")) do
+			local spl = split(v, ":")
+			array_box_1[val][k] = tonumber(spl[1])
+			array_box_2[val][k] = tonumber(spl[2])
+		end
 	end
 end
 
@@ -3734,6 +3747,12 @@ function save_inv(val, value)
 		local text = ""
 		for i=0,max_inv do
 			text = text..array_house_1[val][i+1]..":"..array_house_2[val][i+1]..","
+		end
+		return text
+	elseif value == "box" then
+		local text = ""
+		for i=0,max_inv do
+			text = text..array_box_1[val][i+1]..":"..array_box_2[val][i+1]..","
 		end
 		return text
 	end
@@ -4911,7 +4930,7 @@ function buy_subject_fun( playerid, text, number, value )
 				end
 
 			elseif value == 3 then
-				local v,k = {shop[104][1], shop[104][2], shop[104][3]},104
+				local v,k = {shop[104][1], shop[104][2], shop[104][3]},104--покупка лото
 				local randomize,count = random(1,1000),false
 
 				while true do
@@ -4938,6 +4957,36 @@ function buy_subject_fun( playerid, text, number, value )
 							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 
 							table.insert(loto[2], randomize)
+						else
+							sendMessage(playerid, "[ERROR] Инвентарь полон", red)
+						end
+					else
+						sendMessage(playerid, "[ERROR] У вас недостаточно средств", red)
+					end
+					return
+				end
+
+				local v,k,key = {shop[115][1], shop[115][2], shop[115][3]},115,116--покупка ящика
+				local result = sqlite( "SELECT COUNT() FROM box_db")
+				if v[1] == text then
+					if cash*v[3] <= array_player_2[playername][1] then
+						if search_inv_player(playerid, 0, 0) >= 2 then
+							local b = result[1]["COUNT()"]+1
+
+							inv_player_empty(playerid, k, b)
+							inv_player_empty(playerid, key, b)
+
+							array_box_1[b] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+							array_box_2[b] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+							sqlite( "INSERT INTO box_db (number, inventory) VALUES ('"..b.."', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+
+							sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", orange)
+							sendMessage(playerid, "Вы получили "..info_png[key][1].." "..b, orange)
+
+							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
+
+							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
 						else
 							sendMessage(playerid, "[ERROR] Инвентарь полон", red)
 						end
@@ -5386,6 +5435,20 @@ function displayLoadedRes ( res )--старт ресурсов
 		house_number = house_number+1
 	end
 	print("[house_number] "..house_number)
+
+
+	local box_number = 0
+	for k,v in pairs(sqlite( "SELECT * FROM box_db" )) do
+		local h = v["number"]
+
+		array_box_1[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		array_box_2[h] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+		load_inv(h, "box", v["inventory"])
+
+		box_number = box_number+1
+	end
+	print("[box_number] "..box_number)
 
 
 	local business_number = 0
@@ -6506,6 +6569,15 @@ local x,y,z = getElementPosition(playerid)
 					end
 				end
 
+				local sic2p = search_inv_player_2_parameter(playerid, 116)
+				if search_inv_player(playerid, 115, sic2p) ~= 0 then
+					for i=0,max_inv do
+						triggerClientEvent( playerid, "event_inv_load", playerid, "box", i, array_box_1[sic2p][i+1], array_box_2[sic2p][i+1] )
+					end
+
+					triggerClientEvent( playerid, "event_tab_load", playerid, "box", sic2p )
+				end
+
 				triggerClientEvent( playerid, "event_inv_create", playerid )
 				state_inv_player[playername] = 1
 			elseif state_inv_player[playername] == 1 then
@@ -6576,6 +6648,10 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 		triggerClientEvent( playerid, "event_tab_load", playerid, "house", "" )
 		enter_house[playername][2] = 0
 	end]]
+
+	if id1 == 115 or id1 == 116 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+		triggerClientEvent( playerid, "event_tab_load", playerid, "box", "" )
+	end
 
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
@@ -7105,12 +7181,13 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 	local playername = getPlayerName(playerid)
 	local plate = tabpanel
 	local h = tabpanel
+	local b = tabpanel
 
 	if value == "player" then
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
 
-		if id3+1 ~= 25 then
+		if id3+1 ~= max_inv+max_inv_additional+1 then
 			setPlayerNametagColor_fun( playerid )
 			sqlite_load(playerid, "cow_farms_table1")
 			sqlite_load(playerid, "business_table")
@@ -7150,6 +7227,18 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		end
 
 		sqlite( "UPDATE house_db SET inventory = '"..save_inv(h, "house").."' WHERE number = '"..h.."'")
+
+	elseif value == "box" then
+		array_box_1[b][id3+1] = id1
+		array_box_2[b][id3+1] = id2
+
+		triggerClientEvent( playerid, "event_inv_load", playerid, value, id3, array_box_1[b][id3+1], array_box_2[b][id3+1] )
+		
+		if state_inv_player[playername] == 1 then
+			triggerClientEvent( playerid, "event_change_image", playerid, value, id3, array_box_1[b][id3+1] )
+		end
+
+		sqlite( "UPDATE box_db SET inventory = '"..save_inv(b, "box").."' WHERE number = '"..b.."'")
 	end
 end
 addEvent( "event_inv_server_load", true )
@@ -9708,7 +9797,6 @@ addCommandHandler ( "search",--команда для копов (обыскат�
 function (playerid, cmd, value, id)
 	local playername = getPlayerName ( playerid )
 	local x,y,z = getElementPosition(playerid)
-	local wanted_sub = {20,81,83}
 
 	if logged[playername] == 0 then
 		return
