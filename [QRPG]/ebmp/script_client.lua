@@ -1407,7 +1407,7 @@ function inv_create ()--создание инв-ря
 	stats_window = m2gui_window( (screenWidth/2)-(width/2), (screenHeight/2)-(height/2), width, height, "", false )
 
 	tabPanel = guiCreateTabPanel ( 10.0, 20.0, 310.0+10+text_width, 215.0+10+text_height, false, stats_window )
-	tab_player = guiCreateTab( "Инвентарь "..getPlayerName ( localPlayer ), tabPanel )
+	tab_player = guiCreateTab( "Инвентарь", tabPanel )
 
 	showCursor( true )
 
