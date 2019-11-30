@@ -3418,7 +3418,7 @@ function fuel_down()--система топлива авто
 		local engine = getVehicleEngineState ( vehicleid )
 		local fuel_down_number = 0.0002
 
-		if engine then
+		if engine and plate ~= "0" then
 			if fuel[plate] <= 0 then
 				setVehicleEngineState ( vehicleid, false )
 			else
