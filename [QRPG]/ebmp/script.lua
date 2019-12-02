@@ -839,8 +839,6 @@ local weapon_cops = {
 local sub_cops = {
 	{info_png[57][1], 1, 57},
 	{info_png[58][1], 1, 58},
-	{info_png[91][1].." "..info_png[91][2+2], 2, 91},
-	{info_png[91][1].." "..info_png[91][3+2], 3, 91},
 	{info_png[108][1], 1, 108},
 }
 
@@ -9833,16 +9831,9 @@ function (playerid, cmd, value, id)
 
 			if (plate == id) then
 
-				if(search_inv_player(playerid, 91, 2) == 0) then
-					sendMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][2+2], red)
-					return
-				end
-			
 				if (isPointInCircle3D(x,y,z, x1,y1,z1, 10.0)) then
 				
 					me_chat(playerid, playername.." обыскал(а) т/с под номером "..id)
-
-					inv_player_delet(playerid, 91, 2, true)
 
 					search_inv_car_police( playerid, id )
 				else
@@ -9862,16 +9853,9 @@ function (playerid, cmd, value, id)
 
 			if (v["number"] == id) then
 
-				if(search_inv_player(playerid, 91, 3) == 0) then
-					sendMessage(playerid, "[ERROR] У вас нет "..info_png[91][1].." "..info_png[91][3+2], red)
-					return
-				end
-			
 				if (isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], 10.0)) then
 				
 					me_chat(playerid, playername.." обыскал(а) дом под номером "..id)
-
-					inv_player_delet(playerid, 91, 3, true)
 
 					search_inv_house_police( playerid, id )
 				else
