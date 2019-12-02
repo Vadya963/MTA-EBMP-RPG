@@ -4374,50 +4374,52 @@ function amount_inv_house_2_parameter(house, id1)--выводит сумму в�
 end
 --------------------------------------------------------------------------------------------------------
 
-function pickupUse( playerid )
+function pickedUpWeaponCheck( playerid )
 	local pickup = source
 	local x,y,z = getElementPosition(playerid)
 	local px,py,pz = getElementPosition(pickup)
 	local playername = getPlayerName(playerid)
 
 	if getElementModel(pickup) == business_icon then
-		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do 
-			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+		for k,i in pairs(business_pos) do 
+			if i[5] == pickup then
+				local result = sqlite( "SELECT * FROM business_db WHERE number = '"..k.."'" )
 				sendMessage(playerid, " ", yellow)
 
-				local s_sql = select_sqlite(43, v["number"])
+				local s_sql = select_sqlite(43, result[1]["number"])
 				if s_sql then
 					sendMessage(playerid, "Владелец бизнеса "..s_sql, yellow)
 				else
 					sendMessage(playerid, "Владелец бизнеса нету", yellow)
 				end
 
-				sendMessage(playerid, "Тип "..v["type"], yellow)
-				sendMessage(playerid, "Товаров на складе "..v["warehouse"].." шт", yellow)
-				sendMessage(playerid, "Стоимость товара (надбавка в N раз) "..v["price"].."$", green)
+				sendMessage(playerid, "Тип "..result[1]["type"], yellow)
+				sendMessage(playerid, "Товаров на складе "..result[1]["warehouse"].." шт", yellow)
+				sendMessage(playerid, "Стоимость товара (надбавка в N раз) "..result[1]["price"].."$", green)
 
-				if search_inv_player(playerid, 43, v["number"]) ~= 0 then
-					sendMessage(playerid, "Состояние кассы "..split(v["money"],".")[1].."$", green)
-					sendMessage(playerid, "Налог бизнеса оплачен на "..v["nalog"].." дней", yellow)
+				if search_inv_player(playerid, 43, result[1]["number"]) ~= 0 then
+					sendMessage(playerid, "Состояние кассы "..split(result[1]["money"],".")[1].."$", green)
+					sendMessage(playerid, "Налог бизнеса оплачен на "..result[1]["nalog"].." дней", yellow)
 				end
 				return
 			end
 		end
 
 	elseif getElementModel(pickup) == house_icon then
-		for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
-			if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, house_bussiness_radius) then
+		for k,i in pairs(house_pos) do 
+			if i[5] == pickup then
+				local result = sqlite( "SELECT * FROM house_db WHERE number = '"..k.."'" )
 				sendMessage(playerid, " ", yellow)
 
-				local s_sql = select_sqlite(25, v["number"])
+				local s_sql = select_sqlite(25, result[1]["number"])
 				if s_sql then
 					sendMessage(playerid, "Владелец дома "..s_sql, yellow)
 				else
 					sendMessage(playerid, "Владелец дома нету", yellow)
 				end
 
-				if search_inv_player(playerid, 25, v["number"]) ~= 0 then
-					sendMessage(playerid, "Налог дома оплачен на "..v["nalog"].." дней", yellow)
+				if search_inv_player(playerid, 25, result[1]["number"]) ~= 0 then
+					sendMessage(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней", yellow)
 				end
 				return
 			end
@@ -4428,6 +4430,13 @@ function pickupUse( playerid )
 			if isPointInCircle3D(v[6],v[7],v[8], x,y,z, v[12]) then
 				sendMessage(playerid, " ", yellow)
 				sendMessage(playerid, v[2], yellow)
+				return
+			end
+		end
+
+		for k,v in pairs(interior_job_pickup) do
+			if pickup == v[1] then
+				setElementPosition(playerid, v[2][1],v[2][2],v[2][3])
 				return
 			end
 		end
@@ -4455,20 +4464,8 @@ function pickupUse( playerid )
 				else
 					sendMessage(playerid, "[ERROR] Инвентарь полон", red)
 				end
-				break
+				return
 			end
-		end
-	end
-end
-addEventHandler( "onPickupUse", root, pickupUse )
-
-function pickedUpWeaponCheck( playerid )
-	local pickup = source
-
-	for k,v in pairs(interior_job_pickup) do
-		if pickup == v[1] then
-			setElementPosition(playerid, v[2][1],v[2][2],v[2][3])
-			break
 		end
 	end
 end
