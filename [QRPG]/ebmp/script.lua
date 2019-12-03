@@ -653,7 +653,7 @@ local harvest_time = {--время роста в минутах 1, защита 
 	[112] = {5, 1, 0, 811, 111},
 }
 for k,v in pairs(harvest_time) do
-	harvest_time[k][3] = split(tostring(v[1]*0.5), ".")[1]
+	harvest_time[k][3] = tonumber(split(tostring(v[1]*0.5), ".")[1])
 end
 local harvest_icon_complete = 2228
 
