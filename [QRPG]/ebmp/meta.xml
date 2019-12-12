@@ -9,16 +9,16 @@
 	<include resource="vozle_merii_app"/>
 	<include resource="dff_and_txd"/>
 	<include resource="map_gta"/>
-	
+	<include resource="dff_and_txd"/>
 	-->
 	
 	
 	<script src="script.lua" type="server"/>
+	<script src="job.lua" type="server"/>
 	<script src="client_pos.lua" type="client"/>
 	<script src="script_client.lua" type="client"/>
 	<script src="tablet.lua" type="client"/>
 	<script src="menu_m2.lua" type="client"/>
-
 	
 	<include resource="bone_attach"/>
 	<include resource="parachute"/>
@@ -30,6 +30,68 @@
 	<file src="other/upgrades_car.txt"/>
 	<file src="other/color_car.png"/>
 	<file src="other/vehicles_pos.txt"/>
+
+	<settings>
+		<!--законы-->
+		<setting name="zakon_alcohol" value="[1]"/>
+		<setting name="zakon_alcohol_crimes" value="[1]"/>
+		<setting name="zakon_drugs" value="[10]"/>
+		<setting name="zakon_drugs_crimes" value="[1]"/>
+		<setting name="zakon_kill_crimes" value="[1]"/>
+		<setting name="zakon_robbery_crimes" value="[1]"/>
+		<setting name="zakon_65_crimes" value="[1]"/>
+		<setting name="zakon_66_crimes" value="[1]"/>
+		<setting name="zakon_car_theft_crimes" value="[1]"/>
+		<setting name="zakon_nalog_car" value="[500]"/>
+		<setting name="zakon_nalog_house" value="[1000]"/>
+		<setting name="zakon_nalog_business" value="[2000]"/>
+		<setting name="zakon_price_house" value="[300000]"/>
+		<setting name="zakon_price_business" value="[300000]"/>
+
+		<setting name="earth_true" value="[true]"/><!--очищать ли землю-->
+		<setting name="me_radius" value="[10]"/><!--радиус отображения действий игрока в чате-->
+		<setting name="max_inv" value="[23]"/><!--слоты инв-ря-->
+		<setting name="max_fuel" value="[50]"/><!--объем бака авто-->
+		<setting name="max_blip" value="[250]"/><!--радиус блипов-->
+		<setting name="house_bussiness_radius" value="[1]"/><!--радиус размещения бизнесов и домов-->
+		<setting name="max_heal" value="[200]"/><!--макс здоровье игрока-->
+		<setting name="house_icon" value="[1273]"/><!--пикап дома-->
+		<setting name="business_icon" value="[1274]"/><!--пикап бизнеса-->
+		<setting name="job_icon" value="[1318]"/><!--пикап работ-->
+		<setting name="price_hotel" value="[100]"/><!--цена в отеле-->
+		<setting name="crimes_giuseppe" value="[25]"/><!--прес-ия для джузеппе-->
+		<setting name="crimes_capture" value="[50]"/><!--прес-ия для захвата-->
+		<setting name="crimes_kill" value="[50]"/><!--прес-ия для киллера-->
+		<setting name="car_theft_time" value="[10]"/><!--время для угона-->
+		<setting name="day_nalog" value="[7]"/><!--кол-во дней для оплаты налога-->
+		<setting name="police_chanel" value="[1]"/><!--канал копов-->
+		<setting name="admin_chanel" value="[2]"/><!--канал админов-->
+		<setting name="car_stage_coef" value="[0.33]"/><!--коэф-нт прокачки двигла-->
+		<setting name="update_db_rang" value="[2]"/><!--ранг основателя-->
+		<!--вместимость складов бизнесов-->
+		<setting name="max_business" value="[100]"/>
+		<setting name="max_cf" value="[1000]"/>
+
+		<!--зарплаты-->
+		<setting name="zp_player_taxi" value="[2500]"/>
+		<setting name="zp_player_plane" value="[2000]"/>
+		<setting name="zp_player_sas" value="[200]"/>
+		<setting name="zp_player_medic" value="[5000]"/>
+		<setting name="zp_player_fire" value="[5000]"/>
+		<setting name="zp_player_police" value="[5000]"/>
+		<setting name="zp_player_busdriver" value="[12000]"/>
+		<setting name="money_guns_zone" value="[5000]"/>
+		<setting name="money_guns_zone_business" value="[1000]"/>
+		<setting name="zp_player_ferm" value="[100]"/>
+		<setting name="zp_player_ferm_etap" value="[10000]"/>
+		<setting name="zp_player_bamby" value="[5000]"/>
+		<setting name="zp_player_box" value="[5000]"/>
+		<setting name="zp_player_police_car" value="[5000]"/>
+		<setting name="zp_player_rescuer" value="[5000]"/>
+		<setting name="zp_player_kill" value="[5000]"/>
+		<setting name="zp_loto" value="[10000]"/>
+
+	</settings>
 
 	<!--худ-->
 	<file src="hud/alcohol.png"/>

@@ -72,21 +72,26 @@ local commandsadm = {
 }
 
 ----цвета----
-local color_tips = {168,228,160}--бабушкины яблоки
-local yellow = {255,255,0}--желтый
-local red = {255,0,0}--красный
-local blue = {0,150,255}--синий
-local white = {255,255,255}--белый
-local green = {0,255,0}--зеленый
-local turquoise = {0,255,255}--бирюзовый
-local orange = {255,100,0}--оранжевый
-local pink = {255,100,255}--розовый
-local lyme = {130,255,0}--лайм админский цвет
-local svetlo_zolotoy = {255,255,130}--светло-золотой
-local crimson = {220,20,60}--малиновый
-local purple = {175,0,255}--фиолетовый
-local gray = {150,150,150}--серый
-local green_rc = {115,180,97}--темно зеленый
+local color_mes = {
+	color_tips = {168,228,160},--бабушкины яблоки
+	yellow = {255,255,0},--желтый
+	red = {255,0,0},--красный
+	red_try = {200,0,0},--красный
+	blue = {0,150,255},--синий
+	white = {255,255,255},--белый
+	green = {0,255,0},--зеленый
+	green_try = {0,200,0},--зеленый
+	turquoise = {0,255,255},--бирюзовый
+	orange = {255,100,0},--оранжевый
+	orange_do = {255,150,0},--оранжевый do
+	pink = {255,100,255},--розовый
+	lyme = {130,255,0},--лайм админский цвет
+	svetlo_zolotoy = {255,255,130},--светло-золотой
+	crimson = {220,20,60},--малиновый
+	purple = {175,0,255},--фиолетовый
+	gray = {150,150,150},--серый
+	green_rc = {115,180,97},--темно зеленый
+}
 
 addEventHandler( "onClientResourceStart", resourceRoot,
 function ( startedRes )
@@ -168,14 +173,14 @@ function tablet_fun()--создание планшета
 			local text1 = guiGetText(dist)
 				
 			if text1 == "" then
-				sendMessage("[ERROR] Вы ничего не написали", red)
+				sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 				return
 			elseif not tonumber(text1) then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			end
 
-			sendMessage("Настройки сохранены", yellow)
+			sendMessage("Настройки сохранены", color_mes.yellow)
 
 			setFarClipDistance(tonumber(text1))
 
@@ -228,7 +233,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendMessage("[ERROR] Вы не выбрали предмет", red)
+					sendMessage("[ERROR] Вы не выбрали предмет", color_mes.red)
 					return
 				end
 				
@@ -240,7 +245,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 				if text == "" then
-					sendMessage("[ERROR] Вы не выбрали предмет", red)
+					sendMessage("[ERROR] Вы не выбрали предмет", color_mes.red)
 					return
 				end
 
@@ -358,7 +363,7 @@ function tablet_fun()--создание планшета
 					if text ~= "" then
 						loadBrowserURL(theBrowser, text)
 					else
-						sendMessage("[ERROR] URL пуст", red)
+						sendMessage("[ERROR] URL пуст", color_mes.red)
 					end
 
 				elseif source == home then
@@ -464,7 +469,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendMessage("[ERROR] Вы не выбрали предмет", red)
+				sendMessage("[ERROR] Вы не выбрали предмет", color_mes.red)
 				return
 			end
 
@@ -504,7 +509,7 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 
 			if text == "" then
-				sendMessage("[ERROR] Вы не выбрали т/с", red)
+				sendMessage("[ERROR] Вы не выбрали т/с", color_mes.red)
 				return
 			end
 
@@ -573,12 +578,12 @@ function tablet_fun()--создание планшета
 				local text2 = tonumber(guiGetText ( edit ))
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
 				if not text2 then
-					sendMessage("[ERROR] Введите число в белое поле", red)
+					sendMessage("[ERROR] Введите число в белое поле", color_mes.red)
 					return
 				end
 
@@ -624,7 +629,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
@@ -661,7 +666,7 @@ function tablet_fun()--создание планшета
 		function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 			guiGridListClear(shoplist)
 			for k,v in pairs(getElementsByType("player")) do
-				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id"), getPlayerName(v), getElementData(v, "crimes_data"))
 				local r,g,b = getPlayerNametagColor(localPlayer)
 				guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 			end
@@ -672,7 +677,7 @@ function tablet_fun()--создание планшета
 		guiGridListAddColumn(shoplist, "Ник", 0.7)
 		guiGridListAddColumn(shoplist, "ОП", 0.1)
 		for k,v in pairs(getElementsByType("player")) do
-			local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+			local row = guiGridListAddRow(shoplist, getElementData(v, "player_id"), getPlayerName(v), getElementData(v, "crimes_data"))
 			local r,g,b = getPlayerNametagColor(localPlayer)
 			guiGridListSetItemColor ( shoplist, row,2, r,g,b)
 		end
@@ -682,7 +687,7 @@ function tablet_fun()--создание планшета
 
 	function outputEditBox( button, state, absoluteX, absoluteY )--админ панель
 		if getElementData(localPlayer, "admin_data") ~= 1 then
-			sendMessage("[ERROR] Вы не админ", red)
+			sendMessage("[ERROR] Вы не админ", color_mes.red)
 			return
 		end
 
@@ -713,7 +718,7 @@ function tablet_fun()--создание планшета
 			local res_t = 2
 
 			triggerServerEvent("event_restartResource", resourceRoot)
-			triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] начал скачивание лога")
+			triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] начал скачивание лога")
 
 			setTimer(function()
 				triggerEvent("event_download", root)
@@ -721,7 +726,7 @@ function tablet_fun()--создание планшета
 
 			function onDownloadFinish ( file, success )
 				if file == "save_sqlite.sql" then
-					triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] скачал лог сервера")
+					triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] скачал лог сервера")
 				end
 			end
 			addEventHandler ( "onClientFileDownloadComplete", root, onDownloadFinish )
@@ -746,7 +751,7 @@ function tablet_fun()--создание планшета
 			function outputEditBox ( button, state, absoluteX, absoluteY )--обновить
 				guiGridListClear(shoplist)
 				for k,v in pairs(getElementsByType("player")) do
-					local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+					local row = guiGridListAddRow(shoplist, getElementData(v, "player_id"), getPlayerName(v), getElementData(v, "crimes_data"))
 					local r,g,b = getPlayerNametagColor(localPlayer)
 					guiGridListSetItemColor (shoplist, row,2, r,g,b)
 				end
@@ -758,16 +763,16 @@ function tablet_fun()--создание планшета
 				local id,player = getPlayerId(text)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				elseif not id then
-					sendMessage("[ERROR] Такого игрока нет", red)
+					sendMessage("[ERROR] Такого игрока нет", color_mes.red)
 					return
 				end
 
 				local x,y,z = getElementPosition(player)
 				setElementPosition(localPlayer, x,y,z)
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] телепортировался к "..id.." ["..getElementData(player, "player_id")[1].."]")
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] телепортировался к "..id.." ["..getElementData(player, "player_id").."]")
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -776,10 +781,10 @@ function tablet_fun()--создание планшета
 				local id,player = getPlayerId(text)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				elseif not id then
-					sendMessage("[ERROR] Такого игрока нет", red)
+					sendMessage("[ERROR] Такого игрока нет", color_mes.red)
 					return
 				end
 
@@ -791,7 +796,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "Ник", 0.7)
 			guiGridListAddColumn(shoplist, "ОП", 0.1)
 			for k,v in pairs(getElementsByType("player")) do
-				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id")[1], getPlayerName(v), getElementData(v, "crimes_data"))
+				local row = guiGridListAddRow(shoplist, getElementData(v, "player_id"), getPlayerName(v), getElementData(v, "crimes_data"))
 				local r,g,b = getPlayerNametagColor(localPlayer)
 				guiGridListSetItemColor (shoplist, row,2, r,g,b)
 			end
@@ -823,13 +828,13 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
 				local name,x,y,z = getElementData(resourceRoot, "interior_job")[tonumber(text)][2],getElementData(resourceRoot, "interior_job")[tonumber(text)][6],getElementData(resourceRoot, "interior_job")[tonumber(text)][7],getElementData(resourceRoot, "interior_job")[tonumber(text)][8]
 				setElementPosition(localPlayer, x,y,z)
-				sendMessage("Вы телепортировались к "..name, lyme)
+				sendMessage("Вы телепортировались к "..name, color_mes.lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -889,18 +894,18 @@ function tablet_fun()--создание планшета
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
 				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
-					sendMessage("[ERROR] Вы не админ", red)
+					sendMessage("[ERROR] Вы не админ", color_mes.red)
 					return
 				end
 
 				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не написали", red)
+					sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -910,13 +915,13 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
 				local x,y,z = getElementData(localPlayer, "house_db")[tonumber(text)]["x"],getElementData(localPlayer, "house_db")[tonumber(text)]["y"],getElementData(localPlayer, "house_db")[tonumber(text)]["z"]
 				setElementPosition(localPlayer, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." дому", lyme)
+				sendMessage("Вы телепортировались к "..text.." дому", color_mes.lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -964,18 +969,18 @@ function tablet_fun()--создание планшета
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
 				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
-					sendMessage("[ERROR] Вы не админ", red)
+					sendMessage("[ERROR] Вы не админ", color_mes.red)
 					return
 				end
 
 				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не написали", red)
+					sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -985,13 +990,13 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
 				local x,y,z = getElementData(localPlayer, "business_db")[tonumber(text)]["x"],getElementData(localPlayer, "business_db")[tonumber(text)]["y"],getElementData(localPlayer, "business_db")[tonumber(text)]["z"]
 				setElementPosition(localPlayer, x,y,z)
-				sendMessage("Вы телепортировались к "..text.." бизнесу", lyme)
+				sendMessage("Вы телепортировались к "..text.." бизнесу", color_mes.lyme)
 			end
 			addEventHandler ( "onClientGUIClick", complete_button, complete, false )
 
@@ -1040,18 +1045,18 @@ function tablet_fun()--создание планшета
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
 				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
-					sendMessage("[ERROR] Вы не админ", red)
+					sendMessage("[ERROR] Вы не админ", color_mes.red)
 					return
 				end
 
 				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не написали", red)
+					sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1101,7 +1106,7 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
@@ -1112,7 +1117,7 @@ function tablet_fun()--создание планшета
 
 				triggerServerEvent("event_destroyElement", resourceRoot, vehicleid)
 				triggerServerEvent("event_car_spawn", resourceRoot, text)
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] пересоздал т/с под номером "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] пересоздал т/с под номером "..text)
 			end
 			addEventHandler ( "onClientGUIClick", refresh_car, outputEditBox, false )
 
@@ -1130,18 +1135,18 @@ function tablet_fun()--создание планшета
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
 				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
-					sendMessage("[ERROR] Вы не админ", red)
+					sendMessage("[ERROR] Вы не админ", color_mes.red)
 					return
 				end
 
 				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не написали", red)
+					sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1151,13 +1156,13 @@ function tablet_fun()--создание планшета
 				local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не выбрали", red)
+					sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 					return
 				end
 
 				local vehicleid = getVehicleidFromPlate( text )
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] убрал т/с под номером "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] убрал т/с под номером "..text)
 
 				triggerServerEvent("event_setElementDimension", resourceRoot, vehicleid, 1)
 			end
@@ -1218,18 +1223,18 @@ function tablet_fun()--создание планшета
 
 			function complete ( button, state, absoluteX, absoluteY )--update_db
 				if getElementData(localPlayer, "admin_data") ~= update_db_rang then
-					sendMessage("[ERROR] Вы не админ", red)
+					sendMessage("[ERROR] Вы не админ", color_mes.red)
 					return
 				end
 
 				local text = guiGetText(edit)
 				
 				if text == "" then
-					sendMessage("[ERROR] Вы ничего не написали", red)
+					sendMessage("[ERROR] Вы ничего не написали", color_mes.red)
 					return
 				end
 
-				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id")[1].."] выполнил запрос "..text)
+				triggerServerEvent("event_admin_chat", resourceRoot, localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] выполнил запрос "..text)
 
 				triggerServerEvent("event_sqlite", resourceRoot, text)
 			end
@@ -1282,7 +1287,7 @@ function tablet_fun()--создание планшета
 							local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(localPlayer, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 						
 							for i=1,guiGridListGetColumnCount (shoplist) do
-								guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+								guiGridListSetItemColor ( shoplist, r,i, color_mes.green[1], color_mes.green[2], color_mes.green[3])
 							end
 						else
 							guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
@@ -1297,29 +1302,29 @@ function tablet_fun()--создание планшета
 			local text = guiGridListGetItemText ( shoplist, guiGridListGetSelectedItem ( shoplist ) )
 				
 			if text == "" then
-				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 				return
 			end
 
 			for k,v in pairs(getElementData(localPlayer, "quest_table")[tonumber(text)][8]) do
 				if v == getPlayerName(localPlayer) then
-					sendMessage("[ERROR] Вы выполнили этот квест", red)
+					sendMessage("[ERROR] Вы выполнили этот квест", color_mes.red)
 					return
 				end
 			end
 
 			for i=0,guiGridListGetRowCount (shoplist) do
 				for j=1,guiGridListGetColumnCount (shoplist) do
-					guiGridListSetItemColor ( shoplist, i,j, white[1], white[2], white[3])
+					guiGridListSetItemColor ( shoplist, i,j, color_mes.white[1], color_mes.white[2], color_mes.white[3])
 				end
 			end
 
 			local r,c = guiGridListGetSelectedItem ( shoplist )
 			for i=1,guiGridListGetColumnCount (shoplist) do
-				guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+				guiGridListSetItemColor ( shoplist, r,i, color_mes.green[1], color_mes.green[2], color_mes.green[3])
 			end
 
-			sendMessage("Вы взяли квест "..getElementData(localPlayer, "quest_table")[tonumber(text)][1], yellow)
+			sendMessage("Вы взяли квест "..getElementData(localPlayer, "quest_table")[tonumber(text)][1], color_mes.yellow)
 
 			setElementData(localPlayer, "quest_select", text..":0")
 		end
@@ -1344,7 +1349,7 @@ function tablet_fun()--создание планшета
 					local r = guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], split(getElementData(localPlayer, "quest_select"), ":")[2].."/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
 					
 					for i=1,guiGridListGetColumnCount (shoplist) do
-						guiGridListSetItemColor ( shoplist, r,i, green[1], green[2], green[3])
+						guiGridListSetItemColor ( shoplist, r,i, color_mes.green[1], color_mes.green[2], color_mes.green[3])
 					end
 				else
 					guiGridListAddRow(shoplist, k, v[1], v[2]..v[3]..v[4], "0/"..v[3], v[6], info_png[ v[7][1] ][1].." "..v[7][2].." "..info_png[ v[7][1] ][2])
@@ -1385,16 +1390,16 @@ function tablet_fun()--создание планшета
 			local cash = tonumber(text)
 				
 			if text == "" then
-				sendMessage("[ERROR] Укажите ставку", red)
+				sendMessage("[ERROR] Укажите ставку", color_mes.red)
 				return
 			elseif not cash then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			elseif cash < 1 then
-				sendMessage("[ERROR] Число меньше 1", red)
+				sendMessage("[ERROR] Число меньше 1", color_mes.red)
 				return
 			elseif start then
-				sendMessage("[ERROR] Вы играете", red)
+				sendMessage("[ERROR] Вы играете", color_mes.red)
 				return
 			end
 
@@ -1450,7 +1455,7 @@ function tablet_fun()--создание планшета
 		radiobutton_table[1][5],radiobutton_table[2][5],radiobutton_table[3][5],radiobutton_table[4][5] = m2gui_label ( 526, 213, 100, 15, "себе", false, low_fon ), false, "0", guiCreateStaticImage( 526, 233, 100, 100, "comp/card/cd1c.png", false, low_fon )
 
 		for i=1,count_card do
-			guiLabelSetColor(radiobutton_table[1][i], gray[1], gray[2], gray[3])
+			guiLabelSetColor(radiobutton_table[1][i], color_mes.gray[1], color_mes.gray[2], color_mes.gray[3])
 			guiSetEnabled ( radiobutton_table[4][i], false )
 		end
 
@@ -1474,10 +1479,10 @@ function tablet_fun()--создание планшета
 					if v == source then
 						if radiobutton_table[2][k] then
 							radiobutton_table[2][k] = false
-							guiLabelSetColor(radiobutton_table[1][i], green[1], green[2], green[3])
+							guiLabelSetColor(radiobutton_table[1][i], color_mes.green[1], color_mes.green[2], color_mes.green[3])
 						else
 							radiobutton_table[2][k] = true
-							guiLabelSetColor(radiobutton_table[1][i], red[1], red[2], red[3])
+							guiLabelSetColor(radiobutton_table[1][i], color_mes.red[1], color_mes.red[2], color_mes.red[3])
 						end
 					end
 				end
@@ -1490,13 +1495,13 @@ function tablet_fun()--создание планшета
 			local cash = tonumber(text)
 				
 			if text == "" then
-				sendMessage("[ERROR] Укажите ставку", red)
+				sendMessage("[ERROR] Укажите ставку", color_mes.red)
 				return
 			elseif not cash then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			elseif cash < 1 then
-				sendMessage("[ERROR] Число меньше 1", red)
+				sendMessage("[ERROR] Число меньше 1", color_mes.red)
 				return
 			end
 
@@ -1509,14 +1514,14 @@ function tablet_fun()--создание планшета
 				end
 
 				if coef == "" then
-					sendMessage("[ERROR] Вы не выбрали коэффициент", red)
+					sendMessage("[ERROR] Вы не выбрали коэффициент", color_mes.red)
 					return
 				end
 
 				count,token,money = 2,tonumber(guiGetText(edit))/tonumber(coef),tonumber(guiGetText(edit))
 
 				for i=1,count_card do
-					guiLabelSetColor(radiobutton_table[1][i], green[1], green[2], green[3])
+					guiLabelSetColor(radiobutton_table[1][i], color_mes.green[1], color_mes.green[2], color_mes.green[3])
 					guiSetEnabled ( radiobutton_table[4][i], true )
 				end
 
@@ -1583,7 +1588,7 @@ function tablet_fun()--создание планшета
 				radiobutton_table[2][5],radiobutton_table[3][5] = false, "0"
 
 				for i=1,count_card do
-					guiLabelSetColor(radiobutton_table[1][i], gray[1], gray[2], gray[3])
+					guiLabelSetColor(radiobutton_table[1][i], color_mes.gray[1], color_mes.gray[2], color_mes.gray[3])
 					guiSetEnabled ( radiobutton_table[4][i], false )
 				end
 			end
@@ -1649,7 +1654,7 @@ function tablet_fun()--создание планшета
 		for k,v in pairs(roulette_game) do
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				if start then
-					sendMessage("[ERROR] Вы играете", red)
+					sendMessage("[ERROR] Вы играете", color_mes.red)
 					return
 				end
 				
@@ -1664,19 +1669,19 @@ function tablet_fun()--создание планшета
 			local cash = tonumber(text)
 				
 			if text == "" then
-				sendMessage("[ERROR] Укажите ставку", red)
+				sendMessage("[ERROR] Укажите ставку", color_mes.red)
 				return
 			elseif id == "" then
-				sendMessage("[ERROR] Вы не сделали ставку", red)
+				sendMessage("[ERROR] Вы не сделали ставку", color_mes.red)
 				return
 			elseif not cash then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			elseif cash < 1 then
-				sendMessage("[ERROR] Число меньше 1", red)
+				sendMessage("[ERROR] Число меньше 1", color_mes.red)
 				return
 			elseif start then
-				sendMessage("[ERROR] Вы играете", red)
+				sendMessage("[ERROR] Вы играете", color_mes.red)
 				return
 			end
 
@@ -1784,19 +1789,19 @@ function tablet_fun()--создание планшета
 			end
 
 			if horse_player == 0 then
-				sendMessage("[ERROR] Вы не выбрали лошадь", red)
+				sendMessage("[ERROR] Вы не выбрали лошадь", color_mes.red)
 				return	
 			elseif text == "" then
-				sendMessage("[ERROR] Укажите ставку", red)
+				sendMessage("[ERROR] Укажите ставку", color_mes.red)
 				return
 			elseif not cash then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			elseif cash < 1 then
-				sendMessage("[ERROR] Число меньше 1", red)
+				sendMessage("[ERROR] Число меньше 1", color_mes.red)
 				return
 			elseif start then
-				sendMessage("[ERROR] Вы играете", red)
+				sendMessage("[ERROR] Вы играете", color_mes.red)
 				return
 			end
 
@@ -1885,7 +1890,7 @@ function tablet_fun()--создание планшета
 		for k,v in pairs(fortune_game) do
 			function outputEditBox ( button, state, absoluteX, absoluteY )
 				if start then
-					sendMessage("[ERROR] Вы играете", red)
+					sendMessage("[ERROR] Вы играете", color_mes.red)
 					return
 				end
 				
@@ -1905,19 +1910,19 @@ function tablet_fun()--создание планшета
 			local cash = tonumber(text)
 				
 			if text == "" then
-				sendMessage("[ERROR] Укажите ставку", red)
+				sendMessage("[ERROR] Укажите ставку", color_mes.red)
 				return
 			elseif id == 0 then
-				sendMessage("[ERROR] Вы не сделали ставку", red)
+				sendMessage("[ERROR] Вы не сделали ставку", color_mes.red)
 				return
 			elseif not cash then
-				sendMessage("[ERROR] Укажите число", red)
+				sendMessage("[ERROR] Укажите число", color_mes.red)
 				return
 			elseif cash < 1 then
-				sendMessage("[ERROR] Число меньше 1", red)
+				sendMessage("[ERROR] Число меньше 1", color_mes.red)
 				return
 			elseif start then
-				sendMessage("[ERROR] Вы играете", red)
+				sendMessage("[ERROR] Вы играете", color_mes.red)
 				return
 			end
 
@@ -1986,10 +1991,10 @@ function tablet_fun()--создание планшета
 			local text2 = tonumber(guiGetText ( edit ))
 				
 			if text == "" then
-				sendMessage("[ERROR] Вы ничего не выбрали", red)
+				sendMessage("[ERROR] Вы ничего не выбрали", color_mes.red)
 				return
 			elseif not text2 then
-				sendMessage("[ERROR] Введите число в белое поле", red)
+				sendMessage("[ERROR] Введите число в белое поле", color_mes.red)
 				return
 			end
 
