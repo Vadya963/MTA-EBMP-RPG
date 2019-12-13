@@ -3809,10 +3809,10 @@ function displayLoadedRes ( res )--старт ресурсов
 	setElementData(resourceRoot, "harvest", harvest)
 	setElementData(resourceRoot, "update_db_rang", get("update_db_rang"))
 	setElementData(resourceRoot, "hospital_spawn", hospital_spawn)
-	setElementData(resourceRoot, "down_car_subject_pos", down_car_subject_pos)
 	setElementData(resourceRoot, "color_mes", color_mes)
 	setElementData(resourceRoot, "weapon", weapon)
 	setElementData(resourceRoot, "up_car_subject", up_car_subject)
+	setElementData(resourceRoot, "down_car_subject_pos", down_car_subject_pos)
 	setElementData(resourceRoot, "up_player_subject", up_player_subject)
 	setElementData(resourceRoot, "down_player_subject", down_player_subject)
 end
