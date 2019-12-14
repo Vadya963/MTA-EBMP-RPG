@@ -5378,7 +5378,7 @@ function inv_server_load (playerid, value, id3, id1, id2, tabpanel)--измен�
 		array_player_1[playername][id3+1] = id1
 		array_player_2[playername][id3+1] = id2
 
-		if id3+1 < get("max_inv")+max_inv_additional+1 then
+		if id3+1 < get("max_inv")+2 then
 			setPlayerNametagColor_fun( playerid )
 			sqlite_load(playerid, "cow_farms_table1")
 			sqlite_load(playerid, "business_table")
