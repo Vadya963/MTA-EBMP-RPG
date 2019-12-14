@@ -192,12 +192,12 @@ local job_object = {}--создан ли объект, 0-нет
 local job_vehicle = {}--позиция авто
 
 function displayLoadedRes ( res )--старт ресурсов
-	for i=1,50 do
+	--[[for i=1,50 do
 		local x,y,z = math.random(-1189,-1007), math.random(-1061,-916), 129.51875
 		local obj = createObject(16442, x,y,z, 0,0,math.random(0,360))
 		setObjectScale (obj, 0.7)
 		korovi_pos[i] = {x,y,z}
-	end
+	end]]
 
 	color_mes = getElementData(resourceRoot, "color_mes")
 end
