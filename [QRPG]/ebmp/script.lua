@@ -4481,8 +4481,20 @@ function buycar ( playerid, id )
 	end
 
 	if id >= 400 and id <= 611 then
-		local result = sqlite( "SELECT COUNT() FROM car_db" )
-		local number = result[1]["COUNT()"]+1
+		local number = 0
+		local randomize = random(1,99999999)
+		local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..randomize.."'" )
+
+		while true do
+			if result[1]["COUNT()"] == 0 then
+				number = randomize
+				break
+			else
+				randomize = random(1,99999999)
+				result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..randomize.."'" )
+			end
+		end
+
 		local val1, val2 = 6, number
 
 		if isPointInCircle3D(t_s_salon[1][1],t_s_salon[1][2],t_s_salon[1][3], x1,y1,z1, 5) then
