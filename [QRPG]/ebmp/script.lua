@@ -968,7 +968,7 @@ local cash_car = {
 	[445] = {"ADMIRAL", 35000},
 	[451] = {"TURISMO", 95000},
 	[455] = {"FLATBED", 10000},--пустой грузовик
-	[456] = {"YANKEE", 5000},--грузовик
+	--[456] = {"YANKEE", 5000},--грузовик
 	--[457] = {"CADDY", 9000},--гольфкар
 	[458] = {"SOLAIR", 18000},
 	[459] = {"TOPFUN", 20000},--грузовик с игру-ми машинами
@@ -2317,6 +2317,7 @@ function rental_car(playerid, job)
 		[3] = {428, 1000},
 		[4] = {453, 1000},
 		[5] = {593, 1000},
+		[7] = {456, 1000},
 		[8] = {428, 1000},
 		[9] = {437, 1000},
 		[10] = {416, 1000},
@@ -6335,6 +6336,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 					me_chat(playerid, playername.." закончил(а) работу")
 				end
+			elseif id2 == 7 then
+				if job[playername] == 0 then
+					job[playername] = id2
+
+					me_chat(playerid, playername.." вышел(ла) на работу Дальнобойщик")
+				else
+					job[playername] = 0
+
+					me_chat(playerid, playername.." закончил(а) работу")
+				end
 			elseif id2 == 8 then
 				if crimes[playername] ~= 0 then
 					sendMessage(playerid, "[ERROR] У вас плохая репутация", color_mes.red)
@@ -6735,7 +6746,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 		elseif id1 == 87 then--лиц. забойщика
 			if job[playername] == 0 then
-				job[playername] = 7
+				job[playername] = 21
 
 				setElementData(playerid, "job_player", job[playername])
 				job_timer2(playerid)

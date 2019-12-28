@@ -657,53 +657,8 @@ local table_job = {
 				end
 	end,
 
-	[7] = function(playerid,playername)--забойщик скота
-		local vehicleid = getPlayerVehicle(playerid)
-		local x,y,z = getElementPosition(playerid)
-		if job_call[playername] == 0 then
-					job_call[playername] = 1
-					local randomize = random(1,#korovi_pos)
+	[7] = function(playerid,playername)--дальнобойщик
 
-					sendMessage(playerid, "Убейте корову", color_mes.yellow)
-
-					job_pos[playername] = {korovi_pos[randomize][1],korovi_pos[randomize][2],korovi_pos[randomize][3]-1}
-					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, 0, 16383.0, playerid )
-					job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, playerid )
-
-				elseif job_call[playername] == 1 then
-					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
-
-					if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and result[1] and getPedWeapon(playerid) == getElementData(resourceRoot, "weapon")[38][2] then
-						if result[1]["warehouse"] < get("max_cf") and result[1]["money"] >= result[1]["price"] and result[1]["nalog"] ~= 0 and result[1]["prod"] ~= 0 then
-							local randomize = result[1]["price"]
-
-							job_call[playername] = 2
-
-							setPedAnimation(playerid, "knife", "knife_3", -1, true, false, false, false)
-
-							setTimer(function ()
-								if isElement(playerid) then
-									setPedAnimation(playerid, nil, nil)
-								end
-							end, (10*1000), 1)
-
-							sqlite( "UPDATE cow_farms_db SET warehouse = warehouse + '1', prod = prod - '1', money = money - '"..randomize.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
-
-							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
-
-							sendMessage(playerid, "Вы получили "..randomize.."$", color_mes.green)
-						end
-					end
-
-				elseif job_call[playername] == 2 then
-					destroyElement(job_blip[playername])
-					destroyElement(job_marker[playername])
-
-					job_blip[playername] = 0
-					job_marker[playername] = 0
-					job_pos[playername] = 0
-					job_call[playername] = 0
-				end
 	end,
 
 	[8] = function(playerid,playername)--работа перевозчика оружия
@@ -1649,6 +1604,55 @@ local table_job = {
 							end
 						end
 					end
+				end
+	end,
+
+	[21] = function(playerid,playername)--забойщик скота
+		local vehicleid = getPlayerVehicle(playerid)
+		local x,y,z = getElementPosition(playerid)
+		if job_call[playername] == 0 then
+					job_call[playername] = 1
+					local randomize = random(1,#korovi_pos)
+
+					sendMessage(playerid, "Убейте корову", color_mes.yellow)
+
+					job_pos[playername] = {korovi_pos[randomize][1],korovi_pos[randomize][2],korovi_pos[randomize][3]-1}
+					job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, 0, 16383.0, playerid )
+					job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, playerid )
+
+				elseif job_call[playername] == 1 then
+					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+
+					if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and result[1] and getPedWeapon(playerid) == getElementData(resourceRoot, "weapon")[38][2] then
+						if result[1]["warehouse"] < get("max_cf") and result[1]["money"] >= result[1]["price"] and result[1]["nalog"] ~= 0 and result[1]["prod"] ~= 0 then
+							local randomize = result[1]["price"]
+
+							job_call[playername] = 2
+
+							setPedAnimation(playerid, "knife", "knife_3", -1, true, false, false, false)
+
+							setTimer(function ()
+								if isElement(playerid) then
+									setPedAnimation(playerid, nil, nil)
+								end
+							end, (10*1000), 1)
+
+							sqlite( "UPDATE cow_farms_db SET warehouse = warehouse + '1', prod = prod - '1', money = money - '"..randomize.."' WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
+
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
+
+							sendMessage(playerid, "Вы получили "..randomize.."$", color_mes.green)
+						end
+					end
+
+				elseif job_call[playername] == 2 then
+					destroyElement(job_blip[playername])
+					destroyElement(job_marker[playername])
+
+					job_blip[playername] = 0
+					job_marker[playername] = 0
+					job_pos[playername] = 0
+					job_call[playername] = 0
 				end
 	end,
 }
