@@ -17,7 +17,7 @@ function ( startedRes )
 	bindKey ( "F2", "down", showdebuginfo_b )
 	bindKey ( "F3", "down", menu_mafia_2 )
 	bindKey ( "F11", "down", showdebuginfo_b )
-	bindKey( "vehicle_fire", "down", toggleNOS )
+	--bindKey( "vehicle_fire", "down", toggleNOS )
 
 	info_png = getElementData(resourceRoot, "info_png")
 	color_mes = getElementData(resourceRoot, "color_mes")

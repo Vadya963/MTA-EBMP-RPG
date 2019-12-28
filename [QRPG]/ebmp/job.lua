@@ -955,6 +955,7 @@ local table_job = {
 									job_vehicle[playername] = vehicleid
 
 									setElementFrozen(vehicleid, true)
+									setVehicleDamageProof(vehicleid, true)
 									sendMessage(playerid, "Возгорание т/с", color_mes.yellow)
 								else
 									sendMessage(playerid, "Возгорание здания", color_mes.yellow)
@@ -1490,7 +1491,7 @@ local table_job = {
 						if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5.0) then
 							local randomize = random(get("zp_player_police_car")/2,get("zp_player_police_car"))
 
-							inv_player_delet(playerid, 109, job_call[playername][2])
+							inv_player_delet(playerid, 109, job_call[playername][2], true)
 
 							sqlite( "UPDATE car_db SET theft = '0' WHERE number = '"..job_call[playername][2].."'")
 
@@ -1659,6 +1660,9 @@ function job_timer2 (playerid)
 end
 
 function job_0( playername )
+	local playerid = getPlayerFromName(playername)
+	local car_rental = getElementData(playerid, "car_rental")
+
 	if isTimer(timer_job[playername]) then
 		killTimer(timer_job[playername])
 	end
@@ -1685,7 +1689,20 @@ function job_0( playername )
 		destroyElement(job_vehicle[playername])
 	end
 
-	setElementData(getPlayerFromName(playername), "job_player", 0)
+	if car_rental then
+		local vehicleid = getVehicleidFromPlate( car_rental )
+
+		if vehicleid == getPlayerVehicle(playerid) then
+			removePedFromVehicle ( playerid )--антибаг
+		end
+
+		destroyElement(vehicleid)
+		inv_player_delet(playerid, 6, car_rental, true)
+		sqlite("DELETE FROM car_db WHERE number = '"..car_rental.."'")
+		setElementData(playerid, "car_rental", false)
+	end
+
+	setElementData(playerid, "job_player", 0)
 	job_pos[playername] = 0
 	job_call[playername] = 0
 	timer_job[playername] = 0
