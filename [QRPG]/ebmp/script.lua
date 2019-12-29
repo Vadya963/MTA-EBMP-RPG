@@ -9032,7 +9032,7 @@ function ( playerid )
 	end
 
 	for k,v in pairs(getElementsByType("player")) do
-		if(getVehiclePlateText(getPlayerVehicle(v)) == "0") and not isElementFrozen(getPlayerVehicle(v)) then
+		if getPlayerVehicle(v) and getVehiclePlateText(getPlayerVehicle(v)) == "0" and not isElementFrozen(getPlayerVehicle(v)) then
 			removePedFromVehicle(v)
 		end
 	end
