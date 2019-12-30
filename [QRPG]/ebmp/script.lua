@@ -1865,10 +1865,10 @@ function pay_money_gz()
 
 					if playerid and logged[playername] == 1 then
 						sendMessage(playerid, "Вы получили "..money_gz.."$ за удержание территорий", color_mes.green)
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money_gz, playername )
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money_gz, playername )
 
 						sendMessage(playerid, "Вы получили "..money_gzb.."$ за крышивание бизнесов", color_mes.green)
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money_gzb, playername )
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money_gzb, playername )
 					end
 				end
 			end
@@ -2094,7 +2094,7 @@ function robbery(playerid, zakon, money, x1,y1,z1, radius, text)
 
 				sendMessage(playerid, "Вы унесли "..cash.."$", color_mes.green )
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+cash, playername )
 			else
 				sendMessage(playerid, "[ERROR] Вы покинули место ограбления", color_mes.red)
 			end
@@ -2151,7 +2151,7 @@ end
 function player_hotel (playerid, id)
 	local playername = getPlayerName(playerid)
 
-	if ((get("price_hotel")) <= array_player_2[playername][1]) then
+	if ((get("price_hotel")) <= search_inv_player_2_parameter(playerid, 1)) then
 
 		local sleep_hygiene_plus = 100
 
@@ -2170,7 +2170,7 @@ function player_hotel (playerid, id)
 
 		sendMessage(playerid, "Вы заплатили "..(get("price_hotel")).."$", color_mes.orange )
 
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(get("price_hotel")), playerid )
+		inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(get("price_hotel")), playerid )
 					
 		return true
 
@@ -2289,7 +2289,7 @@ function quest_player(playerid, id)
 
 				setElementData(playerid, "quest_select", "0:0")
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+quest_table[quest][6], playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+quest_table[quest][6], playername )
 
 				sendMessage(playerid, "[QUEST] Вы получили "..quest_table[quest][6].."$", color_mes.green)
 
@@ -2330,7 +2330,7 @@ function rental_car(playerid, job)
 	}
 
 	if car[job] then
-		if car[job][2] > array_player_2[playername][1] then
+		if car[job][2] > search_inv_player_2_parameter(playerid, 1) then
 			sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 			return
 		end
@@ -2345,7 +2345,7 @@ function rental_car(playerid, job)
 
 		sendMessage(playerid, "Вы заплатили за аренду т/с "..car[job][2].."$", color_mes.yellow)
 
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-car[job][2], playername )
+		inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-car[job][2], playername )
 
 		local x,y,z = getElementPosition(playerid)
 		local rot = 0
@@ -2611,7 +2611,7 @@ function addVehicleUpgrade_fun( vehicleid, value, playerid, number )
 			return
 		end
 
-		if cash <= array_player_2[playername][1] then
+		if cash <= search_inv_player_2_parameter(playerid, 1) then
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -2636,7 +2636,7 @@ function addVehicleUpgrade_fun( vehicleid, value, playerid, number )
 
 			sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -2667,7 +2667,7 @@ function removeVehicleUpgrade_fun( vehicleid, playerid, number )
 			return
 		end
 
-		if cash <= array_player_2[playername][1] then
+		if cash <= search_inv_player_2_parameter(playerid, 1) then
 			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 			if  result[1]["tune"] == "0" then
 				sendMessage(playerid, "[ERROR] Нет установленного тюнинга", color_mes.red)
@@ -2685,7 +2685,7 @@ function removeVehicleUpgrade_fun( vehicleid, playerid, number )
 
 			sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
@@ -2963,12 +2963,12 @@ function auction_buy_sell(playerid, value, i, id1, id2, money, name_buy)--про
 				return
 			end
 
-			if array_player_2[playername][1] >= result[1]["money"] then
+			if search_inv_player_2_parameter(playerid, 1) >= result[1]["money"] then
 
 				if inv_player_empty(playerid, result[1]["id1"], result[1]["id2"]) then
 					sendMessage(playerid, "Вы купили у "..result[1]["name_sell"].." "..info_png[result[1]["id1"]][1].." "..result[1]["id2"].." "..info_png[result[1]["id1"]][2].." за "..result[1]["money"].."$", color_mes.orange)
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-result[1]["money"], playername )
+					inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-result[1]["money"], playername )
 
 					for i,playerid in pairs(getElementsByType("player")) do
 						local playername_sell = getPlayerName(playerid)
@@ -3080,12 +3080,12 @@ function buy_subject_fun( playerid, text, number, value )
 	elseif value == "mer" then
 		for k,v in pairs(mayoralty_shop) do
 			if v[1] == text then
-				if v[3] <= array_player_2[playername][1] then
+				if v[3] <= search_inv_player_2_parameter(playerid, 1) then
 					if v[4] == 10 then
 						if inv_player_empty(playerid, v[4], getElementData(playerid, "player_id")) then
 							sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", color_mes.orange)
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(v[3]), playername )
 						else
 							sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 						end
@@ -3093,7 +3093,7 @@ function buy_subject_fun( playerid, text, number, value )
 						if inv_player_empty(playerid, v[4], v[2]) then
 							sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", color_mes.orange)
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(v[3]), playername )
 						else
 							sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 						end
@@ -3116,11 +3116,11 @@ function buy_subject_fun( playerid, text, number, value )
 						name_mafia_skin = name_mafia_skin..j..","
 						if getElementModel(playerid) == j then
 							count = true
-							if v[3] <= array_player_2[playername][1] then
+							if v[3] <= search_inv_player_2_parameter(playerid, 1) then
 								if inv_player_empty(playerid, v[4], v[2]) then
 									sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", color_mes.orange)
 
-									inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+									inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(v[3]), playername )
 								else
 									sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 								end
@@ -3134,11 +3134,11 @@ function buy_subject_fun( playerid, text, number, value )
 						sendMessage(playerid, "[ERROR] Вы должны быть в одежде "..name_mafia_skin, color_mes.red)
 					end
 				else
-					if v[3] <= array_player_2[playername][1] then
+					if v[3] <= search_inv_player_2_parameter(playerid, 1) then
 						if inv_player_empty(playerid, v[4], v[2]) then
 							sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", color_mes.orange)
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(v[3]), playername )
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(v[3]), playername )
 						else
 							sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 						end
@@ -3172,13 +3172,13 @@ function buy_subject_fun( playerid, text, number, value )
 
 				for k,v in pairs(weapon) do
 					if v[1] == text then
-						if cash*v[3] <= array_player_2[playername][1] then
+						if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 							if inv_player_empty(playerid, k, v[4]) then
 								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", color_mes.orange)
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+								inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 							else
 								sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 							end
@@ -3193,13 +3193,13 @@ function buy_subject_fun( playerid, text, number, value )
 					return
 				end
 
-				if cash <= array_player_2[playername][1] then
+				if cash <= search_inv_player_2_parameter(playerid, 1) then
 					if inv_player_empty(playerid, 27, text) then
 						sendMessage(playerid, "Вы купили "..text.." скин за "..cash.."$", color_mes.orange)
 
 						sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash.."' WHERE number = '"..number.."'")
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 					else
 						sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 					end
@@ -3226,13 +3226,13 @@ function buy_subject_fun( playerid, text, number, value )
 				end
 
 				if v[1] == text then
-					if cash*v[3] <= array_player_2[playername][1] then
+					if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 						if inv_player_empty(playerid, k, randomize) then
 							sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", color_mes.orange)
 
 							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 
 							table.insert(loto[2], randomize)
 						else
@@ -3247,7 +3247,7 @@ function buy_subject_fun( playerid, text, number, value )
 				local v,k,key = {shop[115][1], shop[115][2], shop[115][3]},115,116--покупка ящика
 				local result = sqlite( "SELECT COUNT() FROM box_db")
 				if v[1] == text then
-					if cash*v[3] <= array_player_2[playername][1] then
+					if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 						if search_inv_player(playerid, 0, 0) >= 2 then
 							local b = result[1]["COUNT()"]+1
 
@@ -3264,7 +3264,7 @@ function buy_subject_fun( playerid, text, number, value )
 
 							sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-							inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+							inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 						else
 							sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 						end
@@ -3276,13 +3276,13 @@ function buy_subject_fun( playerid, text, number, value )
 
 				for k,v in pairs(shop) do
 					if v[1] == text then
-						if cash*v[3] <= array_player_2[playername][1] then
+						if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 							if inv_player_empty(playerid, k, v[2]) then
 								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", color_mes.orange)
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+								inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 							else
 								sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 							end
@@ -3295,13 +3295,13 @@ function buy_subject_fun( playerid, text, number, value )
 			elseif value == 4 then
 				for k,v in pairs(gas) do
 					if v[1] == text then
-						if cash*v[3] <= array_player_2[playername][1] then
+						if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 							if inv_player_empty(playerid, k, v[2]) then
 								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", color_mes.orange)
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+								inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 							else
 								sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 							end
@@ -3314,13 +3314,13 @@ function buy_subject_fun( playerid, text, number, value )
 			elseif value == 5 then
 				for k,v in pairs(repair_shop) do
 					if v[1] == text then
-						if cash*v[3] <= array_player_2[playername][1] then
+						if cash*v[3] <= search_inv_player_2_parameter(playerid, 1) then
 							if inv_player_empty(playerid, v[4], v[2]) then
 								sendMessage(playerid, "Вы купили "..text.." за "..cash*v[3].."$", color_mes.orange)
 
 								sqlite( "UPDATE business_db SET warehouse = warehouse - '"..prod.."', money = money + '"..cash*v[3].."' WHERE number = '"..number.."'")
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*v[3]), playername )
+								inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*v[3]), playername )
 							else
 								sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 							end
@@ -3360,7 +3360,7 @@ function till_fun( playerid, value, money )
 			if (money*-1) <= result[1]["money"] then
 				sqlite( "UPDATE business_db SET money = money - '"..(money*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(money*-1), playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+(money*-1), playername )
 
 				sendMessage(playerid, "Вы забрали из кассы "..(money*-1).."$", color_mes.green)
 			else
@@ -3373,10 +3373,10 @@ function till_fun( playerid, value, money )
 				return
 			end
 
-			if money <= array_player_2[playername][1] then
+			if money <= search_inv_player_2_parameter(playerid, 1) then
 				sqlite( "UPDATE business_db SET money = money + '"..money.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-money, playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-money, playername )
 
 				sendMessage(playerid, "Вы положили в кассу "..money.."$", color_mes.orange)
 			else
@@ -3469,7 +3469,7 @@ function cow_farms(playerid, value, val1, val2)
 	if value == "buy" then
 		local result = sqlite( "SELECT COUNT() FROM cow_farms_db" )
 		result = result[1]["COUNT()"]+1
-		if cash*result > array_player_2[playername][1] then
+		if cash*result > search_inv_player_2_parameter(playerid, 1) then
 			sendMessage(playerid, "[ERROR] У вас недостаточно средств, необходимо "..cash*result.."$", color_mes.red)
 			return
 		end
@@ -3477,7 +3477,7 @@ function cow_farms(playerid, value, val1, val2)
 		if inv_player_empty(playerid, doc, result) then
 			sqlite( "INSERT INTO cow_farms_db (number, price, coef, money, nalog, warehouse, prod) VALUES ('"..result.."', '0', '50', '0', '5', '0', '0')" )
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash*result, playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash*result, playername )
 
 			sendMessage(playerid, "Вы купили скотобойню за "..cash*result.."$", color_mes.orange)
 
@@ -3531,7 +3531,7 @@ function cow_farms(playerid, value, val1, val2)
 				end
 
 				if (val2*-1) <= result[1]["money"] then
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(val2*-1), playername )
+					inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+(val2*-1), playername )
 
 					sqlite( "UPDATE cow_farms_db SET money = money - '"..(val2*-1).."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
@@ -3540,14 +3540,14 @@ function cow_farms(playerid, value, val1, val2)
 					sendMessage(playerid, "[ERROR] Недостаточно средств на балансе бизнеса", color_mes.red)
 				end
 			else
-				if val2 <= array_player_2[playername][1] then
+				if val2 <= search_inv_player_2_parameter(playerid, 1) then
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 					if not result[1] then
 						return
 					end
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-val2, playername )
+					inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-val2, playername )
 
 					sqlite( "UPDATE cow_farms_db SET money = money + '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
@@ -3610,7 +3610,7 @@ function cow_farms(playerid, value, val1, val2)
 		local cash2 = (money*((100-result[1]["coef"])/100))
 		local cash = (money*(result[1]["coef"]/100))
 
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+cash, playername )
+		inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+cash, playername )
 
 		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[88][1].." "..val1.." шт за "..cash.."$", color_mes.green)
 
@@ -3638,7 +3638,7 @@ function cow_farms(playerid, value, val1, val2)
 
 		inv_car_delet(playerid, 89, val2, true, true)
 
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+		inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money, playername )
 
 		sendMessage(playerid, "Вы разгрузили из т/с "..info_png[89][1].." "..val1.." шт за "..money.."$", color_mes.green)
 
@@ -4569,7 +4569,7 @@ function buycar ( playerid, id )
 				end
 			end
 
-			if cash_car[id][2] > array_player_2[playername][1] then
+			if cash_car[id][2] > search_inv_player_2_parameter(playerid, 1) then
 				sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 				return
 			end
@@ -4580,7 +4580,7 @@ function buycar ( playerid, id )
 				return
 			end
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_car[id][2], playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash_car[id][2], playername )
 
 			sendMessage(playerid, "Вы купили транспортное средство за "..cash_car[id][2].."$", color_mes.orange)
 
@@ -4599,7 +4599,7 @@ function buycar ( playerid, id )
 				end
 			end
 
-			if cash_helicopters[id][2] > array_player_2[playername][1] then
+			if cash_helicopters[id][2] > search_inv_player_2_parameter(playerid, 1) then
 				sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 				return
 			end
@@ -4610,7 +4610,7 @@ function buycar ( playerid, id )
 				return
 			end
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_helicopters[id][2], playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash_helicopters[id][2], playername )
 
 			sendMessage(playerid, "Вы купили транспортное средство за "..cash_helicopters[id][2].."$", color_mes.orange)
 
@@ -4629,7 +4629,7 @@ function buycar ( playerid, id )
 				end
 			end
 
-			if cash_boats[id][2] > array_player_2[playername][1] then
+			if cash_boats[id][2] > search_inv_player_2_parameter(playerid, 1) then
 				sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 				return
 			end
@@ -4640,7 +4640,7 @@ function buycar ( playerid, id )
 				return
 			end
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash_boats[id][2], playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash_boats[id][2], playername )
 
 			sendMessage(playerid, "Вы купили транспортное средство за "..cash_boats[id][2].."$", color_mes.orange)
 
@@ -4860,7 +4860,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 		for k,v in pairs(down_player_subject) do
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) and id1 == v[5] then--получение прибыли за предметы
 				inv_player_delet( playerid, id1, id2, false, true )
-				inv_server_load( playerid, value, 0, 1, array_player_2[playername][1]+id2, tabpanel )
+				inv_server_load( playerid, value, 0, 1, search_inv_player_2_parameter(playerid, 1)+id2, tabpanel )
 
 				sendMessage(playerid, "Вы выбросили "..info_png[id1][1].." "..id2.." "..info_png[id1][2], color_mes.yellow)
 
@@ -4982,7 +4982,7 @@ function e_down (playerid, key, keyState)--подбор предметов с з
 		end
 
 		for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], get("house_bussiness_radius")) then
+			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], get("delet_subject_radius")) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= down_car_subject[1][6] then
 						sendMessage(playerid, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", color_mes.red)
@@ -5386,7 +5386,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 		if count ~= 0 then
 
 			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
-				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) then
+				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("delet_subject_radius")) then
 
 					if id ~= 24 then
 						sendMessage(playerid, "[ERROR] Нужен только "..info_png[24][1], color_mes.red)
@@ -5409,7 +5409,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 					sqlite( "UPDATE business_db SET warehouse = warehouse + '"..count.."', money = money - '"..money.."' WHERE number = '"..v["number"].."'")
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+					inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money, playername )
 
 					sendMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", color_mes.green)
 					return
@@ -5424,7 +5424,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 
 						money = count*sic2p
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money, playername )
 
 						sendMessage(playerid, "Вы разгрузили из т/с "..info_png[id][1].." "..count.." шт за "..money.."$", color_mes.green)
 					end
@@ -6594,7 +6594,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			addcrimes(playerid, get("zakon_65_crimes"))
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
 
 		elseif id1 == 66 then--ящик с оружием
 			local array_weapon = {9,12,13,14,15,17,18,19,26,34,41}
@@ -6644,7 +6644,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 			me_chat(playerid, playername.." обналичил(а) "..info_png[id1][1].." "..randomize.." "..info_png[id1][2])
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
 
 		elseif id1 == 81 then--динамит
 			local count = false
@@ -6998,7 +6998,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 					local randomize = random(get("zp_loto")/2,get("zp_loto"))
 					loto[3] = false
 
-					inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+randomize, playername )
+					inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
 					sendMessage(root, "[НОВОСТИ] Лотерея объявляется закрытой, победителем стал "..playername..", выигрыш составил "..randomize.."$", color_mes.green)
 				end
 
@@ -7141,7 +7141,7 @@ function win_roulette( playerid, cash, ratio )
 
 	sendMessage(playerid, "Вы заработали "..money.."$ X"..ratio, color_mes.green)
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+money, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+money, playername )
 end
 addEvent("event_win_roulette", true)
 addEventHandler("event_win_roulette", root, win_roulette)
@@ -7162,12 +7162,12 @@ function roulette_fun (playerid, id, cash, randomize)--играть в руле�
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 	if id == "RED" then
 		for k,v in pairs(Red) do
@@ -7259,12 +7259,12 @@ function slots (playerid, cash, randomize1, randomize2, randomize3)
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 	if (randomize1 == randomize2 and randomize1 == randomize3) then
 		win_roulette( playerid, cash, 25 )
@@ -7281,12 +7281,12 @@ function insider_track (playerid, cash, randomize, horse, horse_player)
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 	sendMessage(playerid, "Финишировала "..horse.." лошадь", color_mes.yellow)
 
@@ -7305,12 +7305,12 @@ function fortune_fun (playerid, cash, value, randomize)
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 	if value == randomize then
 		win_roulette( playerid, cash, randomize )
@@ -7334,12 +7334,12 @@ function poker_win( playerid, value, cash, coef, token )
 	local cash = tonumber(cash)
 	local coef = tonumber(coef)
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
-	inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+	inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 	for k,v in pairs(spl) do
 		table.insert(card, v)
@@ -7551,7 +7551,7 @@ function blackjack (playerid, cmd, value, ...)
 			return
 		end
 
-		if cash > array_player_2[playername][1] then
+		if cash > search_inv_player_2_parameter(playerid, 1) then
 			sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 			return
 		end
@@ -7693,7 +7693,7 @@ function blackjack (playerid, cmd, value, ...)
 			if point == point2 then
 
 			elseif point < point2 and point2 <= 21 or point2 == 21 then
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-accept_player[playername][3], playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-accept_player[playername][3], playername )
 
 				win_roulette(accept_player[playername][2], accept_player[playername][3], 1)
 			elseif point > point2 and point <= 21 or point == 21 then
@@ -7838,7 +7838,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if cash <= array_player_2[playername][1] then
+	if cash <= search_inv_player_2_parameter(playerid, 1) then
 		for k,vehicleid in pairs(getElementsByType("vehicle")) do
 
 			local plate = getVehiclePlateText(vehicleid)
@@ -7880,7 +7880,7 @@ function (playerid, cmd, id)
 
 								sqlite( "UPDATE car_db SET x = '"..(x+2).."', y = '"..y.."', z = '"..(z+1).."', fuel = '"..fuel[plate].."' WHERE number = '"..plate.."'")
 
-								inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+								inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 
 								sendMessage(playerid, "Вы эвакуировали т/с за "..cash.."$", color_mes.orange)
 
@@ -7928,7 +7928,7 @@ function (playerid, cmd, cash)
 		return
 	end
 
-	if cash > array_player_2[playername][1] then
+	if cash > search_inv_player_2_parameter(playerid, 1) then
 		sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 		return
 	end
@@ -7937,7 +7937,7 @@ function (playerid, cmd, cash)
 	
 		me_chat(playerid, playername.." выписал(а) "..info_png[79][1].." "..cash.." "..info_png[79][2])
 
-		inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-cash, playername )
+		inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash, playername )
 	
 	else
 	
@@ -8019,7 +8019,7 @@ function (playerid, cmd, id)
 
 			sendMessage(playerid, "Вы получили премию "..(cash*(crimes[id])).."$", color_mes.green )
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]+(cash*(crimes[id])), playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+(cash*(crimes[id])), playername )
 		else
 			sendMessage(playerid, "[ERROR] Игрок далеко", color_mes.red)
 		end
@@ -8057,7 +8057,7 @@ function (playerid, cmd, id)
 				return
 			end
 
-			if cash*crimes[id] > array_player_2[playername][1] then
+			if cash*crimes[id] > search_inv_player_2_parameter(playerid, 1) then
 				sendMessage(playerid, "[ERROR] У вас недостаточно средств", color_mes.red)
 				return
 			end
@@ -8066,7 +8066,7 @@ function (playerid, cmd, id)
 
 			sendMessage(player, "Ждите освобождения", color_mes.yellow)
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*(crimes[id])), playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*(crimes[id])), playername )
 
 			crimes[id] = 1
 		else
@@ -8177,7 +8177,7 @@ function (playerid)
 		return
 	end
 
-	if(array_player_2[playername][1] < get("zakon_price_house")) then
+	if(search_inv_player_2_parameter(playerid, 1) < get("zakon_price_house")) then
 	
 		sendMessage(playerid, "[ERROR] Стоимость домов составляет "..get("zakon_price_house").."$", color_mes.red)
 		return
@@ -8223,7 +8223,7 @@ function (playerid)
 
 			sendMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], color_mes.orange)
 
-			inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-get("zakon_price_house"), playername )
+			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-get("zakon_price_house"), playername )
 		else
 			sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 		end
@@ -8250,7 +8250,7 @@ function (playerid, cmd, id)
 		return
 	end
 
-	if(array_player_2[playername][1] < get("zakon_price_business")) then
+	if(search_inv_player_2_parameter(playerid, 1) < get("zakon_price_business")) then
 	
 		sendMessage(playerid, "[ERROR] Стоимость бизнеса составляет "..get("zakon_price_business").."$", color_mes.red)
 		return
@@ -8296,7 +8296,7 @@ function (playerid, cmd, id)
 
 				sendMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], color_mes.orange)
 
-				inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-get("zakon_price_business"), playername )
+				inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-get("zakon_price_business"), playername )
 			else
 				sendMessage(playerid, "[ERROR] Инвентарь полон", color_mes.red)
 			end
@@ -8326,13 +8326,13 @@ function (playerid, cmd, id)
 	end
 
 	if id >= 1 and id <= max_interior_house then
-		if (cash*id) <= array_player_2[playername][1] then
+		if (cash*id) <= search_inv_player_2_parameter(playerid, 1) then
 			for h,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) and getElementDimension(playerid) == 0 and getElementInterior(playerid) == 0 then
 					if search_inv_player(playerid, 25, v["number"]) ~= 0 then
 						sqlite( "UPDATE house_db SET interior = '"..id.."' WHERE number = '"..v["number"].."'")
 
-						inv_server_load( playerid, "player", 0, 1, array_player_2[playername][1]-(cash*id), playername )
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-(cash*id), playername )
 
 						sendMessage(playerid, "Вы изменили интерьер на "..id.." за "..(cash*id).."$", color_mes.orange)
 					else
