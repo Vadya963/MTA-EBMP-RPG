@@ -32,7 +32,7 @@ function ( startedRes )
 	end, 1000, 1)
 end)
 
-local max_speed = 80--максимальная скорость в городе
+local max_speed = 40--максимальная скорость в городе
 local time_game = 0--сколько минут играешь
 local afk = 0--сколько минут в афк
 local pos_timer = 0--задержка для евента
@@ -361,7 +361,7 @@ end
 function getSpeed(vehicle)
 	if vehicle then
 		local x, y, z = getElementVelocity(vehicle)
-		return math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))*111.847*1.61--узнает скорость авто в км/ч
+		return math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))*111.847--*1.61--узнает скорость авто в км/ч
 	end
 end
 
@@ -658,19 +658,19 @@ function createText ()
 			local fuel_table = split(fuel, ".")
 			local speed_car = 0
 
-			if getSpeed(vehicle) >= 240 then
-				speed_car = 240*1.125+43
+			if getSpeed(vehicle) >= 140 then
+				speed_car = 140*2+40
 			else
-				speed_car = getSpeed(vehicle)*1.125+43
+				speed_car = getSpeed(vehicle)*2+40
 			end
 
 			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( localPlayer, "probeg_data" ), ".")[1]
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
 
-			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/speed_v.png" )
-			dxDrawImage ( screenWidth-250, screenHeight-250, 210, 210, "speedometer/arrow_speed_v.png", speed_car )
-			dxDrawImage ( (screenWidth-250), screenHeight-250, 210, 210, "speedometer/fuel_v.png", 35.0-(fuel*1.4) )
+			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "speedometer/speed_v.png" )
+			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "speedometer/arrow_speed_v.png", speed_car )
+			dxDrawImage ( (screenWidth-105), screenHeight-120, 105, 105, "speedometer/fuel_v.png", 30.0-(fuel*1.2) )
 		end
 
 		local spl_gz = getElementData(localPlayer, "guns_zone2")
@@ -723,13 +723,13 @@ function createText ()
 				if getElementData(localPlayer, "speed_car_device_data") == 1 then
 					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 					local speed_table = split(getSpeed(vehicle), ".")
-					local dimensions = dxGetTextWidth ( speed_table[1].." km/h", 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( speed_table[1].." mp/h", 1, m2font_dx1 )
 
 					if coords[1] and coords[2] then
 						if tonumber(speed_table[1]) >= max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
 						elseif tonumber(speed_table[1]) < max_speed then
-							dxdrawtext ( speed_table[1].." km/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+							dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
 						end
 					end
 				end
@@ -772,7 +772,7 @@ function createText ()
 
 
 		for k,v in pairs(getElementData(resourceRoot, "business_pos")) do
-			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then	
+			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
 					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
