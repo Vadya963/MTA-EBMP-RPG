@@ -101,23 +101,23 @@
 	<file src="hud/sleep.png"/>
 	<file src="hud/drugs.png"/>
 
-	<file src="gui/m2font.ttf"/>
-	<file src="gui/gui7.png"/>
-	<file src="gui/window-arrow-off-down.png"/>
-	<file src="gui/window-arrow-on-down.png"/>
-	<file src="gui/window-arrow-off-left.png"/>
-	<file src="gui/window-arrow-on-left.png"/>
-	<file src="gui/window-arrow-off-right.png"/>
-	<file src="gui/window-arrow-on-right.png"/>
-	<file src="gui/window-arrow-off-up.png"/>
-	<file src="gui/window-arrow-on-up.png"/>
-	<file src="gui/window-m2.png"/>
-	<file src="gui/timer.png"/>
-	<file src="gui/timer_arrow.png"/>
+	<file src="hud/m2font.ttf"/>
+	<file src="hud/gui7.png"/>
+	<file src="hud/window-arrow-off-down.png"/>
+	<file src="hud/window-arrow-on-down.png"/>
+	<file src="hud/window-arrow-off-left.png"/>
+	<file src="hud/window-arrow-on-left.png"/>
+	<file src="hud/window-arrow-off-right.png"/>
+	<file src="hud/window-arrow-on-right.png"/>
+	<file src="hud/window-arrow-off-up.png"/>
+	<file src="hud/window-arrow-on-up.png"/>
+	<file src="hud/window-m2.png"/>
+	<file src="hud/timer.png"/>
+	<file src="hud/timer_arrow.png"/>
 
-	<file src="speedometer/speed_v.png"/>
-	<file src="speedometer/arrow_speed_v.png"/>
-	<file src="speedometer/fuel_v.png"/>
+	<file src="hud/speed_v.png"/>
+	<file src="hud/arrow_speed_v.png"/>
+	<file src="hud/fuel_v.png"/>
 
 	<file src="comp/tablet-display.png"/>
 	<file src="comp/backbut.png"/>

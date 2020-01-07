@@ -1,7 +1,7 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
-local m2font = guiCreateFont( "gui/m2font.ttf", 9 )
-local m2font_dx = dxCreateFont ( "gui/m2font.ttf", 9 )--default-bold
-local m2font_dx1 = "default-bold"--dxCreateFont ( "gui/m2font.ttf", 10 )
+local m2font = guiCreateFont( "hud/m2font.ttf", 9 )
+local m2font_dx = dxCreateFont ( "hud/m2font.ttf", 9 )--default-bold
+local m2font_dx1 = "default-bold"--dxCreateFont ( "hud/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = false
 local hud = true
@@ -459,7 +459,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
 	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
-	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "gui/gui7.png", bool_r, m2gui_fon )
+	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "hud/gui7.png", bool_r, m2gui_fon )
 	local text = m2gui_label ( 16+5, 0, dimensions+20, dimensions_h, text, bool_r, m2gui_fon )
 	local x1,y1 = guiGetPosition(m2gui_fon, false)
 
@@ -668,9 +668,9 @@ function createText ()
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
 
-			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "speedometer/speed_v.png" )
-			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "speedometer/arrow_speed_v.png", speed_car )
-			dxDrawImage ( (screenWidth-105), screenHeight-120, 105, 105, "speedometer/fuel_v.png", 30.0-(fuel*1.2) )
+			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/speed_v.png" )
+			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/arrow_speed_v.png", speed_car )
+			dxDrawImage ( (screenWidth-105), screenHeight-120, 105, 105, "hud/fuel_v.png", 30.0-(fuel*1.2) )
 		end
 
 		local spl_gz = getElementData(localPlayer, "guns_zone2")
@@ -683,9 +683,9 @@ function createText ()
 		end
 
 		if timer[1] then
-			dxDrawImage ( (screenWidth-85), 238, 85, 85, "gui/timer.png" )
+			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer.png" )
 			dxDrawCircle ( (screenWidth-85)+(85/2), 238+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,200 ), tocolor( 255,50,50,200 ) )
-			dxDrawImage ( (screenWidth-85), 238, 85, 85, "gui/timer_arrow.png", (360.0/timer[2])*timer[3] )
+			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer_arrow.png", (360.0/timer[2])*timer[3] )
 		end
 	end
 

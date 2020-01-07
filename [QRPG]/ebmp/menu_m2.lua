@@ -71,14 +71,14 @@ local menu_m2_table_text = {
 }
 
 --menu from mafia 2
-local menu_m2 = guiCreateStaticImage( screenWidth/2-30, screenHeight-100, 57, 58, "gui/window-m2.png", false )
+local menu_m2 = guiCreateStaticImage( screenWidth/2-30, screenHeight-100, 57, 58, "hud/window-m2.png", false )
 local sx,sy = guiGetSize(menu_m2, false)
 local px,py = guiGetPosition(menu_m2, false)
 local arrow_m2 = {
-	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "gui/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down", m2gui_label( px+(sx/2)-(25/2)+1, py+sy+3+1, 25, 15, "test", false )},
-	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left", m2gui_label( px-25-5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
-	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "gui/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up", m2gui_label( px+(sx/2)-(25/2)+1, py-15-5+1, 25, 15, "test", false )},
-	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "gui/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right", m2gui_label( px+sx+5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
+	[1] = {guiCreateStaticImage( (sx/2)-(13/2), sy-16, 13, 8, "hud/window-arrow-off-down.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py+sy+3, 25, 15, "test", false ), "down", m2gui_label( px+(sx/2)-(25/2)+1, py+sy+3+1, 25, 15, "test", false )},
+	[2] = {guiCreateStaticImage( 8, (sy/2)-(13/2), 8, 13, "hud/window-arrow-off-left.png", false, menu_m2 ), m2gui_label( px-25-5, py+(sy/2)-(15/2), 25, 15, "test", false ), "left", m2gui_label( px-25-5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
+	[3] = {guiCreateStaticImage( (sx/2)-(13/2), 8, 13, 8, "hud/window-arrow-off-up.png", false, menu_m2 ), m2gui_label( px+(sx/2)-(25/2), py-15-5, 25, 15, "test", false ), "up", m2gui_label( px+(sx/2)-(25/2)+1, py-15-5+1, 25, 15, "test", false )},
+	[4] = {guiCreateStaticImage( sx-16, (sy/2)-(13/2), 8, 13, "hud/window-arrow-off-right.png", false, menu_m2 ), m2gui_label( px+sx+5, py+(sy/2)-(15/2), 25, 15, "test", false ), "right", m2gui_label( px+sx+5+1, py+(sy/2)-(15/2)+1, 25, 15, "test", false )},
 }
 guiSetVisible ( menu_m2, false )
 for i=1,4 do
@@ -90,16 +90,16 @@ for i=1,4 do
 end
 
 for i=1,4 do
-	function select_button_menu ( absoluteX, absoluteY, gui )--наведение на меню
+	function select_button_menu ( absoluteX, absoluteY, hud )--наведение на меню
 		guiLabelSetColor ( arrow_m2[i][2], 255, 210, 75 )
-		guiStaticImageLoadImage(arrow_m2[i][1], "gui/window-arrow-on-"..arrow_m2[i][3]..".png")
+		guiStaticImageLoadImage(arrow_m2[i][1], "hud/window-arrow-on-"..arrow_m2[i][3]..".png")
 	end
 	addEventHandler( "onClientMouseEnter", arrow_m2[i][2], select_button_menu, false )
 end
 for i=1,4 do
-	function select_button_menu2 ( absoluteX, absoluteY, gui )--покидание меню
+	function select_button_menu2 ( absoluteX, absoluteY, hud )--покидание меню
 		guiLabelSetColor ( arrow_m2[i][2], 255, 255, 255 )
-		guiStaticImageLoadImage(arrow_m2[i][1], "gui/window-arrow-off-"..arrow_m2[i][3]..".png")
+		guiStaticImageLoadImage(arrow_m2[i][1], "hud/window-arrow-off-"..arrow_m2[i][3]..".png")
 	end
 	addEventHandler( "onClientMouseLeave", arrow_m2[i][2], select_button_menu2, false )
 end
@@ -157,11 +157,11 @@ function menu_mafia_2( key, keyState )
 end
 
 function outputEditBox ( button, state, absoluteX, absoluteY )
-	local gui = source
+	local hud = source
 
 	for k,v in pairs(arrow_m2) do
-		if gui == v[2] then
-			local text = guiGetText(gui)
+		if hud == v[2] then
+			local text = guiGetText(hud)
 
 			for k1,v1 in pairs(menu_m2_table_text) do
 				if text == k1 then
