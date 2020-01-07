@@ -671,6 +671,10 @@ function createText ()
 			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/speed_v.png" )
 			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/arrow_speed_v.png", speed_car )
 			dxDrawImage ( (screenWidth-105), screenHeight-120, 105, 105, "hud/fuel_v.png", 30.0-(fuel*1.2) )
+
+			if fuel <= 15 then
+				dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/low_fuel.png" )
+			end
 		end
 
 		local spl_gz = getElementData(localPlayer, "guns_zone2")
@@ -1425,57 +1429,78 @@ function inv_create ()--создание инв-ря
 
 	for i=0,max_inv do
 		function outputEditBox ( button, state, absoluteX, absoluteY )--выделение картинки в инв-ре
-			local x,y = guiGetPosition ( inv_slot_player[i][1], false )
 
 			info3 = i
 			info1 = inv_slot_player[i][2]
 			info2 = inv_slot_player[i][3]
 
-			if lmb == 0 then
-				for k,v in pairs(no_select_subject) do 
-					if v == info1 then
-						return
-					end
-				end
+			if button == "left" then
+				local x,y = guiGetPosition ( inv_slot_player[i][1], false )
 
-				gui_selection = true
-				info_tab = tab_player
-				gui_selection_pos_x = x
-				gui_selection_pos_y = y
-				info3_selection_1 = info3
-				info1_selection_1 = info1
-				info2_selection_1 = info2
-				lmb = 1
-			else
-				--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
-				--if inv_slot_player[info3][2] ~= 0 then
-
-					
-					for k,v in pairs(no_change_subject) do
+				if lmb == 0 then
+					for k,v in pairs(no_select_subject) do 
 						if v == info1 then
 							return
 						end
 					end
 
-					--[[info_tab = tab_player
+					gui_selection = true
+					info_tab = tab_player
 					gui_selection_pos_x = x
 					gui_selection_pos_y = y
 					info3_selection_1 = info3
 					info1_selection_1 = info1
 					info2_selection_1 = info2
-					return
-				end]]
+					lmb = 1
+				else
+					--------------------------------------------------------------замена куда нажал 2 раз----------------------------------------------------------------------------
+					--if inv_slot_player[info3][2] ~= 0 then
 
-				triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+						
+						for k,v in pairs(no_change_subject) do
+							if v == info1 then
+								return
+							end
+						end
 
-				zamena_img()
+						--[[info_tab = tab_player
+						gui_selection_pos_x = x
+						gui_selection_pos_y = y
+						info3_selection_1 = info3
+						info1_selection_1 = info1
+						info2_selection_1 = info2
+						return
+					end]]
+
+					triggerServerEvent( "event_inv_server_load", resourceRoot, localPlayer, "player", info3, info1_selection_1, info2_selection_1, getPlayerName(localPlayer) )
+
+					zamena_img()
+
+					gui_selection = false
+					info_tab = nil
+					lmb = 0
+				end
+
+				--sendMessage(info3.." "..info1.." "..info2)
+
+			elseif button == "right" then--использование предмета
+				for k,v in pairs(no_use_subject) do 
+					if v == info1 then
+						return
+					end
+				end
+
+				if tab_player == guiGetSelectedTab(tabPanel) then
+					triggerServerEvent( "event_use_inv", resourceRoot, localPlayer, "player", info3, info1, info2 )
+				end
 
 				gui_selection = false
 				info_tab = nil
+				info1 = -1
+				info2 = -1
+				info3 = -1
 				lmb = 0
 			end
-
-			--sendMessage(info3.." "..info1.." "..info2)
 		end
 		addEventHandler ( "onClientGUIClick", inv_slot_player[i][1], outputEditBox, false )
 	end
@@ -1800,31 +1825,6 @@ function inv_create ()--создание инв-ря
 	end
 
 	---------------------кнопки--------------------------------------------------
-	for i=0,max_inv do
-		function use_subject ( button, state, absoluteX, absoluteY )--использование предмета
-			if button == "right" then
-
-				for k,v in pairs(no_use_subject) do 
-					if v == info1 then
-						return
-					end
-				end
-
-				if tab_player == guiGetSelectedTab(tabPanel) then
-					triggerServerEvent( "event_use_inv", resourceRoot, localPlayer, "player", info3, info1, info2 )
-				end
-
-				gui_selection = false
-				info_tab = nil
-				info1 = -1
-				info2 = -1
-				info3 = -1
-				lmb = 0
-			end
-		end
-		addEventHandler( "onClientGUIClick", inv_slot_player[i][1], use_subject, false )
-	end
-
 	function throw_earth ( button, state, absoluteX, absoluteY, worldX, worldY, worldZ, clickedElement )--выброс предмета
 		if lmb == 1 then
 			local x,y = guiGetPosition ( stats_window, false )

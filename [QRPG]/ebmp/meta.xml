@@ -118,6 +118,7 @@
 	<file src="hud/speed_v.png"/>
 	<file src="hud/arrow_speed_v.png"/>
 	<file src="hud/fuel_v.png"/>
+	<file src="hud/low_fuel.png"/>
 
 	<file src="comp/tablet-display.png"/>
 	<file src="comp/backbut.png"/>
