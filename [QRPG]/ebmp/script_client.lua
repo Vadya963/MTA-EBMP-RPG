@@ -688,7 +688,7 @@ function createText ()
 
 		if timer[1] then
 			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer.png" )
-			dxDrawCircle ( (screenWidth-85)+(85/2), 238+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,200 ), tocolor( 255,50,50,200 ) )
+			dxDrawCircle ( (screenWidth-85)+(85/2), 238+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,150 ), tocolor( 255,50,50,150 ) )
 			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer_arrow.png", (360.0/timer[2])*timer[3] )
 		end
 	end
