@@ -69,6 +69,7 @@
 		<setting name="car_stage_coef" value="[0.33]"/><!--коэф-нт прокачки двигла-->
 		<setting name="update_db_rang" value="[2]"/><!--ранг основателя-->
 		<setting name="delet_subject_radius" value="[5]"/><!--радиус разгрузки у бизнесов-->
+		<setting name="no_create_subject" value="[[6,25,115,116]]"/><!--предметы которые нельзя создать-->
 		<!--вместимость складов бизнесов-->
 		<setting name="max_business" value="[100]"/>
 		<setting name="max_cf" value="[1000]"/>

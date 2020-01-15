@@ -8506,6 +8506,13 @@ function (playerid, cmd, id, id1, id2 )
 		return
 	end
 
+	for k,v in pairs(get("no_create_subject")) do
+		if (val1 == v) then
+			sendMessage(playerid, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+			return
+		end
+	end
+
 	if val1 == 44 and val2 == get("update_db_rang") and not hasObjectPermissionTo("user."..playername, "command.shutdown") then
 		sendMessage(playerid, "Вы не основатель", color_mes.red)
 		return
@@ -8576,6 +8583,13 @@ function (playerid, cmd, id1, id2 )
 		return
 	end
 
+	for k,v in pairs(get("no_create_subject")) do
+		if (val1 == v) then
+			sendMessage(playerid, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+			return
+		end
+	end
+
 	if not vehicleid then
 		sendMessage(playerid, "[ERROR] Вы не в т/с", color_mes.red)
 		return
@@ -8606,6 +8620,13 @@ function (playerid, cmd, id1, id2, count )
 	if val1 > #info_png or val1 < 2 then
 		sendMessage(playerid, "[ERROR] от 2 до "..#info_png, color_mes.red)
 		return
+	end
+
+	for k,v in pairs(get("no_create_subject")) do
+		if (val1 == v) then
+			sendMessage(playerid, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+			return
+		end
 	end
 
 	for i=1,count do
