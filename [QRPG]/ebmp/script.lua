@@ -460,7 +460,7 @@ end
 local info_png = {
 	[0] = {"", ""},
 	[1] = {"чековая книжка", "$ в банке"},
-	[2] = {"права", "шт"},
+	[2] = {"права", "номер"},
 	[3] = {"сигареты Big Break Red", "сигарет"},
 	[4] = {"аптечка", "шт"},
 	[5] = {"канистра с", "лит."},
@@ -508,7 +508,7 @@ local info_png = {
 	[47] = {"перцовый балончик", "мл"},
 	[48] = {"мясо", "$ за штуку"},
 	[49] = {"лопата", "шт"},
-	[50] = {"лицензия на оружие", "шт"},
+	[50] = {"лицензия на оружие", "номер"},
 	[51] = {"jetpack", "шт"},
 	[52] = {"кислородный балон на 5 мин", "шт"},
 	[53] = {"бургер", "шт"},
@@ -3081,7 +3081,7 @@ function buy_subject_fun( playerid, text, number, value )
 		for k,v in pairs(mayoralty_shop) do
 			if v[1] == text then
 				if v[3] <= search_inv_player_2_parameter(playerid, 1) then
-					if v[4] == 10 then
+					if v[4] == 10 or v[4] == 2 or v[4] == 50 then
 						if inv_player_empty(playerid, v[4], getElementData(playerid, "player_id")) then
 							sendMessage(playerid, "Вы купили "..text.." за "..v[3].."$", color_mes.orange)
 
@@ -4026,6 +4026,16 @@ function quitPlayer ( quitType )--дисконект игрока с серве�
 			inv_player_delet(playerid, 10, policetoken)
 		end
 
+		local rights = search_inv_player_2_parameter(playerid, 2)
+		if rights ~= 0 and getElementData(playerid, "player_id") ~= rights then
+			inv_player_delet(playerid, 2, rights)
+		end
+
+		local lic_weapon = search_inv_player_2_parameter(playerid, 50)
+		if lic_weapon ~= 0 and getElementData(playerid, "player_id") ~= lic_weapon then
+			inv_player_delet(playerid, 50, lic_weapon)
+		end
+
 		local heal = getElementHealth( playerid )
 		sqlite( "UPDATE account SET heal = '"..heal.."', x = '"..x.."', y = '"..y.."', z = '"..z.."', arrest = '"..arrest[playername].."', crimes = '"..crimes[playername].."', alcohol = '"..alcohol[playername].."', satiety = '"..satiety[playername].."', hygiene = '"..hygiene[playername].."', sleep = '"..sleep[playername].."', drugs = '"..drugs[playername].."' WHERE name = '"..playername.."'")
 
@@ -4278,6 +4288,14 @@ function reg_or_login(playerid)
 
 		if inv_player_delet(playerid, 10, search_inv_player_2_parameter(playerid, 10)) then
 			inv_player_empty(playerid, 10, getElementData(playerid, "player_id"))
+		end
+
+		if inv_player_delet(playerid, 2, search_inv_player_2_parameter(playerid, 2)) then
+			inv_player_empty(playerid, 2, getElementData(playerid, "player_id"))
+		end
+
+		if inv_player_delet(playerid, 50, search_inv_player_2_parameter(playerid, 50)) then
+			inv_player_empty(playerid, 50, getElementData(playerid, "player_id"))
 		end
 
 		triggerClientEvent( playerid, "event_setFarClipDistance", playerid, tonumber(result[1]["settings"]) )
@@ -5921,12 +5939,16 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			end
 			return
 
-		elseif id1 == 10 or id1 == 105 then--документы копа, паспорт
+		elseif id1 == 10 or id1 == 105 or id1 == 2 or id1 == 50 then--документы копа, паспорт, права, лиц на оружие
 			local id,player = getPlayerId(id2)
 			if id then
 				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." на имя "..id)
-			else
+			elseif id1 == 10 or id1 == 105 then
 				me_chat(playerid, playername.." показал(а) чужой "..info_png[id1][1])
+			elseif id1 == 2 then
+				me_chat(playerid, playername.." показал(а) чужие "..info_png[id1][1])
+			elseif id1 == 50 then
+				me_chat(playerid, playername.." показал(а) чужую "..info_png[id1][1])
 			end
 			return
 
@@ -8506,16 +8528,16 @@ function (playerid, cmd, id, id1, id2 )
 		return
 	end
 
-	for k,v in pairs(get("no_create_subject")) do
-		if (val1 == v) then
-			sendMessage(playerid, "[ERROR] Этот предмет нельзя создать", color_mes.red)
-			return
-		end
-	end
-
 	if val1 == 44 and val2 == get("update_db_rang") and not hasObjectPermissionTo("user."..playername, "command.shutdown") then
 		sendMessage(playerid, "Вы не основатель", color_mes.red)
 		return
+	elseif val1 ~= 44 then
+		for k,v in pairs(get("no_create_subject")) do
+			if (val1 == v) then
+				sendMessage(playerid, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+				return
+			end
+		end
 	end
 
 	local id,player = getPlayerId(id)
