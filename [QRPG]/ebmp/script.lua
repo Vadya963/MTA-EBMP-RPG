@@ -765,9 +765,9 @@ local mayoralty_shop = {
 	{info_png[64][1].." Спасатель", 19, 5000, 64},
 	{info_png[77][1], 100, 100, 77},
 
-	{"квитанция для оплаты дома на "..get("day_nalog").." дней", get("day_nalog"), (get("zakon_nalog_house")*get("day_nalog")), 59},
-	{"квитанция для оплаты бизнеса на "..get("day_nalog").." дней", get("day_nalog"), (get("zakon_nalog_business")*get("day_nalog")), 60},
-	{"квитанция для оплаты т/с на "..get("day_nalog").." дней", get("day_nalog"), (get("zakon_nalog_car")*get("day_nalog")), 61},
+	{"квитанция для оплаты дома на "..get("day_taxation").." дней", get("day_taxation"), (get("zakon_taxation_house")*get("day_taxation")), 59},
+	{"квитанция для оплаты бизнеса на "..get("day_taxation").." дней", get("day_taxation"), (get("zakon_taxation_business")*get("day_taxation")), 60},
+	{"квитанция для оплаты т/с на "..get("day_taxation").." дней", get("day_taxation"), (get("zakon_taxation_car")*get("day_taxation")), 61},
 }
 
 local weapon_cops = {
@@ -1447,7 +1447,7 @@ local array_car_2 = {
 local fuel = {--топливный бак
 	["0"] = 50,
 }
-local probeg = {--пробег
+local kilometrage = {--пробег
 	["0"] = 0,
 }
 
@@ -1527,7 +1527,7 @@ function debuginfo ()
 		if (vehicleid) then
 			local plate = getVehiclePlateText(vehicleid)
 			setElementData(playerid, "fuel_data", fuel[plate])
-			setElementData(playerid, "probeg_data", probeg[plate])
+			setElementData(playerid, "kilometrage_data", kilometrage[plate])
 		end
 
 		if search_inv_player_2_parameter(playerid, 85) ~= 0 then
@@ -1648,7 +1648,7 @@ function fuel_down()--система топлива авто
 					fuel[plate] = fuel[plate] - fuel_down_number
 				else
 					fuel[plate] = fuel[plate] - (fuel_down_number*getSpeed(vehicleid))
-					probeg[plate] = probeg[plate] + (getSpeed(vehicleid)/3600)
+					kilometrage[plate] = kilometrage[plate] + (getSpeed(vehicleid)/3600)
 				end
 			end
 		end
@@ -1767,39 +1767,39 @@ function prison()--таймер заключения
 	end
 end
 
-function pay_nalog()
+function pay_taxation()
 	local time = getRealTime()
 
 	if time["hour"] == 12 and time["minute"] == 0 then
 		local result = sqlite( "SELECT * FROM car_db" )
 		for k,v in pairs(result) do
-			if v["nalog"] > 0 then
-				sqlite( "UPDATE car_db SET nalog = nalog - '1' WHERE number = '"..v["number"].."'")
+			if v["taxation"] > 0 then
+				sqlite( "UPDATE car_db SET taxation = taxation - '1' WHERE number = '"..v["number"].."'")
 			end
 		end
 
 		local result = sqlite( "SELECT * FROM house_db" )
 		for k,v in pairs(result) do
-			if v["nalog"] > 0 then
-				sqlite( "UPDATE house_db SET nalog = nalog - '1' WHERE number = '"..v["number"].."'")
+			if v["taxation"] > 0 then
+				sqlite( "UPDATE house_db SET taxation = taxation - '1' WHERE number = '"..v["number"].."'")
 			end
 		end
 
 		local result = sqlite( "SELECT * FROM business_db" )
 		for k,v in pairs(result) do
-			if v["nalog"] > 0 then
-				sqlite( "UPDATE business_db SET nalog = nalog - '1' WHERE number = '"..v["number"].."'")
+			if v["taxation"] > 0 then
+				sqlite( "UPDATE business_db SET taxation = taxation - '1' WHERE number = '"..v["number"].."'")
 			end
 		end
 
 		local result = sqlite( "SELECT * FROM cow_farms_db" )
 		for k,v in pairs(result) do
-			if v["nalog"] > 0 then
-				sqlite( "UPDATE cow_farms_db SET nalog = nalog - '1' WHERE number = '"..v["number"].."'")
+			if v["taxation"] > 0 then
+				sqlite( "UPDATE cow_farms_db SET taxation = taxation - '1' WHERE number = '"..v["number"].."'")
 			end
 		end
 
-		print("[pay_nalog]")
+		print("[pay_taxation]")
 	end
 
 	if time["minute"] == 0 then
@@ -2360,11 +2360,11 @@ function rental_car(playerid, job)
 
 		local paintjob_text = 3
 
-		local nalog_start = 5
+		local taxation_start = 5
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, color_mes.orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..car[job][1].."', '"..nalog_start.."', '0','0', '"..(x+2).."', '"..y.."', '"..z.."', '"..rot.."', '"..get("max_fuel").."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, taxation, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, kilometrage, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..car[job][1].."', '"..taxation_start.."', '0','0', '"..(x+2).."', '"..y.."', '"..z.."', '"..rot.."', '"..get("max_fuel").."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 		
 		car_spawn(tostring(val2))
 	end
@@ -2788,7 +2788,7 @@ function pickedUpWeaponCheck( playerid )
 
 				if search_inv_player(playerid, 43, result[1]["number"]) ~= 0 then
 					sendMessage(playerid, "Состояние кассы "..split(result[1]["money"],".")[1].."$", color_mes.green)
-					sendMessage(playerid, "Налог бизнеса оплачен на "..result[1]["nalog"].." дней", color_mes.yellow)
+					sendMessage(playerid, "Налог бизнеса оплачен на "..result[1]["taxation"].." дней", color_mes.yellow)
 				end
 				return
 			end
@@ -2808,7 +2808,7 @@ function pickedUpWeaponCheck( playerid )
 				end
 
 				if search_inv_player(playerid, 25, result[1]["number"]) ~= 0 then
-					sendMessage(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней", color_mes.yellow)
+					sendMessage(playerid, "Налог дома оплачен на "..result[1]["taxation"].." дней", color_mes.yellow)
 				end
 				return
 			end
@@ -2868,7 +2868,7 @@ function sqlite_load(playerid, value)
 				{result[1]["number"], "Зарплата", result[1]["price"].."$"},
 				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
 				{result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
-				{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
+				{result[1]["number"], "Налог", result[1]["taxation"].." дней"},
 				{result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
 				{result[1]["number"], "Склад", result[1]["prod"].." мешков с кормом"},
 			}
@@ -2884,7 +2884,7 @@ function sqlite_load(playerid, value)
 			local farms = {
 				{result[1]["number"], "Цена на товар (надбавка в N раз)", result[1]["price"].."$"},
 				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
-				{result[1]["number"], "Налог", result[1]["nalog"].." дней"},
+				{result[1]["number"], "Налог", result[1]["taxation"].." дней"},
 				{result[1]["number"], "Склад", result[1]["warehouse"].." продуктов"},
 			}
 			
@@ -2901,7 +2901,7 @@ function sqlite_load(playerid, value)
 		setElementData(playerid, "auc", result)
 
 	elseif value == "carparking_table" then
-		local result_car = sqlite( "SELECT * FROM car_db WHERE nalog = '0'" )
+		local result_car = sqlite( "SELECT * FROM car_db WHERE taxation = '0'" )
 		setElementData(playerid, "carparking_table", result_car)
 
 	elseif value == "cow_farms_table2" then
@@ -3475,7 +3475,7 @@ function cow_farms(playerid, value, val1, val2)
 		end
 
 		if inv_player_empty(playerid, doc, result) then
-			sqlite( "INSERT INTO cow_farms_db (number, price, coef, money, nalog, warehouse, prod) VALUES ('"..result.."', '0', '50', '0', '5', '0', '0')" )
+			sqlite( "INSERT INTO cow_farms_db (number, price, coef, money, taxation, warehouse, prod) VALUES ('"..result.."', '0', '50', '0', '5', '0', '0')" )
 
 			inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)-cash*result, playername )
 
@@ -3566,7 +3566,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			if search_inv_player(playerid, 60, 7) ~= 0 then
 				if inv_player_delet(playerid, 60, 7) then
-					sqlite( "UPDATE cow_farms_db SET nalog = nalog + '7' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
+					sqlite( "UPDATE cow_farms_db SET taxation = taxation + '7' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'")
 
 					sendMessage(playerid, "Вы оплатили налог "..search_inv_player_2_parameter(playerid, doc).." скотобойни", color_mes.yellow)
 				end
@@ -3670,7 +3670,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	setTimer(set_weather, 1000, 0)--погода сервера
 	setTimer(prison, 60000, 0)--таймер заключения в тюрьме
 	setTimer(prison_timer, 1000, 0)--античит если не в тюрьме
-	setTimer(pay_nalog, 60000, 0)--списание налогов
+	setTimer(pay_taxation, 60000, 0)--списание налогов
 
 	setWeather(tomorrow_weather)
 	setGlitchEnabled ( "quickreload", true )
@@ -3971,7 +3971,7 @@ function()
 	count_player = count_player+1
 	setElementData(playerid, "player_id", count_player)
 	setElementData(playerid, "fuel_data", 0)
-	setElementData(playerid, "probeg_data", 0)
+	setElementData(playerid, "kilometrage_data", 0)
 	setElementData(playerid, "quest_select", "0:0")
 	setElementData(playerid, "radar_visible", true)
 	setElementData(playerid, "task", false)
@@ -4450,13 +4450,13 @@ function car_spawn(number)
 	local plate = number
 	local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 
-	if result[1]["nalog"] ~= 0 and result[1]["theft"] == 0 then
+	if result[1]["taxation"] ~= 0 and result[1]["theft"] == 0 then
 		local vehicleid = createVehicle(result[1]["model"], result[1]["x"], result[1]["y"], result[1]["z"], 0, 0, result[1]["rot"], plate)
 
 		setVehicleLocked ( vehicleid, false )
 
 		fuel[plate] = result[1]["fuel"]
-		probeg[plate] = result[1]["probeg"]
+		kilometrage[plate] = result[1]["kilometrage"]
 		
 		if result[1]["tune"] ~= "0" then
 			for k,v in pairs(split(result[1]["tune"], ",")) do
@@ -4508,7 +4508,7 @@ addEventHandler("event_car_spawn", root, car_spawn)
 function spawn_carparking( playerid, plate )
 	local playername = getPlayerName(playerid)
 	local count = 0
-	local result = sqlite( "SELECT COUNT() FROM car_db WHERE nalog = '0' AND number = '"..plate.."'" )
+	local result = sqlite( "SELECT COUNT() FROM car_db WHERE taxation = '0' AND number = '"..plate.."'" )
 
 	for k,vehicleid in pairs(getElementsByType("vehicle")) do
 		if getVehiclePlateText(vehicleid) == plate then
@@ -4524,7 +4524,7 @@ function spawn_carparking( playerid, plate )
 
 	if search_inv_player(playerid, 61, 7) ~= 0 then
 		if inv_player_delet(playerid, 61, 7) then
-			sqlite( "UPDATE car_db SET nalog = '7' WHERE number = '"..plate.."'")
+			sqlite( "UPDATE car_db SET taxation = '7' WHERE number = '"..plate.."'")
 			car_spawn(plate)
 
 			sendMessage(playerid, "Вы забрали т/с под номером "..plate, color_mes.yellow)
@@ -4679,11 +4679,11 @@ function buycar ( playerid, id )
 
 		local paintjob_text = 3
 
-		local nalog_start = 5
+		local taxation_start = 5
 
 		sendMessage(playerid, "Вы получили "..info_png[val1][1].." "..val2, color_mes.orange)
 
-		sqlite( "INSERT INTO car_db (number, model, nalog, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, probeg, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..id.."', '"..nalog_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..get("max_fuel").."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '107:"..val2..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+		sqlite( "INSERT INTO car_db (number, model, taxation, frozen, evacuate, x, y, z, rot, fuel, car_rgb, headlight_rgb, paintjob, tune, stage, kilometrage, wheel, hydraulics, wheel_rgb, theft, inventory) VALUES ('"..val2.."', '"..id.."', '"..taxation_start.."', '0','0', '"..x.."', '"..y.."', '"..z.."', '"..rot.."', '"..get("max_fuel").."', '"..car_rgb_text.."', '"..headlight_rgb_text.."', '"..paintjob_text.."', '0', '0', '0', '0', '0', '"..wheel_rgb_text.."', '0', '107:"..val2..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 	
 		car_spawn(tostring(val2))
 	else
@@ -4710,7 +4710,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["nalog"] <= 0 then
+				if result[1]["taxation"] <= 0 then
 					sendMessage(playerid, "[ERROR] Т/с арестован за уклонение от уплаты налогов", color_mes.red)
 					setVehicleEngineState(vehicleid, false)
 					return
@@ -4751,7 +4751,7 @@ function exit_car_fun( playerid )
 				local x,y,z = getElementPosition(vehicleid)
 				local rx,ry,rz = getElementRotation(vehicleid)
 
-				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."', probeg = '"..probeg[plate].."' WHERE number = '"..plate.."'")
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."', kilometrage = '"..kilometrage[plate].."' WHERE number = '"..plate.."'")
 			end
 		end
 	end
@@ -4774,7 +4774,7 @@ function exit_car ( vehicleid, seat, jacked )--евент выхода из ав
 				local x,y,z = getElementPosition(vehicleid)
 				local rx,ry,rz = getElementRotation(vehicleid)
 
-				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."', probeg = '"..probeg[plate].."' WHERE number = '"..plate.."'")
+				sqlite( "UPDATE car_db SET x = '"..x.."', y = '"..y.."', z = '"..z.."', rot = '"..rz.."', fuel = '"..fuel[plate].."', kilometrage = '"..kilometrage[plate].."' WHERE number = '"..plate.."'")
 			end
 		end
 	end
@@ -5079,7 +5079,7 @@ local vehicleid = getPlayerVehicle(playerid)
 
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) and v["type"] == interior_business[4][2] then--заправка
 
-						if v["nalog"] <= 0 then
+						if v["taxation"] <= 0 then
 							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 							return
 						end
@@ -5090,7 +5090,7 @@ local vehicleid = getPlayerVehicle(playerid)
 
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) and v["type"] == interior_business[5][2] then--тюнинг
 
-						if v["nalog"] <= 0 then
+						if v["taxation"] <= 0 then
 							sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 							return
 						end
@@ -5185,7 +5185,7 @@ function left_alt_down (playerid, key, keyState)
 						return
 					end
 
-					if v["nalog"] <= 0 then
+					if v["taxation"] <= 0 then
 						sendMessage(playerid, "[ERROR] Дом арестован за уклонение от уплаты налогов", color_mes.red)
 						return
 					end
@@ -5223,7 +5223,7 @@ function left_alt_down (playerid, key, keyState)
 						return
 					end
 
-					if v["nalog"] <= 0 then
+					if v["taxation"] <= 0 then
 						sendMessage(playerid, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 						return
 					end
@@ -5898,7 +5898,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 						if result[1]["COUNT()"] == 1 then
 							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-							if result[1]["nalog"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and getVehicleOccupant(vehicleid, 0) then
+							if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and getVehicleOccupant(vehicleid, 0) then
 								setVehicleEngineState(vehicleid, true)
 							end
 						end
@@ -5923,7 +5923,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2)
 
-				do_chat(playerid, "Налог т/с оплачен на "..result[1]["nalog"].." дней - "..playername)
+				do_chat(playerid, "Налог т/с оплачен на "..result[1]["taxation"].." дней - "..playername)
 				do_chat(playerid, "Установлен "..result[1]["stage"].." stage - "..playername)
 			end
 			return
@@ -5935,7 +5935,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 
 				me_chat(playerid, playername.." показал(а) "..info_png[id1][1].." "..id2)
 
-				do_chat(playerid, "Налог дома оплачен на "..result[1]["nalog"].." дней - "..playername)
+				do_chat(playerid, "Налог дома оплачен на "..result[1]["taxation"].." дней - "..playername)
 			end
 			return
 
@@ -6216,7 +6216,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local count = 0
 			for k,v in pairs(sqlite( "SELECT * FROM house_db" )) do
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) then
-					sqlite( "UPDATE house_db SET nalog = nalog + '"..id2.."' WHERE number = '"..v["number"].."'")
+					sqlite( "UPDATE house_db SET taxation = taxation + '"..id2.."' WHERE number = '"..v["number"].."'")
 					
 					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." и оплатил(а) "..v["number"].." дом")
 
@@ -6235,7 +6235,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 			local count = 0
 			for k,v in pairs(sqlite( "SELECT * FROM business_db" )) do
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) then
-					sqlite( "UPDATE business_db SET nalog = nalog + '"..id2.."' WHERE number = '"..v["number"].."'")
+					sqlite( "UPDATE business_db SET taxation = taxation + '"..id2.."' WHERE number = '"..v["number"].."'")
 					
 					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." и оплатил(а) "..v["number"].." бизнес")
 
@@ -6255,7 +6255,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 				local plate = getVehiclePlateText(vehicleid)
 				local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["COUNT()"] == 1 then
-					sqlite( "UPDATE car_db SET nalog = nalog + '"..id2.."' WHERE number = '"..plate.."'")
+					sqlite( "UPDATE car_db SET taxation = taxation + '"..id2.."' WHERE number = '"..plate.."'")
 
 					me_chat(playerid, playername.." использовал(а) "..info_png[id1][1].." "..id2.." "..info_png[id1][2].." и оплатил(а) "..plate.." т/с")
 
@@ -8241,7 +8241,7 @@ function (playerid)
 			table.insert(taxi_pos, {x, y, z})
 			table.insert(fire_pos, {x, y, z})
 
-			sqlite( "INSERT INTO house_db (number, door, nalog, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '106:"..dim..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
+			sqlite( "INSERT INTO house_db (number, door, taxation, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '106:"..dim..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
 			sendMessage(playerid, "Вы получили "..info_png[25][1].." "..dim.." "..info_png[25][2], color_mes.orange)
 
@@ -8314,7 +8314,7 @@ function (playerid, cmd, id)
 				business_pos[dim] = {x, y, z, createBlip ( x, y, z, interior_business[id][6], 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, get("business_icon"), 10000 )}
 				setElementData(resourceRoot, "business_pos", business_pos)
 
-				sqlite( "INSERT INTO business_db (number, type, price, money, nalog, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
+				sqlite( "INSERT INTO business_db (number, type, price, money, taxation, warehouse, x, y, z, interior, world) VALUES ('"..dim.."', '"..interior_business[id][2].."', '0', '0', '5', '0', '"..x.."', '"..y.."', '"..z.."', '"..id.."', '"..dim.."')" )
 
 				sendMessage(playerid, "Вы получили "..info_png[43][1].." "..dim.." "..info_png[43][2], color_mes.orange)
 
@@ -9127,7 +9127,7 @@ function input_Console ( text )
 		restartAllResources()
 
 	elseif text == "n" then
-		pay_nalog()
+		pay_taxation()
 	end
 end
 addEventHandler ( "onConsole", root, input_Console )
@@ -9243,7 +9243,7 @@ function ( playerid, state )
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["nalog"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and fuel[plate] > 0 then
+				if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and fuel[plate] > 0 then
 					if state == "true" then
 						setVehicleEngineState(vehicleid, true)
 						me_chat(playerid, playername.." завел(а) двигатель")

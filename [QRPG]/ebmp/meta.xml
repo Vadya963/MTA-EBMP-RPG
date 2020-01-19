@@ -42,9 +42,9 @@
 		<setting name="zakon_65_crimes" value="[1]"/>
 		<setting name="zakon_66_crimes" value="[1]"/>
 		<setting name="zakon_car_theft_crimes" value="[1]"/>
-		<setting name="zakon_nalog_car" value="[500]"/>
-		<setting name="zakon_nalog_house" value="[1000]"/>
-		<setting name="zakon_nalog_business" value="[2000]"/>
+		<setting name="zakon_taxation_car" value="[500]"/>
+		<setting name="zakon_taxation_house" value="[1000]"/>
+		<setting name="zakon_taxation_business" value="[2000]"/>
 		<setting name="zakon_price_house" value="[300000]"/>
 		<setting name="zakon_price_business" value="[300000]"/>
 
@@ -63,7 +63,7 @@
 		<setting name="crimes_capture" value="[50]"/><!--прес-ия для захвата-->
 		<setting name="crimes_kill" value="[50]"/><!--прес-ия для киллера-->
 		<setting name="car_theft_time" value="[10]"/><!--время для угона-->
-		<setting name="day_nalog" value="[7]"/><!--кол-во дней для оплаты налога-->
+		<setting name="day_taxation" value="[7]"/><!--кол-во дней для оплаты налога-->
 		<setting name="police_chanel" value="[1]"/><!--канал копов-->
 		<setting name="admin_chanel" value="[2]"/><!--канал админов-->
 		<setting name="car_stage_coef" value="[0.33]"/><!--коэф-нт прокачки двигла-->

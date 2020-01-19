@@ -819,7 +819,6 @@ local table_job = {
 						local dist = (getSpeed(vehicleid)/3600)
 						job_call[playername][3] = job_call[playername][3]+dist
 						job_pos[playername] = {x,y,z}
-						print(dist, job_call[playername][3])
 
 						if job_call[playername][2] <= job_call[playername][3] then
 							job_call[playername][1] = 2
@@ -1583,7 +1582,7 @@ local table_job = {
 					local result = sqlite( "SELECT * FROM cow_farms_db WHERE number = '"..search_inv_player_2_parameter(playerid, 87).."'" )
 
 					if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) and result[1] and getPedWeapon(playerid) == getElementData(resourceRoot, "weapon")[38][2] then
-						if result[1]["warehouse"] < get("max_cf") and result[1]["money"] >= result[1]["price"] and result[1]["nalog"] ~= 0 and result[1]["prod"] ~= 0 then
+						if result[1]["warehouse"] < get("max_cf") and result[1]["money"] >= result[1]["price"] and result[1]["taxation"] ~= 0 and result[1]["prod"] ~= 0 then
 							local randomize = result[1]["price"]
 
 							job_call[playername] = 2
@@ -1696,7 +1695,7 @@ function car_theft_fun(playername, car_theft_win)
 			local plate = getVehiclePlateText(job_vehicleid[playername][1])
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 			if (result[1]["COUNT()"] == 1) then
-				sqlite( "UPDATE car_db SET x = '"..job_vehicleid[playername][2].."', y = '"..job_vehicleid[playername][3].."', z = '"..job_vehicleid[playername][4].."', rot = '"..job_vehicleid[playername][5].."', fuel = '"..fuel[plate].."', probeg = '"..probeg[plate].."' WHERE number = '"..plate.."'")
+				sqlite( "UPDATE car_db SET x = '"..job_vehicleid[playername][2].."', y = '"..job_vehicleid[playername][3].."', z = '"..job_vehicleid[playername][4].."', rot = '"..job_vehicleid[playername][5].."', fuel = '"..fuel[plate].."', kilometrage = '"..kilometrage[plate].."' WHERE number = '"..plate.."'")
 			end
 
 			if car_theft_win then

@@ -664,7 +664,7 @@ function createText ()
 				speed_car = getSpeed(vehicle)*2+40
 			end
 
-			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( localPlayer, "probeg_data" ), ".")[1]
+			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( localPlayer, "kilometrage_data" ), ".")[1]
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
 
