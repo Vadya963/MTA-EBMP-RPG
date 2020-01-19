@@ -1,5 +1,5 @@
 <meta>
-	<script src="object_eb.lua" type="client"/>
+	<script src="object_replace.lua" type="client"/>
 	<file src="leyka.txd"/>
 	<file src="leyka.dff"/>
 	<file src="gun_cane.txd"/>

@@ -1,33 +1,3 @@
-local clear_street_pos = {
-	["Los Santos"] = { [1] = {}, [2] = {} },
-	["San Fierro"] = { [1] = {}, [2] = {} },
-	["Las Venturas"] = { [1] = {}, [2] = {} },
-}
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["Los Santos"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street2'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["Los Santos"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street3'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["San Fierro"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street4'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["San Fierro"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street5'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["Las Venturas"][1][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-for k,v in pairs(sqlite( "SELECT * FROM position WHERE description = 'job_clear_street6'" )) do
-	local spl = split(v["pos"], ",")
-	clear_street_pos["Las Venturas"][2][k] = {tonumber(spl[1]), tonumber(spl[2]), tonumber(spl[3])}
-end
-
 local vehicle_pos = {}
 local uc_txt = fileOpen(":ebmp/other/vehicles_pos.txt")
 for k,v in pairs(split(fileRead ( uc_txt, fileGetSize( uc_txt ) ), ";")) do
@@ -836,51 +806,40 @@ local table_job = {
 		local vehicleid = getPlayerVehicle(playerid)
 		local x,y,z = getElementPosition(playerid)
 		if vehicleid then
-					if getElementModel(vehicleid) == 574 then
-						if getSpeed(vehicleid) < 61 then
+			if getElementModel(vehicleid) == 574 then
+				if getSpeed(vehicleid) < 40*1.61 then
+					if job_call[playername] == 0 then
+						local randomize = random(1,5)
+						job_call[playername] = {1,randomize,0}
+						job_pos[playername] = {x,y,z}
 
-							if job_call[playername] == 0 then
+						sendMessage(playerid, "Очистите "..randomize.." км дороги", color_mes.yellow)
 
-								sendMessage(playerid, "Езжайте по маршруту", color_mes.yellow)
+					elseif job_call[playername][1] == 1 then
+						local dist = (getSpeed(vehicleid)/3600)
+						job_call[playername][3] = job_call[playername][3]+dist
+						job_pos[playername] = {x,y,z}
+						print(dist, job_call[playername][3])
 
-								job_call[playername] = {getElementZoneName ( playerid, true ), random(1,2), 1}
-								job_pos[playername] = {clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][1],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][2],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][3]-1}
-
-								job_blip[playername] = createBlip ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 0, 2, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, 0, 16383.0, playerid )
-								job_marker[playername] = createMarker ( job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], "checkpoint", 5.0, color_mes.yellow[1],color_mes.yellow[2],color_mes.yellow[3], 255, playerid )
-
-							elseif job_call[playername][3] >= 1 and job_call[playername][3] <= #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ]-1 then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
-
-									job_call[playername][3] = job_call[playername][3]+1
-
-									job_pos[playername] = {clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][1],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][2],clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ][ job_call[playername][3] ][3]-1}
-
-									setElementPosition(job_blip[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-									setElementPosition(job_marker[playername], job_pos[playername][1],job_pos[playername][2],job_pos[playername][3])
-								end
-
-							elseif job_call[playername][3] == #clear_street_pos[ job_call[playername][1] ][ job_call[playername][2] ] then
-								if isPointInCircle3D(x,y,z, job_pos[playername][1],job_pos[playername][2],job_pos[playername][3], 5) then
-									local randomize = random(get("zp_player_sas")*job_call[playername][3]/2,get("zp_player_sas")*job_call[playername][3])
-
-									inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
-
-									sendMessage(playerid, "Вы получили за маршрут "..randomize.."$", color_mes.green)
-
-									destroyElement(job_blip[playername])
-									destroyElement(job_marker[playername])
-
-									job_blip[playername] = 0
-									job_marker[playername] = 0
-									job_pos[playername] = 0
-									job_call[playername] = 0
-								end
-							end
-
+						if job_call[playername][2] <= job_call[playername][3] then
+							job_call[playername][1] = 2
 						end
+
+					elseif job_call[playername][1] == 2 then
+						local randomize = random(get("zp_player_sas")*job_call[playername][2]/2,get("zp_player_sas")*job_call[playername][2])
+
+						inv_server_load( playerid, "player", 0, 1, search_inv_player_2_parameter(playerid, 1)+randomize, playername )
+
+						sendMessage(playerid, "Вы получили за маршрут "..randomize.."$", color_mes.green)
+
+						job_blip[playername] = 0
+						job_marker[playername] = 0
+						job_pos[playername] = 0
+						job_call[playername] = 0
 					end
 				end
+			end
+		end
 	end,
 
 	[12] = function(playerid,playername)--работа пожарный

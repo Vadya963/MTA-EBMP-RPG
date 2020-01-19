@@ -15,7 +15,7 @@
 	
 	<script src="script.lua" type="server"/>
 	<script src="job.lua" type="server"/>
-	<script src="client_pos.lua" type="client"/>
+	<script src="bampy_pos.lua" type="client"/>
 	<script src="script_client.lua" type="client"/>
 	<script src="tablet.lua" type="client"/>
 	<script src="menu_m2.lua" type="client"/>
@@ -77,7 +77,7 @@
 		<!--зарплаты-->
 		<setting name="zp_player_taxi" value="[2500]"/>
 		<setting name="zp_player_plane" value="[2000]"/>
-		<setting name="zp_player_sas" value="[200]"/>
+		<setting name="zp_player_sas" value="[5000]"/>
 		<setting name="zp_player_medic" value="[5000]"/>
 		<setting name="zp_player_fire" value="[5000]"/>
 		<setting name="zp_player_police" value="[5000]"/>

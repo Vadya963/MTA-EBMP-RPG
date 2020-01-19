@@ -1439,16 +1439,16 @@ local max_drugs = 100
 
 --инв-рь авто
 local array_car_1 = {
-	[0] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	["0"] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 }
 local array_car_2 = {
-	[0] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	["0"] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 }
 local fuel = {--топливный бак
-	[0] = 50,
+	["0"] = 50,
 }
 local probeg = {--пробег
-	[0] = 0,
+	["0"] = 0,
 }
 
 --инв-рь дома
@@ -9047,11 +9047,6 @@ function ( playerid, cmd, id )
 
 			setElementInterior(vehicleid, getElementInterior(playerid))
 			setElementDimension(vehicleid, getElementDimension(playerid))
-
-			array_car_1[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			array_car_2[plate] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-			fuel[plate] = get("max_fuel")
-			probeg[plate] = 0
 
 			admin_chat(playerid, playername.." ["..getElementData(playerid, "player_id").."] создал т/с")
 
