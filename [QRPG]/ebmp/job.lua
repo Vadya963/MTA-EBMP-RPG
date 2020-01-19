@@ -811,14 +811,12 @@ local table_job = {
 					if job_call[playername] == 0 then
 						local randomize = random(1,5)
 						job_call[playername] = {1,randomize,0}
-						job_pos[playername] = {x,y,z}
 
 						sendMessage(playerid, "Очистите "..randomize.." км дороги", color_mes.yellow)
 
 					elseif job_call[playername][1] == 1 then
 						local dist = (getSpeed(vehicleid)/3600)
 						job_call[playername][3] = job_call[playername][3]+dist
-						job_pos[playername] = {x,y,z}
 
 						if job_call[playername][2] <= job_call[playername][3] then
 							job_call[playername][1] = 2
