@@ -1,4 +1,5 @@
 local screenWidth, screenHeight = guiGetScreenSize ( )
+local width_hd, height_hd = (screenWidth/1366),(screenHeight/768)--адаптация размеров
 local m2font = guiCreateFont( "hud/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "hud/m2font.ttf", 9 )--default-bold
 local m2font_dx1 = "default-bold"--dxCreateFont ( "hud/m2font.ttf", 10 )
@@ -621,8 +622,8 @@ function createText ()
 	local hygiene = getElementData ( localPlayer, "hygiene_data" ) or 0--макс 100
 	local sleep = getElementData ( localPlayer, "sleep_data" ) or 0--макс 100
 	local drugs = getElementData ( localPlayer, "drugs_data" ) or 0--макс 100
-	local width_need = (screenWidth/5.04)--ширина нужд 271
-	local height_need = (screenHeight/5.68)--высота нужд 135
+	local width_need = 270*width_hd
+	local height_need = 150*height_hd
 
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
@@ -649,6 +650,12 @@ function createText ()
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*4, 30, 30, "hud/sleep.png" )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, width_need, 15, tocolor ( 0, 0, 0, 200 ) )
 		dxDrawRectangle( screenWidth-width_need-30, height_need+(20+7.5)*4, (width_need/100)*sleep, 15, tocolor ( 90, 151, 107, 255 ) )
+
+		if timer[1] then
+			dxDrawImage ( (screenWidth-85), height_need+(20+7.5)*5, 85, 85, "hud/timer.png" )
+			dxDrawCircle ( (screenWidth-85)+(85/2), height_need+(20+7.5)*5+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,150 ), tocolor( 255,50,50,150 ) )
+			dxDrawImage ( (screenWidth-85), height_need+(20+7.5)*5, 85, 85, "hud/timer_arrow.png", (360.0/timer[2])*timer[3] )
+		end
 
 		local vehicle = getPlayerVehicle ( localPlayer )
 		if vehicle then--отображение скорости авто
@@ -684,12 +691,6 @@ function createText ()
 			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( color_mes.white[1], color_mes.white[2], color_mes.white[3] ), 1, m2font_dx1 )
 			dxdrawtext ( "Атака "..getTeamName(name_mafia[spl_gz[1][3]][1])..": "..spl_gz[1][4].." очков", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
 			dxdrawtext ( "Защита "..getTeamName(name_mafia[spl_gz[1][5]][1])..": "..spl_gz[1][6].." очков", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
-		end
-
-		if timer[1] then
-			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer.png" )
-			dxDrawCircle ( (screenWidth-85)+(85/2), 238+(85/2), 30, -90.0, (360.0/timer[2])*timer[3]-90, tocolor( 255,50,50,150 ), tocolor( 255,50,50,150 ) )
-			dxDrawImage ( (screenWidth-85), 238, 85, 85, "hud/timer_arrow.png", (360.0/timer[2])*timer[3] )
 		end
 	end
 
