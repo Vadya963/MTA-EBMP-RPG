@@ -3664,7 +3664,7 @@ function displayLoadedRes ( res )--старт ресурсов
 	removeWorldModel(3855, 999999, 0, 0, 0)
 
 	setTimer(debuginfo, 1000, 0)--дебагинфа
-	--setTimer(need, 60000, 0)--уменьшение потребностей(временно выкл)
+	setTimer(need, 60000, 0)--уменьшение потребностей
 	setTimer(need_1, 10000, 0)--смена скина на бомжа
 	setTimer(fuel_down, 1000, 0)--система топлива
 	setTimer(set_weather, 1000, 0)--погода сервера
