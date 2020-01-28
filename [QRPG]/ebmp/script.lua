@@ -183,9 +183,9 @@ function player_position( playerid )
 end
 
 local car_shtraf_stoyanka = createColRectangle( 2054.1,2367.5, 62, 70 )
-local ls_airport = createColRectangle( 1364.041015625,-2766.3720703125, 789, 581 )
+--[[local ls_airport = createColRectangle( 1364.041015625,-2766.3720703125, 789, 581 )
 local lv_airport = createColRectangle( 1258.2685546875,1143.7607421875, 473, 719 )
-local sf_airport = createColRectangle( -1734.609375,-695.794921875, 680, 1156 )
+local sf_airport = createColRectangle( -1734.609375,-695.794921875, 680, 1156 )]]
 function isPointInCircle3D(x, y, z, x1, y1, z1, radius)
 	if getDistanceBetweenPoints3D(x, y, z, x1, y1, z1) <= radius then
 		return true
@@ -3060,7 +3060,7 @@ function buy_subject_fun( playerid, text, number, value )
 			return
 		end
 
-		if search_inv_player(playerid, 50, 1) == 0 then
+		if search_inv_player_2_parameter(playerid, 50) ~= getElementData(playerid, "player_id") then
 			sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
 			return
 		end
@@ -3165,7 +3165,7 @@ function buy_subject_fun( playerid, text, number, value )
 		end
 
 			if value == 1 then
-				if search_inv_player(playerid, 50, 1) == 0 then
+				if search_inv_player_2_parameter(playerid, 50) ~= getElementData(playerid, "player_id") then
 					sendMessage(playerid, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
 					return
 				end
@@ -4717,7 +4717,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				end
 			end
 
-			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 then
+			if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player_2_parameter(playerid, 2) == getElementData(playerid, "player_id") then
 				if tonumber(plate) ~= 0 then
 					triggerClientEvent( playerid, "event_tab_load", playerid, "car", plate )
 				end
@@ -5898,7 +5898,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 						if result[1]["COUNT()"] == 1 then
 							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-							if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and getVehicleOccupant(vehicleid, 0) then
+							if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player_2_parameter(playerid, 2) == getElementData(playerid, "player_id") and getVehicleOccupant(vehicleid, 0) then
 								setVehicleEngineState(vehicleid, true)
 							end
 						end
@@ -9243,7 +9243,7 @@ function ( playerid, state )
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-				if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player(playerid, 2, 1) ~= 0 and fuel[plate] > 0 then
+				if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player_2_parameter(playerid, 2) == getElementData(playerid, "player_id") and fuel[plate] > 0 then
 					if state == "true" then
 						setVehicleEngineState(vehicleid, true)
 						me_chat(playerid, playername.." завел(а) двигатель")
