@@ -105,9 +105,10 @@ local name_mafia = {
 	[7] = {createTeam("Da Nang Boys", 255,0,0), {121,122,123}},
 	[8] = {createTeam("Russian Mafia", 100,100,100), {111,112,113}},
 	[9] = {createTeam("Bikers", 150,75,0), {100,247,248,254}},
+	[10] = {createTeam("Italian Mafia", 255,150,0), {124,125,126,127}},
 }
 for k,v in pairs(name_mafia) do
-	setTeamFriendlyFire ( v[1], false )
+	setTeamFriendlyFire ( v[1], false )--false не могут убить союзников
 end
 local guns_zone = {}
 ------------------------------------------------------------------------------------------------------------------
@@ -374,7 +375,7 @@ function set_weather()
 	if hour == 0 and minute == 0 then
 		setWeatherBlended(tomorrow_weather)
 
-		tomorrow_weather = random(0,1)
+		tomorrow_weather = random(0,19)
 		print("[tomorrow_weather] "..tomorrow_weather)
 
 		setElementData(resourceRoot, "tomorrow_weather_data", tomorrow_weather)
@@ -737,7 +738,8 @@ local giuseppe = {
 	{info_png[85][1].." "..getTeamName (name_mafia[6][1]), 6, 5000, 85},
 	{info_png[85][1].." "..getTeamName (name_mafia[7][1]), 7, 5000, 85},
 	{info_png[85][1].." "..getTeamName (name_mafia[8][1]), 8, 5000, 85},
-	{info_png[85][1].." "..getTeamName (name_mafia[9][1]), 9, 5000, 85},--13
+	{info_png[85][1].." "..getTeamName (name_mafia[9][1]), 9, 5000, 85},
+	{info_png[85][1].." "..getTeamName (name_mafia[10][1]), 10, 5000, 85},--14
 	{info_png[90][1].." 78 "..info_png[90][2], 78, 1000, 90},
 }
 
@@ -3109,7 +3111,7 @@ function buy_subject_fun( playerid, text, number, value )
 	elseif value == "giuseppe" then
 		for k,v in pairs(giuseppe) do
 			if v[1] == text then
-				if k >= 5 and k <= 13 then
+				if k >= 5 and k <= 14 then
 					local count = false
 					local name_mafia_skin = ""
 					for k,j in pairs(name_mafia[v[2]][2]) do
