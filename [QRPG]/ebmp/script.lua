@@ -4745,7 +4745,7 @@ function exit_car_fun( playerid )
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
 
-		if getVehicleOccupant ( vehicleid, 0 ) then
+		if getVehicleOccupant ( vehicleid, 0 ) == playerid then
 			setVehicleEngineState(vehicleid, false)
 
 			local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
@@ -4818,7 +4818,7 @@ local x,y,z = getElementPosition(playerid)
 				if vehicleid then
 					local plate = getVehiclePlateText ( vehicleid )
 
-					if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) and tonumber(plate) ~= 0 then
+					if search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and getVehicleOccupant ( vehicleid, 0 ) == playerid and tonumber(plate) ~= 0 then
 						for i=0,get("max_inv") do
 							triggerClientEvent( playerid, "event_inv_load", playerid, "car", i, array_car_1[plate][i+1], array_car_2[plate][i+1] )
 						end
@@ -4938,7 +4938,7 @@ function throw_earth_server (playerid, value, id3, id1, id2, tabpanel)--выбр
 	if vehicleid then
 		local plate = getVehiclePlateText ( vehicleid )
 
-		if getVehicleOccupant ( vehicleid, 0 ) and id2 == tonumber(plate) and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
+		if getVehicleOccupant ( vehicleid, 0 ) == playerid and id2 == tonumber(plate) and id1 == 6 then--когда выбрасываешь ключ в инв-ре исчезают картинки
 			triggerClientEvent( playerid, "event_tab_load", playerid, "car", "" )
 		end
 	end
@@ -5317,7 +5317,7 @@ function give_subject( playerid, value, id1, id2, load_value )--выдача п�
 		if vehicleid then
 			count2 = amount_inv_car_1_parameter(vehicleid, 0)
 
-			if not getVehicleOccupant ( vehicleid, 0 ) then
+			if getVehicleOccupant ( vehicleid, 0 ) ~= playerid then
 				return
 
 			elseif count2 == 0 then
@@ -5396,7 +5396,7 @@ function delet_subject(playerid, id)--удаление предметов из �
 	local money = 0
 		
 	if vehicleid then
-		if not getVehicleOccupant ( vehicleid, 0 ) then
+		if getVehicleOccupant ( vehicleid, 0 ) ~= playerid then
 			return
 		end
 
@@ -5900,7 +5900,7 @@ function use_inv (playerid, value, id3, id_1, id_2 )--использование
 						local result = sqlite( "SELECT COUNT() FROM car_db WHERE number = '"..plate.."'" )
 						if result[1]["COUNT()"] == 1 then
 							local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
-							if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player_2_parameter(playerid, 2) == getElementData(playerid, "player_id") and getVehicleOccupant(vehicleid, 0) then
+							if result[1]["taxation"] ~= 0 and search_inv_player(playerid, 6, tonumber(plate)) ~= 0 and search_inv_player_2_parameter(playerid, 2) == getElementData(playerid, "player_id") and getVehicleOccupant(vehicleid, 0) == playerid then
 								setVehicleEngineState(vehicleid, true)
 							end
 						end

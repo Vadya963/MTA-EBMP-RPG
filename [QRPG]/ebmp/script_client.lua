@@ -722,7 +722,7 @@ function createText ()
 		
 		if isPointInCircle3D(x,y,z, xv,yv,zv, 20) then
 			local coords = { getScreenFromWorldPosition( xv,yv,zv+1, 0, false ) }
-			local plate = getVehiclePlateText(vehicle)
+			local plate = tostring(getVehiclePlateText(vehicle))
 
 			if coords[1] and coords[2] then
 				if getElementData(localPlayer, "speed_car_device_data") == 1 then
