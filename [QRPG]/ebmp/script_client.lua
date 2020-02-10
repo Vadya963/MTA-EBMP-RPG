@@ -684,6 +684,37 @@ function createText ()
 			end
 		end
 
+		for k,vehicle in pairs(getElementsByType("vehicle")) do--отображение скорости авто над машиной
+			local xv,yv,zv = getElementPosition(vehicle)
+			local x,y,z = getElementPosition(localPlayer)
+			
+			if isPointInCircle3D(x,y,z, xv,yv,zv, 20) then
+				local coords = { getScreenFromWorldPosition( xv,yv,zv+1, 0, false ) }
+				local plate = tostring(getVehiclePlateText(vehicle))
+
+				if coords[1] and coords[2] then
+					if getElementData(localPlayer, "speed_car_device_data") == 1 then
+						local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
+						local speed_table = split(getSpeed(vehicle), ".")
+						local dimensions = dxGetTextWidth ( speed_table[1].." mp/h", 1, m2font_dx1 )
+
+						if coords[1] and coords[2] then
+							if tonumber(speed_table[1]) >= max_speed then
+								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
+							elseif tonumber(speed_table[1]) < max_speed then
+								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+							end
+						end
+					end
+
+					local dimensions = dxGetTextWidth ( plate, 1, m2font_dx1 )
+					if getElementDimension(vehicle) == 0 then
+						dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					end
+				end
+			end
+		end
+
 		local spl_gz = getElementData(localPlayer, "guns_zone2")
 		local name_mafia = getElementData(resourceRoot, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
@@ -716,36 +747,6 @@ function createText ()
 		dxdrawtext ( sleep, screenWidth-width_need-30-30, height_need+(20+7.5)*4, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
 	end
 
-
-	for k,vehicle in pairs(getElementsByType("vehicle")) do--отображение скорости авто над машиной
-		local xv,yv,zv = getElementPosition(vehicle)
-		
-		if isPointInCircle3D(x,y,z, xv,yv,zv, 20) then
-			local coords = { getScreenFromWorldPosition( xv,yv,zv+1, 0, false ) }
-			local plate = tostring(getVehiclePlateText(vehicle))
-
-			if coords[1] and coords[2] then
-				if getElementData(localPlayer, "speed_car_device_data") == 1 then
-					local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
-					local speed_table = split(getSpeed(vehicle), ".")
-					local dimensions = dxGetTextWidth ( speed_table[1].." mp/h", 1, m2font_dx1 )
-
-					if coords[1] and coords[2] then
-						if tonumber(speed_table[1]) >= max_speed then
-							dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
-						elseif tonumber(speed_table[1]) < max_speed then
-							dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
-						end
-					end
-				end
-
-				local dimensions = dxGetTextWidth ( plate, 1, m2font_dx1 )
-				if getElementDimension(vehicle) == 0 then
-					dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
-				end
-			end
-		end
-	end
 
 	if getElementData(localPlayer, "gps_device_data") == 1 then
 		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
