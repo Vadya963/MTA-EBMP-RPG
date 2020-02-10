@@ -675,12 +675,12 @@ function createText ()
 
 			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
 
-			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/speed_v.png" )
-			dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/arrow_speed_v.png", speed_car )
-			dxDrawImage ( (screenWidth-105), screenHeight-120, 105, 105, "hud/fuel_v.png", 30.0-(fuel*1.2) )
+			dxDrawImage ( screenWidth-105-146, screenHeight-120, 105, 105, "hud/speed_v.png" )
+			dxDrawImage ( screenWidth-105-146, screenHeight-120, 105, 105, "hud/arrow_speed_v.png", speed_car )
+			dxDrawImage ( (screenWidth-105-146), screenHeight-120, 105, 105, "hud/fuel_v.png", 30.0-(fuel*1.2) )
 
 			if fuel <= 15 then
-				dxDrawImage ( screenWidth-105, screenHeight-120, 105, 105, "hud/low_fuel.png" )
+				dxDrawImage ( screenWidth-105-146, screenHeight-120, 105, 105, "hud/low_fuel.png" )
 			end
 		end
 

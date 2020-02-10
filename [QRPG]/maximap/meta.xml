@@ -1,6 +1,15 @@
 <meta>
 	<info name="Maximap" version="0.6" type="misc" author="Gamesnert" description="Replacement for the F11 map, which allows for replacement of the background image, smoothened movement and more customisation through export functions."/>
 
+	<script src="c_hud_mask.lua" type="client" validate="false"/>
+	<file src="hud_mask.fx" type="client" />
+	<file src="include/tex_matrix.fx" type="client" />
+	<file src="images/circle_mask.png" type="client" />
+	<file src="images/sept_mask.png" type="client" />
+	<file src="images/radar_ver1.png" type="client" />
+	<file src="images/radar_ver2.png" type="client" />
+	<file src="images/pointer.png" type="client" />
+
 	<script src="maximap_c.lua" type="client"/>
 	<script src="getControlState.lua" type="client"/>
 
