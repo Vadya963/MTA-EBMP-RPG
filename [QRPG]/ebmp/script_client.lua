@@ -64,6 +64,22 @@ function playerDamage_text ( attacker, weapon, bodypart, loss )--получен�
 			break
 		end
 	end
+
+	if attacker then
+		if getElementType ( attacker ) == "player" then
+			body_hit_sound()
+
+		elseif getElementType ( attacker ) == "vehicle" then
+			for i,playerid in pairs(getElementsByType("player")) do
+				local vehicleid = getPlayerVehicle(playerid)
+
+				if attacker == vehicleid then
+					body_hit_sound()
+					break
+				end
+			end
+		end
+	end
 end
 addEventHandler ( "onClientPedDamage", root, playerDamage_text )
 

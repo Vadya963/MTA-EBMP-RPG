@@ -3946,7 +3946,6 @@ function()
 
 	setPlayerHudComponentVisible ( playerid, "money", false )
 	setPlayerHudComponentVisible ( playerid, "health", false )
-	setPlayerHudComponentVisible ( playerid, "area_name", false )
 	setPlayerHudComponentVisible ( playerid, "vehicle_name", true )
 	setPlayerNametagShowing ( playerid, false )
 	setPlayerBlurLevel ( playerid, 0 )

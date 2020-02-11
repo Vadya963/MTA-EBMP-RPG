@@ -306,7 +306,7 @@ function tablet_fun()--создание планшета
 			function outputEditBox ( button, state, absoluteX, absoluteY )--продать предмет
 				local id1, id2, money, name_buy = 0, tonumber(guiGetText ( edit_id2 )), tonumber(guiGetText ( edit_money )), guiGetText ( edit_text_id4 )
 
-				for k,v in pairs(info_png) do
+				for k,v in ipairs(info_png) do
 					if v[1] == guiComboBoxGetItemText(edit_id1, guiComboBoxGetSelected(edit_id1)) then
 						id1 = k
 						break
@@ -886,7 +886,7 @@ function tablet_fun()--создание планшета
 
 				setTimer(function()
 					for k,v in pairs(getElementData(localPlayer, "house_db")) do
-						guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
+						guiGridListAddRow(shoplist, v["number"], v["door"], v["taxation"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
 					end
 				end, 1000, 1)
 			end
@@ -927,7 +927,7 @@ function tablet_fun()--создание планшета
 
 			guiGridListAddColumn(shoplist, "number", 0.1)
 			guiGridListAddColumn(shoplist, "door", 0.1)
-			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "taxation", 0.1)
 			guiGridListAddColumn(shoplist, "x", 0.2)
 			guiGridListAddColumn(shoplist, "y", 0.2)
 			guiGridListAddColumn(shoplist, "z", 0.2)
@@ -935,7 +935,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "world", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(localPlayer, "house_db")) do
-				guiGridListAddRow(shoplist, v["number"], v["door"], v["nalog"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
+				guiGridListAddRow(shoplist, v["number"], v["door"], v["taxation"], v["x"], v["y"], v["z"], v["interior"], v["world"], v["inventory"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_house, outputEditBox, false )
@@ -961,7 +961,7 @@ function tablet_fun()--создание планшета
 
 				setTimer(function()
 					for k,v in pairs(getElementData(localPlayer, "business_db")) do
-						guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
+						guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["taxation"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
 					end
 				end, 1000, 1)
 			end
@@ -1004,7 +1004,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "type", 0.2)
 			guiGridListAddColumn(shoplist, "price", 0.1)
 			guiGridListAddColumn(shoplist, "money", 0.1)
-			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "taxation", 0.1)
 			guiGridListAddColumn(shoplist, "warehouse", 0.1)
 			guiGridListAddColumn(shoplist, "x", 0.2)
 			guiGridListAddColumn(shoplist, "y", 0.2)
@@ -1012,7 +1012,7 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "interior", 0.1)
 			guiGridListAddColumn(shoplist, "world", 0.1)
 			for k,v in pairs(getElementData(localPlayer, "business_db")) do
-				guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["nalog"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
+				guiGridListAddRow(shoplist, v["number"], v["type"], v["price"], v["money"], v["taxation"], v["warehouse"], v["x"], v["y"], v["z"], v["interior"], v["world"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_business, outputEditBox, false )
@@ -1127,7 +1127,7 @@ function tablet_fun()--создание планшета
 				
 				setTimer(function()
 					for k,v in pairs(getElementData(localPlayer, "car_db")) do
-						guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
+						guiGridListAddRow(shoplist, v["number"], v["model"], v["taxation"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["kilometrage"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 					end
 				end, 1000, 1)
 			end
@@ -1168,9 +1168,9 @@ function tablet_fun()--создание планшета
 			end
 			addEventHandler ( "onClientGUIClick", dim_0, complete, false )
 
-			guiGridListAddColumn(shoplist, "number", 0.1)
+			guiGridListAddColumn(shoplist, "number", 0.15)
 			guiGridListAddColumn(shoplist, "model", 0.1)
-			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "taxation", 0.1)
 			guiGridListAddColumn(shoplist, "frozen", 0.1)
 			guiGridListAddColumn(shoplist, "evacuate", 0.1)
 			guiGridListAddColumn(shoplist, "x", 0.2)
@@ -1183,14 +1183,14 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "paintjob", 0.1)
 			guiGridListAddColumn(shoplist, "tune", 0.5)
 			guiGridListAddColumn(shoplist, "stage", 0.1)
-			guiGridListAddColumn(shoplist, "probeg", 0.2)
+			guiGridListAddColumn(shoplist, "kilometrage", 0.2)
 			guiGridListAddColumn(shoplist, "wheel", 0.1)
 			guiGridListAddColumn(shoplist, "hydraulics", 0.1)
 			guiGridListAddColumn(shoplist, "wheel_rgb", 0.2)
 			guiGridListAddColumn(shoplist, "theft", 0.1)
 			guiGridListAddColumn(shoplist, "inventory", 4.0)
 			for k,v in pairs(getElementData(localPlayer, "car_db")) do
-				guiGridListAddRow(shoplist, v["number"], v["model"], v["nalog"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["probeg"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
+				guiGridListAddRow(shoplist, v["number"], v["model"], v["taxation"], v["frozen"], v["evacuate"], v["x"], v["y"], v["z"], v["rot"], v["fuel"], v["car_rgb"], v["headlight_rgb"], v["paintjob"], v["tune"], v["stage"], v["kilometrage"], v["wheel"], v["hydraulics"], v["wheel_rgb"], v["theft"], v["inventory"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_car, outputEditBox, false )
@@ -1215,7 +1215,7 @@ function tablet_fun()--создание планшета
 				
 				setTimer(function()
 					for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
-						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
+						guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["taxation"], v["warehouse"], v["prod"])
 					end
 				end, 1000, 1)
 			end
@@ -1244,11 +1244,11 @@ function tablet_fun()--создание планшета
 			guiGridListAddColumn(shoplist, "price", 0.1)
 			guiGridListAddColumn(shoplist, "coef", 0.1)
 			guiGridListAddColumn(shoplist, "money", 0.2)
-			guiGridListAddColumn(shoplist, "nalog", 0.1)
+			guiGridListAddColumn(shoplist, "taxation", 0.1)
 			guiGridListAddColumn(shoplist, "warehouse", 0.1)
 			guiGridListAddColumn(shoplist, "prod", 0.1)
 			for k,v in pairs(getElementData(localPlayer, "cow_farms_table2")) do
-				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["nalog"], v["warehouse"], v["prod"])
+				guiGridListAddRow(shoplist, v["number"], v["price"], v["coef"], v["money"], v["taxation"], v["warehouse"], v["prod"])
 			end
 		end
 		addEventHandler ( "onClientGUIClick", tp_cow_farms, outputEditBox, false )

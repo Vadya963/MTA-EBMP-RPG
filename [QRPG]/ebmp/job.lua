@@ -1009,7 +1009,7 @@ local table_job = {
 							triggerClientEvent(playerid, "event_setPedAimTarget", playerid, job_ped[playername], x, y, z)
 
 							local angle = math.deg(math.atan2(x-job_pos[playername][1],y-job_pos[playername][2]))*-1
-							setElementRotation(job_ped[playername], 0,0,angle)
+							setElementRotation(job_ped[playername], 0,0,angle+90)
 						end
 
 					elseif job_call[playername][1] == job_call[playername][3]+3 then
