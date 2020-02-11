@@ -3386,7 +3386,7 @@ function till_fun( playerid, value, money )
 			end
 		end
 
-	elseif value == "Цена на товар" then
+	elseif value == "Цена на товар (надбавка в N раз)" then
 		local result = sqlite( "SELECT * FROM business_db WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
 		if not result[1] then
