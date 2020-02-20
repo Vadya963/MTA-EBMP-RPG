@@ -8239,8 +8239,6 @@ function (playerid)
 
 			house_pos[dim] = {x, y, z, createBlip ( x, y, z, 32, 0, 0,0,0,0, 0, 500 ), createPickup ( x, y, z, 3, get("house_icon"), 10000 )}
 			setElementData(resourceRoot, "house_pos", house_pos)
-			table.insert(taxi_pos, {x, y, z})
-			table.insert(fire_pos, {x, y, z})
 
 			sqlite( "INSERT INTO house_db (number, door, taxation, x, y, z, interior, world, inventory) VALUES ('"..dim.."', '"..house_door.."', '5', '"..x.."', '"..y.."', '"..z.."', '1', '"..dim.."', '106:"..dim..",0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,0:0,')" )
 
