@@ -543,7 +543,7 @@ local info_png = {
 	[81] = {"динамит", "шт"},
 	[82] = {"шнур", "шт"},
 	[83] = {"тратил", "гр"},
-	[84] = {"отмычка", "процентов"},
+	[84] = {"отмычка", "%"},
 	[85] = {"повязка", "опг"},
 	[86] = {"документы на скотобойню под номером", ""},
 	[87] = {"трудовой договор забойщика скота на", "скотобойне"},
@@ -2869,7 +2869,7 @@ function sqlite_load(playerid, value)
 			local farms = {
 				{result[1]["number"], "Зарплата", result[1]["price"].."$"},
 				{result[1]["number"], "Баланс", split(result[1]["money"],".")[1].."$"},
-				{result[1]["number"], "Доход от продаж", result[1]["coef"].." процентов"},
+				{result[1]["number"], "Доход от продаж", result[1]["coef"].."%"},
 				{result[1]["number"], "Налог", result[1]["taxation"].." дней"},
 				{result[1]["number"], "Склад", result[1]["warehouse"].." тушек"},
 				{result[1]["number"], "Склад", result[1]["prod"].." мешков с кормом"},
@@ -3518,7 +3518,7 @@ function cow_farms(playerid, value, val1, val2)
 
 			sqlite( "UPDATE cow_farms_db SET coef = '"..val2.."' WHERE number = '"..search_inv_player_2_parameter(playerid, doc).."'" )
 
-			sendMessage(playerid, "Вы установили доход от продаж "..val2.." процентов", color_mes.yellow)
+			sendMessage(playerid, "Вы установили доход от продаж "..val2.."%", color_mes.yellow)
 
 		elseif val1 == "Баланс" then
 			if val2 == 0 then
