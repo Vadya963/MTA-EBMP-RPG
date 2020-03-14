@@ -2,7 +2,7 @@ local screenWidth, screenHeight = guiGetScreenSize ( )
 local width_hd, height_hd = (screenWidth/1366),(screenHeight/768)--адаптация размеров
 local m2font = guiCreateFont( "hud/m2font.ttf", 9 )
 local m2font_dx = dxCreateFont ( "hud/m2font.ttf", 9 )--default-bold
-local m2font_dx1 = "default-bold"--dxCreateFont ( "hud/m2font.ttf", 10 )
+local dxfont = "default-bold"--dxCreateFont ( "hud/m2font.ttf", 10 )
 setDevelopmentMode ( true )
 local debuginfo = false
 local hud = true
@@ -644,7 +644,7 @@ function createText ()
 	if hud then
 		local client_time = "Date: "..time["monthday"].."."..time["month"]+'1'.."."..time["year"]+'1900'.." Time: "..time["hour"]..":"..time["minute"]..":"..time["second"]
 		local text = "FPS: "..FPS.." | Ping: "..getPlayerPing(localPlayer).." | ID: "..getPlayer_Id(localPlayer).." | Players online: "..#getElementsByType("player").." | Minute in game: "..time_game.." | "..client_time
-		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( text, 2.0, 0.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
 
 		--нужды
 		dxDrawImage ( screenWidth-30, height_need-7.5+(20+7.5)*0, 30, 30, "hud/alcohol.png" )
@@ -689,7 +689,7 @@ function createText ()
 
 			local speed_vehicle = "plate "..plate.." | heal vehicle "..heal_vehicle[1].." | kilometrage "..split(getElementData ( localPlayer, "kilometrage_data" ), ".")[1]
 
-			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( speed_vehicle, 5, screenHeight-16, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
 
 			dxDrawImage ( screenWidth-105-146, screenHeight-120, 105, 105, "hud/speed_v.png" )
 			dxDrawImage ( screenWidth-105-146, screenHeight-120, 105, 105, "hud/arrow_speed_v.png", speed_car )
@@ -712,20 +712,20 @@ function createText ()
 					if getElementData(localPlayer, "speed_car_device_data") == 1 then
 						local coords = { getScreenFromWorldPosition( xv,yv,zv+1.5, 0, false ) }
 						local speed_table = split(getSpeed(vehicle), ".")
-						local dimensions = dxGetTextWidth ( speed_table[1].." mp/h", 1, m2font_dx1 )
+						local dimensions = dxGetTextWidth ( speed_table[1].." mp/h", 1, dxfont )
 
 						if coords[1] and coords[2] then
 							if tonumber(speed_table[1]) >= max_speed then
-								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
+								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, dxfont )
 							elseif tonumber(speed_table[1]) < max_speed then
-								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+								dxdrawtext ( speed_table[1].." mp/h", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 							end
 						end
 					end
 
-					local dimensions = dxGetTextWidth ( plate, 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( plate, 1, dxfont )
 					if getElementDimension(vehicle) == 0 then
-						dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+						dxdrawtext ( plate, coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 					end
 				end
 			end
@@ -735,9 +735,9 @@ function createText ()
 		local name_mafia = getElementData(resourceRoot, "name_mafia")
 		if spl_gz and spl_gz[1][1] == 1 then
 			dxDrawRectangle( 0.0, screenHeight-16.0*6-124, 250.0, 16.0*3, tocolor( 0, 0, 0, 150 ) )
-			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( color_mes.white[1], color_mes.white[2], color_mes.white[3] ), 1, m2font_dx1 )
-			dxdrawtext ( "Атака "..getTeamName(name_mafia[spl_gz[1][3]][1])..": "..spl_gz[1][4].." очков", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, m2font_dx1 )
-			dxdrawtext ( "Защита "..getTeamName(name_mafia[spl_gz[1][5]][1])..": "..spl_gz[1][6].." очков", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, m2font_dx1 )
+			dxdrawtext ( "Время: "..spl_gz[2].." сек", 2.0, screenHeight-16*6-124, 0.0, 0.0, tocolor( color_mes.white[1], color_mes.white[2], color_mes.white[3] ), 1, dxfont )
+			dxdrawtext ( "Атака "..getTeamName(name_mafia[spl_gz[1][3]][1])..": "..spl_gz[1][4].." очков", 2.0, screenHeight-16*5-124, 0.0, 0.0, tocolor( 255,0,50 ), 1, dxfont )
+			dxdrawtext ( "Защита "..getTeamName(name_mafia[spl_gz[1][5]][1])..": "..spl_gz[1][6].." очков", 2.0, screenHeight-16*4-124, 0.0, 0.0, tocolor( 0,50,255 ), 1, dxfont )
 		end
 	end
 
@@ -747,20 +747,20 @@ function createText ()
 
 
 	if isCursorShowing() then
-		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( "skin "..getElementModel(localPlayer)..", interior "..getElementInterior(localPlayer)..", dimension "..getElementDimension(localPlayer), 300.0, 70.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( x.." "..y.." "..z, 300.0, 40.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( rx.." "..ry.." "..rz, 300.0, 55.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( "skin "..getElementModel(localPlayer)..", interior "..getElementInterior(localPlayer)..", dimension "..getElementDimension(localPlayer), 300.0, 70.0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
 
 		if isCursorShowing() then
 			local screenx, screeny, worldx, worldy, worldz = getCursorPosition()
-			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( screenx*screenWidth..", "..screeny*screenHeight, screenx*screenWidth, screeny*screenHeight+15, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
 		end
 
-		dxdrawtext ( (alcohol/100), screenWidth-width_need-30-30, height_need+(20+7.5)*0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( drugs, screenWidth-width_need-30-30, height_need+(20+7.5)*1, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( satiety, screenWidth-width_need-30-30, height_need+(20+7.5)*2, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( hygiene, screenWidth-width_need-30-30, height_need+(20+7.5)*3, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
-		dxdrawtext ( sleep, screenWidth-width_need-30-30, height_need+(20+7.5)*4, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1 )
+		dxdrawtext ( (alcohol/100), screenWidth-width_need-30-30, height_need+(20+7.5)*0, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( drugs, screenWidth-width_need-30-30, height_need+(20+7.5)*1, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( satiety, screenWidth-width_need-30-30, height_need+(20+7.5)*2, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( hygiene, screenWidth-width_need-30-30, height_need+(20+7.5)*3, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
+		dxdrawtext ( sleep, screenWidth-width_need-30-30, height_need+(20+7.5)*4, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont )
 	end
 
 
@@ -768,10 +768,10 @@ function createText ()
 		local coords = { getScreenFromWorldPosition( x,y,z, 0, false ) }
 		local x_table = split(x, ".")
 		local y_table = split(y, ".")
-		local dimensions = dxGetTextWidth ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", 1, m2font_dx1 )
+		local dimensions = dxGetTextWidth ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", 1, dxfont )
 
 		if coords[1] and coords[2] then
-			dxdrawtext ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+			dxdrawtext ( "[X  "..x_table[1]..", Y  "..y_table[1].."]", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 		end
 	end
 	
@@ -783,11 +783,11 @@ function createText ()
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, m2font_dx1 )
-					dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "Дом #"..k.."", 1, dxfont )
+					dxdrawtext ( "Дом #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT)", 1, dxfont )
+					dxdrawtext ( "(Войти - ALT)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 			end
 		end
@@ -797,11 +797,11 @@ function createText ()
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], getElementData(resourceRoot, "house_bussiness_radius")) then
 				local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, m2font_dx1 )
-					dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "Бизнес #"..k.."", 1, dxfont )
+					dxdrawtext ( "Бизнес #"..k.."", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", 1, dxfont )
+					dxdrawtext ( "(Войти - ALT, Разгрузить товар - E, Меню - X)", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 			end
 		end
@@ -811,11 +811,11 @@ function createText ()
 			if isPointInCircle3D(x,y,z, v[6],v[7],v[8], v[12]) then				
 				local coords = { getScreenFromWorldPosition( v[6],v[7],v[8]+0.2, 0, false ) }
 				if coords[1] and coords[2] then
-					local dimensions = dxGetTextWidth ( "Здание", 1, m2font_dx1 )
-					dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "Здание", 1, dxfont )
+					dxdrawtext ( "Здание", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 
-					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[11]..")", 1, m2font_dx1 )
-					dxdrawtext ( "(Войти - ALT"..v[11]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "(Войти - ALT"..v[11]..")", 1, dxfont )
+					dxdrawtext ( "(Войти - ALT"..v[11]..")", coords[1]-(dimensions/2), coords[2]+15, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 			end
 		end
@@ -828,8 +828,8 @@ function createText ()
 		if area then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx1 )
-				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( v[5], 1, dxfont )
+				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 			end
 		end
 	end
@@ -842,27 +842,27 @@ function createText ()
 		if info1_png ~= 0 then
 
 			if info1_png == 6 and info2_png ~= 0 and getVehicleNameFromPlate( info2_png ) then
-				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], 1, m2font_dx1 )
-				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], 1, dxfont )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, dxfont, "left", "top", false, false, true )
+				dxDrawText ( info_png[info1_png][1].." "..info2_png.." ("..getVehicleNameFromPlate( info2_png )..") "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont, "left", "top", false, false, true )
 			else
-				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], 1, m2font_dx1 )
-				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				local dimensions = dxGetTextWidth ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], 1, dxfont )
+				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, dxfont, "left", "top", false, false, true )
+				dxDrawText ( info_png[info1_png][1].." "..split(info2_png,".")[1].." "..info_png[info1_png][2], ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont, "left", "top", false, false, true )
 			end
 			
 			if debuginfo then
-				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( "ID предмета "..info1_png, 1, dxfont )
 
-				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+30, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+30, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+30, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, dxfont, "left", "top", false, false, true )
+				dxDrawText ( "ID предмета "..info1_png, ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+30, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont, "left", "top", false, false, true )
 			end
 			
 			if tab_player == guiGetSelectedTab(tabPanel) then
-				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( "(использовать ПКМ)", 1, dxfont )
 
-				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, m2font_dx1, "left", "top", false, false, true )
-				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, m2font_dx1, "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2)+1, height+gui_pos_y+y+1+15, 0.0, 0.0, tocolor ( 0, 0, 0, 255 ), 1, dxfont, "left", "top", false, false, true )
+				dxDrawText ( "(использовать ПКМ)", ((width+gui_pos_x+x)+25)-(dimensions/2), height+gui_pos_y+y+15, 0.0, 0.0, tocolor ( color_mes.white[1], color_mes.white[2], color_mes.white[3], 255 ), 1, dxfont, "left", "top", false, false, true )
 			end
 		end
 	end
@@ -881,27 +881,27 @@ function createText ()
 		if area2 then
 			local coords = { getScreenFromWorldPosition( v[1][1], v[1][2], v[1][3]-1, 0, false ) }
 			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( info_png[v[9]][1], 1, m2font_dx1 )
-				dxdrawtext ( info_png[v[9]][1], coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( info_png[v[9]][1], 1, dxfont )
+				dxdrawtext ( info_png[v[9]][1], coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 
 				if v[8] then
-					local dimensions = dxGetTextWidth ( "полито", 1, m2font_dx1 )
-					dxdrawtext ( "полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "полито", 1, dxfont )
+					dxdrawtext ( "полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				else
-					local dimensions = dxGetTextWidth ( "не полито", 1, m2font_dx1 )
-					dxdrawtext ( "не полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "не полито", 1, dxfont )
+					dxdrawtext ( "не полито", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 
 				if v[2] > 0 then
-					local dimensions = dxGetTextWidth ( "созреет через "..v[2].." мин", 1, m2font_dx1 )
-					dxdrawtext ( "созреет через "..v[2].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "созреет через "..v[2].." мин", 1, dxfont )
+					dxdrawtext ( "созреет через "..v[2].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				elseif v[2] == 0 then
-					local dimensions = dxGetTextWidth ( "исчезнет через "..v[3].." мин", 1, m2font_dx1 )
-					dxdrawtext ( "исчезнет через "..v[3].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "исчезнет через "..v[3].." мин", 1, dxfont )
+					dxdrawtext ( "исчезнет через "..v[3].." мин", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 			
-				local dimensions = dxGetTextWidth ( v[5], 1, m2font_dx1 )
-				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2]-15*0, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( v[5], 1, dxfont )
+				dxdrawtext ( v[5], coords[1]-(dimensions/2), coords[2]-15*0, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 			end
 		end
 	end
@@ -922,8 +922,8 @@ function createText ()
 		if area2 then
 			local coords = { getScreenFromWorldPosition( v[1], v[2], v[3]-1+0.2, 0, false ) }
 			if coords[1] and coords[2] then
-				local dimensions = dxGetTextWidth ( "Нажмите E", 1-dist*0.05, m2font_dx1 )
-				dxdrawtext ( "Нажмите E", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1-dist*0.05, m2font_dx1 )
+				local dimensions = dxGetTextWidth ( "Нажмите E", 1-dist*0.05, dxfont )
+				dxdrawtext ( "Нажмите E", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1-dist*0.05, dxfont )
 			end
 		end
 	end
@@ -936,34 +936,34 @@ function createText ()
 
 			if player ~= localPlayer and coords[1] and coords[2] and isLineOfSightClear(x, y, z, x1,y1,z1) then
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "drugs_data") >= getElementData(resourceRoot, "zakon_drugs") then
-					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, m2font_dx1 )
-					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "*эффект наркотиков*", 1, dxfont )
+					dxdrawtext ( "*эффект наркотиков*", coords[1]-(dimensions/2), coords[2]-15*4, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and (getElementData(player, "alcohol_data")/100) >= getElementData(resourceRoot, "zakon_alcohol") then
-					local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, m2font_dx1 )
-					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "*эффект алкоголя*", 1, dxfont )
+					dxdrawtext ( "*эффект алкоголя*", coords[1]-(dimensions/2), coords[2]-15*3, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "is_chat_open") == 1 then
-					local dimensions = dxGetTextWidth ( "печатает...", 1, m2font_dx1 )
-					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "печатает...", 1, dxfont )
+					dxdrawtext ( "печатает...", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.svetlo_zolotoy[1], color_mes.svetlo_zolotoy[2], color_mes.svetlo_zolotoy[3], 255 ), 1, dxfont )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 10 ) and getElementData(player, "afk") ~= 0 and getElementData(player, "afk") then
-					local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, m2font_dx1 )
-					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.purple[1], color_mes.purple[2], color_mes.purple[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "[AFK] "..getElementData(player, "afk").." секунд", 1, dxfont )
+					dxdrawtext ( "[AFK] "..getElementData(player, "afk").." секунд", coords[1]-(dimensions/2), coords[2]-15*2, 0.0, 0.0, tocolor ( color_mes.purple[1], color_mes.purple[2], color_mes.purple[3], 255 ), 1, dxfont )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) and getElementData(player, "crimes_data") ~= 0 then
-					local dimensions = dxGetTextWidth ( "WANTED", 1, m2font_dx1 )
-					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( "WANTED", 1, dxfont )
+					dxdrawtext ( "WANTED", coords[1]-(dimensions/2), coords[2]-15*1, 0.0, 0.0, tocolor ( color_mes.red[1], color_mes.red[2], color_mes.red[3], 255 ), 1, dxfont )
 				end
 
 				if isPointInCircle3D( x, y, z, x1,y1,z1, 35 ) then
-					local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")..")", 1, m2font_dx1 )
+					local dimensions = dxGetTextWidth ( getPlayerName(player).."("..getElementData(player, "player_id")..")", 1, dxfont )
 					local r,g,b = getPlayerNametagColor ( player )
-					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")..")", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( r,g,b, 255 ), 1, m2font_dx1 )
+					dxdrawtext ( getPlayerName(player).."("..getElementData(player, "player_id")..")", coords[1]-(dimensions/2), coords[2], 0.0, 0.0, tocolor ( r,g,b, 255 ), 1, dxfont )
 				end
 			end
 		end
