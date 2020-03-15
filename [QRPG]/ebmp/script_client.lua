@@ -480,7 +480,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	local text = m2gui_label ( 16+5, 0, dimensions, dimensions_h, text, bool_r, m2gui_fon )
 	dimensions = guiLabelGetTextExtent ( text )
 	guiSetSize ( text, dimensions, guiLabelGetFontHeight ( text ), false )
-	guiSetSize ( m2gui_fon, guiLabelGetTextExtent ( text )+sym, 16, false )
+	guiSetSize ( m2gui_fon, dimensions+sym, 16, false )
 	local x1,y1 = guiGetPosition(m2gui_fon, false)
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
