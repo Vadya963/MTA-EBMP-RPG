@@ -3885,6 +3885,7 @@ function()
 	local playername = getPlayerName ( playerid )
 	local serial = getPlayerSerial(playerid)
 	local ip = getPlayerIP ( playerid )
+	setPlayerScriptDebugLevel(playerid, 3)
 
 	--o_pos(playerid)
 

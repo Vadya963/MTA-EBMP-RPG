@@ -472,12 +472,15 @@ function m2gui_window( x,y, width, height, text, bool_r, movable, sizable )
 end
 
 function m2gui_button( x,y, text, bool_r, parent)
-	local sym = 16+5+20
-	local dimensions = dxGetTextWidth ( text, 1, m2font_dx )
-	local dimensions_h = dxGetFontHeight ( 1, m2font_dx )
+	local sym = 16+5
+	local dimensions = 0
+	local dimensions_h = 0
 	local m2gui_fon = guiCreateStaticImage( x, y, dimensions+sym, 16, "comp/low_fon.png", bool_r, parent )
 	local m2gui_but = guiCreateStaticImage( 0, 0, 16, 16, "hud/gui7.png", bool_r, m2gui_fon )
-	local text = m2gui_label ( 16+5, 0, dimensions+20, dimensions_h, text, bool_r, m2gui_fon )
+	local text = m2gui_label ( 16+5, 0, dimensions, dimensions_h, text, bool_r, m2gui_fon )
+	dimensions = guiLabelGetTextExtent ( text )
+	guiSetSize ( text, dimensions, guiLabelGetFontHeight ( text ), false )
+	guiSetSize ( m2gui_fon, guiLabelGetTextExtent ( text )+sym, 16, false )
 	local x1,y1 = guiGetPosition(m2gui_fon, false)
 
 	function outputEditBox ( absoluteX, absoluteY, gui )--наведение на текст кнопки
@@ -490,7 +493,7 @@ function m2gui_button( x,y, text, bool_r, parent)
 	end
 	addEventHandler( "onClientMouseLeave", text, outputEditBox, false )
 
-	return text,dimensions+sym+x,20+y1
+	return text,dimensions+sym+x+5,20+y1
 end
 -----------------------------------------------------------------------------------------
 
