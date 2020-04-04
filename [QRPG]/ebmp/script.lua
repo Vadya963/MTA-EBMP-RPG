@@ -2098,7 +2098,7 @@ function robbery(localPlayer, zakon, money, x1,y1,z1, radius, text)
 
 				inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)+cash, playername )
 			else
-				sendMessage(localPlayer, "[ERROR] Вы покинули место ограбления", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы покинули место ограбления", color_mes.red)
 			end
 
 			robbery_kill( playername )
@@ -2178,7 +2178,7 @@ function player_hotel (localPlayer, id)
 
 	else 
 
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return false
 	end
 end
@@ -2282,7 +2282,7 @@ function quest_player(localPlayer, id)
 			if quest_table[quest][3] <= quest_progress then
 				if quest_table[quest][7][1] ~= 0 then
 					if not inv_player_empty(localPlayer, quest_table[quest][7][1], quest_table[quest][7][2]) then
-						sendMessage(localPlayer, "[ERROR] Для завершения квеста освободите инвентарь", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Для завершения квеста освободите инвентарь", color_mes.red)
 						return
 					else
 						sendMessage(localPlayer, "[QUEST] Вы получили "..info_png[quest_table[quest][7][1]][1].." "..quest_table[quest][7][2].." "..info_png[quest_table[quest][7][1]][2], color_mes.svetlo_zolotoy)
@@ -2333,13 +2333,13 @@ function rental_car(localPlayer, job)
 
 	if car[job] then
 		if car[job][2] > search_inv_player_2_parameter(localPlayer, 1) then
-			sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 			return
 		end
 
 		if inv_player_empty(localPlayer, val1, val2) then
 		else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 			return
 		end
 
@@ -2609,7 +2609,7 @@ function addVehicleUpgrade_fun( vehicleid, value, localPlayer, number )
 
 	if prod <= result[1]["warehouse"] then
 		if cash == 0 then
-			sendMessage(localPlayer, "[ERROR] Не установлена стоимость товара", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Не установлена стоимость товара", color_mes.red)
 			return
 		end
 
@@ -2645,10 +2645,10 @@ function addVehicleUpgrade_fun( vehicleid, value, localPlayer, number )
 				sqlite( "UPDATE car_db SET tune = '"..text.."' WHERE number = '"..plate.."'")
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] На складе недостаточно товаров", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] На складе недостаточно товаров", color_mes.red)
 	end
 end
 addEvent( "event_addVehicleUpgrade", true )
@@ -2665,14 +2665,14 @@ function removeVehicleUpgrade_fun( vehicleid, localPlayer, number )
 
 	if prod <= result[1]["warehouse"] then
 		if cash == 0 then
-			sendMessage(localPlayer, "[ERROR] Не установлена стоимость товара", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Не установлена стоимость товара", color_mes.red)
 			return
 		end
 
 		if cash <= search_inv_player_2_parameter(localPlayer, 1) then
 			local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 			if  result[1]["tune"] == "0" then
-				sendMessage(localPlayer, "[ERROR] Нет установленного тюнинга", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Нет установленного тюнинга", color_mes.red)
 				return
 			end
 
@@ -2694,10 +2694,10 @@ function removeVehicleUpgrade_fun( vehicleid, localPlayer, number )
 				sqlite( "UPDATE car_db SET tune = '"..text.."', wheel = '0', hydraulics = '0' WHERE number = '"..plate.."'")
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] На складе недостаточно товаров", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] На складе недостаточно товаров", color_mes.red)
 	end
 end
 addEvent( "event_removeVehicleUpgrade", true )
@@ -2853,7 +2853,7 @@ function pickedUpWeaponCheck( localPlayer )
 
 					setElementData(resourceRoot, "harvest", harvest)
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 				return
 			end
@@ -2950,7 +2950,7 @@ function auction_buy_sell(localPlayer, value, i, id1, id2, money, name_buy)--п�
 
 			sqlite( "INSERT INTO auction (i, name_sell, id1, id2, money, name_buy) VALUES ('"..randomize.."', '"..playername.."', '"..id1.."', '"..id2.."', '"..money.."', '"..name_buy.."')" )
 		else
-			sendMessage(localPlayer, "[ERROR] У вас нет такого предмета", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас нет такого предмета", color_mes.red)
 		end
 
 	elseif value == "buy" then
@@ -2961,7 +2961,7 @@ function auction_buy_sell(localPlayer, value, i, id1, id2, money, name_buy)--п�
 
 			if (result[1]["name_buy"] ~= playername and result[1]["name_buy"] ~= "all") then
 			
-				sendMessage(localPlayer, "[ERROR] Вы не можете купить этот предмет", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не можете купить этот предмет", color_mes.red)
 				return
 			end
 
@@ -2999,13 +2999,13 @@ function auction_buy_sell(localPlayer, value, i, id1, id2, money, name_buy)--п�
 
 					sqlite( "DELETE FROM auction WHERE i = '"..i.."'" )
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Лот не найден", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Лот не найден", color_mes.red)
 		end
 
 	elseif value == "return" then
@@ -3021,13 +3021,13 @@ function auction_buy_sell(localPlayer, value, i, id1, id2, money, name_buy)--п�
 
 					sqlite( "DELETE FROM auction WHERE i = '"..i.."'" )
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Имена не совпадают", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Имена не совпадают", color_mes.red)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Лот не найден", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Лот не найден", color_mes.red)
 		end
 	end
 end
@@ -3047,7 +3047,7 @@ function buy_subject_fun( localPlayer, text, number, value )
 				if inv_player_empty(localPlayer, v[3], v[2]) then
 					sendMessage(localPlayer, "Вы получили "..text, color_mes.orange)
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 				return
 			end
@@ -3057,13 +3057,13 @@ function buy_subject_fun( localPlayer, text, number, value )
 			if inv_player_empty(localPlayer, 39, 1) then
 				sendMessage(localPlayer, "Вы получили "..text, color_mes.orange)
 			else
-				sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 			end
 			return
 		end
 
 		if search_inv_player_2_parameter(localPlayer, 50) ~= getElementData(localPlayer, "player_id") then
-			sendMessage(localPlayer, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
 			return
 		end
 
@@ -3072,7 +3072,7 @@ function buy_subject_fun( localPlayer, text, number, value )
 				if inv_player_empty(localPlayer, k, v[4]) then
 					sendMessage(localPlayer, "Вы получили "..text, color_mes.orange)
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 			end
 		end
@@ -3089,7 +3089,7 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 							inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(v[3]), playername )
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					else
 						if inv_player_empty(localPlayer, v[4], v[2]) then
@@ -3097,11 +3097,11 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 							inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(v[3]), playername )
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					end
 				else
-					sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				end
 			end
 		end
@@ -3124,16 +3124,16 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 									inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(v[3]), playername )
 								else
-									sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+									sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 								end
 							else
-								sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 							end
 						end
 					end
 
 					if not count then
-						sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде "..name_mafia_skin, color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде "..name_mafia_skin, color_mes.red)
 					end
 				else
 					if v[3] <= search_inv_player_2_parameter(localPlayer, 1) then
@@ -3142,10 +3142,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 							inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(v[3]), playername )
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					else
-						sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 					end
 				end
 
@@ -3162,13 +3162,13 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 	if prod <= result[1]["warehouse"] then
 		if cash == 0 then
-			sendMessage(localPlayer, "[ERROR] Не установлена стоимость товара (надбавка в N раз)", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Не установлена стоимость товара (надбавка в N раз)", color_mes.red)
 			return
 		end
 
 			if value == 1 then
 				if search_inv_player_2_parameter(localPlayer, 50) ~= getElementData(localPlayer, "player_id") then
-					sendMessage(localPlayer, "[ERROR] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас нет лицензии на оружие, приобрести её можно в Мэрии", color_mes.red)
 					return
 				end
 
@@ -3182,10 +3182,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 								inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(cash*v[3]), playername )
 							else
-								sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 							end
 						else
-							sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 						end
 					end
 				end
@@ -3203,10 +3203,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 						inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-cash, playername )
 					else
-						sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 					end
 				else
-					sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				end
 
 			elseif value == 3 then
@@ -3238,10 +3238,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 							table.insert(loto[2], randomize)
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					else
-						sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 					end
 					return
 				end
@@ -3268,10 +3268,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 							inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(cash*v[3]), playername )
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					else
-						sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 					end
 					return
 				end
@@ -3286,10 +3286,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 								inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(cash*v[3]), playername )
 							else
-								sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 							end
 						else
-							sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 						end
 					end
 				end
@@ -3305,10 +3305,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 								inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(cash*v[3]), playername )
 							else
-								sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 							end
 						else
-							sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 						end
 					end
 				end
@@ -3324,10 +3324,10 @@ function buy_subject_fun( localPlayer, text, number, value )
 
 								inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-(cash*v[3]), playername )
 							else
-								sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 							end
 						else
-							sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 						end
 					end
 				end
@@ -3335,7 +3335,7 @@ function buy_subject_fun( localPlayer, text, number, value )
 			end
 
 	else
-		sendMessage(localPlayer, "[ERROR] На складе недостаточно товаров", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] На складе недостаточно товаров", color_mes.red)
 	end	
 end
 addEvent( "event_buy_subject_fun", true )
@@ -3366,7 +3366,7 @@ function till_fun( localPlayer, value, money )
 
 				sendMessage(localPlayer, "Вы забрали из кассы "..(money*-1).."$", color_mes.green)
 			else
-				sendMessage(localPlayer, "[ERROR] В кассе недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] В кассе недостаточно средств", color_mes.red)
 			end
 
 		else
@@ -3382,7 +3382,7 @@ function till_fun( localPlayer, value, money )
 
 				sendMessage(localPlayer, "Вы положили в кассу "..money.."$", color_mes.orange)
 			else
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 			end
 		end
 
@@ -3410,7 +3410,7 @@ function craft_fun( localPlayer, text )
 	local playername = getPlayerName(localPlayer)
 
 	if enter_house[playername][1] == 0 then
-		sendMessage(localPlayer, "[ERROR] Вы не в доме", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не в доме", color_mes.red)
 		return
 	end
 
@@ -3441,10 +3441,10 @@ function craft_fun( localPlayer, text )
 
 							sendMessage(localPlayer, "Вы создали "..v[1], color_mes.orange)
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 						end
 					else
-						sendMessage(localPlayer, "[ERROR] Недостаточно ресурсов", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Недостаточно ресурсов", color_mes.red)
 					end
 				end
 			end
@@ -3453,7 +3453,7 @@ function craft_fun( localPlayer, text )
 		end
 	end
 
-	sendMessage(localPlayer, "[ERROR] У вас нет ключа от дома", color_mes.red)
+	sendMessage(localPlayer, "[ОШИБКА] У вас нет ключа от дома", color_mes.red)
 end
 addEvent( "event_craft_fun", true )
 addEventHandler ( "event_craft_fun", root, craft_fun )
@@ -3472,7 +3472,7 @@ function cow_farms(localPlayer, value, val1, val2)
 		local result = sqlite( "SELECT COUNT() FROM cow_farms_db" )
 		result = result[1]["COUNT()"]+1
 		if cash*result > search_inv_player_2_parameter(localPlayer, 1) then
-			sendMessage(localPlayer, "[ERROR] У вас недостаточно средств, необходимо "..cash*result.."$", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств, необходимо "..cash*result.."$", color_mes.red)
 			return
 		end
 
@@ -3485,7 +3485,7 @@ function cow_farms(localPlayer, value, val1, val2)
 
 			sendMessage(localPlayer, "Вы получили "..info_png[doc][1].." "..result.." "..info_png[doc][2], color_mes.svetlo_zolotoy)
 		else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 		end
 
 	elseif value == "menu" then
@@ -3539,7 +3539,7 @@ function cow_farms(localPlayer, value, val1, val2)
 
 					sendMessage(localPlayer, "Вы забрали из кассы "..(val2*-1).."$", color_mes.green)
 				else
-					sendMessage(localPlayer, "[ERROR] Недостаточно средств на балансе бизнеса", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Недостаточно средств на балансе бизнеса", color_mes.red)
 				end
 			else
 				if val2 <= search_inv_player_2_parameter(localPlayer, 1) then
@@ -3555,7 +3555,7 @@ function cow_farms(localPlayer, value, val1, val2)
 
 					sendMessage(localPlayer, "Вы положили в кассу "..val2.."$", color_mes.orange)
 				else
-					sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				end
 			end
 
@@ -3573,7 +3573,7 @@ function cow_farms(localPlayer, value, val1, val2)
 					sendMessage(localPlayer, "Вы оплатили налог "..search_inv_player_2_parameter(localPlayer, doc).." скотобойни", color_mes.yellow)
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] У вас нет "..info_png[60][1].." 7 "..info_png[60][2], color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас нет "..info_png[60][1].." 7 "..info_png[60][2], color_mes.red)
 			end
 		end
 
@@ -3586,7 +3586,7 @@ function cow_farms(localPlayer, value, val1, val2)
 		if not result[1] then
 			return false
 		elseif result[1]["warehouse"]-val1 < 0 then
-			sendMessage(localPlayer, "[ERROR] Склад пуст", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Склад пуст", color_mes.red)
 			return false
 		end
 
@@ -3631,10 +3631,10 @@ function cow_farms(localPlayer, value, val1, val2)
 		if not result[1] then
 			return true
 		elseif result[1]["money"] < money then
-			sendMessage(localPlayer, "[ERROR] Недостаточно средств на балансе бизнеса", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Недостаточно средств на балансе бизнеса", color_mes.red)
 			return true
 		elseif result[1]["prod"] >= get("max_cf") then
-			sendMessage(localPlayer, "[ERROR] Склад полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Склад полон", color_mes.red)
 			return true
 		end
 
@@ -4520,7 +4520,7 @@ function spawn_carparking( localPlayer, plate )
 	end
 
 	if count == 1 or result[1]["COUNT()"] == 0 then
-		sendMessage(localPlayer, "[ERROR] Т/с в городе", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Т/с в городе", color_mes.red)
 		return
 	end
 
@@ -4532,7 +4532,7 @@ function spawn_carparking( localPlayer, plate )
 			sendMessage(localPlayer, "Вы забрали т/с под номером "..plate, color_mes.yellow)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] У вас нет "..info_png[61][1].." 7 "..info_png[61][2], color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет "..info_png[61][1].." 7 "..info_png[61][2], color_mes.red)
 	end
 end
 addEvent( "event_spawn_carparking", true )
@@ -4569,7 +4569,7 @@ function buycar ( localPlayer, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ид т/с]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ид т/с]", color_mes.red)
 		return
 	end
 
@@ -4578,25 +4578,25 @@ function buycar ( localPlayer, id )
 
 		if isPointInCircle3D(t_s_salon[1][1],t_s_salon[1][2],t_s_salon[1][3], x1,y1,z1, 5) then
 			if cash_car[id] == nil then
-				sendMessage(localPlayer, "[ERROR] Этот т/с недоступен", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Этот т/с недоступен", color_mes.red)
 				return
 			end
 
 			for k,v in pairs(police_car) do
 				if v == id and search_inv_player_2_parameter(localPlayer, 10) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 					return
 				end
 			end
 
 			if cash_car[id][2] > search_inv_player_2_parameter(localPlayer, 1) then
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				return
 			end
 
 			if inv_player_empty(localPlayer, val1, val2) then
 			else
-				sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				return
 			end
 
@@ -4608,25 +4608,25 @@ function buycar ( localPlayer, id )
 
 		elseif isPointInCircle3D(t_s_salon[2][1],t_s_salon[2][2],t_s_salon[2][3], x1,y1,z1, 5) then
 			if cash_helicopters[id] == nil then
-				sendMessage(localPlayer, "[ERROR] Этот т/с недоступен", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Этот т/с недоступен", color_mes.red)
 				return
 			end
 
 			for k,v in pairs(police_helicopters) do
 				if v == id and search_inv_player_2_parameter(localPlayer, 10) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 					return
 				end
 			end
 
 			if cash_helicopters[id][2] > search_inv_player_2_parameter(localPlayer, 1) then
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				return
 			end
 
 			if inv_player_empty(localPlayer, val1, val2) then
 			else
-				sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				return
 			end
 
@@ -4638,25 +4638,25 @@ function buycar ( localPlayer, id )
 
 		elseif isPointInCircle3D(t_s_salon[3][1],t_s_salon[3][2],t_s_salon[3][3], x1,y1,z1, 5) then
 			if cash_boats[id] == nil then
-				sendMessage(localPlayer, "[ERROR] Этот т/с недоступен", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Этот т/с недоступен", color_mes.red)
 				return
 			end
 
 			for k,v in pairs(police_boats) do
 				if v == id and search_inv_player_2_parameter(localPlayer, 10) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 					return
 				end
 			end
 
 			if cash_boats[id][2] > search_inv_player_2_parameter(localPlayer, 1) then
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				return
 			end
 
 			if inv_player_empty(localPlayer, val1, val2) then
 			else
-				sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				return
 			end
 
@@ -4666,7 +4666,7 @@ function buycar ( localPlayer, id )
 
 			x,y,z,rot = -2244.6,2408.7,1.8,315
 		else
-			sendMessage(localPlayer, "[ERROR] Найдите место продажи т/с", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Найдите место продажи т/с", color_mes.red)
 			return
 		end
 
@@ -4689,7 +4689,7 @@ function buycar ( localPlayer, id )
 	
 		car_spawn(tostring(val2))
 	else
-		sendMessage(localPlayer, "[ERROR] от 400 до 611", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 400 до 611", color_mes.red)
 	end
 end
 addEvent( "event_buycar", true )
@@ -4713,7 +4713,7 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 			if result[1]["COUNT()"] == 1 then
 				local result = sqlite( "SELECT * FROM car_db WHERE number = '"..plate.."'" )
 				if result[1]["taxation"] <= 0 then
-					sendMessage(localPlayer, "[ERROR] Т/с арестован за уклонение от уплаты налогов", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Т/с арестован за уклонение от уплаты налогов", color_mes.red)
 					setVehicleEngineState(vehicleid, false)
 					return
 				end
@@ -4725,12 +4725,12 @@ function enter_car ( vehicleid, seat, jacked )--евент входа в авт�
 				end
 
 				if fuel[plate] <= 0 then
-					sendMessage(localPlayer, "[ERROR] Бак пуст", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Бак пуст", color_mes.red)
 					setVehicleEngineState(vehicleid, false)
 					return
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Чтобы завести т/с надо иметь ключ от т/с и права (можно купить в Мэрии)", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Чтобы завести т/с надо иметь ключ от т/с и права (можно купить в Мэрии)", color_mes.red)
 				setVehicleEngineState(vehicleid, false)
 			end
 		end
@@ -4966,7 +4966,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= v[6] then
-						sendMessage(localPlayer, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", color_mes.red)
 						return
 					end
 				end
@@ -4979,7 +4979,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= v[6] then
-						sendMessage(localPlayer, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в "..getVehicleNameFromModel ( v[6] ).."("..v[6]..")", color_mes.red)
 						return
 					end
 				end
@@ -4992,7 +4992,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 			if isPointInCircle3D(x,y,z, v[1],v[2],v[3], v[4]) then
 				if v[9] ~= 0 then
 					if getElementModel(localPlayer) ~= v[9] then
-						sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде "..v[9], color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде "..v[9], color_mes.red)
 						return
 					end
 				end
@@ -5005,7 +5005,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 			if isPointInCircle3D(x,y,z, v["x"],v["y"],v["z"], get("delet_subject_radius")) then
 				if vehicleid then
 					if getElementModel(vehicleid) ~= down_car_subject[1][6] then
-						sendMessage(localPlayer, "[ERROR] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в "..getVehicleNameFromModel ( down_car_subject[1][6] ).."("..down_car_subject[1][6]..")", color_mes.red)
 						return
 					end
 				end
@@ -5028,7 +5028,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 				end
 
 				if count and search_inv_player(localPlayer, v[4], search_inv_player_2_parameter(localPlayer, v[4])) >= 1 then
-					sendMessage(localPlayer, "[ERROR] Можно переносить только один предмет", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Можно переносить только один предмет", color_mes.red)
 					return
 				end
 
@@ -5041,7 +5041,7 @@ function e_down (localPlayer, key, keyState)--подбор предметов с
 
 					setElementData(resourceRoot, "earth_data", earth)
 				else
-					sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 				end
 
 				return
@@ -5082,7 +5082,7 @@ local vehicleid = getPlayerVehicle(localPlayer)
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) and v["type"] == interior_business[4][2] then--заправка
 
 						if v["taxation"] <= 0 then
-							sendMessage(localPlayer, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 							return
 						end
 
@@ -5093,7 +5093,7 @@ local vehicleid = getPlayerVehicle(localPlayer)
 					elseif isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) and v["type"] == interior_business[5][2] then--тюнинг
 
 						if v["taxation"] <= 0 then
-							sendMessage(localPlayer, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 							return
 						end
 
@@ -5109,7 +5109,7 @@ local vehicleid = getPlayerVehicle(localPlayer)
 					for k,v in pairs(police_station) do
 						if interior_job[v][1] == getElementInterior(localPlayer) and interior_job[v][10] == getElementDimension(localPlayer) then
 							if search_inv_player_2_parameter(localPlayer, 10) == 0 then
-								sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 								return
 							end
 
@@ -5132,7 +5132,7 @@ local vehicleid = getPlayerVehicle(localPlayer)
 					for k,v in pairs(black_auc) do
 						if interior_job[v][1] == getElementInterior(localPlayer) and interior_job[v][10] == getElementDimension(localPlayer) then
 							if crimes[playername] < get("crimes_giuseppe") then
-								sendMessage(localPlayer, "[ERROR] Нужно иметь "..get("crimes_giuseppe").." преступлений", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..get("crimes_giuseppe").." преступлений", color_mes.red)
 								return
 							end
 
@@ -5183,12 +5183,12 @@ function left_alt_down (localPlayer, key, keyState)
 
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("house_bussiness_radius")) then
 					if house_door == 0 then
-						sendMessage(localPlayer, "[ERROR] Дверь закрыта", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Дверь закрыта", color_mes.red)
 						return
 					end
 
 					if v["taxation"] <= 0 then
-						sendMessage(localPlayer, "[ERROR] Дом арестован за уклонение от уплаты налогов", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Дом арестован за уклонение от уплаты налогов", color_mes.red)
 						return
 					end
 
@@ -5199,7 +5199,7 @@ function left_alt_down (localPlayer, key, keyState)
 
 				elseif getElementDimension(localPlayer) == v["world"] and getElementInterior(localPlayer) == interior_house[id][1] and enter_house[playername][1] == 1 then
 					if house_door == 0 then
-						sendMessage(localPlayer, "[ERROR] Дверь закрыта", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Дверь закрыта", color_mes.red)
 						return
 					end
 
@@ -5226,7 +5226,7 @@ function left_alt_down (localPlayer, key, keyState)
 					end
 
 					if v["taxation"] <= 0 then
-						sendMessage(localPlayer, "[ERROR] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Бизнес арестован за уклонение от уплаты налогов", color_mes.red)
 						return
 					end
 					
@@ -5258,7 +5258,7 @@ function left_alt_down (localPlayer, key, keyState)
 					if id == 9 or id == 10 or id == 11 or id == 12 then
 						if inv_player_empty(localPlayer, 6, 0) then
 						else
-							sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 							return
 						end
 					end
@@ -5299,7 +5299,7 @@ function give_subject( localPlayer, value, id1, id2, load_value )--выдача 
 	if value == "player" then
 
 		if search_inv_player(localPlayer, id1, search_inv_player_2_parameter(localPlayer, id1)) >= 1 then
-			sendMessage(localPlayer, "[ERROR] Можно переносить только один предмет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Можно переносить только один предмет", color_mes.red)
 			return
 		end
 
@@ -5309,7 +5309,7 @@ function give_subject( localPlayer, value, id1, id2, load_value )--выдача 
 
 			random_sub (localPlayer, id1)
 		else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 		end
 
 	elseif value == "car" then--для работ по перевозке ящиков
@@ -5321,50 +5321,50 @@ function give_subject( localPlayer, value, id1, id2, load_value )--выдача 
 				return
 
 			elseif count2 == 0 then
-				sendMessage(localPlayer, "[ERROR] Багажник заполнен", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Багажник заполнен", color_mes.red)
 				return
 
 			elseif id1 == 65 then
 				if search_inv_player(localPlayer, 64, 3) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не инкассатор", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не инкассатор", color_mes.red)
 					return
 				end
 			elseif id1 == 24 or id1 == 73 then
 				if search_inv_player(localPlayer, 64, 7) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не дальнобойщик", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не дальнобойщик", color_mes.red)
 					return
 				end
 			elseif id1 == 66 then
 				if search_inv_player(localPlayer, 64, 8) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не перевозчик оружия", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не перевозчик оружия", color_mes.red)
 					return
 				end
 			elseif id1 == 75 then
 				if search_inv_player(localPlayer, 64, 2) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не водитель мусоровоза", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не водитель мусоровоза", color_mes.red)
 					return
 				end
 			elseif id1 == 78 then
 				if search_inv_player(localPlayer, 64, 4) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не рыболов", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не рыболов", color_mes.red)
 					return
 				end
 			elseif id1 == 88 then
 				if search_inv_player(localPlayer, 64, 7) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не дальнобойщик", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не дальнобойщик", color_mes.red)
 					return
 				elseif search_inv_player(localPlayer, 87, search_inv_player_2_parameter(localPlayer, 87)) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не работаете на скотобойне", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не работаете на скотобойне", color_mes.red)
 					return
 				elseif not cow_farms(localPlayer, "load", count2, 0) then
 					return
 				end
 			elseif id1 == 89 then
 				if search_inv_player(localPlayer, 64, 7) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не дальнобойщик", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не дальнобойщик", color_mes.red)
 					return
 				elseif search_inv_player(localPlayer, 87, search_inv_player_2_parameter(localPlayer, 87)) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не работаете на скотобойне", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не работаете на скотобойне", color_mes.red)
 					return
 				end
 			end
@@ -5383,7 +5383,7 @@ function give_subject( localPlayer, value, id1, id2, load_value )--выдача 
 				sendMessage(localPlayer, "[TIPS] Езжайте на скотобойню, чтобы разгрузиться", color_mes.color_tips)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 		end
 	end
 
@@ -5409,19 +5409,19 @@ function delet_subject(localPlayer, id)--удаление предметов и�
 				if isPointInCircle3D(v["x"],v["y"],v["z"], x,y,z, get("delet_subject_radius")) then
 
 					if id ~= 24 then
-						sendMessage(localPlayer, "[ERROR] Нужен только "..info_png[24][1], color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Нужен только "..info_png[24][1], color_mes.red)
 						return
 					end
 
 					if v["warehouse"] >= get("max_business") then
-						sendMessage(localPlayer, "[ERROR] Склад полон", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Склад полон", color_mes.red)
 						return
 					end
 
 					money = count*sic2p
 
 					if v["money"] < money then
-						sendMessage(localPlayer, "[ERROR] Недостаточно средств на балансе бизнеса", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Недостаточно средств на балансе бизнеса", color_mes.red)
 						return
 					end
 
@@ -5452,10 +5452,10 @@ function delet_subject(localPlayer, id)--удаление предметов и�
 				end
 			end
 		else
-			--sendMessage(localPlayer, "[ERROR] Багажник пуст", color_mes.red)
+			--sendMessage(localPlayer, "[ОШИБКА] Багажник пуст", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 	end
 end
 
@@ -5539,7 +5539,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local satiety_plus = 5
 
 			if getElementHealth(localPlayer) == get("max_heal") then
-				sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 				return
 			end
 
@@ -5578,7 +5578,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 		elseif id1 == 4 then--аптечка
 			if getElementHealth(localPlayer) == get("max_heal") then
-				sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 				return
 			end
 
@@ -5595,10 +5595,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local drugs_plus = 1
 
 			if getElementHealth(localPlayer) == get("max_heal") then
-				sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 				return
 			elseif drugs[playername]+drugs_plus > max_drugs then
-				sendMessage(localPlayer, "[ERROR] У вас сильная наркозависимость", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас сильная наркозависимость", color_mes.red)
 				return
 			end
 
@@ -5636,10 +5636,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local hygiene_minys = 5
 
 			if getElementHealth(localPlayer) == get("max_heal") then
-				sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 				return
 			elseif alcohol[playername]+alcohol_plus > max_alcohol then
-				sendMessage(localPlayer, "[ERROR] Вы сильно пьяны", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы сильно пьяны", color_mes.red)
 				return
 			end
 
@@ -5688,10 +5688,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local hygiene_minys = 10
 
 				if getElementHealth(localPlayer) == get("max_heal") then
-					sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 					return
 				elseif alcohol[playername]+alcohol_plus > max_alcohol then
-					sendMessage(localPlayer, "[ERROR] Вы сильно пьяны", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы сильно пьяны", color_mes.red)
 					return
 				end
 
@@ -5725,10 +5725,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local hygiene_minys = 10
 
 				if getElementHealth(localPlayer) == get("max_heal") then
-					sendMessage(localPlayer, "[ERROR] У вас полное здоровье", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас полное здоровье", color_mes.red)
 					return
 				elseif alcohol[playername]+alcohol_plus > max_alcohol then
-					sendMessage(localPlayer, "[ERROR] Вы сильно пьяны", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы сильно пьяны", color_mes.red)
 					return
 				end
 
@@ -5765,7 +5765,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local satiety_plus = 50
 
 				if satiety[playername]+satiety_plus > max_satiety then
-					sendMessage(localPlayer, "[ERROR] Вы не голодны", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не голодны", color_mes.red)
 					return
 				end
 
@@ -5780,7 +5780,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local satiety_plus = 25
 
 				if satiety[playername]+satiety_plus > max_satiety then
-					sendMessage(localPlayer, "[ERROR] Вы не голодны", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не голодны", color_mes.red)
 					return
 				end
 
@@ -5798,7 +5798,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local sleep_hygiene_plus = 50
 
 				if hygiene[playername]+sleep_hygiene_plus > max_hygiene then
-					sendMessage(localPlayer, "[ERROR] Вы чисты", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы чисты", color_mes.red)
 					return
 				end
 
@@ -5821,7 +5821,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				
 				else 
 				
-					sendMessage(localPlayer, "[ERROR] Вы не в доме и не в отеле", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не в доме и не в отеле", color_mes.red)
 					return
 				end
 
@@ -5829,7 +5829,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local sleep_hygiene_plus = 50
 
 				if sleep[playername]+sleep_hygiene_plus > max_sleep then
-					sendMessage(localPlayer, "[ERROR] Вы бодры", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы бодры", color_mes.red)
 					return
 				end
 
@@ -5850,7 +5850,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				
 				else 
 				
-					sendMessage(localPlayer, "[ERROR] Вы не в доме и не в отеле", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не в доме и не в отеле", color_mes.red)
 					return
 				end
 			end
@@ -5861,7 +5861,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local drugs_minys = 10
 
 			if drugs[playername]-drugs_minys < 0 then
-				sendMessage(localPlayer, "[ERROR] У вас нет наркозависимости", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас нет наркозависимости", color_mes.red)
 				return
 			end
 
@@ -5875,7 +5875,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local alcohol_minys = 50
 
 			if alcohol[playername]-alcohol_minys < 0 then
-				sendMessage(localPlayer, "[ERROR] Вы не пьяны", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не пьяны", color_mes.red)
 				return
 			end
 
@@ -5906,15 +5906,15 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 						end
 
 					else
-						sendMessage(localPlayer, "[ERROR] Максимальная вместимость бака "..get("max_fuel").." литров", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Максимальная вместимость бака "..get("max_fuel").." литров", color_mes.red)
 						return
 					end
 				else
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -5972,10 +5972,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 		elseif id1 == 23 then--ремонтный набор
 			if vehicleid then
 				if getSpeed(vehicleid) > 5 then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				elseif getElementHealth(vehicleid) == 1000 or getElementInterior(vehicleid) ~= 0 or getElementDimension(vehicleid) ~= 0 then
-					sendMessage(localPlayer, "[ERROR] Т/с не нуждается в ремонте", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Т/с не нуждается в ремонте", color_mes.red)
 					return
 				end
 
@@ -5986,7 +5986,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				me_chat(localPlayer, playername.." починил(а) т/с")
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6034,7 +6034,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				sendMessage(localPlayer, "Расстояние до оленя: "..split(getDistanceBetweenPoints2D(getElementData(localPlayer, "job_pos_15")[1],getElementData(localPlayer, "job_pos_15")[2], x,y), ".")[1].." метров", color_mes.yellow)
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не Охотник", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не Охотник", color_mes.red)
 				return
 			end
 
@@ -6045,13 +6045,13 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				sendMessage(localPlayer, "Расстояние до груза: "..split(getDistanceBetweenPoints2D(getElementData(localPlayer, "job_pos_17")[1],getElementData(localPlayer, "job_pos_17")[2], x,y), ".")[1].." метров", color_mes.yellow)
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не Уборщик морского дна", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не Уборщик морского дна", color_mes.red)
 				return
 			end
 
 		elseif id1 == 39 then--броник
 			if getPedArmor(localPlayer) ~= 0 then
-				sendMessage(localPlayer, "[ERROR] На вас надет бронежилет", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] На вас надет бронежилет", color_mes.red)
 				return
 			end
 
@@ -6073,7 +6073,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			local x1,y1 = player_position( localPlayer )
 
 			if vehicleid then
-				sendMessage(localPlayer, "[ERROR] Вы в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы в т/с", color_mes.red)
 				return
 			end
 
@@ -6148,11 +6148,11 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 
 				if count == 0 then
-					sendMessage(localPlayer, "[ERROR] Нужно быть около дома, бизнеса или в хранилище казино калигула; Вы уже начали ограбление", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Нужно быть около дома, бизнеса или в хранилище казино калигула; Вы уже начали ограбление", color_mes.red)
 					return
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Ограбление доступно с 0 до 6 часов игрового времени", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Ограбление доступно с 0 до 6 часов игрового времени", color_mes.red)
 				return
 			end
 
@@ -6182,7 +6182,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 		elseif id1 == 52 then--кислородный балон
 			if getElementData(localPlayer, "OxygenLevel") then
-				sendMessage(localPlayer, "[ERROR] На вас надет кислородный балон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] На вас надет кислородный балон", color_mes.red)
 				return
 			end
 
@@ -6229,7 +6229,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			end
 
 			if count == 0 then
-				sendMessage(localPlayer, "[ERROR] Вы должны быть около дома", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы должны быть около дома", color_mes.red)
 				return
 			end
 
@@ -6248,7 +6248,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			end
 
 			if count == 0 then
-				sendMessage(localPlayer, "[ERROR] Вы должны быть около бизнеса", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы должны быть около бизнеса", color_mes.red)
 				return
 			end
 		
@@ -6263,11 +6263,11 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 					id2 = 0
 				else
-					sendMessage(localPlayer, "[ERROR] Т/с не найдено", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Т/с не найдено", color_mes.red)
 					return
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6306,7 +6306,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 3 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				end
 
@@ -6331,7 +6331,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 5 then
 				if getElementModel(localPlayer) ~= 61 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 61", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 61", color_mes.red)
 					return
 				end
 
@@ -6347,7 +6347,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			elseif id2 == 6 then
 				if (crimes[playername] < get("crimes_giuseppe")) then
 			
-					sendMessage(localPlayer, "[ERROR] Нужно иметь "..get("crimes_giuseppe").." преступлений", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..get("crimes_giuseppe").." преступлений", color_mes.red)
 					return
 				end
 
@@ -6372,7 +6372,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 8 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				end
 
@@ -6397,10 +6397,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 10 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				elseif getElementModel(localPlayer) ~= 274 and getElementModel(localPlayer) ~= 275 and getElementModel(localPlayer) ~= 276 and getElementModel(localPlayer) ~= 145 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 274,275,276,145", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 274,275,276,145", color_mes.red)
 					return
 				end
 
@@ -6425,10 +6425,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 12 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				elseif getElementModel(localPlayer) ~= 277 and getElementModel(localPlayer) ~= 278 and getElementModel(localPlayer) ~= 279 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 277,278,279", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 277,278,279", color_mes.red)
 					return
 				end
 
@@ -6443,13 +6443,13 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 13 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				elseif getElementModel(localPlayer) ~= 285 and getElementModel(localPlayer) ~= 75 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 285,75", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 285,75", color_mes.red)
 					return
 				elseif search_inv_player_2_parameter(localPlayer, 10) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 					return
 				end
 
@@ -6464,7 +6464,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 14 then
 				if getElementModel(localPlayer) ~= 158 and getElementModel(localPlayer) ~= 198 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 158,198", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 158,198", color_mes.red)
 					return
 				end
 
@@ -6479,7 +6479,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 15 then
 				if getElementModel(localPlayer) ~= 312 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 312", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 312", color_mes.red)
 					return
 				end
 
@@ -6494,7 +6494,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 16 then
 				if getElementModel(localPlayer) ~= 155 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 155", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 155", color_mes.red)
 					return
 				end
 
@@ -6509,7 +6509,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 17 then
 				if getElementModel(localPlayer) ~= 311 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 311", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 311", color_mes.red)
 					return
 				end
 
@@ -6524,13 +6524,13 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 18 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				elseif getElementModel(localPlayer) ~= 284 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 284", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 284", color_mes.red)
 					return
 				elseif search_inv_player_2_parameter(localPlayer, 10) == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 					return
 				end
 
@@ -6545,10 +6545,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 			elseif id2 == 19 then
 				if crimes[playername] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] У вас плохая репутация", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У вас плохая репутация", color_mes.red)
 					return
 				elseif getElementModel(localPlayer) ~= 277 and getElementModel(localPlayer) ~= 278 and getElementModel(localPlayer) ~= 279 then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде 277,278,279", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде 277,278,279", color_mes.red)
 					return
 				end
 
@@ -6565,10 +6565,10 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local mafia = search_inv_player_2_parameter(localPlayer, 85)
 
 				if crimes[playername] < get("crimes_kill") then
-					sendMessage(localPlayer, "[ERROR] Нужно иметь "..get("crimes_kill").." преступлений", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..get("crimes_kill").." преступлений", color_mes.red)
 					return
 				elseif mafia == 0 then
-					sendMessage(localPlayer, "[ERROR] Вы не член банды", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не член банды", color_mes.red)
 					return
 				end
 
@@ -6581,7 +6581,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 
 				if not skin then
-					sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде своей банды", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде своей банды", color_mes.red)
 					return
 				end
 
@@ -6636,7 +6636,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 		elseif id1 == 77 then--жетон
 			if vehicleid then
-				sendMessage(localPlayer, "[ERROR] Вы в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы в т/с", color_mes.red)
 				return
 			end
 
@@ -6650,7 +6650,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				setElementPosition(localPlayer, station[1][1],station[1][2],station[1][3])
 				id2 = id2 - 1
 			else 
-				sendMessage(localPlayer, "[ERROR] Вы должны быть около вокзала", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы должны быть около вокзала", color_mes.red)
 				return
 			end
 
@@ -6658,7 +6658,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 			if (not isPointInCircle3D(x,y,z, 2308.81640625,-13.25,26.7421875, 5)) then
 			
-				sendMessage(localPlayer, "[ERROR] Вы не около банка", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не около банка", color_mes.red)
 				return
 			end
 
@@ -6689,7 +6689,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 			if (not count) then
 			
-				sendMessage(localPlayer, "[ERROR] Рядом нет инкассаторской машины", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Рядом нет инкассаторской машины", color_mes.red)
 				return
 			end
 
@@ -6708,13 +6708,13 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 					
 					else
 					
-						sendMessage(localPlayer, "[ERROR] Это не то т/с", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] Это не то т/с", color_mes.red)
 						return
 					end
 				
 				else
 				
-					sendMessage(localPlayer, "[ERROR] Вы не Угонщик", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы не Угонщик", color_mes.red)
 					return
 				end
 			
@@ -6737,7 +6737,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 
 				if count == 0 then
-					sendMessage(localPlayer, "[ERROR] Рядом нет нужного т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Рядом нет нужного т/с", color_mes.red)
 					return
 				end
 			end
@@ -6792,7 +6792,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 		elseif id1 == 94 then--квадрокоптер
 			if vehicleid then
-				sendMessage(localPlayer, "[ERROR] Вы в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы в т/с", color_mes.red)
 				return
 			end
 
@@ -6816,7 +6816,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6829,7 +6829,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				end
 
 				if count then
-					sendMessage(localPlayer, "[ERROR] На это т/с нельзя установить двигатель", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] На это т/с нельзя установить двигатель", color_mes.red)
 					return
 				end
 
@@ -6845,7 +6845,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6854,7 +6854,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6866,7 +6866,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6875,7 +6875,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6889,7 +6889,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6898,7 +6898,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6911,7 +6911,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6936,7 +6936,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6957,11 +6957,11 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 					id2 = 0
 				else
-					sendMessage(localPlayer, "[ERROR] На это т/с нельзя установить винилы", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] На это т/с нельзя установить винилы", color_mes.red)
 					return
 				end
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6970,7 +6970,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -6982,7 +6982,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -6991,7 +6991,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 				local plate = getVehiclePlateText(vehicleid)
 
 				if (getSpeed(vehicleid) > 5) then
-					sendMessage(localPlayer, "[ERROR] Остановите т/с", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Остановите т/с", color_mes.red)
 					return
 				end
 
@@ -7005,7 +7005,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 				return
 			end
 
@@ -7028,7 +7028,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				id2 = 0
 			else
-				sendMessage(localPlayer, "[ERROR] Лотерея закончилась", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Лотерея закончилась", color_mes.red)
 				return
 			end
 
@@ -7043,7 +7043,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			end
 
 			if getElementData(localPlayer, "task") ~= "TASK_SIMPLE_PLAYER_ON_FOOT" then
-				sendMessage(localPlayer, "[ERROR] Вы заняты другим делом", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы заняты другим делом", color_mes.red)
 				return
 			end
 
@@ -7068,7 +7068,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				setElementData(resourceRoot, "harvest", harvest)
 			else
-				sendMessage(localPlayer, "[ERROR] Вы слишком близко к другим растениям", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы слишком близко к другим растениям", color_mes.red)
 				return
 			end
 
@@ -7082,7 +7082,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 			end
 
 			if getElementData(localPlayer, "task") ~= "TASK_SIMPLE_PLAYER_ON_FOOT" then
-				sendMessage(localPlayer, "[ERROR] Вы заняты другим делом", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Вы заняты другим делом", color_mes.red)
 				return
 			end
 
@@ -7106,7 +7106,7 @@ function use_inv (localPlayer, value, id3, id_1, id_2 )--использован�
 
 				setElementData(resourceRoot, "harvest", harvest)
 			else
-				sendMessage(localPlayer, "[ERROR] Рядом нет растения, которое можно полить", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Рядом нет растения, которое можно полить", color_mes.red)
 				return
 			end
 
@@ -7145,7 +7145,7 @@ function (localPlayer, cmd, id, ...)
 	end
 
 	if not id or text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [текст]", color_mes.red)
 		return
 	end
 
@@ -7155,7 +7155,7 @@ function (localPlayer, cmd, id, ...)
 		sendMessage(localPlayer, "[SMS TO] "..id.." ["..getElementData(player, "player_id").."]: "..text, color_mes.yellow)
 		sendMessage(player, "[SMS FROM] "..playername.." ["..getElementData(localPlayer, "player_id").."]: "..text, color_mes.yellow)
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -7187,7 +7187,7 @@ function roulette_fun (localPlayer, id, cash, randomize)--играть в рул
 	end
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7284,7 +7284,7 @@ function slots (localPlayer, cash, randomize1, randomize2, randomize3)
 	end
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7306,7 +7306,7 @@ function insider_track (localPlayer, cash, randomize, horse, horse_player)
 	end
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7330,7 +7330,7 @@ function fortune_fun (localPlayer, cash, value, randomize)
 	end
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7359,7 +7359,7 @@ function poker_win( localPlayer, value, cash, coef, token )
 	local coef = tonumber(coef)
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7555,12 +7555,12 @@ function blackjack (localPlayer, cmd, value, ...)
 	if logged[playername] == 0 then
 		return
 	elseif search_inv_player(localPlayer, 93, 1) == 0 then
-		sendMessage(localPlayer, "[ERROR] У вас нет "..info_png[93][1], color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет "..info_png[93][1], color_mes.red)
 		return
 	end
 
 	if not value then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [invite | take | open]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [invite | take | open]", color_mes.red)
 		return
 	end
 
@@ -7569,14 +7569,14 @@ function blackjack (localPlayer, cmd, value, ...)
 		local cash = tonumber(arg[2])
 
 		if not id or not cash then
-			sendMessage(localPlayer, "[ERROR] /"..cmd.." invite [ИД игрока] [сумма]", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." invite [ИД игрока] [сумма]", color_mes.red)
 			return
 		elseif cash < 1 then
 			return
 		end
 
 		if cash > search_inv_player_2_parameter(localPlayer, 1) then
-			sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 			return
 		end
 
@@ -7587,19 +7587,19 @@ function blackjack (localPlayer, cmd, value, ...)
 			if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 
 				if arrest[id] ~= 0 then
-					sendMessage(localPlayer, "[ERROR] Игрок в тюрьме", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Игрок в тюрьме", color_mes.red)
 					return
 				elseif accept_player[id][1] then
-					sendMessage(localPlayer, "[ERROR] Игрок играет", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Игрок играет", color_mes.red)
 					return
 				elseif accept_player[playername][1] then
-					sendMessage(localPlayer, "[ERROR] Вы играете", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Вы играете", color_mes.red)
 					return
 				elseif cash > array_player_2[id][1] then
-					sendMessage(localPlayer, "[ERROR] У игрока недостаточно средств", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] У игрока недостаточно средств", color_mes.red)
 					return
 				elseif playername == id then
-					sendMessage(localPlayer, "[ERROR] На столько всё плохо?", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] На столько всё плохо?", color_mes.red)
 					return
 				end
 
@@ -7611,32 +7611,32 @@ function blackjack (localPlayer, cmd, value, ...)
 				sendMessage(player, "/accept no - отказаться", color_mes.yellow)
 				
 			else
-				sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 		end
 
 	elseif value == "take" then
 		if not accept_player[playername][1] then
-			sendMessage(localPlayer, "[ERROR] Вы не играете", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы не играете", color_mes.red)
 			return
 		elseif accept_player[playername][4] then
-			sendMessage(localPlayer, "[ERROR] Вы готовы вскрыть карты", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы готовы вскрыть карты", color_mes.red)
 			return
 		elseif #game[playername] == 5 then
-			sendMessage(localPlayer, "[ERROR] У вас 5 карт", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] У вас 5 карт", color_mes.red)
 			return
 		end
 
 		if logged[getPlayerName(accept_player[playername][2])] == 1 then
 			local x1,y1,z1 = getElementPosition(accept_player[playername][2])
 			if not isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 				return
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 			return
 		end
 
@@ -7677,18 +7677,18 @@ function blackjack (localPlayer, cmd, value, ...)
 
 	elseif value == "open" then
 		if not accept_player[playername][1] then
-			sendMessage(localPlayer, "[ERROR] Вы не играете", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы не играете", color_mes.red)
 			return
 		end
 
 		if logged[getPlayerName(accept_player[playername][2])] == 1 then
 			local x1,y1,z1 = getElementPosition(accept_player[playername][2])
 			if not isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
-				sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 				return
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 			return
 		end
 
@@ -7747,17 +7747,17 @@ function accept (localPlayer, cmd, value)
 		return
 
 	elseif not value then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [yes | no]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [yes | no]", color_mes.red)
 		return
 
 	elseif not accept_player[playername][2] then
-		sendMessage(localPlayer, "[ERROR] У вас нет предложений", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет предложений", color_mes.red)
 		return
 	end
 
 	if value == "yes" then
 		if accept_player[playername][1] then
-			sendMessage(localPlayer, "[ERROR] Вы играете", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы играете", color_mes.red)
 			return
 		end
 
@@ -7786,7 +7786,7 @@ function( localPlayer, cmd, id )
 	local id = tonumber(id)
 
 	if not id then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [канал]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [канал]", color_mes.red)
 		return
 	
 	elseif (logged[playername] == 0 or id <= 0) then
@@ -7795,7 +7795,7 @@ function( localPlayer, cmd, id )
 	
 	elseif (amount_inv_player_1_parameter(localPlayer, 80) == 0) then
 	
-		sendMessage(localPlayer, "[ERROR] У вас нет рации", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет рации", color_mes.red)
 		return
 	end
 
@@ -7814,7 +7814,7 @@ function (localPlayer, cmd, ...)
 	if logged[playername] == 0 then
 		return
 	elseif (amount_inv_player_1_parameter(localPlayer, 80) == 0) then
-		sendMessage(localPlayer, "[ERROR] У вас нет рации", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет рации", color_mes.red)
 		return
 	end
 
@@ -7823,7 +7823,7 @@ function (localPlayer, cmd, ...)
 	end
 
 	if text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [текст]", color_mes.red)
 		return
 	end
 
@@ -7858,7 +7858,7 @@ function (localPlayer, cmd, id)
 	end
 
 	if not id then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [номер т/с]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [номер т/с]", color_mes.red)
 		return
 	end
 
@@ -7876,14 +7876,14 @@ function (localPlayer, cmd, id)
 						
 						if v["frozen"] == 0 then
 							if v["evacuate"] == 1 then
-								sendMessage(localPlayer, "[ERROR] Т/с на эвакуаторе", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] Т/с на эвакуаторе", color_mes.red)
 								return
 							end
 
 							if search_inv_player(localPlayer, 6, id) ~= 0 then
 
 								if (player_in_car_theft(tostring(id)) ~= 0) then
-									sendMessage(localPlayer, "[ERROR] Т/с угнали", color_mes.red)
+									sendMessage(localPlayer, "[ОШИБКА] Т/с угнали", color_mes.red)
 									return
 								end
 
@@ -7909,14 +7909,14 @@ function (localPlayer, cmd, id)
 								sendMessage(localPlayer, "Вы эвакуировали т/с за "..cash.."$", color_mes.orange)
 
 							else
-								sendMessage(localPlayer, "[ERROR] У вас нет ключа от этого т/с", color_mes.red)
+								sendMessage(localPlayer, "[ОШИБКА] У вас нет ключа от этого т/с", color_mes.red)
 							end
 						else
-							sendMessage(localPlayer, "[ERROR] Т/с на штрафстоянке", color_mes.red)
+							sendMessage(localPlayer, "[ОШИБКА] Т/с на штрафстоянке", color_mes.red)
 						end
 					end
 				else
-					sendMessage(localPlayer, "[ERROR] Т/с не найдено", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Т/с не найдено", color_mes.red)
 				end
 
 				return
@@ -7926,14 +7926,14 @@ function (localPlayer, cmd, id)
 		local result = sqlite( "SELECT * FROM car_db WHERE number = '"..id.."'" )
 		if result[1] then
 			if result[1]["theft"] == 1 then
-				sendMessage(localPlayer, "[ERROR] Т/с в угоне", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Т/с в угоне", color_mes.red)
 				return
 			end
 		end
 
-		sendMessage(localPlayer, "[ERROR] Т/с не найдено", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Т/с не найдено", color_mes.red)
 	else
-		sendMessage(localPlayer, "[ERROR] Нужно иметь "..cash.."$", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..cash.."$", color_mes.red)
 	end
 end)
 
@@ -7944,7 +7944,7 @@ function (localPlayer, cmd, cash)
 	local cash = tonumber(cash)
 
 	if not cash then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [сумма]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [сумма]", color_mes.red)
 		return
 	end
 
@@ -7953,7 +7953,7 @@ function (localPlayer, cmd, cash)
 	end
 
 	if cash > search_inv_player_2_parameter(localPlayer, 1) then
-		sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 		return
 	end
 
@@ -7965,7 +7965,7 @@ function (localPlayer, cmd, cash)
 	
 	else
 	
-		sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 	end
 end)
 
@@ -7976,7 +7976,7 @@ function (localPlayer, cmd, plate)
 	local plate = tonumber(plate)
 
 	if not plate then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [номер т/с]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [номер т/с]", color_mes.red)
 		return
 	end
 
@@ -7985,10 +7985,10 @@ function (localPlayer, cmd, plate)
 	if logged[playername] == 0 then
 		return
 	elseif not result[1] then
-		sendMessage(localPlayer, "[ERROR] Т/с не найдено", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Т/с не найдено", color_mes.red)
 		return
 	elseif result[1]["theft"] == 0 then
-		sendMessage(localPlayer, "[ERROR] Т/с не в угоне", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Т/с не в угоне", color_mes.red)
 		return
 	end
 
@@ -7997,7 +7997,7 @@ function (localPlayer, cmd, plate)
 
 		me_chat(localPlayer, playername.." написал(а) "..info_png[109][1].." "..plate)
 	else
-		sendMessage(localPlayer, "[ERROR] У вас нет "..info_png[108][1], color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] У вас нет "..info_png[108][1], color_mes.red)
 	end
 end)
 
@@ -8012,12 +8012,12 @@ function (localPlayer, cmd, id)
 	end
 
 	if not id then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока]", color_mes.red)
 		return
 	end
 
 	if search_inv_player_2_parameter(localPlayer, 10) == 0 then
-		sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 		return
 	end
 
@@ -8028,12 +8028,12 @@ function (localPlayer, cmd, id)
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 
 			if arrest[id] ~= 0 then
-				sendMessage(localPlayer, "[ERROR] Игрок в тюрьме", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок в тюрьме", color_mes.red)
 				return
 			end
 
 			if crimes[id] == 0 then
-				sendMessage(localPlayer, "[ERROR] Гражданин чист перед законом", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Гражданин чист перед законом", color_mes.red)
 				return
 			end
 
@@ -8045,10 +8045,10 @@ function (localPlayer, cmd, id)
 
 			inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)+(cash*(crimes[id])), playername )
 		else
-			sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8063,7 +8063,7 @@ function (localPlayer, cmd, id)
 	end
 
 	if not id then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока]", color_mes.red)
 		return
 	end
 
@@ -8074,15 +8074,15 @@ function (localPlayer, cmd, id)
 		if isPointInCircle3D(x,y,z, x1,y1,z1, 10) then
 
 			if arrest[id] == 0 or arrest[id] == 2 then
-				sendMessage(localPlayer, "[ERROR] Игрок не в тюрьме", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок не в тюрьме", color_mes.red)
 				return
 			elseif crimes[id] == 1 then
-				sendMessage(localPlayer, "[ERROR] Маленький срок заключения", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Маленький срок заключения", color_mes.red)
 				return
 			end
 
 			if cash*crimes[id] > search_inv_player_2_parameter(localPlayer, 1) then
-				sendMessage(localPlayer, "[ERROR] У вас недостаточно средств", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] У вас недостаточно средств", color_mes.red)
 				return
 			end
 
@@ -8094,10 +8094,10 @@ function (localPlayer, cmd, id)
 
 			crimes[id] = 1
 		else
-			sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8111,12 +8111,12 @@ function (localPlayer, cmd, value, id)
 	end
 
 	if not id or not value then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [player | car | house] [ИД игрока | номер т/с | номер дома]", color_mes.red)
 		return
 	end
 
 	if search_inv_player_2_parameter(localPlayer, 10) == 0 then
-		sendMessage(localPlayer, "[ERROR] Вы не полицейский", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не полицейский", color_mes.red)
 		return
 	end
 
@@ -8131,10 +8131,10 @@ function (localPlayer, cmd, value, id)
 
 				search_inv_player_police( localPlayer, id )
 			else
-				sendMessage(localPlayer, "[ERROR] Игрок далеко", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Игрок далеко", color_mes.red)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 		end
 
 	elseif value == "car" then
@@ -8151,14 +8151,14 @@ function (localPlayer, cmd, value, id)
 					search_inv_car_police( localPlayer, id )
 				else
 				
-					sendMessage(localPlayer, "[ERROR] Т/с далеко", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Т/с далеко", color_mes.red)
 				end
 
 				return
 			end
 		end
 
-		sendMessage(localPlayer, "[ERROR] Т/с не найдено", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Т/с не найдено", color_mes.red)
 
 	elseif value == "house" then
 		for i,v in pairs(sqlite( "SELECT * FROM house_db" )) do
@@ -8173,14 +8173,14 @@ function (localPlayer, cmd, value, id)
 					search_inv_house_police( localPlayer, id )
 				else
 				
-					sendMessage(localPlayer, "[ERROR] Дом далеко", color_mes.red)
+					sendMessage(localPlayer, "[ОШИБКА] Дом далеко", color_mes.red)
 				end
 
 				return
 			end
 		end
 
-		sendMessage(localPlayer, "[ERROR] Дом не найден", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Дом не найден", color_mes.red)
 	end
 end)
 
@@ -8197,13 +8197,13 @@ function (localPlayer)
 	end
 
 	if search_inv_player(localPlayer, 45, 1) == 0 then
-		sendMessage(localPlayer, "[ERROR] Вы не риэлтор", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не риэлтор", color_mes.red)
 		return
 	end
 
 	if(search_inv_player_2_parameter(localPlayer, 1) < get("zakon_price_house")) then
 	
-		sendMessage(localPlayer, "[ERROR] Стоимость домов составляет "..get("zakon_price_house").."$", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Стоимость домов составляет "..get("zakon_price_house").."$", color_mes.red)
 		return
 	end
 
@@ -8247,10 +8247,10 @@ function (localPlayer)
 
 			inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-get("zakon_price_house"), playername )
 		else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Рядом есть бизнес, дом или гос. здание", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Рядом есть бизнес, дом или гос. здание", color_mes.red)
 	end
 end)
 
@@ -8268,19 +8268,19 @@ function (localPlayer, cmd, id)
 	end
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [номер бизнеса от 1 до "..#interior_business.."]", color_mes.red)
 		return
 	end
 
 	if(search_inv_player_2_parameter(localPlayer, 1) < get("zakon_price_business")) then
 	
-		sendMessage(localPlayer, "[ERROR] Стоимость бизнеса составляет "..get("zakon_price_business").."$", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Стоимость бизнеса составляет "..get("zakon_price_business").."$", color_mes.red)
 		return
 	end
 
 	if id >= 1 and id <= #interior_business then
 		if search_inv_player(localPlayer, 45, 1) == 0 then
-			sendMessage(localPlayer, "[ERROR] Вы не риэлтор", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Вы не риэлтор", color_mes.red)
 			return
 		end
 
@@ -8320,13 +8320,13 @@ function (localPlayer, cmd, id)
 
 				inv_server_load( localPlayer, "player", 0, 1, search_inv_player_2_parameter(localPlayer, 1)-get("zakon_price_business"), playername )
 			else
-				sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 			end
 		else
-			sendMessage(localPlayer, "[ERROR] Рядом есть бизнес, дом или гос. здание", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Рядом есть бизнес, дом или гос. здание", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] от 1 до "..#interior_business, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 1 до "..#interior_business, color_mes.red)
 	end
 end)
 
@@ -8343,7 +8343,7 @@ function (localPlayer, cmd, id)
 	end
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [номер интерьера от 1 до "..max_interior_house.."]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [номер интерьера от 1 до "..max_interior_house.."]", color_mes.red)
 		return
 	end
 
@@ -8358,19 +8358,19 @@ function (localPlayer, cmd, id)
 
 						sendMessage(localPlayer, "Вы изменили интерьер на "..id.." за "..(cash*id).."$", color_mes.orange)
 					else
-						sendMessage(localPlayer, "[ERROR] У вас нет ключа от дома", color_mes.red)
+						sendMessage(localPlayer, "[ОШИБКА] У вас нет ключа от дома", color_mes.red)
 					end
 
 					return
 				end
 			end
 
-			sendMessage(localPlayer, "[ERROR] Нужно находиться около дома", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Нужно находиться около дома", color_mes.red)
 		else
-			sendMessage(localPlayer, "[ERROR] Нужно иметь "..(cash*id).."$", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..(cash*id).."$", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] от 1 до "..max_interior_house, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 1 до "..max_interior_house, color_mes.red)
 	end
 
 end)
@@ -8389,7 +8389,7 @@ function (localPlayer, cmd, ...)
 	end
 
 	if text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [текст]", color_mes.red)
 		return
 	end
 
@@ -8410,7 +8410,7 @@ function (localPlayer, cmd, ...)
 	end
 
 	if text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [текст]", color_mes.red)
 		return
 	end
 
@@ -8431,7 +8431,7 @@ function (localPlayer, cmd, ...)
 	end
 
 	if text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [текст]", color_mes.red)
 		return
 	end
 
@@ -8450,17 +8450,17 @@ function (localPlayer)
 	
 	elseif(mafia == 0) then
 	
-		sendMessage(localPlayer, "[ERROR] Вы не состоите в банде", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не состоите в банде", color_mes.red)
 		return
 	
 	elseif(point_guns_zone[1] == 1) then
 	
-		sendMessage(localPlayer, "[ERROR] Идет захват территории", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Идет захват территории", color_mes.red)
 		return
 
 	elseif(crimes[playername] < get("crimes_capture")) then
 	
-		sendMessage(localPlayer, "[ERROR] Нужно иметь "..get("crimes_capture").." преступлений", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Нужно иметь "..get("crimes_capture").." преступлений", color_mes.red)
 		return
 	end
 
@@ -8473,7 +8473,7 @@ function (localPlayer)
 	end
 
 	if not skin then
-		sendMessage(localPlayer, "[ERROR] Вы должны быть в одежде своей банды", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы должны быть в одежде своей банды", color_mes.red)
 		return
 	end
 
@@ -8519,12 +8519,12 @@ function (localPlayer, cmd, id, id1, id2 )
 	end
 
 	if not val1 or not val2 then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [ид предмета] [количество]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [ид предмета] [количество]", color_mes.red)
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendMessage(localPlayer, "[ERROR] от 2 до "..#info_png, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 2 до "..#info_png, color_mes.red)
 		return
 	end
 
@@ -8534,7 +8534,7 @@ function (localPlayer, cmd, id, id1, id2 )
 	elseif val1 ~= 44 then
 		for k,v in pairs(get("no_create_subject")) do
 			if (val1 == v) then
-				sendMessage(localPlayer, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+				sendMessage(localPlayer, "[ОШИБКА] Этот предмет нельзя создать", color_mes.red)
 				return
 			end
 		end
@@ -8546,10 +8546,10 @@ function (localPlayer, cmd, id, id1, id2 )
 		if inv_player_empty(localPlayer, val1, val2) then
 			admin_chat(localPlayer, playername.." ["..getElementData(localPlayer, "player_id").."] выдал "..id.." ["..getElementData(player, "player_id").."] "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
 		else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8563,12 +8563,12 @@ function (localPlayer, cmd, id, id1, id2 )
 	end
 
 	if not val1 or not val2 then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [ид предмета] [количество]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [ид предмета] [количество]", color_mes.red)
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendMessage(localPlayer, "[ERROR] от 2 до "..#info_png, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 2 до "..#info_png, color_mes.red)
 		return
 	end
 
@@ -8578,10 +8578,10 @@ function (localPlayer, cmd, id, id1, id2 )
 		if inv_player_delet(player, val1, val2, true) then
 			admin_chat(localPlayer, playername.." ["..getElementData(localPlayer, "player_id").."] удалил у "..id.." ["..getElementData(player, "player_id").."] "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
 		else
-			sendMessage(localPlayer, "[ERROR] Предмет не найден", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Предмет не найден", color_mes.red)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8596,31 +8596,31 @@ function (localPlayer, cmd, id1, id2 )
 	end
 
 	if not val1 or not val2 then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ид предмета] [количество]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ид предмета] [количество]", color_mes.red)
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendMessage(localPlayer, "[ERROR] от 2 до "..#info_png, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 2 до "..#info_png, color_mes.red)
 		return
 	end
 
 	for k,v in pairs(get("no_create_subject")) do
 		if (val1 == v) then
-			sendMessage(localPlayer, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Этот предмет нельзя создать", color_mes.red)
 			return
 		end
 	end
 
 	if not vehicleid then
-		sendMessage(localPlayer, "[ERROR] Вы не в т/с", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Вы не в т/с", color_mes.red)
 		return
 	end
 
 	if inv_car_empty(localPlayer, val1, val2, true) then
 		admin_chat(localPlayer, playername.." ["..getElementData(localPlayer, "player_id").."] создал для "..getVehiclePlateText(vehicleid).." "..info_png[val1][1].." "..val2.." "..info_png[val1][2])
 	else
-		sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 	end
 end)
 
@@ -8635,18 +8635,18 @@ function (localPlayer, cmd, id1, id2, count )
 	end
 
 	if not val1 or not val2 then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ид предмета] [количество] [количество на земле]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ид предмета] [количество] [количество на земле]", color_mes.red)
 		return
 	end
 
 	if val1 > #info_png or val1 < 2 then
-		sendMessage(localPlayer, "[ERROR] от 2 до "..#info_png, color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 2 до "..#info_png, color_mes.red)
 		return
 	end
 
 	for k,v in pairs(get("no_create_subject")) do
 		if (val1 == v) then
-			sendMessage(localPlayer, "[ERROR] Этот предмет нельзя создать", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Этот предмет нельзя создать", color_mes.red)
 			return
 		end
 	end
@@ -8672,7 +8672,7 @@ function ( localPlayer, cmd, x, y, z )
 	end
 
 	if x == nil or y == nil or z == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [и 3 координаты]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [и 3 координаты]", color_mes.red)
 		return
 	end
 
@@ -8717,7 +8717,7 @@ function ( localPlayer, cmd, ... )
 	end
 
 	if text == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [текст]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [текст]", color_mes.red)
 		return
 	end
 
@@ -8735,7 +8735,7 @@ function ( localPlayer, cmd, id1, id2 )
 	end
 
 	if house == nil or min == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [часов] [минут]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [часов] [минут]", color_mes.red)
 		return
 	end
 
@@ -8755,7 +8755,7 @@ function (localPlayer, cmd, value, id)
 	end
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [player | car | house] [имя игрока | номер т/с | номер дома]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [player | car | house] [имя игрока | номер т/с | номер дома]", color_mes.red)
 		return
 	end
 
@@ -8774,7 +8774,7 @@ function (localPlayer, cmd, value, id)
 
 			triggerClientEvent(localPlayer, "event_invsave_fun", localPlayer, "load", 0, 0, 0, 0)
 		else
-			sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 		end
 
 	elseif value == "car" then
@@ -8792,7 +8792,7 @@ function (localPlayer, cmd, value, id)
 
 			triggerClientEvent(localPlayer, "event_invsave_fun", localPlayer, "load", 0, 0, 0, 0)
 		else
-			sendMessage(localPlayer, "[ERROR] Такого т/с нет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Такого т/с нет", color_mes.red)
 		end
 
 	elseif value == "house" then
@@ -8810,7 +8810,7 @@ function (localPlayer, cmd, value, id)
 
 			triggerClientEvent(localPlayer, "event_invsave_fun", localPlayer, "load", 0, 0, 0, 0)
 		else
-			sendMessage(localPlayer, "[ERROR] Такого дома нет", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Такого дома нет", color_mes.red)
 		end
 	end
 end)
@@ -8829,7 +8829,7 @@ function prisonplayer (localPlayer, cmd, id, time, ...)--(посадить иг�
 	end
 
 	if not id or reason == "" or not time then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [время] [причина]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [время] [причина]", color_mes.red)
 		return
 	end
 
@@ -8845,7 +8845,7 @@ function prisonplayer (localPlayer, cmd, id, time, ...)--(посадить иг�
 		arrest[id] = 2
 		inv_server_load (localPlayer, "player", 24, 92, time, playername)
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end
 addCommandHandler ( "prisonplayer", prisonplayer)
@@ -8871,7 +8871,7 @@ function target(localPlayer, cmd, id)
 
 		admin_chat(localPlayer, getPlayerName(localPlayer).." ["..getElementData(localPlayer, "player_id").."] следит за "..id.." ["..getElementData(player, "player_id").."]")
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end
 addCommandHandler ( "rc", target)
@@ -8890,7 +8890,7 @@ function ( localPlayer, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [причина]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [причина]", color_mes.red)
 		return
 	end
 
@@ -8899,7 +8899,7 @@ function ( localPlayer, cmd, id, ... )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		if result[1]["ban"] ~= "0" then
-			sendMessage(localPlayer, "[ERROR] Игрок уже забанен", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок уже забанен", color_mes.red)
 			return
 		end
 
@@ -8912,7 +8912,7 @@ function ( localPlayer, cmd, id, ... )
 			kickPlayer(player, "banplayer reason: "..reason)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8925,7 +8925,7 @@ function ( localPlayer, cmd, id )
 	end
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока]", color_mes.red)
 		return
 	end
 
@@ -8934,7 +8934,7 @@ function ( localPlayer, cmd, id )
 
 		local result = sqlite( "SELECT * FROM account WHERE name = '"..id.."'" )
 		if result[1]["ban"] == "0" then
-			sendMessage(localPlayer, "[ERROR] Игрок не забанен", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Игрок не забанен", color_mes.red)
 			return
 		end
 
@@ -8942,7 +8942,7 @@ function ( localPlayer, cmd, id )
 
 		sendMessage( root, "Администратор "..playername.." разбанил "..id, color_mes.lyme)
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)
 
@@ -8960,7 +8960,7 @@ function ( localPlayer, cmd, id, ... )
 	end
 
 	if id == nil or reason == "" then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ИД игрока] [причина]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ИД игрока] [причина]", color_mes.red)
 		return
 	end
 
@@ -8969,7 +8969,7 @@ function ( localPlayer, cmd, id, ... )
 
 		local result = sqlite( "SELECT COUNT() FROM banserial_list WHERE name = '"..id.."'" )
 		if result[1]["COUNT()"] == 1 then
-			sendMessage(localPlayer, "[ERROR] Серийник игрока уже забанен", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Серийник игрока уже забанен", color_mes.red)
 			return
 		end
 
@@ -8983,7 +8983,7 @@ function ( localPlayer, cmd, id, ... )
 			kickPlayer(player, "banserial reason: "..reason)
 		end
 	else
-		sendMessage(localPlayer, "[ERROR] Такого игрока нет", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] Такого игрока нет", color_mes.red)
 	end
 end)]]
 
@@ -9012,7 +9012,7 @@ function ( localPlayer, cmd, id )
 	end
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [номер виртуального мира]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [номер виртуального мира]", color_mes.red)
 		return
 	end
 
@@ -9031,7 +9031,7 @@ function ( localPlayer, cmd, id )
 	local id = tonumber(id)
 
 	if id == nil then
-		sendMessage(localPlayer, "[ERROR] /"..cmd.." [ид т/с]", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] /"..cmd.." [ид т/с]", color_mes.red)
 		return
 	end
 
@@ -9054,10 +9054,10 @@ function ( localPlayer, cmd, id )
 
 			--sendMessage(localPlayer, "Вы получили "..info_png[val1][1].." "..val2.." "..info_png[val1][2], color_mes.lyme)
 		--[[else
-			sendMessage(localPlayer, "[ERROR] Инвентарь полон", color_mes.red)
+			sendMessage(localPlayer, "[ОШИБКА] Инвентарь полон", color_mes.red)
 		end]]
 	else
-		sendMessage(localPlayer, "[ERROR] от 400 до 611", color_mes.red)
+		sendMessage(localPlayer, "[ОШИБКА] от 400 до 611", color_mes.red)
 	end
 end)
 
